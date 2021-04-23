@@ -1,5 +1,7 @@
 use thiserror::Error;
 
+pub type Result<T> = std::result::Result<T, TypesenseError>;
+
 #[derive(Error, Debug)]
 pub enum TypesenseError {
     /// Config error.
@@ -44,5 +46,5 @@ pub enum TypesenseError {
 
     /// HTTP status error.
     #[error("HTTP status error")]
-    HTTPStatusError,
+    HttpStatusError,
 }
