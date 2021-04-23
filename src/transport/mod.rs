@@ -7,6 +7,15 @@ mod http_low_level;
 pub use builder::TransportBuilder;
 pub use http_low_level::HttpLowLevel;
 
+#[cfg(target_arch = "wasm32")]
+pub(crate) use http_low_level::WasmClient;
+
+#[cfg(not(target_arch = "wasm32"))]
+pub(crate) use http_low_level::HyperClient;
+
+#[cfg(all(feature = "tokio-rt", not(target_arch = "wasm32")))]
+pub(crate) use http_low_level::HyperHttpsClient;
+
 /// The [`Transport`] struct.
 ///
 /// It handles the low level HTTP client.

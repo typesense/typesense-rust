@@ -6,6 +6,7 @@ use thiserror::Error;
 pub type Result<T> = std::result::Result<T, TypesenseError>;
 
 /// Represents an error that can occur while using the library.
+#[non_exhaustive]
 #[derive(Error, Debug)]
 pub enum TypesenseError {
     /// TypesenseClientError
@@ -13,8 +14,8 @@ pub enum TypesenseError {
     TypesenseClientError,
 
     /// Config error.
-    #[error("config error")]
-    ConfigError,
+    #[error("config error: {0}")]
+    ConfigError(String),
 
     /// Timeout.
     #[error("timeout")]

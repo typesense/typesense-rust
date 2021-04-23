@@ -1,0 +1,13 @@
+when:
+  method: POST
+  path: /test_api_key
+  header:
+    - name: X-TYPESENSE-API-KEY
+      value: VerySecretKey
+  body: "Test with api key successful"
+then:
+  status: 200
+  header:
+    - name: content-type
+      value: text/html
+  body: "Test with api key successful"

@@ -1,0 +1,14 @@
+when:
+  method: GET
+  path: /test_api_key
+  header:
+    - name: X-TYPESENSE-API-KEY
+      value: VerySecretKey
+then:
+  status: 200
+  header:
+    - name: content-type
+      value: text/html
+    - name: Access-Control-Allow-Origin
+      value: \*
+  body: "Test with api key successful"
