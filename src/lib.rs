@@ -2,3 +2,5 @@
 //! # Typesense
 //!
 //! Welcome to typesense, the rust library for the Typesense API.
+
+mod error;
