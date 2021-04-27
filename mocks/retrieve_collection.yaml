@@ -1,0 +1,22 @@
+when:
+  method: GET
+  path: /collections/companies
+  header:
+    - name: X-TYPESENSE-API-KEY
+      value: VerySecretKey
+  status: 200
+then:
+  header:
+    - name: content-type
+      value: text/json
+  body: '
+  {
+        "name": "companies",
+        "num_documents": 1250,
+        "fields": [
+           {"name": "company_name", "type": "string" },
+           {"name": "num_employees", "type": "int32" },
+           {"name": "country", "type": "string", "facet": true }
+        ],
+        "default_sorting_field": "num_employees"
+  }'

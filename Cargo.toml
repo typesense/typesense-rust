@@ -1,39 +1,5 @@
-[package]
-name = "typesense"
-version = "0.1.0"
-authors = ["Typesense  <contact@typesense.org>"]
-edition = "2018"
-
-[features]
-default = []
-tokio-rt = ["hyper/runtime", "hyper/tcp", "hyper-tls"]
-
-[lib]
-crate-type = ["cdylib", "rlib"]
-
-[dependencies]
-async-trait = "0.1.50"
-base64 = "0.13.0"
-hmac = "0.11.0"
-http = "0.2.4"
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-sha2 = "0.9.5"
-thiserror = "1.0.24"
-
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-hyper = { version = "0.14.7", features = ["http1", "http2", "client"] }
-hyper-tls = { version = "0.5.0", optional = true }
-
-[target.'cfg(target_arch = "wasm32")'.dependencies]
-js-sys = { version = "0.3.50" }
-wasm-bindgen = { version = "0.2.73" }
-wasm-bindgen-futures = { version = "0.4.23" }
-web-sys = { version = "0.3.50", features = ["Headers", "Response", "Request", "RequestInit", "RequestMode", "Window", "WorkerGlobalScope"] }
-
-[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
-tokio = { version = "1.5.0", features = ["macros", "rt", "rt-multi-thread"] }
-
-[target.'cfg(target_arch = "wasm32")'.dev-dependencies]
-console_error_panic_hook = "0.1.6"
-wasm-bindgen-test = "0.3.23"
+[workspace]
+members = [
+    "typesense",
+    "typesense_derive"
+]
