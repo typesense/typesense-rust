@@ -1,0 +1,5 @@
+error: Unexpected token facets. Do you mean `facet`?
+ --> $DIR/unknown_attribute.rs:8:17
+  |
+8 |     #[typesense(facets)]
+  |                 ^^^^^^
