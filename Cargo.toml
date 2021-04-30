@@ -7,4 +7,15 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+anyhow = "1.0.40"
+async-native-tls = "0.3.3"
+async-std = { version = "1.9.0" }
+hyper = { version = "0.14.7", default-features = false,  features = ["full"] }
+hyper-tls = { version = "0.5.0" }
+js-sys = "0.3.50"
+smol = { version = "1.2.5" }
 thiserror = "1.0.24"
+tokio = { version = "1.5.0", features = ["full"] }
+wasm-bindgen = "0.2.73"
+wasm-bindgen-futures = "0.4.23"
+web-sys = { version = "0.3.50", features = ["Headers", "Response", "Request", "RequestInit", "Window", "WorkerGlobalScope"] }
