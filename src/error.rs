@@ -1,7 +1,7 @@
 use thiserror::Error;
 
-/// [`Result`](std::result::Result) type that is returned from functions with error
-/// as [`TypesenseError`](crate::error::TypesenseError).
+/// [`Result`](std::result::Result) type that is returned from
+/// functions with error as [`TypesenseError`].
 pub type Result<T> = std::result::Result<T, TypesenseError>;
 
 /// Represents an error that can occur while using the library.

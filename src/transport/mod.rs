@@ -1,150 +1,101 @@
-use std::pin::Pin;
+//! The module containing the [`Transport`] struct and
+//! its [`Builder`](TransportBuilder).
 
-use hyper::{body, Body, Request, Response};
-use wasm_bindgen::prelude::*;
-use wasm_bindgen::JsCast;
-use wasm_bindgen_futures::JsFuture;
+mod builder;
+mod http_low_level;
 
-mod build;
+pub use builder::TransportBuilder;
+pub use http_low_level::HttpLowLevel;
 
-pub use build::TransportBuilder;
-
-use build::{HttpsConnector, HyperClient, WasmClient};
-
+/// The [`Transport`] struct.
+///
+/// It handles the low level HTTP client.
 pub struct Transport<C> {
     client: C,
 }
 
-impl Transport<HyperClient<HttpsConnector>> {
-    pub fn new() -> Self {
+#[cfg(feature = "tokio_rt")]
+impl Default for Transport<http_low_level::HyperHttpsClient> {
+    fn default() -> Self {
         TransportBuilder::new_hyper().build()
     }
 }
 
-impl<C> Transport<HyperClient<C>>
+impl<C> Transport<C>
 where
-    C: hyper::client::connect::Connect + Clone + Send + Sync + 'static,
+    C: HttpLowLevel,
 {
-    pub async fn send(
+    /// Make a request that will be accepted by
+    /// [`send`](Self::send) function.
+    pub fn make_request(
         &self,
-        method: hyper::Method,
+        method: C::Method,
         uri: &str,
-        headers: hyper::HeaderMap,
-        body: Body,
-    ) -> Response<Body> {
-        let mut request_builder = Request::builder().method(method).uri(uri);
-        request_builder.headers_mut().map(|h| *h = headers);
-        let request = request_builder.body(body).unwrap();
+        headers: C::HeaderMap,
+        body: C::Body,
+    ) -> C::Request {
+        C::make_request(method, uri, headers, body)
+    }
 
-        self.client.request(request).await.unwrap()
+    /// Send a request and receive a response.
+    pub async fn send(&self, request: C::Request) -> C::Response {
+        self.client.send(request).await
     }
 }
 
-impl Transport<WasmClient> {
-    pub async fn send(
-        &self,
-        method: hyper::Method,
-        uri: &str,
-        headers: hyper::HeaderMap,
-        body: Body,
-    ) -> Response<Body> {
-        let mut opts = web_sys::RequestInit::new();
-        opts.method(method.as_str());
+#[cfg(test)]
+mod tests {
+    use http::Method as HttpMethod;
+    use http::{HeaderMap, StatusCode};
+    use httpmock::Method as MockMethod;
+    use httpmock::MockServer;
 
-        let body_bytes = body::to_bytes(body).await.unwrap();
-        let body_pinned = Pin::new(body_bytes);
-        if body_pinned.len() > 0 {
-            let uint_8_array = unsafe { js_sys::Uint8Array::view(&body_pinned) };
-            opts.body(Some(&uint_8_array));
-        }
+    use super::*;
 
-        let request = web_sys::Request::new_with_str_and_init(&uri, &opts).unwrap();
+    #[tokio::test]
+    async fn hyper() {
+        let body = String::from("Test Successful");
+        let server = MockServer::start();
 
-        for (name, value) in headers.iter().map(|(x, y)| (x.as_str(), x.as_str())) {
-            request.headers().set(name, value).unwrap();
-        }
+        let get = server.mock(|when, then| {
+            when.method(MockMethod::GET)
+                .path("/")
+                .header("Test", "test");
+            then.status(200)
+                .header("Content-Type", "text/html")
+                .body(body.clone());
+        });
 
-        let scope = WindowOrWorker::new();
-        let promise = match scope {
-            WindowOrWorker::Window(window) => window.fetch_with_request(&request),
-            WindowOrWorker::Worker(worker) => worker.fetch_with_request(&request),
-        };
+        let post = server.mock(|when, then| {
+            when.method(MockMethod::POST)
+                .path("/")
+                .header("Test", "test")
+                .body(body.clone());
+            then.status(200)
+                .header("Content-Type", "text/html")
+                .body(body.clone());
+        });
 
-        let res = JsFuture::from(promise).await.unwrap();
+        let url = server.url("/");
+        let mut header = HeaderMap::new();
+        header.insert("Test", "test".parse().unwrap());
 
-        let res: web_sys::Response = res.dyn_into().unwrap();
+        let transport = TransportBuilder::new_hyper().build();
 
-        let promise_array = res.array_buffer().unwrap();
-        let array = JsFuture::from(promise_array).await.unwrap();
-        let buf: js_sys::ArrayBuffer = array.dyn_into().unwrap();
-        let slice = js_sys::Uint8Array::new(&buf);
-        let body = slice.to_vec();
+        let request = transport.make_request(HttpMethod::GET, &url, header.clone(), vec![].into());
+        let response = transport.send(request).await;
+        assert_eq!(response.status(), StatusCode::OK);
+        let bytes = hyper::body::to_bytes(response).await.unwrap();
 
-        let mut response = Response::builder().status(res.status());
+        assert_eq!(bytes, body.as_bytes());
+        get.assert();
 
-        for mut i in js_sys::try_iter(&res.headers()).unwrap() {
-            let array: js_sys::Array = i.next().unwrap().unwrap().into();
-            let values = array.values();
+        let request = transport.make_request(HttpMethod::POST, &url, header.clone(), body.clone().into());
+        let response = transport.send(request).await;
+        assert_eq!(response.status(), StatusCode::OK);
+        let bytes = hyper::body::to_bytes(response).await.unwrap();
 
-            let prop = String::from("value").into();
-            let key = js_sys::Reflect::get(&values.next().unwrap(), &prop)
-                .unwrap()
-                .as_string()
-                .unwrap();
-            let value = js_sys::Reflect::get(&values.next().unwrap(), &prop)
-                .unwrap()
-                .as_string()
-                .unwrap();
-            response = response.header(&key, &value);
-        }
-
-        response.body(body.into()).unwrap()
+        assert_eq!(bytes, body.as_bytes());
+        post.assert();
     }
-}
-
-enum WindowOrWorker {
-    Window(web_sys::Window),
-    Worker(web_sys::WorkerGlobalScope),
-}
-
-impl WindowOrWorker {
-    fn new() -> Self {
-        #[wasm_bindgen]
-        extern "C" {
-            type Global;
-
-            #[wasm_bindgen(method, getter, js_name = Window)]
-            fn window(this: &Global) -> wasm_bindgen::JsValue;
-
-            #[wasm_bindgen(method, getter, js_name = WorkerGlobalScope)]
-            fn worker(this: &Global) -> wasm_bindgen::JsValue;
-        }
-
-        let global: Global = js_sys::global().unchecked_into();
-
-        if !global.window().is_undefined() {
-            Self::Window(global.unchecked_into())
-        } else if !global.worker().is_undefined() {
-            Self::Worker(global.unchecked_into())
-        } else {
-            panic!("Only supported in a browser or web worker");
-        }
-    }
-}
-
-#[tokio::test]
-async fn test() {
-    use hyper::{Body, HeaderMap, Method};
-
-    let transport = Transport::new();
-    let response = transport
-        .send(
-            Method::GET,
-            "https://www.rust-lang.org",
-            HeaderMap::new(),
-            Body::empty(),
-        )
-        .await;
-
-    println!("{:?}", response);
 }
