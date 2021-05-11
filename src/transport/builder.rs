@@ -1,6 +1,3 @@
-use std::future::Future;
-use std::pin::Pin;
-
 use super::http_low_level;
 use super::Transport;
 
@@ -11,8 +8,11 @@ pub struct TransportBuilder<C> {
     client: C,
 }
 
-#[cfg(feature = "tokio_rt")]
-#[cfg_attr(docsrs, doc(cfg(feature = "tokio_rt")))]
+#[cfg(all(feature = "tokio-rt", not(target_arch = "wasm32")))]
+#[cfg_attr(
+    docsrs,
+    doc(cfg(all(feature = "tokio-rt", not(target_arch = "wasm32"))))
+)]
 impl TransportBuilder<http_low_level::HyperHttpsClient> {
     /// Used to make a new [`hyper`](https://docs.rs/hyper) client.
     /// The connector used is [`HttpsConnector`](hyper_tls::HttpsConnector).
@@ -24,8 +24,8 @@ impl TransportBuilder<http_low_level::HyperHttpsClient> {
     }
 }
 
-#[cfg(feature = "hyper")]
-#[cfg_attr(docsrs, doc(cfg(feature = "hyper")))]
+#[cfg(not(target_arch = "wasm32"))]
+#[cfg_attr(docsrs, doc(cfg(not(target_arch = "wasm32"))))]
 impl<C> TransportBuilder<http_low_level::HyperClient<C>>
 where
     C: hyper::client::connect::Connect + Clone,
@@ -34,7 +34,10 @@ where
     /// Provide your own executor and connector.
     pub fn new_custom_hyper<E>(executor: E, connector: C) -> Self
     where
-        E: hyper::rt::Executor<Pin<Box<dyn Future<Output = ()> + Send>>> + Send + Sync + 'static,
+        E: hyper::rt::Executor<std::pin::Pin<Box<dyn std::future::Future<Output = ()> + Send>>>
+            + Send
+            + Sync
+            + 'static,
     {
         let client = hyper::Client::builder().executor(executor).build(connector);
 
@@ -42,8 +45,8 @@ where
     }
 }
 
-#[cfg(feature = "wasm")]
-#[cfg_attr(docsrs, doc(cfg(feature = "wasm")))]
+#[cfg(target_arch = "wasm32")]
+#[cfg_attr(docsrs, doc(cfg(target_arch = "wasm32")))]
 impl TransportBuilder<http_low_level::WasmClient> {
     /// Used to make a new wasm client.
     pub fn new_wasm() -> Self {

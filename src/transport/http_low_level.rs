@@ -1,17 +1,15 @@
-use std::pin::Pin;
-
 use async_trait::async_trait;
 
-#[cfg(feature = "hyper")]
+#[cfg(not(target_arch = "wasm32"))]
 pub(crate) type HyperClient<C> = hyper::Client<C, hyper::Body>;
 
-#[cfg(feature = "tokio_rt")]
+#[cfg(all(feature = "tokio-rt", not(target_arch = "wasm32")))]
 pub(crate) type HttpsConnector = hyper_tls::HttpsConnector<hyper::client::HttpConnector>;
 
-#[cfg(feature = "tokio_rt")]
+#[cfg(all(feature = "tokio-rt", not(target_arch = "wasm32")))]
 pub(crate) type HyperHttpsClient = HyperClient<HttpsConnector>;
 
-#[cfg(feature = "wasm")]
+#[cfg(target_arch = "wasm32")]
 pub(crate) struct WasmClient;
 
 /// A low level HTTP trait.
@@ -26,25 +24,20 @@ pub trait HttpLowLevel {
     /// HTTP Body type.
     type Body;
 
-    /// HTTP Request type.
-    type Request;
-
     /// HTTP Response type.
     type Response;
 
-    /// Return a request which is accepted by the client.
-    fn make_request(
+    /// Send a request and receive a response.
+    async fn send(
+        &self,
         method: Self::Method,
         uri: &str,
         headers: Self::HeaderMap,
         body: Self::Body,
-    ) -> Self::Request;
-
-    /// Send a request and receive a response.
-    async fn send(&self, request: Self::Request) -> Self::Response;
+    ) -> crate::Result<Self::Response>;
 }
 
-#[cfg(feature = "hyper")]
+#[cfg(not(target_arch = "wasm32"))]
 #[async_trait(?Send)]
 impl<C> HttpLowLevel for HyperClient<C>
 where
@@ -53,51 +46,64 @@ where
     type Method = http::Method;
     type HeaderMap = http::HeaderMap;
     type Body = Vec<u8>;
-    type Request = http::Request<hyper::Body>;
     type Response = http::Response<hyper::Body>;
 
-    fn make_request(
+    async fn send(
+        &self,
         method: Self::Method,
         uri: &str,
         headers: Self::HeaderMap,
         body: Self::Body,
-    ) -> Self::Request {
+    ) -> crate::Result<Self::Response> {
         let mut builder = http::Request::builder().method(method).uri(uri);
         if let Some(h) = builder.headers_mut() {
             *h = headers;
         }
 
-        builder.body(body.into()).unwrap()
-    }
+        let request = builder.body(body.into()).unwrap();
+        let response = self.request(request).await.unwrap();
 
-    async fn send(&self, request: Self::Request) -> Self::Response {
-        self.request(request).await.unwrap()
+        if response.status().is_success() {
+            Ok(response)
+        } else {
+            return Err(response.status().into());
+        }
     }
 }
 
-#[cfg(feature = "wasm")]
+#[cfg(target_arch = "wasm32")]
 #[async_trait(?Send)]
 impl HttpLowLevel for WasmClient {
     type Method = http::Method;
     type HeaderMap = http::HeaderMap;
     type Body = Vec<u8>;
-    type Request = web_sys::Request;
     type Response = http::Response<Self::Body>;
 
-    fn make_request(
+    async fn send(
+        &self,
         method: Self::Method,
         uri: &str,
         headers: Self::HeaderMap,
         body: Self::Body,
-    ) -> Self::Request {
+    ) -> crate::Result<Self::Response> {
+        use js_sys::{Array, ArrayBuffer, Reflect, Uint8Array};
+        use wasm_bindgen::JsCast;
+        use wasm_bindgen_futures::JsFuture;
+
         let mut opts = web_sys::RequestInit::new();
         opts.method(method.as_str());
 
-        let body_pinned = Pin::new(body);
+        let body_pinned = std::pin::Pin::new(body);
         if body_pinned.len() > 0 {
-            let uint_8_array = unsafe { js_sys::Uint8Array::view(&body_pinned) };
+            // Creating a JS Typed Array which is a view to into wasm's linear memory.
+            // It could be invalidated if the contents is moved, which is why
+            // we are using `Pin`.
+            // Read more [here](https://docs.rs/js-sys/0.3.51/js_sys/struct.Uint8Array.html#unsafety).
+            let uint_8_array = unsafe { Uint8Array::view(&body_pinned) };
             opts.body(Some(&uint_8_array));
         }
+
+        opts.mode(web_sys::RequestMode::Cors);
 
         let request = web_sys::Request::new_with_str_and_init(&uri, &opts).unwrap();
 
@@ -108,14 +114,6 @@ impl HttpLowLevel for WasmClient {
             request.headers().set(name, value).unwrap();
         }
 
-        request
-    }
-
-    async fn send(&self, request: Self::Request) -> Self::Response {
-        use js_sys::{Array, ArrayBuffer, Reflect, Uint8Array};
-        use wasm_bindgen::JsCast;
-        use wasm_bindgen_futures::JsFuture;
-
         let scope = WindowOrWorker::new();
         let promise = match scope {
             WindowOrWorker::Window(window) => window.fetch_with_request(&request),
@@ -123,19 +121,20 @@ impl HttpLowLevel for WasmClient {
         };
 
         let res = JsFuture::from(promise).await.unwrap();
-
+        debug_assert!(res.is_instance_of::<web_sys::Response>());
         let res: web_sys::Response = res.dyn_into().unwrap();
 
         let promise_array = res.array_buffer().unwrap();
         let array = JsFuture::from(promise_array).await.unwrap();
+        debug_assert!(array.is_instance_of::<js_sys::ArrayBuffer>());
         let buf: ArrayBuffer = array.dyn_into().unwrap();
         let slice = Uint8Array::new(&buf);
         let body = slice.to_vec();
 
-        let mut response = http::Response::builder().status(res.status());
+        let mut builder = http::Response::builder().status(res.status());
 
-        while let Some(mut i) = js_sys::try_iter(&res.headers()).unwrap() {
-            let array: Array = i.next().unwrap().unwrap().into();
+        for i in js_sys::try_iter(&res.headers()).unwrap().unwrap() {
+            let array: Array = i.unwrap().into();
             let values = array.values();
 
             let prop = String::from("value").into();
@@ -147,20 +146,26 @@ impl HttpLowLevel for WasmClient {
                 .unwrap()
                 .as_string()
                 .unwrap();
-            response = response.header(&key, &value);
+            builder = builder.header(&key, &value);
         }
 
-        response.body(body).unwrap()
+        let response = builder.body(body).unwrap();
+
+        if response.status().is_success() {
+            Ok(response)
+        } else {
+            return Err(response.status().into());
+        }
     }
 }
 
-#[cfg(feature = "wasm")]
+#[cfg(target_arch = "wasm32")]
 enum WindowOrWorker {
     Window(web_sys::Window),
     Worker(web_sys::WorkerGlobalScope),
 }
 
-#[cfg(feature = "wasm")]
+#[cfg(target_arch = "wasm32")]
 impl WindowOrWorker {
     fn new() -> Self {
         use wasm_bindgen::prelude::*;

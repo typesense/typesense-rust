@@ -1,3 +1,4 @@
+use http::StatusCode;
 use thiserror::Error;
 
 /// [`Result`](std::result::Result) type that is returned from
@@ -7,6 +8,10 @@ pub type Result<T> = std::result::Result<T, TypesenseError>;
 /// Represents an error that can occur while using the library.
 #[derive(Error, Debug)]
 pub enum TypesenseError {
+    /// TypesenseClientError
+    #[error("typesense client error")]
+    TypesenseClientError,
+
     /// Config error.
     #[error("config error")]
     ConfigError,
@@ -50,4 +55,28 @@ pub enum TypesenseError {
     /// HTTP status error.
     #[error("HTTP status error")]
     HttpStatusError,
+}
+
+impl From<StatusCode> for TypesenseError {
+    fn from(status: StatusCode) -> Self {
+        match status {
+            // 400
+            StatusCode::BAD_REQUEST => Self::RequestMalformed,
+            // 401
+            StatusCode::UNAUTHORIZED => Self::RequestUnauthorized,
+            // 403
+            StatusCode::FORBIDDEN => Self::RequestForbidden,
+            // 404
+            StatusCode::NOT_FOUND => Self::ObjectNotFound,
+            // 409
+            StatusCode::CONFLICT => Self::ObjectAlreadyExists,
+            // 422
+            StatusCode::UNPROCESSABLE_ENTITY => Self::ObjectUnprocessable,
+            // 500
+            StatusCode::INTERNAL_SERVER_ERROR => Self::ServerError,
+            // 503
+            StatusCode::SERVICE_UNAVAILABLE => Self::ServiceUnavailable,
+            _ => Self::TypesenseClientError,
+        }
+    }
 }

@@ -14,7 +14,7 @@ pub struct Transport<C> {
     client: C,
 }
 
-#[cfg(feature = "tokio_rt")]
+#[cfg(all(feature = "tokio-rt", not(target_arch = "wasm32")))]
 impl Default for Transport<http_low_level::HyperHttpsClient> {
     fn default() -> Self {
         TransportBuilder::new_hyper().build()
@@ -25,77 +25,110 @@ impl<C> Transport<C>
 where
     C: HttpLowLevel,
 {
-    /// Make a request that will be accepted by
-    /// [`send`](Self::send) function.
-    pub fn make_request(
+    /// Send a request and receive a response.
+    pub async fn send(
         &self,
         method: C::Method,
         uri: &str,
         headers: C::HeaderMap,
         body: C::Body,
-    ) -> C::Request {
-        C::make_request(method, uri, headers, body)
-    }
-
-    /// Send a request and receive a response.
-    pub async fn send(&self, request: C::Request) -> C::Response {
-        self.client.send(request).await
+    ) -> crate::Result<C::Response> {
+        self.client.send(method, uri, headers, body).await
     }
 }
 
-#[cfg(test)]
-mod tests {
+#[cfg(all(test, feature = "tokio-rt", not(target_arch = "wasm32")))]
+mod hyper_tests {
     use http::Method as HttpMethod;
     use http::{HeaderMap, StatusCode};
-    use httpmock::Method as MockMethod;
-    use httpmock::MockServer;
 
     use super::*;
 
     #[tokio::test]
-    async fn hyper() {
+    async fn hyper() -> crate::Result<()> {
         let body = String::from("Test Successful");
-        let server = MockServer::start();
 
-        let get = server.mock(|when, then| {
-            when.method(MockMethod::GET)
-                .path("/")
-                .header("Test", "test");
-            then.status(200)
-                .header("Content-Type", "text/html")
-                .body(body.clone());
-        });
-
-        let post = server.mock(|when, then| {
-            when.method(MockMethod::POST)
-                .path("/")
-                .header("Test", "test")
-                .body(body.clone());
-            then.status(200)
-                .header("Content-Type", "text/html")
-                .body(body.clone());
-        });
-
-        let url = server.url("/");
+        let url = "http://localhost:5000";
         let mut header = HeaderMap::new();
         header.insert("Test", "test".parse().unwrap());
 
         let transport = TransportBuilder::new_hyper().build();
 
-        let request = transport.make_request(HttpMethod::GET, &url, header.clone(), vec![].into());
-        let response = transport.send(request).await;
+        let response = transport
+            .send(HttpMethod::GET, &url, header.clone(), vec![].into())
+            .await?;
+
         assert_eq!(response.status(), StatusCode::OK);
         let bytes = hyper::body::to_bytes(response).await.unwrap();
-
         assert_eq!(bytes, body.as_bytes());
-        get.assert();
 
-        let request = transport.make_request(HttpMethod::POST, &url, header.clone(), body.clone().into());
-        let response = transport.send(request).await;
+        let response = transport
+            .send(HttpMethod::POST, &url, header.clone(), body.clone().into())
+            .await?;
+
         assert_eq!(response.status(), StatusCode::OK);
         let bytes = hyper::body::to_bytes(response).await.unwrap();
-
         assert_eq!(bytes, body.as_bytes());
-        post.assert();
+
+        Ok(())
+    }
+}
+
+#[cfg(all(test, target_arch = "wasm32"))]
+mod wasm_test {
+    wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
+
+    use http::Method as HttpMethod;
+    use http::{HeaderMap, StatusCode};
+    use wasm_bindgen::prelude::*;
+    use wasm_bindgen_test::wasm_bindgen_test;
+
+    use super::*;
+
+    #[wasm_bindgen]
+    extern "C" {
+        #[wasm_bindgen(js_namespace = console)]
+        fn log(s: &str);
+    }
+
+    macro_rules! console_log {
+        ($($t:tt)*) => (log(&format_args!($($t)*).to_string()))
+    }
+
+    #[wasm_bindgen_test]
+    async fn wasm() {
+        console_error_panic_hook::set_once();
+
+        console_log!("Test Started.");
+        match try_wasm().await {
+            Ok(_) => console_log!("Test Successful."),
+            Err(e) => console_log!("Test failed: {:?}", e),
+        }
+    }
+
+    async fn try_wasm() -> crate::Result<()> {
+        let body = String::from("Test Successful");
+
+        let url = "http://localhost:5000";
+        let mut header = HeaderMap::new();
+        header.insert("Test", "test".parse().unwrap());
+
+        let transport = TransportBuilder::new_wasm().build();
+
+        let response = transport
+            .send(HttpMethod::GET, &url, header.clone(), vec![].into())
+            .await?;
+
+        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(response.body(), body.as_bytes());
+
+        let response = transport
+            .send(HttpMethod::POST, &url, header.clone(), body.clone().into())
+            .await?;
+
+        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(response.body(), body.as_bytes());
+
+        Ok(())
     }
 }

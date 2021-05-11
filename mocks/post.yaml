@@ -1,0 +1,13 @@
+when:
+  method: POST
+  path: /
+  header:
+    - name: Test
+      value: test
+  body: "Test Successful"
+then:
+  status: 200
+  header:
+    - name: content-type
+      value: text/html
+  body: "Test Successful"
