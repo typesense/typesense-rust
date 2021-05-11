@@ -38,6 +38,7 @@ jobs:
         with:
           command: install
           args: --features="standalone" httpmock
+      - name: Run httpmock
         run: httpmock --expose --static-mock-dir=./mocks &
       - name: Install test runner for wasm
         if: matrix.platform.target == 'wasm32-unknown-unknown'
