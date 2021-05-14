@@ -60,8 +60,8 @@ where
             *h = headers;
         }
 
-        let request = builder.body(body.into()).unwrap();
-        let response = self.request(request).await.unwrap();
+        let request = builder.body(body.into())?;
+        let response = self.request(request).await?;
 
         if response.status().is_success() {
             Ok(response)
@@ -105,13 +105,13 @@ impl HttpLowLevel for WasmClient {
 
         opts.mode(web_sys::RequestMode::Cors);
 
-        let request = web_sys::Request::new_with_str_and_init(&uri, &opts).unwrap();
+        let request = web_sys::Request::new_with_str_and_init(&uri, &opts)?;
 
         for (name, value) in headers
             .iter()
             .map(|(x, y)| (x.as_str(), y.to_str().unwrap()))
         {
-            request.headers().set(name, value).unwrap();
+            request.headers().set(name, value)?;
         }
 
         let scope = WindowOrWorker::new();
@@ -120,12 +120,12 @@ impl HttpLowLevel for WasmClient {
             WindowOrWorker::Worker(worker) => worker.fetch_with_request(&request),
         };
 
-        let res = JsFuture::from(promise).await.unwrap();
+        let res = JsFuture::from(promise).await?;
         debug_assert!(res.is_instance_of::<web_sys::Response>());
         let res: web_sys::Response = res.dyn_into().unwrap();
 
-        let promise_array = res.array_buffer().unwrap();
-        let array = JsFuture::from(promise_array).await.unwrap();
+        let promise_array = res.array_buffer()?;
+        let array = JsFuture::from(promise_array).await?;
         debug_assert!(array.is_instance_of::<js_sys::ArrayBuffer>());
         let buf: ArrayBuffer = array.dyn_into().unwrap();
         let slice = Uint8Array::new(&buf);
@@ -133,23 +133,21 @@ impl HttpLowLevel for WasmClient {
 
         let mut builder = http::Response::builder().status(res.status());
 
-        for i in js_sys::try_iter(&res.headers()).unwrap().unwrap() {
-            let array: Array = i.unwrap().into();
+        for i in js_sys::try_iter(&res.headers())?.unwrap() {
+            let array: Array = i?.into();
             let values = array.values();
 
             let prop = String::from("value").into();
-            let key = Reflect::get(&values.next().unwrap(), &prop)
-                .unwrap()
+            let key = Reflect::get(values.next()?.as_ref(), &prop)?
                 .as_string()
                 .unwrap();
-            let value = Reflect::get(&values.next().unwrap(), &prop)
-                .unwrap()
+            let value = Reflect::get(values.next()?.as_ref(), &prop)?
                 .as_string()
                 .unwrap();
             builder = builder.header(&key, &value);
         }
 
-        let response = builder.body(body).unwrap();
+        let response = builder.body(body)?;
 
         if response.status().is_success() {
             Ok(response)

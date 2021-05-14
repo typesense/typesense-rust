@@ -59,7 +59,7 @@ mod hyper_tests {
             .await?;
 
         assert_eq!(response.status(), StatusCode::OK);
-        let bytes = hyper::body::to_bytes(response).await.unwrap();
+        let bytes = hyper::body::to_bytes(response).await?;
         assert_eq!(bytes, body.as_bytes());
 
         let response = transport
@@ -67,7 +67,7 @@ mod hyper_tests {
             .await?;
 
         assert_eq!(response.status(), StatusCode::OK);
-        let bytes = hyper::body::to_bytes(response).await.unwrap();
+        let bytes = hyper::body::to_bytes(response).await?;
         assert_eq!(bytes, body.as_bytes());
 
         Ok(())

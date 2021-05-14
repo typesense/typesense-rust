@@ -55,6 +55,22 @@ pub enum TypesenseError {
     /// HTTP status error.
     #[error("HTTP status error")]
     HttpStatusError,
+
+    /// HTTP error.
+    #[error("http error: {0}")]
+    HttpError(#[from] http::Error),
+
+    /// Hyper error.
+    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg_attr(docsrs, doc(cfg(not(target_arch = "wasm32"))))]
+    #[error("hyper error: {0}")]
+    HyperError(#[from] hyper::Error),
+
+    /// WASM error.
+    #[cfg(target_arch = "wasm32")]
+    #[cfg_attr(docsrs, doc(cfg(target_arch = "wasm32")))]
+    #[error("wasm client error: {0:?}")]
+    WasmError(String),
 }
 
 impl From<StatusCode> for TypesenseError {
@@ -78,5 +94,12 @@ impl From<StatusCode> for TypesenseError {
             StatusCode::SERVICE_UNAVAILABLE => Self::ServiceUnavailable,
             _ => Self::TypesenseClientError,
         }
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
+impl From<wasm_bindgen::JsValue> for TypesenseError {
+    fn from(value: wasm_bindgen::JsValue) -> Self {
+        Self::WasmError(format!("{:?}", value))
     }
 }
