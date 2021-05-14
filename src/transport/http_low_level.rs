@@ -55,12 +55,16 @@ where
         headers: Self::HeaderMap,
         body: Self::Body,
     ) -> crate::Result<Self::Response> {
+        // Making a builder
         let mut builder = http::Request::builder().method(method).uri(uri);
+        // Adding headers
         if let Some(h) = builder.headers_mut() {
             *h = headers;
         }
 
+        // Building it to a request
         let request = builder.body(body.into())?;
+        // Sending and waiting for a response
         let response = self.request(request).await?;
 
         if response.status().is_success() {
@@ -90,9 +94,12 @@ impl HttpLowLevel for WasmClient {
         use wasm_bindgen::JsCast;
         use wasm_bindgen_futures::JsFuture;
 
+        // Options to configure the request
         let mut opts = web_sys::RequestInit::new();
+        // Specifying the method
         opts.method(method.as_str());
 
+        // Pinning the body.
         let body_pinned = std::pin::Pin::new(body);
         if body_pinned.len() > 0 {
             // Creating a JS Typed Array which is a view to into wasm's linear memory.
@@ -103,10 +110,13 @@ impl HttpLowLevel for WasmClient {
             opts.body(Some(&uint_8_array));
         }
 
+        // Setting the request mode
         opts.mode(web_sys::RequestMode::Cors);
 
+        // Making a request
         let request = web_sys::Request::new_with_str_and_init(&uri, &opts)?;
 
+        // Adding headers
         for (name, value) in headers
             .iter()
             .map(|(x, y)| (x.as_str(), y.to_str().unwrap()))
@@ -115,24 +125,31 @@ impl HttpLowLevel for WasmClient {
         }
 
         let scope = WindowOrWorker::new();
+        // Fetching the request
         let promise = match scope {
             WindowOrWorker::Window(window) => window.fetch_with_request(&request),
             WindowOrWorker::Worker(worker) => worker.fetch_with_request(&request),
         };
 
+        // Converting a JS Promise to a Rust Future and awaiting
         let res = JsFuture::from(promise).await?;
         debug_assert!(res.is_instance_of::<web_sys::Response>());
         let res: web_sys::Response = res.dyn_into().unwrap();
 
+        // Taking the response body
         let promise_array = res.array_buffer()?;
         let array = JsFuture::from(promise_array).await?;
         debug_assert!(array.is_instance_of::<js_sys::ArrayBuffer>());
         let buf: ArrayBuffer = array.dyn_into().unwrap();
+        // Making a uint8 array
         let slice = Uint8Array::new(&buf);
+        // Converting it to a Vec
         let body = slice.to_vec();
 
+        // Making a builder
         let mut builder = http::Response::builder().status(res.status());
 
+        // Adding headers
         for i in js_sys::try_iter(&res.headers())?.unwrap() {
             let array: Array = i?.into();
             let values = array.values();
@@ -147,6 +164,7 @@ impl HttpLowLevel for WasmClient {
             builder = builder.header(&key, &value);
         }
 
+        // Building it to a response
         let response = builder.body(body)?;
 
         if response.status().is_success() {
