@@ -1,0 +1,13 @@
+{
+    "moz:firefoxOptions": {
+      "prefs": {
+        "security.fileuri.strict_origin_policy": false
+      }
+    },
+    "goog:chromeOptions": {
+      "args": [
+        "--disable-web-security"
+      ]
+    }
+}
+  
