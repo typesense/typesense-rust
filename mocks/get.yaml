@@ -1,0 +1,14 @@
+when:
+  method: GET
+  path: /
+  header:
+    - name: Test
+      value: test
+then:
+  status: 200
+  header:
+    - name: content-type
+      value: text/html
+    - name: Access-Control-Allow-Origin
+      value: \*
+  body: "Test Successful"

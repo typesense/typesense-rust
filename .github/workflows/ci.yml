@@ -12,7 +12,6 @@ jobs:
     strategy:
       matrix:
         platform: [
-          { os: "windows", target: "x86_64-pc-windows-msvc" },
           { os: "ubuntu", target: "x86_64-unknown-linux-gnu" },
           { os: "ubuntu", target: "wasm32-unknown-unknown" },
         ]
@@ -33,6 +32,13 @@ jobs:
           target: ${{ matrix.platform.target }}
           profile: minimal
           default: true
+      - name: Install httpmock
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: --features standalone -- httpmock
+      - name: Run httpmock
+        run: httpmock --expose --static-mock-dir=./mocks &
       - name: Install test runner for wasm
         if: matrix.platform.target == 'wasm32-unknown-unknown'
         run:  curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
@@ -49,4 +55,4 @@ jobs:
           args: --all-features
       - name: Tests in WASM
         if: matrix.platform.target == 'wasm32-unknown-unknown'
-        run: wasm-pack test --node -- --all-features
+        run: wasm-pack test --headless --chrome
