@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use bytes::Bytes;
 
 #[cfg(not(target_arch = "wasm32"))]
 pub(crate) type HyperClient<C> = hyper::Client<C, hyper::Body>;
@@ -14,26 +15,17 @@ pub(crate) struct WasmClient;
 
 /// A low level HTTP trait.
 #[async_trait(?Send)]
-pub trait HttpLowLevel {
-    /// HTTP Method type.
-    type Method;
-
-    /// HTTP Header map type.
-    type HeaderMap;
-
-    /// HTTP Body type.
-    type Body;
-
+pub trait HttpLowLevel<M = http::Method, H = http::HeaderMap> {
     /// HTTP Response type.
     type Response;
 
     /// Send a request and receive a response.
     async fn send(
         &self,
-        method: Self::Method,
+        method: M,
         uri: &str,
-        headers: Self::HeaderMap,
-        body: Self::Body,
+        headers: H,
+        body: Bytes,
     ) -> crate::Result<Self::Response>;
 }
 
@@ -43,17 +35,14 @@ impl<C> HttpLowLevel for HyperClient<C>
 where
     C: hyper::client::connect::Connect + Clone + Send + Sync + 'static,
 {
-    type Method = http::Method;
-    type HeaderMap = http::HeaderMap;
-    type Body = Vec<u8>;
     type Response = http::Response<hyper::Body>;
 
     async fn send(
         &self,
-        method: Self::Method,
+        method: http::Method,
         uri: &str,
-        headers: Self::HeaderMap,
-        body: Self::Body,
+        headers: http::HeaderMap,
+        body: Bytes,
     ) -> crate::Result<Self::Response> {
         // Making a builder
         let mut builder = http::Request::builder().method(method).uri(uri);
@@ -78,17 +67,14 @@ where
 #[cfg(target_arch = "wasm32")]
 #[async_trait(?Send)]
 impl HttpLowLevel for WasmClient {
-    type Method = http::Method;
-    type HeaderMap = http::HeaderMap;
-    type Body = Vec<u8>;
-    type Response = http::Response<Self::Body>;
+    type Response = http::Response<Vec<u8>>;
 
     async fn send(
         &self,
-        method: Self::Method,
+        method: http::Method,
         uri: &str,
-        headers: Self::HeaderMap,
-        body: Self::Body,
+        headers: http::HeaderMap,
+        body: Bytes,
     ) -> crate::Result<Self::Response> {
         use js_sys::{Array, ArrayBuffer, Reflect, Uint8Array};
         use wasm_bindgen::JsCast;

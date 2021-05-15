@@ -1,11 +1,18 @@
 //! The module containing the [`Transport`] struct and
 //! its [`Builder`](TransportBuilder).
+use bytes::Bytes;
 
 mod builder;
 mod http_low_level;
 
 pub use builder::TransportBuilder;
 pub use http_low_level::HttpLowLevel;
+
+#[cfg(target_arch = "wasm32")]
+pub(crate) use http_low_level::WasmClient;
+
+#[cfg(all(feature = "tokio-rt", not(target_arch = "wasm32")))]
+pub(crate) use http_low_level::HyperHttpsClient;
 
 /// The [`Transport`] struct.
 ///
@@ -28,10 +35,10 @@ where
     /// Send a request and receive a response.
     pub async fn send(
         &self,
-        method: C::Method,
+        method: http::Method,
         uri: &str,
-        headers: C::HeaderMap,
-        body: C::Body,
+        headers: http::HeaderMap,
+        body: Bytes,
     ) -> crate::Result<C::Response> {
         self.client.send(method, uri, headers, body).await
     }
