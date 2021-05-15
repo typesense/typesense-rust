@@ -110,10 +110,9 @@ mod hyper_tests {
         let host = "http://localhost:5000";
         let api_key = "VerySecretKey";
 
-        let client = ClientBuilder::default()
+        let client = ClientBuilder::new_hyper()
             .host(host)
             .api_key(api_key)
-            .with_hyper()
             .build()
             .unwrap();
 
@@ -174,10 +173,9 @@ mod wasm_test {
         let host = "http://localhost:5000";
         let api_key = "VerySecretKey";
 
-        let client = ClientBuilder::default()
+        let client = ClientBuilder::new_wasm()
             .host(host)
             .api_key(api_key)
-            .with_wasm()
             .build()
             .unwrap();
 

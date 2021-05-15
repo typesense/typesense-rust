@@ -64,20 +64,28 @@ impl<'a, T> Default for ClientBuilder<'a, T> {
     doc(cfg(all(feature = "tokio-rt", not(target_arch = "wasm32"))))
 )]
 impl<'a> ClientBuilder<'a, crate::transport::HyperHttpsClient> {
-    /// Set transport with a new [`hyper`](https://docs.rs/hyper) client.
+    /// Create client builder with a [`hyper`](https://docs.rs/hyper) client.
     /// The connector used is [`HttpsConnector`](hyper_tls::HttpsConnector).
-    pub fn with_hyper(mut self) -> Self {
-        self.transport = Some(crate::transport::TransportBuilder::new_hyper().build());
-        self
+    pub fn new_hyper() -> Self {
+        let transport = Some(crate::transport::TransportBuilder::new_hyper().build());
+        Self {
+            transport,
+            host: None,
+            api_key: None,
+        }
     }
 }
 
 #[cfg(target_arch = "wasm32")]
 #[cfg_attr(docsrs, doc(cfg(target_arch = "wasm32")))]
 impl<'a> ClientBuilder<'a, WasmClient> {
-    /// Set transport using default wasm client
-    pub fn with_wasm(mut self) -> Self {
-        self.transport = Some(crate::transport::TransportBuilder::new_wasm().build());
-        self
+    /// Create client builder using default wasm client
+    pub fn new_wasm() -> Self {
+        let transport = Some(crate::transport::TransportBuilder::new_wasm().build());
+        Self {
+            transport,
+            host: None,
+            api_key: None,
+        }
     }
 }
