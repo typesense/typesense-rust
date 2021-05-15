@@ -1,11 +1,6 @@
+use crate::transport::HttpLowLevel;
 use crate::transport::Transport;
 use crate::Result;
-
-#[cfg(target_arch = "wasm32")]
-use crate::transport::WasmClient;
-
-#[cfg(not(target_arch = "wasm32"))]
-use crate::transport::HyperClient;
 
 mod builder;
 pub use builder::ClientBuilder;
@@ -27,86 +22,41 @@ impl<'a, T> Client<'a, T> {
     }
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 #[allow(dead_code)]
-impl<'a, C> Client<'a, HyperClient<C>>
+impl<'a, C> Client<'a, C>
 where
-    C: hyper::client::connect::Connect + Clone + Send + Sync + 'static,
+    C: HttpLowLevel,
 {
     pub(crate) async fn send(
         &self,
         method: http::Method,
         path: &str,
-        mut headers: http::HeaderMap,
         body: Vec<u8>,
-    ) -> Result<http::Response<hyper::Body>> {
+    ) -> Result<C::Response> {
         let uri = format!("{}{}", self.host, path);
+        let mut headers = http::HeaderMap::default();
         headers.insert(TYPESENSE_API_KEY_HEADER_NAME, self.api_key.parse().unwrap());
         self.transport.send(method, &uri, headers, body).await
     }
 
-    pub(crate) async fn get(
-        &self,
-        path: &str,
-        headers: http::HeaderMap,
-    ) -> Result<http::Response<hyper::Body>> {
-        self.send(http::Method::GET, path, headers, vec![]).await
+    pub(crate) async fn get(&self, path: &str) -> Result<C::Response> {
+        self.send(http::Method::GET, path, vec![]).await
     }
 
-    pub(crate) async fn post(
-        &self,
-        path: &str,
-        headers: http::HeaderMap,
-        body: Vec<u8>,
-    ) -> Result<http::Response<hyper::Body>> {
-        self.send(http::Method::POST, path, headers, body).await
-    }
-}
-
-#[cfg(target_arch = "wasm32")]
-#[allow(dead_code)]
-impl<'a> Client<'a, WasmClient> {
-    pub(crate) async fn send(
-        &self,
-        method: http::Method,
-        path: &str,
-        mut headers: http::HeaderMap,
-        body: Vec<u8>,
-    ) -> Result<http::Response<Vec<u8>>> {
-        let uri = format!("{}{}", self.host, path);
-        headers.insert(TYPESENSE_API_KEY_HEADER_NAME, self.api_key.parse().unwrap());
-        self.transport.send(method, &uri, headers, body).await
-    }
-
-    pub(crate) async fn get(
-        &self,
-        path: &str,
-        headers: http::HeaderMap,
-    ) -> Result<http::Response<Vec<u8>>> {
-        self.send(http::Method::GET, path, headers, vec![]).await
-    }
-
-    pub(crate) async fn post(
-        &self,
-        path: &str,
-        headers: http::HeaderMap,
-        body: Vec<u8>,
-    ) -> Result<http::Response<Vec<u8>>> {
-        self.send(http::Method::POST, path, headers, body).await
+    pub(crate) async fn post(&self, path: &str, body: Vec<u8>) -> Result<C::Response> {
+        self.send(http::Method::POST, path, body).await
     }
 }
 
 #[cfg(all(test, feature = "tokio-rt", not(target_arch = "wasm32")))]
 mod hyper_tests {
-    use http::{HeaderMap, StatusCode};
+    use http::StatusCode;
 
     use super::*;
 
     #[tokio::test]
     async fn hyper() -> crate::Result<()> {
         let body = String::from("Test with api key successful");
-        let header = HeaderMap::new();
-
         let host = "http://localhost:5000";
         let api_key = "VerySecretKey";
 
@@ -116,15 +66,13 @@ mod hyper_tests {
             .build()
             .unwrap();
 
-        let response = client.get("/test_api_key", header.clone()).await?;
+        let response = client.get("/test_api_key").await?;
 
         assert_eq!(response.status(), StatusCode::OK);
         let bytes = hyper::body::to_bytes(response).await?;
         assert_eq!(bytes, body.as_bytes());
 
-        let response = client
-            .post("/test_api_key", header.clone(), body.clone().into())
-            .await?;
+        let response = client.post("/test_api_key", body.clone().into()).await?;
 
         assert_eq!(response.status(), StatusCode::OK);
         let bytes = hyper::body::to_bytes(response).await?;
@@ -138,7 +86,7 @@ mod hyper_tests {
 mod wasm_test {
     wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
 
-    use http::{HeaderMap, StatusCode};
+    use http::StatusCode;
     use wasm_bindgen::prelude::*;
     use wasm_bindgen_test::wasm_bindgen_test;
 
@@ -168,8 +116,6 @@ mod wasm_test {
     async fn try_wasm() -> crate::Result<()> {
         let body = String::from("Test with api key successful");
 
-        let header = HeaderMap::new();
-
         let host = "http://localhost:5000";
         let api_key = "VerySecretKey";
 
@@ -179,14 +125,12 @@ mod wasm_test {
             .build()
             .unwrap();
 
-        let response = client.get("/test_api_key", header.clone()).await?;
+        let response = client.get("/test_api_key").await?;
 
         assert_eq!(response.status(), StatusCode::OK);
         assert_eq!(response.body(), body.as_bytes());
 
-        let response = client
-            .post("/test_api_key", header.clone(), body.clone().into())
-            .await?;
+        let response = client.post("/test_api_key", body.clone().into()).await?;
 
         assert_eq!(response.status(), StatusCode::OK);
         assert_eq!(response.body(), body.as_bytes());

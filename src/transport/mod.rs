@@ -10,9 +10,6 @@ pub use http_low_level::HttpLowLevel;
 #[cfg(target_arch = "wasm32")]
 pub(crate) use http_low_level::WasmClient;
 
-#[cfg(not(target_arch = "wasm32"))]
-pub(crate) use http_low_level::HyperClient;
-
 #[cfg(all(feature = "tokio-rt", not(target_arch = "wasm32")))]
 pub(crate) use http_low_level::HyperHttpsClient;
 
@@ -37,10 +34,10 @@ where
     /// Send a request and receive a response.
     pub async fn send(
         &self,
-        method: C::Method,
+        method: http::Method,
         uri: &str,
-        headers: C::HeaderMap,
-        body: C::Body,
+        headers: http::HeaderMap,
+        body: Vec<u8>,
     ) -> crate::Result<C::Response> {
         self.client.send(method, uri, headers, body).await
     }
