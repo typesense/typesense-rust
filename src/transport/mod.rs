@@ -1,5 +1,6 @@
 //! The module containing the [`Transport`] struct and
 //! its [`Builder`](TransportBuilder).
+use bytes::Bytes;
 
 mod builder;
 mod http_low_level;
@@ -37,7 +38,7 @@ where
         method: http::Method,
         uri: &str,
         headers: http::HeaderMap,
-        body: Vec<u8>,
+        body: Bytes,
     ) -> crate::Result<C::Response> {
         self.client.send(method, uri, headers, body).await
     }

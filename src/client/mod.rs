@@ -1,3 +1,5 @@
+use bytes::Bytes;
+
 use crate::transport::HttpLowLevel;
 use crate::transport::Transport;
 use crate::Result;
@@ -31,7 +33,7 @@ where
         &self,
         method: http::Method,
         path: &str,
-        body: Vec<u8>,
+        body: Bytes,
     ) -> Result<C::Response> {
         let uri = format!("{}{}", self.host, path);
         let mut headers = http::HeaderMap::default();
@@ -40,10 +42,10 @@ where
     }
 
     pub(crate) async fn get(&self, path: &str) -> Result<C::Response> {
-        self.send(http::Method::GET, path, vec![]).await
+        self.send(http::Method::GET, path, Bytes::new()).await
     }
 
-    pub(crate) async fn post(&self, path: &str, body: Vec<u8>) -> Result<C::Response> {
+    pub(crate) async fn post(&self, path: &str, body: Bytes) -> Result<C::Response> {
         self.send(http::Method::POST, path, body).await
     }
 }

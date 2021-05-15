@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use bytes::Bytes;
 
 #[cfg(not(target_arch = "wasm32"))]
 pub(crate) type HyperClient<C> = hyper::Client<C, hyper::Body>;
@@ -14,7 +15,7 @@ pub(crate) struct WasmClient;
 
 /// A low level HTTP trait.
 #[async_trait(?Send)]
-pub trait HttpLowLevel<M = http::Method, H = http::HeaderMap, B = Vec<u8>> {
+pub trait HttpLowLevel<M = http::Method, H = http::HeaderMap> {
     /// HTTP Response type.
     type Response;
 
@@ -24,7 +25,7 @@ pub trait HttpLowLevel<M = http::Method, H = http::HeaderMap, B = Vec<u8>> {
         method: M,
         uri: &str,
         headers: H,
-        body: B,
+        body: Bytes,
     ) -> crate::Result<Self::Response>;
 }
 
@@ -41,7 +42,7 @@ where
         method: http::Method,
         uri: &str,
         headers: http::HeaderMap,
-        body: Vec<u8>,
+        body: Bytes,
     ) -> crate::Result<Self::Response> {
         // Making a builder
         let mut builder = http::Request::builder().method(method).uri(uri);
@@ -73,7 +74,7 @@ impl HttpLowLevel for WasmClient {
         method: http::Method,
         uri: &str,
         headers: http::HeaderMap,
-        body: Vec<u8>,
+        body: Bytes,
     ) -> crate::Result<Self::Response> {
         use js_sys::{Array, ArrayBuffer, Reflect, Uint8Array};
         use wasm_bindgen::JsCast;
