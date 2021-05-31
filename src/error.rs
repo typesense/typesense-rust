@@ -72,6 +72,10 @@ pub enum TypesenseError {
     #[cfg_attr(docsrs, doc(cfg(target_arch = "wasm32")))]
     #[error("wasm client error: {0:?}")]
     WasmError(String),
+
+    /// JSON error.
+    #[error("json error: {0}")]
+    JsonError(#[from] serde_json::Error),
 }
 
 impl From<StatusCode> for TypesenseError {
