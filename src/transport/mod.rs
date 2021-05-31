@@ -66,16 +66,14 @@ mod hyper_tests {
             .await?;
 
         assert_eq!(response.status(), StatusCode::OK);
-        let bytes = hyper::body::to_bytes(response).await?;
-        assert_eq!(bytes, body.as_bytes());
+        assert_eq!(response.into_body(), body.as_bytes());
 
         let response = transport
             .send(HttpMethod::POST, &url, header.clone(), body.clone().into())
             .await?;
 
         assert_eq!(response.status(), StatusCode::OK);
-        let bytes = hyper::body::to_bytes(response).await?;
-        assert_eq!(bytes, body.as_bytes());
+        assert_eq!(response.into_body(), body.as_bytes());
 
         Ok(())
     }

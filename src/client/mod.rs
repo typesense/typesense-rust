@@ -91,14 +91,12 @@ mod hyper_tests {
         let response = client.get("/test_api_key").await?;
 
         assert_eq!(response.status(), StatusCode::OK);
-        let bytes = hyper::body::to_bytes(response).await?;
-        assert_eq!(bytes, body.as_bytes());
+        assert_eq!(response.into_body(), body.as_bytes());
 
         let response = client.post("/test_api_key", body.clone().into()).await?;
 
         assert_eq!(response.status(), StatusCode::OK);
-        let bytes = hyper::body::to_bytes(response).await?;
-        assert_eq!(bytes, body.as_bytes());
+        assert_eq!(response.into_body(), body.as_bytes());
 
         Ok(())
     }
