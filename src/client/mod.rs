@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use http::Response;
 
 use crate::transport::HttpLowLevel;
@@ -15,25 +17,25 @@ pub const TYPESENSE_API_KEY_HEADER_NAME: &str = "X-TYPESENSE-API-KEY";
 
 /// Root client for top level APIs
 #[derive(Clone)]
-pub struct Client<'a, T> {
+pub struct Client<T> {
     transport: Transport<T>,
-    host: &'a str,
-    api_key: &'a str,
+    host: Arc<String>,
+    api_key: Arc<String>,
 }
 
-impl<'a, T> Client<'a, T> {
+impl<T> Client<T> {
     /// Gets the transport of the client
     pub fn transport(&self) -> &Transport<T> {
         &self.transport
     }
 }
 
-impl<'a, T> Client<'a, T>
+impl<T> Client<T>
 where
     T: Clone,
 {
     /// Make the ClientKeys struct, to interact with the Keys API.
-    pub fn keys(&self) -> ClientKeys<'a, T> {
+    pub fn keys(&self) -> ClientKeys<T> {
         ClientKeys {
             client: self.clone(),
         }
@@ -41,7 +43,7 @@ where
 }
 
 #[allow(dead_code)]
-impl<'a, C> Client<'a, C>
+impl<C> Client<C>
 where
     C: HttpLowLevel,
 {
