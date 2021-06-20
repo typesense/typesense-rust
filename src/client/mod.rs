@@ -1,31 +1,49 @@
-use bytes::Bytes;
+use std::sync::Arc;
+
+use http::Response;
 
 use crate::transport::HttpLowLevel;
 use crate::transport::Transport;
 use crate::Result;
 
 mod builder;
+pub mod keys;
+
 pub use builder::ClientBuilder;
+pub use keys::ClientKeys;
 
 #[allow(dead_code)]
 pub const TYPESENSE_API_KEY_HEADER_NAME: &str = "X-TYPESENSE-API-KEY";
 
 /// Root client for top level APIs
-pub struct Client<'a, T> {
+#[derive(Clone)]
+pub struct Client<T> {
     transport: Transport<T>,
-    host: &'a str,
-    api_key: &'a str,
+    host: Arc<String>,
+    api_key: Arc<String>,
 }
 
-impl<'a, T> Client<'a, T> {
+impl<T> Client<T> {
     /// Gets the transport of the client
     pub fn transport(&self) -> &Transport<T> {
         &self.transport
     }
 }
 
+impl<T> Client<T>
+where
+    T: Clone,
+{
+    /// Make the ClientKeys struct, to interact with the Keys API.
+    pub fn keys(&self) -> ClientKeys<T> {
+        ClientKeys {
+            client: self.clone(),
+        }
+    }
+}
+
 #[allow(dead_code)]
-impl<'a, C> Client<'a, C>
+impl<C> Client<C>
 where
     C: HttpLowLevel,
 {
@@ -33,20 +51,24 @@ where
         &self,
         method: http::Method,
         path: &str,
-        body: Bytes,
-    ) -> Result<C::Response> {
+        body: Vec<u8>,
+    ) -> Result<Response<Vec<u8>>> {
         let uri = format!("{}{}", self.host, path);
         let mut headers = http::HeaderMap::default();
         headers.insert(TYPESENSE_API_KEY_HEADER_NAME, self.api_key.parse().unwrap());
         self.transport.send(method, &uri, headers, body).await
     }
 
-    pub(crate) async fn get(&self, path: &str) -> Result<C::Response> {
-        self.send(http::Method::GET, path, Bytes::new()).await
+    pub(crate) async fn get(&self, path: &str) -> Result<Response<Vec<u8>>> {
+        self.send(http::Method::GET, path, Vec::new()).await
     }
 
-    pub(crate) async fn post(&self, path: &str, body: Bytes) -> Result<C::Response> {
+    pub(crate) async fn post(&self, path: &str, body: Vec<u8>) -> Result<Response<Vec<u8>>> {
         self.send(http::Method::POST, path, body).await
+    }
+
+    pub(crate) async fn delete(&self, path: &str) -> Result<Response<Vec<u8>>> {
+        self.send(http::Method::DELETE, path, Vec::new()).await
     }
 }
 
@@ -71,14 +93,12 @@ mod hyper_tests {
         let response = client.get("/test_api_key").await?;
 
         assert_eq!(response.status(), StatusCode::OK);
-        let bytes = hyper::body::to_bytes(response).await?;
-        assert_eq!(bytes, body.as_bytes());
+        assert_eq!(response.into_body(), body.as_bytes());
 
         let response = client.post("/test_api_key", body.clone().into()).await?;
 
         assert_eq!(response.status(), StatusCode::OK);
-        let bytes = hyper::body::to_bytes(response).await?;
-        assert_eq!(bytes, body.as_bytes());
+        assert_eq!(response.into_body(), body.as_bytes());
 
         Ok(())
     }

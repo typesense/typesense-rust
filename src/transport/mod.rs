@@ -1,6 +1,5 @@
 //! The module containing the [`Transport`] struct and
 //! its [`Builder`](TransportBuilder).
-use bytes::Bytes;
 
 mod builder;
 mod http_low_level;
@@ -17,6 +16,7 @@ pub(crate) use http_low_level::HyperHttpsClient;
 /// The [`Transport`] struct.
 ///
 /// It handles the low level HTTP client.
+#[derive(Clone)]
 pub struct Transport<C> {
     client: C,
 }
@@ -38,8 +38,8 @@ where
         method: http::Method,
         uri: &str,
         headers: http::HeaderMap,
-        body: Bytes,
-    ) -> crate::Result<C::Response> {
+        body: Vec<u8>,
+    ) -> crate::Result<http::Response<Vec<u8>>> {
         self.client.send(method, uri, headers, body).await
     }
 }
@@ -66,16 +66,14 @@ mod hyper_tests {
             .await?;
 
         assert_eq!(response.status(), StatusCode::OK);
-        let bytes = hyper::body::to_bytes(response).await?;
-        assert_eq!(bytes, body.as_bytes());
+        assert_eq!(response.into_body(), body.as_bytes());
 
         let response = transport
             .send(HttpMethod::POST, &url, header.clone(), body.clone().into())
             .await?;
 
         assert_eq!(response.status(), StatusCode::OK);
-        let bytes = hyper::body::to_bytes(response).await?;
-        assert_eq!(bytes, body.as_bytes());
+        assert_eq!(response.into_body(), body.as_bytes());
 
         Ok(())
     }

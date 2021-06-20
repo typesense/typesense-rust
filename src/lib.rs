@@ -9,5 +9,5 @@ mod client;
 mod error;
 pub mod transport;
 
-pub use client::{Client, ClientBuilder};
+pub use client::{keys, Client, ClientBuilder};
 pub use error::{Result, TypesenseError};

@@ -1,5 +1,4 @@
 use async_trait::async_trait;
-use bytes::Bytes;
 
 #[cfg(not(target_arch = "wasm32"))]
 pub(crate) type HyperClient<C> = hyper::Client<C, hyper::Body>;
@@ -16,17 +15,14 @@ pub(crate) struct WasmClient;
 /// A low level HTTP trait.
 #[async_trait(?Send)]
 pub trait HttpLowLevel<M = http::Method, H = http::HeaderMap> {
-    /// HTTP Response type.
-    type Response;
-
     /// Send a request and receive a response.
     async fn send(
         &self,
         method: M,
         uri: &str,
         headers: H,
-        body: Bytes,
-    ) -> crate::Result<Self::Response>;
+        body: Vec<u8>,
+    ) -> crate::Result<http::Response<Vec<u8>>>;
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -35,15 +31,13 @@ impl<C> HttpLowLevel for HyperClient<C>
 where
     C: hyper::client::connect::Connect + Clone + Send + Sync + 'static,
 {
-    type Response = http::Response<hyper::Body>;
-
     async fn send(
         &self,
         method: http::Method,
         uri: &str,
         headers: http::HeaderMap,
-        body: Bytes,
-    ) -> crate::Result<Self::Response> {
+        body: Vec<u8>,
+    ) -> crate::Result<http::Response<Vec<u8>>> {
         // Making a builder
         let mut builder = http::Request::builder().method(method).uri(uri);
         // Adding headers
@@ -57,6 +51,10 @@ where
         let response = self.request(request).await?;
 
         if response.status().is_success() {
+            let (parts, body) = response.into_parts();
+            let body = hyper::body::to_bytes(body).await?.to_vec();
+            let response = http::Response::from_parts(parts, body);
+
             Ok(response)
         } else {
             return Err(response.status().into());
@@ -67,15 +65,13 @@ where
 #[cfg(target_arch = "wasm32")]
 #[async_trait(?Send)]
 impl HttpLowLevel for WasmClient {
-    type Response = http::Response<Vec<u8>>;
-
     async fn send(
         &self,
         method: http::Method,
         uri: &str,
         headers: http::HeaderMap,
-        body: Bytes,
-    ) -> crate::Result<Self::Response> {
+        body: Vec<u8>,
+    ) -> crate::Result<http::Response<Vec<u8>>> {
         use js_sys::{Array, ArrayBuffer, Reflect, Uint8Array};
         use wasm_bindgen::JsCast;
         use wasm_bindgen_futures::JsFuture;

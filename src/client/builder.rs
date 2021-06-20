@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use super::Client;
 use crate::transport::Transport;
 
@@ -6,16 +8,16 @@ use crate::transport::WasmClient;
 
 use crate::{Result, TypesenseError};
 /// Builder for the Typesense [`Client`]
-pub struct ClientBuilder<'a, T> {
+pub struct ClientBuilder<T> {
     transport: Option<Transport<T>>,
-    host: Option<&'a str>,
-    api_key: Option<&'a str>,
+    host: Option<Arc<String>>,
+    api_key: Option<Arc<String>>,
 }
 
-impl<'a, T> ClientBuilder<'a, T> {
+impl<T> ClientBuilder<T> {
     /// build [`Client`] with the current configurations. Return [`typesense::TypesenseError::ConfigError`]
     /// if a configuration is missing.
-    pub fn build(self) -> Result<Client<'a, T>> {
+    pub fn build(self) -> Result<Client<T>> {
         Ok(Client {
             transport: self.transport.ok_or_else(|| {
                 TypesenseError::ConfigError("missing client transport".to_string())
@@ -30,14 +32,14 @@ impl<'a, T> ClientBuilder<'a, T> {
     }
 
     /// Set host
-    pub fn host(mut self, host: &'a str) -> Self {
-        self.host = Some(host);
+    pub fn host(mut self, host: impl AsRef<str>) -> Self {
+        self.host = Some(Arc::new(host.as_ref().to_string()));
         self
     }
 
     /// Set api key
-    pub fn api_key(mut self, api_key: &'a str) -> Self {
-        self.api_key = Some(api_key);
+    pub fn api_key(mut self, api_key: impl AsRef<str>) -> Self {
+        self.api_key = Some(Arc::new(api_key.as_ref().to_string()));
         self
     }
 
@@ -48,7 +50,7 @@ impl<'a, T> ClientBuilder<'a, T> {
     }
 }
 
-impl<'a, T> Default for ClientBuilder<'a, T> {
+impl<T> Default for ClientBuilder<T> {
     fn default() -> Self {
         Self {
             transport: None,
@@ -63,7 +65,7 @@ impl<'a, T> Default for ClientBuilder<'a, T> {
     docsrs,
     doc(cfg(all(feature = "tokio-rt", not(target_arch = "wasm32"))))
 )]
-impl<'a> ClientBuilder<'a, crate::transport::HyperHttpsClient> {
+impl ClientBuilder<crate::transport::HyperHttpsClient> {
     /// Create client builder with a [`hyper`](https://docs.rs/hyper) client.
     /// The connector used is [`HttpsConnector`](hyper_tls::HttpsConnector).
     pub fn new_hyper() -> Self {
@@ -78,7 +80,7 @@ impl<'a> ClientBuilder<'a, crate::transport::HyperHttpsClient> {
 
 #[cfg(target_arch = "wasm32")]
 #[cfg_attr(docsrs, doc(cfg(target_arch = "wasm32")))]
-impl<'a> ClientBuilder<'a, WasmClient> {
+impl ClientBuilder<WasmClient> {
     /// Create client builder using default wasm client
     pub fn new_wasm() -> Self {
         let transport = Some(crate::transport::TransportBuilder::new_wasm().build());
