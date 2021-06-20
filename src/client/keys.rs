@@ -1,3 +1,7 @@
+//! Module containing everything related to Keys API.
+//!
+//! More info [here](https://typesense.org/docs/0.20.0/api/api-keys.html).
+
 use hmac::{Hmac, Mac, NewMac};
 use serde::{Deserialize, Serialize};
 use sha2::Sha256;
@@ -15,6 +19,8 @@ where
     T: HttpLowLevel,
 {
     /// Create an API Key.
+    ///
+    /// More info [here](https://typesense.org/docs/0.20.0/api/api-keys.html#create-an-api-key).
     pub async fn create(
         &self,
         actions: Vec<Actions>,
@@ -39,6 +45,8 @@ where
     }
 
     /// Retrieve (metadata about) a key.
+    ///
+    /// More info [here](https://typesense.org/docs/0.20.0/api/api-keys.html#retrieve-an-api-key).
     pub async fn retrieve(&self, n: usize) -> crate::Result<ClientKeyRetrieve> {
         let response = self.client.get(format!("/keys/{}", n).as_str()).await?;
 
@@ -47,6 +55,8 @@ where
     }
 
     /// Retrieve (metadata about) all keys.
+    ///
+    /// More info [here](https://typesense.org/docs/0.20.0/api/api-keys.html#list-all-keys).
     pub async fn retrieve_all(&self) -> crate::Result<ClientKeyRetrieveAll> {
         let response = self.client.get("/keys").await?;
 
@@ -55,6 +65,8 @@ where
     }
 
     /// Delete an API key given its ID.
+    ///
+    /// More info [here](https://typesense.org/docs/0.20.0/api/api-keys.html#delete-api-key).
     pub async fn delete(&self, n: usize) -> crate::Result<ClientKeyDelete> {
         let response = self.client.delete(format!("/keys/{}", n).as_str()).await?;
 
@@ -63,6 +75,8 @@ where
     }
 
     /// Generate a scoped search API key that can have embedded search parameters in them.
+    ///
+    /// More info [here](https://typesense.org/docs/0.20.0/api/api-keys.html#generate-scoped-search-key).
     pub async fn generate_scoped_search_key(
         key: impl AsRef<str>,
         filter_by: impl AsRef<str>,
@@ -87,7 +101,8 @@ where
 }
 
 /// Enum over the possible list of Actions.
-/// Read more on this [here](https://typesense.org/docs/0.19.0/api/api-keys.html#sample-actions).
+///
+/// More info [here](https://typesense.org/docs/0.19.0/api/api-keys.html#sample-actions).
 #[derive(Serialize, Deserialize)]
 pub enum Actions {
     /// Allows only search requests.
@@ -119,31 +134,55 @@ pub enum Actions {
     All,
 }
 
-#[derive(Deserialize)]
+/// Structure returned by [`ClientKeys::create`] function.
+#[derive(Serialize, Deserialize)]
 pub struct ClientKeyCreate {
+    /// Key ID
     pub id: usize,
+
+    /// Key Actions
     pub actions: Vec<Actions>,
+
+    /// Key Collections
     pub collections: Vec<String>,
+
+    /// Key Value
     pub value: String,
+
+    /// Key Description
     pub description: String,
 }
 
-#[derive(Deserialize)]
+/// Structure returned by [`ClientKeys::retrieve`] function.
+#[derive(Serialize, Deserialize)]
 pub struct ClientKeyRetrieve {
+    /// Key Actions
     pub actions: Vec<Actions>,
+
+    /// Key Collections
     pub collections: Vec<String>,
+
+    /// Key Description
     pub description: String,
+
+    /// Key ID
     pub id: usize,
+
+    /// Key Value Prefix
     pub value_prefix: String,
 }
 
-#[derive(Deserialize)]
+/// Structure returned by [`ClientKeys::retrieve_all`] function.
+#[derive(Serialize, Deserialize)]
 pub struct ClientKeyRetrieveAll {
+    /// Vector of all the Keys
     pub keys: Vec<ClientKeyRetrieve>,
 }
 
-#[derive(Deserialize)]
+/// Structure returned by [`ClientKeys::delete`] function.
+#[derive(Serialize, Deserialize)]
 pub struct ClientKeyDelete {
+    /// ID of the deleted Key
     pub id: usize,
 }
 

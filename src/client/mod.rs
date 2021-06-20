@@ -7,7 +7,7 @@ use crate::transport::Transport;
 use crate::Result;
 
 mod builder;
-mod keys;
+pub mod keys;
 
 pub use builder::ClientBuilder;
 pub use keys::ClientKeys;
