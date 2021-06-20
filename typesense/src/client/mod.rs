@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use http::Response;
 
+use crate::collection::CollectionClient;
 use crate::transport::HttpLowLevel;
 use crate::transport::Transport;
 use crate::Result;
@@ -12,7 +13,6 @@ pub mod keys;
 pub use builder::ClientBuilder;
 pub use keys::ClientKeys;
 
-#[allow(dead_code)]
 pub const TYPESENSE_API_KEY_HEADER_NAME: &str = "X-TYPESENSE-API-KEY";
 
 /// Root client for top level APIs
@@ -37,6 +37,12 @@ where
     /// Make the ClientKeys struct, to interact with the Keys API.
     pub fn keys(&self) -> ClientKeys<T> {
         ClientKeys {
+            client: self.clone(),
+        }
+    }
+    /// Creates a [`CollectionClient`] to interact with the Typesense Collection API
+    pub fn collection(&self) -> CollectionClient<T> {
+        CollectionClient {
             client: self.clone(),
         }
     }

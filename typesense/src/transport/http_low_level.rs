@@ -10,7 +10,7 @@ pub(crate) type HttpsConnector = hyper_tls::HttpsConnector<hyper::client::HttpCo
 pub(crate) type HyperHttpsClient = HyperClient<HttpsConnector>;
 
 #[cfg(target_arch = "wasm32")]
-pub(crate) struct WasmClient;
+pub struct WasmClient;
 
 /// A low level HTTP trait.
 #[async_trait(?Send)]

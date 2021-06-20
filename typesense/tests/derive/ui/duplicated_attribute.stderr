@@ -1,0 +1,7 @@
+error: #[typesense(facet)] repeated more than one time.
+ --> $DIR/duplicated_attribute.rs:7:5
+  |
+7 | /     #[typesense(facet)]
+8 | |     #[typesense(facet)]
+9 | |     country_code: String,
+  | |________________________^

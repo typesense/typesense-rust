@@ -1,0 +1,23 @@
+when:
+  method: POST
+  path: /collections
+  header:
+    - name: X-TYPESENSE-API-KEY
+      value: VerySecretKey
+  body: '{"name":"companies","fields":[{"name":"company_name","type":"string"},{"name":"num_employees","type":"int32"},{"name":"country","type":"string","facet":true}],"default_sorting_field":"num_employees"}'
+then:
+  status: 200
+  header:
+    - name: content-type
+      value: text/json
+  body: '
+  {
+        "name": "companies",
+        "num_documents": 0,
+        "fields": [
+           {"name": "company_name", "type": "string" },
+           {"name": "num_employees", "type": "int32" },
+           {"name": "country", "type": "string", "facet": true }
+        ],
+        "default_sorting_field": "num_employees"
+  }'
