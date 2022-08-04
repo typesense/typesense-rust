@@ -5,7 +5,7 @@
 //!
 //! Welcome to typesense, the rust library for the Typesense API.
 
-#[cfg(feature = "codegen")]
+#[cfg(feature = "openapi_client")]
 pub use typesense_codegen as openapi_client;
 
 mod client;

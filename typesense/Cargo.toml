@@ -8,7 +8,7 @@ description = "WIP client for typesense"
 
 [features]
 default = ["derive"]
-codegen = ["typesense_codegen"]
+openapi_client = []
 tokio-rt = ["hyper/runtime", "hyper/tcp", "hyper-tls"]
 
 # Provide derive(Document) macro.
@@ -27,7 +27,7 @@ serde_json = "1"
 sha2 = "0.9.5"
 thiserror = "1.0.24"
 typesense_derive = { version = "0.1.0", path="../typesense_derive", optional = true }
-typesense_codegen = { verision = "0.24.0", path="../typesense_codegen", optional = true }
+typesense_codegen = { version = "0.23.0", path="../typesense_codegen" }
 
 [dev-dependencies]
 serde_json = "1.0"
