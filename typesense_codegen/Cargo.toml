@@ -1,8 +1,10 @@
 [package]
-name = "openapi"
+name = "typesense_codegen"
 version = "0.23.0"
 authors = ["OpenAPI Generator team and contributors"]
 edition = "2018"
+description = "client for typesense generated with openapi spec"
+license = "Apache-2.0"
 
 [dependencies]
 serde = { version = "^1.0", features = ["derive"] }
