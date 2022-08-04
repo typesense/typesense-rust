@@ -3,6 +3,8 @@ name = "typesense"
 version = "0.1.0"
 authors = ["Typesense  <contact@typesense.org>"]
 edition = "2018"
+license = "Apache-2.0"
+description = "WIP client for typesense"
 
 [features]
 default = ["derive"]
@@ -23,7 +25,7 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 sha2 = "0.9.5"
 thiserror = "1.0.24"
-typesense_derive = { path="../typesense_derive", optional = true }
+typesense_derive = { version = "0.1.0", path="../typesense_derive", optional = true }
 
 [dev-dependencies]
 serde_json = "1.0"
