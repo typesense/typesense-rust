@@ -38,7 +38,7 @@ jobs:
           command: install
           args: --features standalone -- httpmock
       - name: Run httpmock
-        run: httpmock --expose --static-mock-dir=./mocks &
+        run: httpmock --expose --mock-files-dir=./mocks &
       - name: Install test runner for wasm
         if: matrix.platform.target == 'wasm32-unknown-unknown'
         run:  curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
