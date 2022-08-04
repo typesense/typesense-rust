@@ -2,28 +2,9 @@
 //! [fields](https://github.com/typesense/typesense/blob/v0.19.0/include/field.)
 //! available in Typesense.
 
-use serde::{Deserialize, Serialize};
-
 mod field_type;
 pub use field_type::*;
-
-/// Struct used to represent a [field](https://github.com/typesense/typesense/blob/v0.19.0/include/field.) in Typesense.
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
-pub struct Field {
-    /// Required. The name of the field.
-    name: String,
-    /// Required. The `FieldType` of the field.
-    #[serde(rename = "type")]
-    typesense_type: FieldType,
-    /// Optional parameter. Indicates if the field is optional or not.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    optional: Option<bool>,
-    /// Optional parameter. Faceted fields are indexed verbatim without
-    /// any tokenization or preprocessing. For example, if you are building
-    /// a product search, color and brand could be defined as facet fields.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    facet: Option<bool>,
-}
+pub use typesense_codegen::models::Field;
 
 /// Builder for the `Field` struct.
 #[derive(Debug, Default)]
@@ -32,6 +13,11 @@ pub struct FieldBuilder {
     typesense_type: Option<FieldType>,
     optional: Option<bool>,
     facet: Option<bool>,
+    index: Option<bool>,
+    locale: Option<String>,
+    sort: Option<bool>,
+    drop: Option<bool>,
+    infix: Option<bool>,
 }
 
 impl FieldBuilder {
@@ -64,14 +50,49 @@ impl FieldBuilder {
         self
     }
 
+    /// Set if field is index.
+    pub fn index(mut self, index: Option<bool>) -> Self {
+        self.index = index;
+        self
+    }
+
+    /// Set field locale.
+    pub fn locale(mut self, locale: Option<String>) -> Self {
+        self.locale = locale;
+        self
+    }
+
+    /// Set sort attribute from field
+    pub fn sort(mut self, sort: Option<bool>) -> Self {
+        self.sort = sort;
+        self
+    }
+
+    /// Set drop attribute from field
+    pub fn drop(mut self, drop: Option<bool>) -> Self {
+        self.drop = drop;
+        self
+    }
+
+    /// Set infix attribute from field
+    pub fn infix(mut self, infix: Option<bool>) -> Self {
+        self.infix = infix;
+        self
+    }
+
     /// Create a `Field` with the current values of the builder,
     /// It can fail if the name or the typesense_type are not defined.
     pub fn build(self) -> Result<Field, Box<dyn std::error::Error>> {
         Ok(Field {
             name: self.name.ok_or("name is not set")?,
-            typesense_type: self.typesense_type.ok_or("typesense_type is not set")?,
+            _type: self.typesense_type.ok_or("typesense_type is not set")?,
             optional: self.optional,
             facet: self.facet,
+            index: self.index,
+            sort: self.sort,
+            drop: self.drop,
+            locale: self.locale,
+            infix: self.infix,
         })
     }
 }

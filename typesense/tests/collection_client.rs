@@ -1,11 +1,12 @@
 use serde::{Deserialize, Serialize};
-use typesense::document::Document as DocumentTrait;
-use typesense::ClientBuilder;
 use typesense::Document;
 
 #[cfg(all(test, feature = "tokio-rt", not(target_arch = "wasm32")))]
 mod hyper_tests {
     use super::*;
+    use typesense::document::Document as DocumentTrait;
+    use typesense::ClientBuilder;
+
     #[tokio::test]
     async fn collection_create() {
         let host = "http://localhost:5000";

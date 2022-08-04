@@ -4,38 +4,8 @@
 //! is roughly equivalent to a table in a relational database.
 //!
 use crate::field::Field;
-use serde::{Deserialize, Serialize};
+pub use typesense_codegen::models::CollectionSchema;
 
-/// Schema used to create collections in the [Typesense API](https://typesense.org/docs/0.19.0/api/collections.html#create-a-collection).
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
-pub struct CollectionSchema {
-    /// Name of the collection you wish to create.
-    name: String,
-    /// A list of fields that you wish to index for querying, filtering and faceting.
-    fields: Vec<Field>,
-    /// Optional: The name of an int32 / float field that determines the order in which the search
-    /// results are ranked when a sort_by clause is not provided during searching.
-    /// When not present, text match score and insertion order are used
-    #[serde(skip_serializing_if = "Option::is_none")]
-    default_sorting_field: Option<String>,
-}
-
-impl CollectionSchema {
-    /// Reference to the name of the Collection
-    pub fn name(&self) -> &String {
-        &self.name
-    }
-
-    /// Reference to the fields of the Collection
-    pub fn fields(&self) -> &Vec<Field> {
-        &self.fields
-    }
-
-    /// Reference to the default_sorting_field of the Collection
-    pub fn default_sorting_field(&self) -> &Option<String> {
-        &self.default_sorting_field
-    }
-}
 /// Builder for the [CollectionSchema] struct.
 #[derive(Debug, Default)]
 pub struct CollectionSchemaBuilder {
@@ -84,6 +54,8 @@ impl CollectionSchemaBuilder {
             name: self.name.ok_or("name is not set")?,
             fields: self.fields.ok_or("typesense_type is not set")?,
             default_sorting_field: self.default_sorting_field,
+            symbols_to_index: None,
+            token_separators: None,
         })
     }
 }
@@ -97,15 +69,15 @@ mod test {
     #[test]
     fn collection_schema_serializes_as_expected() {
         let fields = [
-            ("company_name", FieldType::String, None),
-            ("num_employees", FieldType::Int32, None),
-            ("country", FieldType::String, Some(true)),
+            ("company_name", "string", None),
+            ("num_employees", "int32", None),
+            ("country", "string", Some(true)),
         ]
         .iter()
         .map(|(name, typesense_type, facet)| {
             FieldBuilder::new()
                 .name(name.to_string())
-                .typesense_type(*typesense_type)
+                .typesense_type(typesense_type.to_string())
                 .facet(*facet)
                 .build()
                 .unwrap()
