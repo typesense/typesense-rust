@@ -42,7 +42,7 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
 
     let typesense_fields = fields
         .iter()
-        .map(|field| to_typesense_field_type(field))
+        .map(to_typesense_field_type)
         .collect::<syn::Result<Vec<_>>>()?;
 
     let gen = quote! {
