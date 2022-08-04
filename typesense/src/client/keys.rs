@@ -5,6 +5,7 @@
 use hmac::{Hmac, Mac, NewMac};
 use serde::{Deserialize, Serialize};
 use sha2::Sha256;
+use typesense_codegen::models::{ApiKey, ApiKeySchema, ApiKeysResponse};
 
 use super::Client;
 use crate::transport::HttpLowLevel;
@@ -26,9 +27,13 @@ where
         actions: Vec<Actions>,
         collections: Vec<String>,
         description: impl Into<Option<String>>,
-        expires_at: impl Into<Option<usize>>,
-    ) -> crate::Result<ClientKeyCreate> {
-        let create = Create {
+        expires_at: impl Into<Option<i64>>,
+    ) -> crate::Result<ApiKey> {
+        let actions = actions
+            .into_iter()
+            .map(|action| action.to_string())
+            .collect();
+        let create = ApiKeySchema {
             actions,
             collections,
             description: description.into(),
@@ -47,7 +52,7 @@ where
     /// Retrieve (metadata about) a key.
     ///
     /// More info [here](https://typesense.org/docs/0.20.0/api/api-keys.html#retrieve-an-api-key).
-    pub async fn retrieve(&self, n: usize) -> crate::Result<ClientKeyRetrieve> {
+    pub async fn retrieve(&self, n: usize) -> crate::Result<ApiKey> {
         let response = self.client.get(format!("/keys/{}", n).as_str()).await?;
 
         let body = response.into_body();
@@ -57,7 +62,7 @@ where
     /// Retrieve (metadata about) all keys.
     ///
     /// More info [here](https://typesense.org/docs/0.20.0/api/api-keys.html#list-all-keys).
-    pub async fn retrieve_all(&self) -> crate::Result<ClientKeyRetrieveAll> {
+    pub async fn retrieve_all(&self) -> crate::Result<ApiKeysResponse> {
         let response = self.client.get("/keys").await?;
 
         let body = response.into_body();
@@ -133,50 +138,18 @@ pub enum Actions {
     #[serde(rename = "*")]
     All,
 }
-
-/// Structure returned by [`ClientKeys::create`] function.
-#[derive(Serialize, Deserialize)]
-pub struct ClientKeyCreate {
-    /// Key ID
-    pub id: usize,
-
-    /// Key Actions
-    pub actions: Vec<Actions>,
-
-    /// Key Collections
-    pub collections: Vec<String>,
-
-    /// Key Value
-    pub value: String,
-
-    /// Key Description
-    pub description: String,
-}
-
-/// Structure returned by [`ClientKeys::retrieve`] function.
-#[derive(Serialize, Deserialize)]
-pub struct ClientKeyRetrieve {
-    /// Key Actions
-    pub actions: Vec<Actions>,
-
-    /// Key Collections
-    pub collections: Vec<String>,
-
-    /// Key Description
-    pub description: String,
-
-    /// Key ID
-    pub id: usize,
-
-    /// Key Value Prefix
-    pub value_prefix: String,
-}
-
-/// Structure returned by [`ClientKeys::retrieve_all`] function.
-#[derive(Serialize, Deserialize)]
-pub struct ClientKeyRetrieveAll {
-    /// Vector of all the Keys
-    pub keys: Vec<ClientKeyRetrieve>,
+impl ToString for Actions {
+    fn to_string(&self) -> String {
+        match self {
+            Self::DocumentsAll => "documents:*".to_string(),
+            Self::DocumentsSearch => "documents:search".to_string(),
+            Self::DocumentsGet => "documents:get".to_string(),
+            Self::CollectionsAll => "collections:*".to_string(),
+            Self::CollectionsDelete => "collections:delete".to_string(),
+            Self::CollectionsCreate => "collections:create".to_string(),
+            Self::All => "*".to_string(),
+        }
+    }
 }
 
 /// Structure returned by [`ClientKeys::delete`] function.
@@ -184,14 +157,6 @@ pub struct ClientKeyRetrieveAll {
 pub struct ClientKeyDelete {
     /// ID of the deleted Key
     pub id: usize,
-}
-
-#[derive(Serialize)]
-struct Create {
-    actions: Vec<Actions>,
-    collections: Vec<String>,
-    description: Option<String>,
-    expires_at: Option<usize>,
 }
 
 #[derive(Serialize)]
