@@ -1,5 +1,6 @@
 [workspace]
 members = [
     "typesense",
-    "typesense_derive"
+    "typesense_derive",
+    "typesense_codegen"
 ]
