@@ -13,6 +13,21 @@ pub(crate) type HyperHttpsClient = HyperClient<HttpsConnector>;
 pub struct WasmClient;
 
 /// A low level HTTP trait.
+#[cfg(not(target_arch = "wasm32"))]
+#[async_trait]
+pub trait HttpLowLevel<M = http::Method, H = http::HeaderMap> {
+    /// Send a request and receive a response.
+    async fn send(
+        &self,
+        method: M,
+        uri: &str,
+        headers: H,
+        body: Vec<u8>,
+    ) -> crate::Result<http::Response<Vec<u8>>>;
+}
+
+/// A low level HTTP trait.
+#[cfg(target_arch = "wasm32")]
 #[async_trait(?Send)]
 pub trait HttpLowLevel<M = http::Method, H = http::HeaderMap> {
     /// Send a request and receive a response.
@@ -26,7 +41,7 @@ pub trait HttpLowLevel<M = http::Method, H = http::HeaderMap> {
 }
 
 #[cfg(not(target_arch = "wasm32"))]
-#[async_trait(?Send)]
+#[async_trait]
 impl<C> HttpLowLevel for HyperClient<C>
 where
     C: hyper::client::connect::Connect + Clone + Send + Sync + 'static,
