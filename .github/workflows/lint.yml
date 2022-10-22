@@ -12,7 +12,7 @@ jobs:
     env:
       TZ: "/usr/share/zoneinfo/your/location"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Cache .cargo and target
         uses: actions/cache@v2
         with:
