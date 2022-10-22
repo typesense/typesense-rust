@@ -2,7 +2,7 @@
 //!
 //! More info [here](https://typesense.org/docs/0.20.0/api/api-keys.html).
 
-use hmac::{Hmac, Mac, NewMac};
+use hmac::{Hmac, Mac};
 use serde::{Deserialize, Serialize};
 use sha2::Sha256;
 use typesense_codegen::models::{ApiKey, ApiKeySchema, ApiKeysResponse};
