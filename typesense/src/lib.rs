@@ -14,6 +14,7 @@ pub mod document;
 mod error;
 pub mod field;
 pub mod transport;
+pub mod synonym;
 
 pub use client::{keys, Client, ClientBuilder};
 pub use error::{Result, TypesenseError};
