@@ -3,6 +3,7 @@
 //! More info [here](https://typesense.org/docs/0.20.0/api/api-keys.html).
 
 use base64::{engine::general_purpose::STANDARD as Base64Engine, Engine};
+use core::fmt;
 use hmac::{Hmac, Mac};
 use serde::{Deserialize, Serialize};
 use sha2::Sha256;
@@ -139,16 +140,16 @@ pub enum Actions {
     #[serde(rename = "*")]
     All,
 }
-impl ToString for Actions {
-    fn to_string(&self) -> String {
+impl fmt::Display for Actions {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::DocumentsAll => "documents:*".to_string(),
-            Self::DocumentsSearch => "documents:search".to_string(),
-            Self::DocumentsGet => "documents:get".to_string(),
-            Self::CollectionsAll => "collections:*".to_string(),
-            Self::CollectionsDelete => "collections:delete".to_string(),
-            Self::CollectionsCreate => "collections:create".to_string(),
-            Self::All => "*".to_string(),
+            Self::DocumentsAll => write!(f, "documents:*"),
+            Self::DocumentsSearch => write!(f, "documents:search"),
+            Self::DocumentsGet => write!(f, "documents:get"),
+            Self::CollectionsAll => write!(f, "collections:*"),
+            Self::CollectionsDelete => write!(f, "collections:delete"),
+            Self::CollectionsCreate => write!(f, "collections:create"),
+            Self::All => write!(f, "*"),
         }
     }
 }
