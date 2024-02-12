@@ -2,6 +2,7 @@
 //!
 //! More info [here](https://typesense.org/docs/0.20.0/api/api-keys.html).
 
+use base64::{engine::general_purpose::STANDARD as Base64Engine, Engine};
 use hmac::{Hmac, Mac};
 use serde::{Deserialize, Serialize};
 use sha2::Sha256;
@@ -96,12 +97,12 @@ where
         let mut mac = Hmac::<Sha256>::new_from_slice(key.as_ref().as_bytes()).unwrap();
         mac.update(params.as_bytes());
         let result = mac.finalize();
-        let digest = base64::encode(result.into_bytes());
+        let digest = Base64Engine.encode(result.into_bytes());
 
         let key_prefix = &key.as_ref()[0..4];
         let raw_scoped_key = format!("{}{}{}", digest, key_prefix, params);
 
-        Ok(base64::encode(raw_scoped_key.as_bytes()))
+        Ok(Base64Engine.encode(raw_scoped_key.as_bytes()))
     }
 }
 
