@@ -128,7 +128,7 @@ fn extract_default_sorting_field(attributes: &[Attribute]) -> syn::Result<Option
                         }
                         None => {
                             return Some(Err(syn::Error::new_spanned(
-                                &attr,
+                                attr,
                                 "expected: typesense(default_sorting_field  = \"...\")",
                             )));
                         }
@@ -146,7 +146,7 @@ fn extract_default_sorting_field(attributes: &[Attribute]) -> syn::Result<Option
                         }
                         None => {
                             return Some(Err(syn::Error::new_spanned(
-                                &attribute_tt,
+                                attribute_tt,
                                 "expected: equal sign(=)",
                             )));
                         }
@@ -164,7 +164,7 @@ fn extract_default_sorting_field(attributes: &[Attribute]) -> syn::Result<Option
                             }
                             _ => {
                                 return Some(Err(syn::Error::new_spanned(
-                                    &eq_sign,
+                                    eq_sign,
                                     "Expected string literal",
                                 )))
                             }
@@ -197,7 +197,7 @@ fn extract_default_sorting_field(attributes: &[Attribute]) -> syn::Result<Option
             } else {
                 Err(syn::Error::new_spanned(
                     // This will not fail since if we are at this point is because attributes is not empty.
-                    attributes.get(0).unwrap(),
+                    attributes.first().unwrap(),
                     format!(
                         "Expected only one default_sorting_field, found {}",
                         default_sorting_field.len(),
@@ -239,7 +239,7 @@ fn extract_collection_name(attributes: &[Attribute]) -> syn::Result<Option<Strin
                         }
                         None => {
                             return Some(Err(syn::Error::new_spanned(
-                                &attr,
+                                attr,
                                 "expected: typesense(collection_name  = \"...\")",
                             )));
                         }
@@ -257,7 +257,7 @@ fn extract_collection_name(attributes: &[Attribute]) -> syn::Result<Option<Strin
                         }
                         None => {
                             return Some(Err(syn::Error::new_spanned(
-                                &attribute_tt,
+                                attribute_tt,
                                 "expected: equal sign(=)",
                             )));
                         }
@@ -275,7 +275,7 @@ fn extract_collection_name(attributes: &[Attribute]) -> syn::Result<Option<Strin
                             }
                             _ => {
                                 return Some(Err(syn::Error::new_spanned(
-                                    &eq_sign,
+                                    eq_sign,
                                     "Expected string literal",
                                 )))
                             }
@@ -308,7 +308,7 @@ fn extract_collection_name(attributes: &[Attribute]) -> syn::Result<Option<Strin
             } else {
                 Err(syn::Error::new_spanned(
                     // This will not fail since if we are at this point is because attributes is not empty.
-                    attributes.get(0).unwrap(),
+                    attributes.first().unwrap(),
                     format!(
                         "Expected only one collection_name, found {}",
                         collection_name.len(),
