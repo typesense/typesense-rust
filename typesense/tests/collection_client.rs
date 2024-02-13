@@ -14,7 +14,7 @@ mod hyper_tests {
         let host = std::env::var("HOST").expect("HOST must be present in .env");
         let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
 
-        let client = Client::new_hyper(host, api_key);
+        let client = Client::new(host, api_key);
 
         let collection_client = client.collection();
 
@@ -34,7 +34,7 @@ mod hyper_tests {
         let host = std::env::var("HOST").expect("HOST must be present in .env");
         let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
 
-        let client = Client::new_hyper(host, api_key);
+        let client = Client::new(host, api_key);
 
         let collection_client = client.collection();
 
@@ -54,7 +54,7 @@ mod hyper_tests {
         let host = std::env::var("HOST").expect("HOST must be present in .env");
         let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
 
-        let client = Client::new_hyper(host, api_key);
+        let client = Client::new(host, api_key);
 
         let collection_client = client.collection();
 
@@ -74,7 +74,7 @@ mod hyper_tests {
         let host = std::env::var("HOST").expect("HOST must be present in .env");
         let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
 
-        let client = Client::new_hyper(host, api_key);
+        let client = Client::new(host, api_key);
 
         let collection_client = client.collection();
 

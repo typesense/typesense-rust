@@ -1,10 +1,8 @@
 //! The module containing the [`Transport`] struct and
 //! its [`Builder`](TransportBuilder).
 
-mod builder;
 mod http_low_level;
 
-pub use builder::TransportBuilder;
 pub use http_low_level::HttpLowLevel;
 
 #[cfg(target_arch = "wasm32")]
@@ -22,9 +20,9 @@ pub struct Transport<C> {
 }
 
 #[cfg(all(feature = "tokio-rt", not(target_arch = "wasm32")))]
-impl Default for Transport<http_low_level::HyperHttpsClient> {
+impl Default for Transport<HyperHttpsClient> {
     fn default() -> Self {
-        TransportBuilder::new_hyper().build()
+        Transport::new()
     }
 }
 
@@ -41,6 +39,54 @@ where
         body: Vec<u8>,
     ) -> crate::Result<http::Response<Vec<u8>>> {
         self.client.send(method, uri, headers, body).await
+    }
+}
+
+#[cfg(all(feature = "tokio-rt", not(target_arch = "wasm32")))]
+#[cfg_attr(
+    docsrs,
+    doc(cfg(all(feature = "tokio-rt", not(target_arch = "wasm32"))))
+)]
+impl Transport<HyperHttpsClient> {
+    /// Used to make a new [`hyper`](https://docs.rs/hyper) client.
+    /// The connector used is [`HttpsConnector`](hyper_tls::HttpsConnector).
+    pub fn new() -> Self {
+        let https = http_low_level::HttpsConnector::new();
+        let client = hyper::Client::builder().build(https);
+
+        Self { client }
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
+#[cfg_attr(docsrs, doc(cfg(target_arch = "wasm32")))]
+impl Transport<WasmClient> {
+    /// Used to make a new wasm client.
+    pub fn new() -> Self {
+        Self {
+            client: http_low_level::WasmClient,
+        }
+    }
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+#[cfg_attr(docsrs, doc(cfg(not(target_arch = "wasm32"))))]
+impl<C> Transport<http_low_level::HyperClient<C>>
+where
+    C: hyper::client::connect::Connect + Clone,
+{
+    /// Used to make a new custom [`hyper`](https://docs.rs/hyper) client.
+    /// Provide your own executor and connector.
+    pub fn new_custom_hyper<E>(executor: E, connector: C) -> Self
+    where
+        E: hyper::rt::Executor<std::pin::Pin<Box<dyn std::future::Future<Output = ()> + Send>>>
+            + Send
+            + Sync
+            + 'static,
+    {
+        let client = hyper::Client::builder().executor(executor).build(connector);
+
+        Self { client }
     }
 }
 
@@ -61,7 +107,7 @@ mod hyper_tests {
         let mut header = HeaderMap::new();
         header.insert("Test", "test".parse().unwrap());
 
-        let transport = TransportBuilder::new_hyper().build();
+        let transport = Transport::new();
 
         let response = transport
             .send(HttpMethod::GET, &url, header.clone(), vec![].into())
@@ -123,7 +169,7 @@ mod wasm_test {
         let mut header = HeaderMap::new();
         header.insert("Test", "test".parse().unwrap());
 
-        let transport = TransportBuilder::new_wasm().build();
+        let transport = Transport::new();
 
         let response = transport
             .send(HttpMethod::GET, &url, header.clone(), vec![].into())

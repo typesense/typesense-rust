@@ -39,8 +39,8 @@ impl<T> Client<T> {
 impl Client<crate::transport::HyperHttpsClient> {
     /// Create client builder with a [`hyper`](https://docs.rs/hyper) client.
     /// The connector used is [`HttpsConnector`](hyper_tls::HttpsConnector).
-    pub fn new_hyper(host: String, api_key: String) -> Self {
-        let transport = crate::transport::TransportBuilder::new_hyper().build();
+    pub fn new(host: String, api_key: String) -> Self {
+        let transport = crate::transport::Transport::new();
         Self {
             transport,
             host: Arc::new(host),
@@ -53,8 +53,8 @@ impl Client<crate::transport::HyperHttpsClient> {
 #[cfg_attr(docsrs, doc(cfg(target_arch = "wasm32")))]
 impl Client<WasmClient> {
     /// Create client builder using default wasm client
-    pub fn new_wasm(host: String, api_key: String) -> Self {
-        let transport = crate::transport::TransportBuilder::new_wasm().build();
+    pub fn new(host: String, api_key: String) -> Self {
+        let transport = crate::transport::Transport::new();
         Self {
             transport,
             host: Arc::new(host),
@@ -126,7 +126,7 @@ mod hyper_tests {
 
         let body = String::from("Test with api key successful");
 
-        let client = Client::new_hyper(host, api_key);
+        let client = Client::new(host, api_key);
 
         let response = client.get("/test_api_key").await?;
 
@@ -180,11 +180,7 @@ mod wasm_test {
         let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
 
         let body = String::from("Test with api key successful");
-        let client = ClientBuilder::new_wasm()
-            .host(host)
-            .api_key(api_key)
-            .build()
-            .unwrap();
+        let client = Client::new(host, api_key);
 
         let response = client.get("/test_api_key").await?;
 
