@@ -5,7 +5,7 @@ use typesense::Document;
 mod hyper_tests {
     use super::*;
     use typesense::document::Document as DocumentTrait;
-    use typesense::ClientBuilder;
+    use typesense::Client;
 
     #[tokio::test]
     async fn collection_create() {
@@ -14,11 +14,7 @@ mod hyper_tests {
         let host = std::env::var("HOST").expect("HOST must be present in .env");
         let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
 
-        let client = ClientBuilder::new_hyper()
-            .host(host)
-            .api_key(api_key)
-            .build()
-            .unwrap();
+        let client = Client::new_hyper(host, api_key);
 
         let collection_client = client.collection();
 
@@ -38,11 +34,7 @@ mod hyper_tests {
         let host = std::env::var("HOST").expect("HOST must be present in .env");
         let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
 
-        let client = ClientBuilder::new_hyper()
-            .host(host)
-            .api_key(api_key)
-            .build()
-            .unwrap();
+        let client = Client::new_hyper(host, api_key);
 
         let collection_client = client.collection();
 
@@ -62,11 +54,7 @@ mod hyper_tests {
         let host = std::env::var("HOST").expect("HOST must be present in .env");
         let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
 
-        let client = ClientBuilder::new_hyper()
-            .host(host)
-            .api_key(api_key)
-            .build()
-            .unwrap();
+        let client = Client::new_hyper(host, api_key);
 
         let collection_client = client.collection();
 
@@ -86,11 +74,7 @@ mod hyper_tests {
         let host = std::env::var("HOST").expect("HOST must be present in .env");
         let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
 
-        let client = ClientBuilder::new_hyper()
-            .host(host)
-            .api_key(api_key)
-            .build()
-            .unwrap();
+        let client = Client::new_hyper(host, api_key);
 
         let collection_client = client.collection();
 

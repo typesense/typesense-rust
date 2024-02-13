@@ -7,10 +7,11 @@ use crate::transport::HttpLowLevel;
 use crate::transport::Transport;
 use crate::Result;
 
-mod builder;
+#[cfg(target_arch = "wasm32")]
+use crate::transport::WasmClient;
+
 pub mod keys;
 
-pub use builder::ClientBuilder;
 pub use keys::ClientKeys;
 
 pub const TYPESENSE_API_KEY_HEADER_NAME: &str = "X-TYPESENSE-API-KEY";
@@ -27,6 +28,38 @@ impl<T> Client<T> {
     /// Gets the transport of the client
     pub fn transport(&self) -> &Transport<T> {
         &self.transport
+    }
+}
+
+#[cfg(all(feature = "tokio-rt", not(target_arch = "wasm32")))]
+#[cfg_attr(
+    docsrs,
+    doc(cfg(all(feature = "tokio-rt", not(target_arch = "wasm32"))))
+)]
+impl Client<crate::transport::HyperHttpsClient> {
+    /// Create client builder with a [`hyper`](https://docs.rs/hyper) client.
+    /// The connector used is [`HttpsConnector`](hyper_tls::HttpsConnector).
+    pub fn new_hyper(host: String, api_key: String) -> Self {
+        let transport = crate::transport::TransportBuilder::new_hyper().build();
+        Self {
+            transport,
+            host: Arc::new(host),
+            api_key: Arc::new(api_key),
+        }
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
+#[cfg_attr(docsrs, doc(cfg(target_arch = "wasm32")))]
+impl Client<WasmClient> {
+    /// Create client builder using default wasm client
+    pub fn new_wasm(host: String, api_key: String) -> Self {
+        let transport = crate::transport::TransportBuilder::new_wasm().build();
+        Self {
+            transport,
+            host: Arc::new(host),
+            api_key: Arc::new(api_key),
+        }
     }
 }
 
@@ -93,11 +126,7 @@ mod hyper_tests {
 
         let body = String::from("Test with api key successful");
 
-        let client = ClientBuilder::new_hyper()
-            .host(host)
-            .api_key(api_key)
-            .build()
-            .unwrap();
+        let client = Client::new_hyper(host, api_key);
 
         let response = client.get("/test_api_key").await?;
 

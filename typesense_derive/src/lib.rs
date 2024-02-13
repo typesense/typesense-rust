@@ -383,7 +383,7 @@ fn to_typesense_field_type(field: &Field) -> syn::Result<proc_macro2::TokenStrea
         (&field.ty, quote!(None))
     };
     let typesense_field_type = quote!(
-            <#ty as typesense::field::ToTypesenseField>::to_typesense_type().to_string()
+            <#ty as typesense::field::ToTypesenseField>::to_typesense_type().to_owned()
     );
     Ok(quote! {
         typesense::field::FieldBuilder::new(std::string::String::from(stringify!(#name)), #typesense_field_type)
