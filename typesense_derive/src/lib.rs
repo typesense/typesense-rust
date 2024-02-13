@@ -48,7 +48,7 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
     let gen = quote! {
         impl  #impl_generics  typesense::document::Document for #name #ty_generics #where_clause {
             fn collection_schema() -> typesense::collection::CollectionSchema {
-                let name = #collection_name.to_string();
+                let name = #collection_name.to_owned();
 
                 let fields = &[#(#typesense_fields,)*];
 
