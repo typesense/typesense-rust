@@ -50,16 +50,14 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
             fn collection_schema() -> typesense::collection::CollectionSchema {
                 let name = #collection_name.to_string();
 
-               let fields = vec![#(#typesense_fields,)*];
+                let fields = &[#(#typesense_fields,)*];
 
                 let default_sorting_field = std::string::String::from(#default_sorting_field);
 
-                typesense::collection::CollectionSchemaBuilder::new()
-                   .name(name)
+                typesense::collection::CollectionSchemaBuilder::new(name)
                    .fields(fields)
                    .default_sorting_field(default_sorting_field)
                    .build()
-                   .unwrap()
             }
         }
     };
@@ -388,12 +386,9 @@ fn to_typesense_field_type(field: &Field) -> syn::Result<proc_macro2::TokenStrea
             <#ty as typesense::field::ToTypesenseField>::to_typesense_type().to_string()
     );
     Ok(quote! {
-        typesense::field::FieldBuilder::new()
-            .name(std::string::String::from(stringify!(#name)))
-            .typesense_type(#typesense_field_type)
+        typesense::field::FieldBuilder::new(std::string::String::from(stringify!(#name)), #typesense_field_type)
             .optional(#optional)
             .facet(#facet)
             .build()
-            .unwrap()
     })
 }

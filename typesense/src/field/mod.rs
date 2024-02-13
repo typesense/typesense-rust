@@ -9,8 +9,8 @@ pub use typesense_codegen::models::{Field, FieldEmbed};
 /// Builder for the `Field` struct.
 #[derive(Debug, Default)]
 pub struct FieldBuilder {
-    name: Option<String>,
-    typesense_type: Option<FieldType>,
+    name: String,
+    typesense_type: FieldType,
     optional: Option<bool>,
     facet: Option<bool>,
     index: Option<bool>,
@@ -24,20 +24,12 @@ pub struct FieldBuilder {
 
 impl FieldBuilder {
     /// Create a Builder
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    /// Set name of the field.
-    pub fn name(mut self, name: String) -> Self {
-        self.name = Some(name);
-        self
-    }
-
-    /// Set type of the field.
-    pub fn typesense_type(mut self, typesense_type: FieldType) -> Self {
-        self.typesense_type = Some(typesense_type);
-        self
+    pub fn new(name: String, typesense_type: FieldType) -> Self {
+        Self {
+            name,
+            typesense_type,
+            ..Default::default()
+        }
     }
 
     /// Set if field is facet.
@@ -84,10 +76,10 @@ impl FieldBuilder {
 
     /// Create a `Field` with the current values of the builder,
     /// It can fail if the name or the typesense_type are not defined.
-    pub fn build(self) -> Result<Field, Box<dyn std::error::Error>> {
-        Ok(Field {
-            name: self.name.ok_or("name is not set")?,
-            r#type: self.typesense_type.ok_or("typesense_type is not set")?,
+    pub fn build(self) -> Field {
+        Field {
+            name: self.name,
+            r#type: self.typesense_type,
             optional: self.optional,
             facet: self.facet,
             index: self.index,
@@ -97,6 +89,6 @@ impl FieldBuilder {
             num_dim: self.num_dim,
             drop: self.drop,
             embed: self.embed,
-        })
+        }
     }
 }
