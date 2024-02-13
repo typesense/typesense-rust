@@ -1,10 +1,8 @@
 //! The module containing the [`Transport`] struct and
 //! its [`Builder`](TransportBuilder).
 
-mod builder;
 mod http_low_level;
 
-pub use builder::TransportBuilder;
 pub use http_low_level::HttpLowLevel;
 
 #[cfg(target_arch = "wasm32")]
@@ -22,9 +20,9 @@ pub struct Transport<C> {
 }
 
 #[cfg(all(feature = "tokio-rt", not(target_arch = "wasm32")))]
-impl Default for Transport<http_low_level::HyperHttpsClient> {
+impl Default for Transport<HyperHttpsClient> {
     fn default() -> Self {
-        TransportBuilder::new_hyper().build()
+        Transport::new()
     }
 }
 
@@ -44,6 +42,60 @@ where
     }
 }
 
+#[allow(missing_docs)]
+pub trait TransportCreator {
+    /// Create new Transport
+    fn new() -> Self;
+}
+
+#[cfg(all(feature = "tokio-rt", not(target_arch = "wasm32")))]
+#[cfg_attr(
+    docsrs,
+    doc(cfg(all(feature = "tokio-rt", not(target_arch = "wasm32"))))
+)]
+impl TransportCreator for Transport<HyperHttpsClient> {
+    /// Used to make a new [`hyper`](https://docs.rs/hyper) client.
+    /// The connector used is [`HttpsConnector`](hyper_tls::HttpsConnector).
+    fn new() -> Self {
+        let https = http_low_level::HttpsConnector::new();
+        let client = hyper::Client::builder().build(https);
+
+        Self { client }
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
+#[cfg_attr(docsrs, doc(cfg(target_arch = "wasm32")))]
+impl TransportCreator for Transport<WasmClient> {
+    /// Used to make a new wasm client.
+    fn new() -> Self {
+        Self {
+            client: http_low_level::WasmClient,
+        }
+    }
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+#[cfg_attr(docsrs, doc(cfg(not(target_arch = "wasm32"))))]
+impl<C> Transport<http_low_level::HyperClient<C>>
+where
+    C: hyper::client::connect::Connect + Clone,
+{
+    /// Used to make a new custom [`hyper`](https://docs.rs/hyper) client.
+    /// Provide your own executor and connector.
+    pub fn new_custom_hyper<E>(executor: E, connector: C) -> Self
+    where
+        E: hyper::rt::Executor<std::pin::Pin<Box<dyn std::future::Future<Output = ()> + Send>>>
+            + Send
+            + Sync
+            + 'static,
+    {
+        let client = hyper::Client::builder().executor(executor).build(connector);
+
+        Self { client }
+    }
+}
+
 #[cfg(all(test, feature = "tokio-rt", not(target_arch = "wasm32")))]
 mod hyper_tests {
     use http::Method as HttpMethod;
@@ -53,13 +105,15 @@ mod hyper_tests {
 
     #[tokio::test]
     async fn hyper() -> crate::Result<()> {
-        let body = String::from("Test Successful");
+        let _ = dotenvy::dotenv();
 
-        let url = "http://localhost:5000";
+        let url = std::env::var("URL").expect("URL must be present in .env");
+
+        let body = String::from("Test Successful");
         let mut header = HeaderMap::new();
         header.insert("Test", "test".parse().unwrap());
 
-        let transport = TransportBuilder::new_hyper().build();
+        let transport = Transport::new();
 
         let response = transport
             .send(HttpMethod::GET, &url, header.clone(), vec![].into())
@@ -112,13 +166,14 @@ mod wasm_test {
     }
 
     async fn try_wasm() -> crate::Result<()> {
+        let url = "http://localhost:5000";
+
         let body = String::from("Test Successful");
 
-        let url = "http://localhost:5000";
         let mut header = HeaderMap::new();
         header.insert("Test", "test".parse().unwrap());
 
-        let transport = TransportBuilder::new_wasm().build();
+        let transport = Transport::new();
 
         let response = transport
             .send(HttpMethod::GET, &url, header.clone(), vec![].into())

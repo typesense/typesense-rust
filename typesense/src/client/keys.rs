@@ -13,11 +13,11 @@ use super::Client;
 use crate::transport::HttpLowLevel;
 
 /// To interact with the Keys API.
-pub struct ClientKeys<T> {
-    pub(super) client: Client<T>,
+pub struct ClientKeys<'c, T> {
+    pub(super) client: &'c Client<T>,
 }
 
-impl<T> ClientKeys<T>
+impl<'c, T> ClientKeys<'c, T>
 where
     T: HttpLowLevel,
 {
@@ -28,7 +28,7 @@ where
         &self,
         actions: Vec<Actions>,
         collections: Vec<String>,
-        description: impl Into<Option<String>>,
+        description: impl Into<String>,
         expires_at: impl Into<Option<i64>>,
     ) -> crate::Result<ApiKey> {
         let actions = actions
@@ -36,9 +36,10 @@ where
             .map(|action| action.to_string())
             .collect();
         let create = ApiKeySchema {
+            value: None,
+            description: description.into(),
             actions,
             collections,
-            description: description.into(),
             expires_at: expires_at.into(),
         };
 

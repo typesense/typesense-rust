@@ -19,6 +19,7 @@ Method | HTTP request | Description
 [**multi_search**](DocumentsApi.md#multi_search) | **POST** /multi_search | send multiple search requests in a single HTTP request
 [**search_collection**](DocumentsApi.md#search_collection) | **GET** /collections/{collectionName}/documents/search | Search for documents in a collection
 [**update_document**](DocumentsApi.md#update_document) | **PATCH** /collections/{collectionName}/documents/{documentId} | Update a document
+[**update_documents**](DocumentsApi.md#update_documents) | **PATCH** /collections/{collectionName}/documents | Update documents with conditional query
 [**upsert_search_override**](DocumentsApi.md#upsert_search_override) | **PUT** /collections/{collectionName}/overrides/{overrideId} | Create or update an override to promote certain documents over others
 [**upsert_search_synonym**](DocumentsApi.md#upsert_search_synonym) | **PUT** /collections/{collectionName}/synonyms/{synonymId} | Create or update a synonym
 
@@ -170,7 +171,7 @@ Name | Type | Description  | Required | Notes
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/octet-stream
+- **Accept**: application/octet-stream, application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -469,6 +470,38 @@ Name | Type | Description  | Required | Notes
 ### Return type
 
 [**serde_json::Value**](serde_json::Value.md)
+
+### Authorization
+
+[api_key_header](../README.md#api_key_header)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## update_documents
+
+> crate::models::UpdateDocuments200Response update_documents(collection_name, body, update_documents_parameters)
+Update documents with conditional query
+
+The filter_by query parameter is used to filter to specify a condition against which the documents are matched. The request body contains the fields that should be updated for any documents that match the filter condition. This endpoint is only available if the Typesense server is version `0.25.0.rc12` or later.
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**collection_name** | **String** | The name of the collection to update documents in | [required] |
+**body** | **serde_json::Value** | The document fields to be updated | [required] |
+**update_documents_parameters** | Option<[**UpdateDocumentsUpdateDocumentsParametersParameter**](.md)> |  |  |
+
+### Return type
+
+[**crate::models::UpdateDocuments200Response**](updateDocuments_200_response.md)
 
 ### Authorization
 

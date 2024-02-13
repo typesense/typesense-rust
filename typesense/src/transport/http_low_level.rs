@@ -182,7 +182,6 @@ enum WindowOrWorker {
 impl WindowOrWorker {
     fn new() -> Self {
         use wasm_bindgen::prelude::*;
-        use wasm_bindgen::JsCast;
 
         #[wasm_bindgen]
         extern "C" {

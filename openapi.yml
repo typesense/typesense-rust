@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Typesense API
   description: "An open source search engine for building delightful search experiences."
-  version: 0.23.0
+  version: 0.25.0
 externalDocs:
   description: Find out more about Typsesense
   url: https://typesense.org
@@ -24,6 +24,11 @@ tags:
     externalDocs:
       description: Find out more
       url: https://typesense.org/docs/0.23.0/api/#curation
+  - name: analytics
+    description: Typesense can aggregate search queries for both analytics purposes and for query suggestions.
+    externalDocs:
+      description: Find out more
+      url: https://typesense.org/docs/0.25.0/api/analytics-query-suggestions.html
   - name: keys
     description: Manage API Keys with fine-grain access control
     externalDocs:
@@ -80,6 +85,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CollectionResponse"
+        400:
+          description: Bad request, see error message for details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
         409:
           description: Collection already exists
           content:
@@ -141,6 +152,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CollectionUpdateSchema"
+        400:
+          description: Bad request, see error message for details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
         404:
           description: The collection was not found
           content:
@@ -222,6 +239,66 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
+    patch:
+      tags:
+        - documents
+      summary: Update documents with conditional query
+      description:
+        The filter_by query parameter is used to filter to specify a condition against which the documents are matched.
+        The request body contains the fields that should be updated for any documents that match the filter condition.
+        This endpoint is only available if the Typesense server is version `0.25.0.rc12` or later.
+      operationId: updateDocuments
+      parameters:
+        - name: collectionName
+          in: path
+          description: The name of the collection to update documents in
+          required: true
+          schema:
+            type: string
+        - name: updateDocumentsParameters
+          in: query
+          schema:
+            type: object
+            properties:
+              filter_by:
+                type: string
+                example: "num_employees:>100 && country: [USA, UK]"
+      responses:
+        '200':
+          description:
+            The response contains a single field, `num_updated`, indicating the number of documents affected.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - num_updated
+                properties:
+                  num_updated:
+                    type: integer
+                    description: The number of documents that have been updated
+                    example: 1
+        '400':
+          description: 'Bad request, see error message for details'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          description: The collection was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+      requestBody:
+        description: The document fields to be updated
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Can be any key-value pair
+              x-go-type: "interface{}"
+        required: true
     delete:
       tags:
         - documents
@@ -394,6 +471,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SearchOverride"
+        404:
+          description: Search override not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
     delete:
       tags:
         - documents
@@ -420,6 +503,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SearchOverride"
+        404:
+          description: Search override not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
   /collections/{collectionName}/synonyms:
     get:
       tags:
@@ -440,6 +529,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SearchSynonymsResponse"
+        404:
+          description: Search synonyms was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
   /collections/{collectionName}/synonyms/{synonymId}:
     get:
       tags:
@@ -467,6 +562,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SearchSynonym"
+        404:
+          description: Search synonym was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
     put:
       tags:
         - documents
@@ -500,6 +601,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SearchSynonym"
+        404:
+          description: Search synonym was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
     delete:
       tags:
         - documents
@@ -525,6 +632,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SearchSynonym"
+        404:
+          description: Search synonym not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+
   /collections/{collectionName}/documents/export:
     get:
       tags:
@@ -573,7 +687,7 @@ paths:
         404:
           description: The collection was not found
           content:
-            application/octet-stream:
+            application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
   /collections/{collectionName}/documents/import:
@@ -609,6 +723,8 @@ paths:
                   - coerce_or_drop
                   - drop
                   - reject
+              remote_embedding_batch_size:
+                type: integer
       requestBody:
         description: The json array of documents or the JSONL file to import
         content:
@@ -632,6 +748,12 @@ paths:
                 example: |
                   {"success": true}
                   {"success": false, "error": "Bad JSON.", "document": "[bad doc"}
+        400:
+          description: Bad request, see error message for details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
         404:
           description: The collection was not found
           content:
@@ -785,6 +907,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiKey"
+        400:
+          description: Bad request, see error message for details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        409:
+          description: API key generation conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
   /keys/{keyId}:
     get:
       tags:
@@ -810,6 +944,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiKey"
+        404:
+          description: The key was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
     delete:
       tags:
         - keys
@@ -830,6 +970,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiKey"
+        400:
+          description: Bad request, see error message for details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        404:
+          description: Key not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
   /aliases:
     get:
       tags:
@@ -876,6 +1028,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CollectionAlias"
+        400:
+          description: Bad request, see error message for details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        404:
+          description: Alias not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
     get:
       tags:
         - collections
@@ -896,6 +1060,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CollectionAlias"
+        404:
+          description: The alias was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
     delete:
       tags:
         - collections
@@ -915,6 +1085,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CollectionAlias"
+        404:
+          description: Alias not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
   /debug:
     get:
       tags:
@@ -1014,7 +1190,109 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MultiSearchResult"
-
+        400:
+          description: Bad request, see error message for details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /analytics/rules:
+    post:
+      tags:
+        - analytics
+      summary: Creates an analytics rule
+      description:
+        When an analytics rule is created, we give it a name and describe the type, the source collections and the destination collection.
+      operationId: createAnalyticsRule
+      requestBody:
+        description: The Analytics rule to be created
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnalyticsRuleSchema"
+        required: true
+      responses:
+        201:
+          description: Analytics rule successfully created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyticsRuleSchema"
+        400:
+          description: Bad request, see error message for details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+    get:
+      tags:
+        - analytics
+      summary: Retrieves all analytics rules
+      description:
+        Retrieve the details of all analytics rules
+      operationId: retrieveAnalyticsRules
+      responses:
+        200:
+          description: Analytics rules fetched
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyticsRulesRetrieveSchema"
+  /analytics/rules/{ruleName}:
+    get:
+      tags:
+        - analytics
+      summary: Retrieves an analytics rule
+      description:
+        Retrieve the details of an analytics rule, given it's name
+      operationId: retrieveAnalyticsRule
+      parameters:
+        - in: path
+          name: ruleName
+          description: The name of the analytics rule to retrieve
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Analytics rule fetched
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyticsRuleSchema"
+        404:
+          description: Analytics rule not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+    delete:
+      tags:
+        - analytics
+      summary: Delete an analytics rule
+      description:
+        Permanently deletes an analytics rule, given it's name
+      operationId: deleteAnalyticsRule
+      parameters:
+        - in: path
+          name: ruleName
+          description: The name of the analytics rule to delete
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: Analytics rule deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyticsRuleSchema"
+        404:
+          description: Analytics rule not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
 components:
   schemas:
     CollectionSchema:
@@ -1031,11 +1309,11 @@ components:
           type: array
           description: A list of fields for querying, filtering and faceting
           example:
-            - name: company_name
-              type: string
-              facet: false
             - name: num_employees
               type: int32
+              facet: false
+            - name: company_name
+              type: string
               facet: false
             - name: country
               type: string
@@ -1048,7 +1326,7 @@ components:
             The name of an int32 / float field that determines the order in which
             the search results are ranked when a sort_by clause is not provided during
             searching. This field must indicate some kind of popularity.
-          example: num_employees
+          example: num_employees # Go with the first field name listed above to produce sane defaults
           default: ""
         token_separators:
           type: array
@@ -1057,14 +1335,28 @@ components:
             splitting the text into individual words in addition to space and new-line characters.
           items:
             type: string # characters only
+            # Could `enum` be used instead, given it's symbols/special *characters*, e.g.:
+            # enum: ["@", "!", ".", "/", ","]
+            minLength: 1
+            maxLength: 1
           default: []
-
+        enable_nested_fields:
+            type: boolean
+            description:
+              Enables experimental support at a collection level for nested object or object array fields.
+              This field is only available if the Typesense server is version `0.24.0.rcn34` or later.
+            default: false
+            example: true
         symbols_to_index:
           type: array
           description: >
             List of symbols or special characters to be indexed.
           items:
             type: string # characters only
+            # Could `enum` be used instead, given it's symbols/special *characters*, e.g.:
+            # enum: ["@", "!", ".", "/", ","]
+            minLength: 1
+            maxLength: 1
           default: []
     CollectionUpdateSchema:
       required:
@@ -1101,7 +1393,7 @@ components:
               readOnly: true
             created_at:
               type: integer
-              description: Timestamp of when the collection was created
+              description: Timestamp of when the collection was created (Unix epoch in seconds)
               format: int64
               readOnly: true
     Field:
@@ -1119,11 +1411,9 @@ components:
         optional:
           type: boolean
           example: true
-          default: false
         facet:
           type: boolean
           example: false
-          default: false
         index:
           type: boolean
           example: true
@@ -1134,15 +1424,44 @@ components:
         sort:
           type: boolean
           example: true
-          default: false
         infix:
           type: boolean
           example: true
           default: false
+        num_dim:
+          type: integer
+          example: 256
         drop:
           type: boolean
           example: true
           # omitting default value since we want it to be null
+        embed:
+          type: object
+          required:
+            - from
+            - model_config
+          properties:
+            from:
+              type: array
+              items:
+                type: string
+            model_config:
+              type: object
+              required:
+                - model_name
+              properties:
+                model_name:
+                  type: string
+                api_key:
+                  type: string
+                access_token:
+                  type: string
+                client_id:
+                  type: string
+                client_secret:
+                  type: string
+                project_id:
+                  type: string
     CollectionAliasSchema:
       type: object
       required:
@@ -1189,7 +1508,7 @@ components:
           description: The number of milliseconds the search took
         out_of:
           type: integer
-          description: The total number of pages
+          description: The total number of documents in the collection
         search_cutoff:
           type: boolean
           description: Whether the search was cut off
@@ -1225,10 +1544,11 @@ components:
         - group_key
         - hits
       properties:
+        found:
+          type: integer
         group_key:
           type: array
-          items:
-            type: string
+          items: {}
         hits:
           type: array
           description: The documents that matched the search query
@@ -1239,9 +1559,13 @@ components:
       properties:
         highlights:
           type: array
-          description: Contains highlighted portions of the search fields
+          description: (Deprecated) Contains highlighted portions of the search fields
           items:
             $ref: "#/components/schemas/SearchHighlight"
+        highlight:
+          type: object
+          description: Highlighted version of the matching document
+          additionalProperties: true
         document:
           type: object
           description: Can be any key-value pair
@@ -1255,6 +1579,10 @@ components:
           description: Can be any key-value pair
           additionalProperties:
             type: integer
+        vector_distance:
+          type: number
+          format: float
+          description: Distance between the query vector and matching document's vector value
       example:
         highlights:
           company_name:
@@ -1279,6 +1607,18 @@ components:
         snippets:
           type: array
           description: Present only for (array) string[] fields
+          example:
+            - <mark>Stark</mark> Industries
+            - <mark>Stark</mark> Corp
+          items:
+            type: string
+        value:
+          type: string
+          description: Full field value with highlighting, present only for (non-array) string fields
+          example: <mark>Stark</mark> Industries is a major supplier of space equipment.
+        values:
+          type: array
+          description: Full field value with highlighting, present only for (array) string[] fields
           example:
             - <mark>Stark</mark> Industries
             - <mark>Stark</mark> Corp
@@ -1441,7 +1781,10 @@ components:
       required:
         - actions
         - collections
+        - description
       properties:
+        value:
+          type: string
         description:
           type: string
         actions:
@@ -1459,17 +1802,10 @@ components:
       allOf:
         - $ref: "#/components/schemas/ApiKeySchema"
         - type: object
-          required:
-            - id
-            - value
-            - value_prefix
           properties:
             id:
               type: integer
               format: int64
-              readOnly: true
-            value:
-              type: string
               readOnly: true
             value_prefix:
               type: string
@@ -1535,12 +1871,43 @@ components:
             Multiple fields are separated with a comma.
           type: string
 
+        text_match_type:
+          description:
+            In a multi-field matching context, this parameter determines how the representative text match 
+            score of a record is calculated. Possible values are max_score (default) or max_weight.
+          type: string
+
         prefix:
           description:
             Boolean field to indicate that the last word in the query should
             be treated as a prefix, and not as a whole word. This is used for building
             autocomplete and instant search interfaces. Defaults to true.
           type: string
+
+        infix:
+          description:
+            If infix index is enabled for this field, infix searching can be done on a per-field 
+            basis by sending a comma separated string parameter called infix to the search query. 
+            This parameter can have 3 values; `off` infix search is disabled, which is default
+             `always` infix search is performed along with regular search
+             `fallback` infix search is performed if regular search does not produce results
+          type: string
+
+        max_extra_prefix:
+          description:
+            There are also 2 parameters that allow you to control the extent of infix searching 
+            max_extra_prefix and max_extra_suffix which specify the maximum number of symbols before 
+            or after the query that can be present in the token. For example query "K2100" has 2 extra 
+            symbols in "6PK2100". By default, any number of prefixes/suffixes can be present for a match.
+          type: integer
+
+        max_extra_suffix:
+          description:
+            There are also 2 parameters that allow you to control the extent of infix searching 
+            max_extra_prefix and max_extra_suffix which specify the maximum number of symbols before 
+            or after the query that can be present in the token. For example query "K2100" has 2 extra 
+            symbols in "6PK2100". By default, any number of prefixes/suffixes can be present for a match.
+          type: integer
 
         filter_by:
           description:
@@ -1583,7 +1950,7 @@ components:
           description: >
             The number of typographical errors (1 or 2) that would be tolerated.
             Default: 2
-          type: integer
+          type: string
 
         page:
           description: Results from this specific page number would be fetched.
@@ -1591,6 +1958,16 @@ components:
 
         per_page:
           description: "Number of results to fetch per page. Default: 10"
+          type: integer
+
+        limit:
+          description: >
+            Number of hits to fetch. Can be used as an alternative to the per_page parameter. 
+            Default: 10.
+          type: integer
+
+        offset:
+          description: Identifies the starting point to return hits from a result set. Can be used as an alternative to the page parameter.
           type: integer
 
         group_by:
@@ -1636,6 +2013,13 @@ components:
             Default: `</mark>`
           type: string
 
+        enable_highlight_v1:
+          description: >
+            Flag for enabling/disabling the deprecated, old highlight structure in the response.
+            Default: true
+          type: boolean
+          default: true
+
         snippet_threshold:
           description: >
             Field values under this length will be fully highlighted, instead of showing
@@ -1664,6 +2048,7 @@ components:
             A list of `record_id:hit_position`. Eg: to include a record with ID 123
             at Position 1 and another record with ID 456 at Position 5,
             you'd specify `123:1,456:5`.
+
             You could also use the Overrides feature to override search results based
             on rules. Overrides are applied first, followed by `pinned_hits` and 
             finally `hidden_hits`.
@@ -1674,6 +2059,7 @@ components:
             A list of records to unconditionally hide from search results.
             A list of `record_id`s to hide. Eg: to hide records with IDs 123 and 456,
             you'd specify `123,456`.
+
             You could also use the Overrides feature to override search results based
             on rules. Overrides are applied first, followed by `pinned_hits` and
             finally `hidden_hits`.
@@ -1685,13 +2071,28 @@ components:
             for them
           type: string
 
+        split_join_tokens:
+          description: >
+            Treat space as typo: search for q=basket ball if q=basketball is not found or vice-versa.
+            Splitting/joining of tokens will only be attempted if the original query produces no results.
+            To always trigger this behavior, set value to `always``.
+            To disable, set value to `off`. Default is `fallback`.
+          type: string
+
         pre_segmented_query:
           description: >
             You can index content from any logographic language into Typesense if you
             are able to segment / split the text into space-separated words yourself 
             before indexing and querying.
+
             Set this parameter to true to do the same
           type: boolean
+
+        preset:
+          description: >
+            Search using a bunch of search parameters by setting this parameter to
+            the name of the existing Preset.
+          type: string
 
         enable_overrides:
           description: >
@@ -1703,6 +2104,14 @@ components:
           description: >
             Set this parameter to true to ensure that an exact match is ranked above
             the others
+          type: boolean
+        max_candidates:
+          description: >
+            Control the number of words that Typesense considers for typo and prefix searching.
+          type: integer
+        prioritize_token_position:
+          description: >
+            Make Typesense prioritize documents where the query words appear earlier in the text.
           type: boolean
         exhaustive_search:
           description: >
@@ -1734,6 +2143,18 @@ components:
             Minimum word length for 2-typo correction to be applied. 
             The value of num_typos is still treated as the maximum allowed typos.
           type: integer
+        vector_query:
+          description: >
+            Vector query expression for fetching documents "closest" to a given query/document vector.
+          type: string
+        remote_embedding_timeout_ms:
+          description: >
+            Timeout (in milliseconds) for fetching remote embeddings.
+          type: integer
+        remote_embedding_num_tries:
+          description: >
+            Number of times to retry fetching remote embeddings.
+          type: integer
 
     MultiSearchParameters:
       description: >
@@ -1758,12 +2179,43 @@ components:
             Multiple fields are separated with a comma.
           type: string
 
+        text_match_type:
+          description:
+            In a multi-field matching context, this parameter determines how the representative text match
+            score of a record is calculated. Possible values are max_score (default) or max_weight.
+          type: string
+
         prefix:
           description:
             Boolean field to indicate that the last word in the query should
             be treated as a prefix, and not as a whole word. This is used for building
             autocomplete and instant search interfaces. Defaults to true.
           type: string
+
+        infix:
+          description:
+            If infix index is enabled for this field, infix searching can be done on a per-field 
+            basis by sending a comma separated string parameter called infix to the search query. 
+            This parameter can have 3 values; `off` infix search is disabled, which is default
+             `always` infix search is performed along with regular search
+             `fallback` infix search is performed if regular search does not produce results
+          type: string
+
+        max_extra_prefix:
+          description:
+            There are also 2 parameters that allow you to control the extent of infix searching 
+            max_extra_prefix and max_extra_suffix which specify the maximum number of symbols before 
+            or after the query that can be present in the token. For example query "K2100" has 2 extra 
+            symbols in "6PK2100". By default, any number of prefixes/suffixes can be present for a match.
+          type: integer
+
+        max_extra_suffix:
+          description:
+            There are also 2 parameters that allow you to control the extent of infix searching 
+            max_extra_prefix and max_extra_suffix which specify the maximum number of symbols before 
+            or after the query that can be present in the token. For example query "K2100" has 2 extra 
+            symbols in "6PK2100". By default, any number of prefixes/suffixes can be present for a match.
+          type: integer
 
         filter_by:
           description:
@@ -1805,7 +2257,7 @@ components:
           description: >
             The number of typographical errors (1 or 2) that would be tolerated.
             Default: 2
-          type: integer
+          type: string
 
         page:
           description: Results from this specific page number would be fetched.
@@ -1813,6 +2265,16 @@ components:
 
         per_page:
           description: "Number of results to fetch per page. Default: 10"
+          type: integer
+
+        limit:
+          description: >
+            Number of hits to fetch. Can be used as an alternative to the per_page parameter. 
+            Default: 10.
+          type: integer
+
+        offset:
+          description: Identifies the starting point to return hits from a result set. Can be used as an alternative to the page parameter.
           type: integer
 
         group_by:
@@ -1886,6 +2348,7 @@ components:
             A list of `record_id:hit_position`. Eg: to include a record with ID 123
             at Position 1 and another record with ID 456 at Position 5,
             you'd specify `123:1,456:5`.
+
             You could also use the Overrides feature to override search results based
             on rules. Overrides are applied first, followed by `pinned_hits` and 
             finally `hidden_hits`.
@@ -1896,6 +2359,7 @@ components:
             A list of records to unconditionally hide from search results.
             A list of `record_id`s to hide. Eg: to hide records with IDs 123 and 456,
             you'd specify `123,456`.
+
             You could also use the Overrides feature to override search results based
             on rules. Overrides are applied first, followed by `pinned_hits` and
             finally `hidden_hits`.
@@ -1912,8 +2376,15 @@ components:
             You can index content from any logographic language into Typesense if you
             are able to segment / split the text into space-separated words yourself 
             before indexing and querying.
+
             Set this parameter to true to do the same
           type: boolean
+
+        preset:
+          description: >
+            Search using a bunch of search parameters by setting this parameter to
+            the name of the existing Preset.
+          type: string
 
         enable_overrides:
           description: >
@@ -1956,6 +2427,18 @@ components:
             Minimum word length for 2-typo correction to be applied. 
             The value of num_typos is still treated as the maximum allowed typos.
           type: integer
+        vector_query:
+          description: >
+            Vector query expression for fetching documents "closest" to a given query/document vector.
+          type: string
+        remote_embedding_timeout_ms:
+          description: >
+            Timeout (in milliseconds) for fetching remote embeddings.
+          type: integer
+        remote_embedding_num_tries:
+          description: >
+            Number of times to retry fetching remote embeddings.
+          type: integer
     MultiSearchSearchesParameter:
       type: object
       required:
@@ -1996,16 +2479,60 @@ components:
           type: object
           properties:
             max:
-              type: integer
+              type: number
+              format: double
             min:
-              type: integer
+              type: number
+              format: double
             sum:
-              type: integer
+              type: number
+              format: double
             total_values:
               type: integer
             avg:
               type: number
-              format: float
+              format: double
+    AnalyticsRuleSchema:
+      type: object
+      required:
+        - name
+        - type
+        - params
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        params:
+          $ref: "#/components/schemas/AnalyticsRuleParameters"
+    AnalyticsRuleParameters:
+      type: object
+      required:
+        - source
+        - destination
+        - limit
+      properties:
+        source:
+          type: object
+          properties:
+            collections:
+              type: array
+              items:
+                type: string
+        destination:
+          type: object
+          properties:
+            collection:
+              type: string
+        limit:
+          type: integer
+    AnalyticsRulesRetrieveSchema:
+      type: object
+      properties:
+        rules:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnalyticsRuleSchema"
   securitySchemes:
     api_key_header:
       type: apiKey

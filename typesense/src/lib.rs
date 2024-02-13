@@ -15,7 +15,7 @@ mod error;
 pub mod field;
 pub mod transport;
 
-pub use client::{keys, Client, ClientBuilder};
+pub use client::{keys, Client};
 pub use error::{Result, TypesenseError};
 
 #[cfg(feature = "typesense_derive")]

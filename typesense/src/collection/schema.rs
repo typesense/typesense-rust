@@ -9,35 +9,28 @@ pub use typesense_codegen::models::CollectionSchema;
 /// Builder for the [CollectionSchema] struct.
 #[derive(Debug, Default)]
 pub struct CollectionSchemaBuilder {
-    name: Option<String>,
-    fields: Option<Vec<Field>>,
+    name: String,
+    fields: Vec<Field>,
     default_sorting_field: Option<String>,
 }
 
 impl CollectionSchemaBuilder {
     /// Create a builder for [CollectionSchema]
-    pub fn new() -> Self {
-        Self::default()
-    }
-    /// Set name
-    pub fn name(mut self, name: String) -> Self {
-        self.name = Some(name);
-        self
+    pub fn new(name: impl Into<String>) -> Self {
+        Self {
+            name: name.into(),
+            ..Default::default()
+        }
     }
     /// Insert field
     pub fn field(mut self, field: Field) -> Self {
-        self.fields = if let Some(mut f) = self.fields {
-            f.push(field);
-            Some(f)
-        } else {
-            Some(vec![field])
-        };
+        self.fields.push(field);
         self
     }
 
     /// Set fields
-    pub fn fields(mut self, fields: Vec<Field>) -> Self {
-        self.fields = Some(fields);
+    pub fn fields(mut self, fields: &[Field]) -> Self {
+        self.fields.extend_from_slice(fields);
         self
     }
 
@@ -49,14 +42,15 @@ impl CollectionSchemaBuilder {
 
     /// Create a `CollectionSchema` with the current values of the builder,
     /// It can fail if any of the required fields is not not defined.
-    pub fn build(self) -> Result<CollectionSchema, Box<dyn std::error::Error>> {
-        Ok(CollectionSchema {
-            name: self.name.ok_or("name is not set")?,
-            fields: self.fields.ok_or("typesense_type is not set")?,
+    pub fn build(self) -> CollectionSchema {
+        CollectionSchema {
+            name: self.name,
+            fields: self.fields,
             default_sorting_field: self.default_sorting_field,
-            symbols_to_index: None,
             token_separators: None,
-        })
+            enable_nested_fields: None,
+            symbols_to_index: None,
+        }
     }
 }
 
@@ -69,26 +63,18 @@ mod test {
     #[test]
     fn collection_schema_serializes_as_expected() {
         let fields = [
-            ("company_name", "string", None),
-            ("num_employees", "int32", None),
-            ("country", "string", Some(true)),
+            ("company_name".to_owned(), "string".to_owned(), None),
+            ("num_employees".to_owned(), "int32".to_owned(), None),
+            ("country".to_owned(), "string".to_owned(), Some(true)),
         ]
-        .iter()
         .map(|(name, typesense_type, facet)| {
-            FieldBuilder::new()
-                .name(name.to_string())
-                .typesense_type(typesense_type.to_string())
-                .facet(*facet)
-                .build()
-                .unwrap()
-        })
-        .collect::<Vec<Field>>();
-        let collection = CollectionSchemaBuilder::new()
-            .name("companies".to_string())
-            .default_sorting_field("num_employees".to_string())
-            .fields(fields)
-            .build()
-            .unwrap();
+            FieldBuilder::new(name, typesense_type).facet(facet).build()
+        });
+
+        let collection = CollectionSchemaBuilder::new("companies".to_owned())
+            .default_sorting_field("num_employees".to_owned())
+            .fields(&fields)
+            .build();
 
         let expected = json!(
             {

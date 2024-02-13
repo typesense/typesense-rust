@@ -5,18 +5,16 @@ use typesense::Document;
 mod hyper_tests {
     use super::*;
     use typesense::document::Document as DocumentTrait;
-    use typesense::ClientBuilder;
+    use typesense::Client;
 
     #[tokio::test]
     async fn collection_create() {
-        let host = "http://localhost:5000";
-        let api_key = "VerySecretKey";
+        let _ = dotenvy::dotenv();
 
-        let client = ClientBuilder::new_hyper()
-            .host(host)
-            .api_key(api_key)
-            .build()
-            .unwrap();
+        let host = std::env::var("URL").expect("URL must be present in .env");
+        let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
+
+        let client = Client::new(host, api_key);
 
         let collection_client = client.collection();
 
@@ -31,14 +29,12 @@ mod hyper_tests {
 
     #[tokio::test]
     async fn collection_retrieve() {
-        let host = "http://localhost:5000";
-        let api_key = "VerySecretKey";
+        let _ = dotenvy::dotenv();
 
-        let client = ClientBuilder::new_hyper()
-            .host(host)
-            .api_key(api_key)
-            .build()
-            .unwrap();
+        let host = std::env::var("URL").expect("URL must be present in .env");
+        let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
+
+        let client = Client::new(host, api_key);
 
         let collection_client = client.collection();
 
@@ -53,14 +49,12 @@ mod hyper_tests {
 
     #[tokio::test]
     async fn collection_delete() {
-        let host = "http://localhost:5000";
-        let api_key = "VerySecretKey";
+        let _ = dotenvy::dotenv();
 
-        let client = ClientBuilder::new_hyper()
-            .host(host)
-            .api_key(api_key)
-            .build()
-            .unwrap();
+        let host = std::env::var("URL").expect("URL must be present in .env");
+        let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
+
+        let client = Client::new(host, api_key);
 
         let collection_client = client.collection();
 
@@ -75,14 +69,12 @@ mod hyper_tests {
 
     #[tokio::test]
     async fn collection_retrieve_all() {
-        let host = "http://localhost:5000";
-        let api_key = "VerySecretKey";
+        let _ = dotenvy::dotenv();
 
-        let client = ClientBuilder::new_hyper()
-            .host(host)
-            .api_key(api_key)
-            .build()
-            .unwrap();
+        let host = std::env::var("URL").expect("URL must be present in .env");
+        let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
+
+        let client = Client::new(host, api_key);
 
         let collection_client = client.collection();
 

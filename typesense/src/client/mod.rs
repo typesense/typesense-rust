@@ -1,50 +1,60 @@
-use std::sync::Arc;
-
 use http::Response;
 
 use crate::collection::CollectionClient;
-use crate::transport::HttpLowLevel;
-use crate::transport::Transport;
+use crate::transport::{HttpLowLevel, Transport, TransportCreator};
 use crate::Result;
 
-mod builder;
+#[cfg(target_arch = "wasm32")]
+use crate::transport::WasmClient;
+
 pub mod keys;
 
-pub use builder::ClientBuilder;
 pub use keys::ClientKeys;
 
 pub const TYPESENSE_API_KEY_HEADER_NAME: &str = "X-TYPESENSE-API-KEY";
 
 /// Root client for top level APIs
 #[derive(Clone)]
-pub struct Client<T> {
-    transport: Transport<T>,
-    host: Arc<String>,
-    api_key: Arc<String>,
+pub struct Client<C> {
+    transport: Transport<C>,
+    host: String,
+    api_key: String,
 }
 
-impl<T> Client<T> {
+impl<C> Client<C> {
     /// Gets the transport of the client
-    pub fn transport(&self) -> &Transport<T> {
+    pub fn transport(&self) -> &Transport<C> {
         &self.transport
     }
 }
 
-impl<T> Client<T>
+#[cfg(any(feature = "tokio-rt", target_arch = "wasm32"))]
+#[cfg_attr(docsrs, doc(cfg(any(feature = "tokio-rt", target_arch = "wasm32"))))]
+impl<C> Client<C>
 where
-    T: Clone,
+    Transport<C>: TransportCreator,
 {
-    /// Make the ClientKeys struct, to interact with the Keys API.
-    pub fn keys(&self) -> ClientKeys<T> {
-        ClientKeys {
-            client: self.clone(),
+    /// Create Client
+    pub fn new(host: impl Into<String>, api_key: impl Into<String>) -> Self {
+        let transport = crate::transport::Transport::new();
+
+        Self {
+            transport,
+            host: host.into(),
+            api_key: api_key.into(),
         }
     }
+}
+
+impl<T> Client<T> {
+    /// Make the ClientKeys struct, to interact with the Keys API.
+    pub fn keys(&self) -> ClientKeys<'_, T> {
+        ClientKeys { client: self }
+    }
+
     /// Creates a [`CollectionClient`] to interact with the Typesense Collection API
-    pub fn collection(&self) -> CollectionClient<T> {
-        CollectionClient {
-            client: self.clone(),
-        }
+    pub fn collection(&self) -> CollectionClient<'_, T> {
+        CollectionClient { client: self }
     }
 }
 
@@ -86,15 +96,14 @@ mod hyper_tests {
 
     #[tokio::test]
     async fn hyper() -> crate::Result<()> {
-        let body = String::from("Test with api key successful");
-        let host = "http://localhost:5000";
-        let api_key = "VerySecretKey";
+        let _ = dotenvy::dotenv();
 
-        let client = ClientBuilder::new_hyper()
-            .host(host)
-            .api_key(api_key)
-            .build()
-            .unwrap();
+        let host = std::env::var("URL").expect("URL must be present in .env");
+        let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
+
+        let body = String::from("Test with api key successful");
+
+        let client = Client::new(host, api_key);
 
         let response = client.get("/test_api_key").await?;
 
@@ -142,16 +151,11 @@ mod wasm_test {
     }
 
     async fn try_wasm() -> crate::Result<()> {
-        let body = String::from("Test with api key successful");
-
         let host = "http://localhost:5000";
         let api_key = "VerySecretKey";
 
-        let client = ClientBuilder::new_wasm()
-            .host(host)
-            .api_key(api_key)
-            .build()
-            .unwrap();
+        let body = String::from("Test with api key successful");
+        let client = Client::new(host, api_key);
 
         let response = client.get("/test_api_key").await?;
 
