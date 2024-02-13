@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use http::Response;
 
 use crate::collection::CollectionClient;
@@ -21,8 +19,8 @@ pub const TYPESENSE_API_KEY_HEADER_NAME: &str = "X-TYPESENSE-API-KEY";
 #[derive(Clone)]
 pub struct Client<C> {
     transport: Transport<C>,
-    host: Arc<String>,
-    api_key: Arc<String>,
+    host: String,
+    api_key: String,
 }
 
 impl<C> Client<C> {
@@ -44,28 +42,21 @@ where
 
         Self {
             transport,
-            host: Arc::new(host.into()),
-            api_key: Arc::new(api_key.into()),
+            host: host.into(),
+            api_key: api_key.into(),
         }
     }
 }
 
-impl<T> Client<T>
-where
-    T: Clone,
-{
+impl<T> Client<T> {
     /// Make the ClientKeys struct, to interact with the Keys API.
-    pub fn keys(&self) -> ClientKeys<T> {
-        ClientKeys {
-            client: self.clone(),
-        }
+    pub fn keys(&self) -> ClientKeys<'_, T> {
+        ClientKeys { client: self }
     }
 
     /// Creates a [`CollectionClient`] to interact with the Typesense Collection API
-    pub fn collection(&self) -> CollectionClient<T> {
-        CollectionClient {
-            client: self.clone(),
-        }
+    pub fn collection(&self) -> CollectionClient<'_, T> {
+        CollectionClient { client: self }
     }
 }
 

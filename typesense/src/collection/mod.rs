@@ -14,11 +14,11 @@ use crate::transport::HttpLowLevel;
 use crate::Result;
 
 /// Client for the Typesense CollectionAPI
-pub struct CollectionClient<T> {
-    pub(crate) client: Client<T>,
+pub struct CollectionClient<'c, T> {
+    pub(crate) client: &'c Client<T>,
 }
 
-impl<T> CollectionClient<T>
+impl<'c, T> CollectionClient<'c, T>
 where
     T: HttpLowLevel,
 {

@@ -68,7 +68,7 @@ impl TransportCreator for Transport<HyperHttpsClient> {
 #[cfg_attr(docsrs, doc(cfg(target_arch = "wasm32")))]
 impl TransportCreator for Transport<WasmClient> {
     /// Used to make a new wasm client.
-    pub fn new() -> Self {
+    fn new() -> Self {
         Self {
             client: http_low_level::WasmClient,
         }

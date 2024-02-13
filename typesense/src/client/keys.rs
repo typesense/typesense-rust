@@ -13,11 +13,11 @@ use super::Client;
 use crate::transport::HttpLowLevel;
 
 /// To interact with the Keys API.
-pub struct ClientKeys<T> {
-    pub(super) client: Client<T>,
+pub struct ClientKeys<'c, T> {
+    pub(super) client: &'c Client<T>,
 }
 
-impl<T> ClientKeys<T>
+impl<'c, T> ClientKeys<'c, T>
 where
     T: HttpLowLevel,
 {
