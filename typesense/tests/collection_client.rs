@@ -9,8 +9,10 @@ mod hyper_tests {
 
     #[tokio::test]
     async fn collection_create() {
-        let host = "http://localhost:5000";
-        let api_key = "VerySecretKey";
+        dotenvy::dotenv().unwrap();
+
+        let host = std::env::var("HOST").expect("HOST must be present in .env");
+        let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
 
         let client = ClientBuilder::new_hyper()
             .host(host)
@@ -31,8 +33,10 @@ mod hyper_tests {
 
     #[tokio::test]
     async fn collection_retrieve() {
-        let host = "http://localhost:5000";
-        let api_key = "VerySecretKey";
+        dotenvy::dotenv().unwrap();
+
+        let host = std::env::var("HOST").expect("HOST must be present in .env");
+        let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
 
         let client = ClientBuilder::new_hyper()
             .host(host)
@@ -53,8 +57,10 @@ mod hyper_tests {
 
     #[tokio::test]
     async fn collection_delete() {
-        let host = "http://localhost:5000";
-        let api_key = "VerySecretKey";
+        dotenvy::dotenv().unwrap();
+
+        let host = std::env::var("HOST").expect("HOST must be present in .env");
+        let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
 
         let client = ClientBuilder::new_hyper()
             .host(host)
@@ -75,8 +81,10 @@ mod hyper_tests {
 
     #[tokio::test]
     async fn collection_retrieve_all() {
-        let host = "http://localhost:5000";
-        let api_key = "VerySecretKey";
+        dotenvy::dotenv().unwrap();
+
+        let host = std::env::var("HOST").expect("HOST must be present in .env");
+        let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
 
         let client = ClientBuilder::new_hyper()
             .host(host)

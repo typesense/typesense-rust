@@ -86,9 +86,12 @@ mod hyper_tests {
 
     #[tokio::test]
     async fn hyper() -> crate::Result<()> {
+        dotenvy::dotenv().unwrap();
+
+        let host = std::env::var("HOST").expect("HOST must be present in .env");
+        let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
+
         let body = String::from("Test with api key successful");
-        let host = "http://localhost:5000";
-        let api_key = "VerySecretKey";
 
         let client = ClientBuilder::new_hyper()
             .host(host)
@@ -142,11 +145,12 @@ mod wasm_test {
     }
 
     async fn try_wasm() -> crate::Result<()> {
+        dotenvy::dotenv().unwrap();
+
+        let host = std::env::var("HOST").expect("HOST must be present in .env");
+        let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
+
         let body = String::from("Test with api key successful");
-
-        let host = "http://localhost:5000";
-        let api_key = "VerySecretKey";
-
         let client = ClientBuilder::new_wasm()
             .host(host)
             .api_key(api_key)

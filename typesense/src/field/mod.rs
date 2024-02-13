@@ -4,7 +4,7 @@
 
 mod field_type;
 pub use field_type::*;
-pub use typesense_codegen::models::Field;
+pub use typesense_codegen::models::{Field, FieldEmbed};
 
 /// Builder for the `Field` struct.
 #[derive(Debug, Default)]
@@ -16,8 +16,10 @@ pub struct FieldBuilder {
     index: Option<bool>,
     locale: Option<String>,
     sort: Option<bool>,
-    drop: Option<bool>,
     infix: Option<bool>,
+    num_dim: Option<i32>,
+    drop: Option<bool>,
+    embed: Option<Box<FieldEmbed>>,
 }
 
 impl FieldBuilder {
@@ -85,14 +87,16 @@ impl FieldBuilder {
     pub fn build(self) -> Result<Field, Box<dyn std::error::Error>> {
         Ok(Field {
             name: self.name.ok_or("name is not set")?,
-            _type: self.typesense_type.ok_or("typesense_type is not set")?,
+            r#type: self.typesense_type.ok_or("typesense_type is not set")?,
             optional: self.optional,
             facet: self.facet,
             index: self.index,
-            sort: self.sort,
-            drop: self.drop,
             locale: self.locale,
+            sort: self.sort,
             infix: self.infix,
+            num_dim: self.num_dim,
+            drop: self.drop,
+            embed: self.embed,
         })
     }
 }

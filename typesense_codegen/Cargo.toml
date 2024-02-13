@@ -1,17 +1,17 @@
 [package]
 name = "typesense_codegen"
-version = "0.23.0"
+version = "0.25.0"
 authors = ["OpenAPI Generator team and contributors"]
-edition = "2018"
 description = "client for typesense generated with openapi spec"
+edition = "2018"
 license = "Apache-2.0"
 
 [dependencies]
-serde = { version = "^1.0", features = ["derive"] }
+serde = "^1.0"
+serde_derive = "^1.0"
 serde_json = "^1.0"
 url = "^2.2"
+uuid = { version = "^1.0", features = ["serde", "v4"] }
 [dependencies.reqwest]
 version = "^0.11"
 features = ["json", "multipart"]
-
-[dev-dependencies]

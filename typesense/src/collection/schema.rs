@@ -54,8 +54,9 @@ impl CollectionSchemaBuilder {
             name: self.name.ok_or("name is not set")?,
             fields: self.fields.ok_or("typesense_type is not set")?,
             default_sorting_field: self.default_sorting_field,
-            symbols_to_index: None,
             token_separators: None,
+            enable_nested_fields: None,
+            symbols_to_index: None,
         })
     }
 }

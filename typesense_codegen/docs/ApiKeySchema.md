@@ -4,7 +4,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**description** | Option<**String**> |  | [optional]
+**value** | Option<**String**> |  | [optional]
+**description** | **String** |  | 
 **actions** | **Vec<String>** |  | 
 **collections** | **Vec<String>** |  | 
 **expires_at** | Option<**i64**> |  | [optional]
