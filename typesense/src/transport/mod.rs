@@ -99,9 +99,9 @@ mod hyper_tests {
 
     #[tokio::test]
     async fn hyper() -> crate::Result<()> {
-        dotenvy::dotenv().unwrap();
+        let _ = dotenvy::dotenv();
 
-        let url = std::env::var("HOST").expect("HOST must be present in .env");
+        let url = std::env::var("URL").expect("URL must be present in .env");
 
         let body = String::from("Test Successful");
         let mut header = HeaderMap::new();
@@ -160,9 +160,7 @@ mod wasm_test {
     }
 
     async fn try_wasm() -> crate::Result<()> {
-        dotenvy::dotenv().unwrap();
-
-        let url = std::env::var("HOST").expect("HOST must be present in .env");
+        let url = "http://localhost:5000";
 
         let body = String::from("Test Successful");
 

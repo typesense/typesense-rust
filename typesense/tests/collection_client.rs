@@ -9,9 +9,9 @@ mod hyper_tests {
 
     #[tokio::test]
     async fn collection_create() {
-        dotenvy::dotenv().unwrap();
+        let _ = dotenvy::dotenv();
 
-        let host = std::env::var("HOST").expect("HOST must be present in .env");
+        let host = std::env::var("URL").expect("URL must be present in .env");
         let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
 
         let client = Client::new(host, api_key);
@@ -29,9 +29,9 @@ mod hyper_tests {
 
     #[tokio::test]
     async fn collection_retrieve() {
-        dotenvy::dotenv().unwrap();
+        let _ = dotenvy::dotenv();
 
-        let host = std::env::var("HOST").expect("HOST must be present in .env");
+        let host = std::env::var("URL").expect("URL must be present in .env");
         let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
 
         let client = Client::new(host, api_key);
@@ -49,9 +49,9 @@ mod hyper_tests {
 
     #[tokio::test]
     async fn collection_delete() {
-        dotenvy::dotenv().unwrap();
+        let _ = dotenvy::dotenv();
 
-        let host = std::env::var("HOST").expect("HOST must be present in .env");
+        let host = std::env::var("URL").expect("URL must be present in .env");
         let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
 
         let client = Client::new(host, api_key);
@@ -69,9 +69,9 @@ mod hyper_tests {
 
     #[tokio::test]
     async fn collection_retrieve_all() {
-        dotenvy::dotenv().unwrap();
+        let _ = dotenvy::dotenv();
 
-        let host = std::env::var("HOST").expect("HOST must be present in .env");
+        let host = std::env::var("URL").expect("URL must be present in .env");
         let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
 
         let client = Client::new(host, api_key);

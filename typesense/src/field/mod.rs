@@ -24,9 +24,9 @@ pub struct FieldBuilder {
 
 impl FieldBuilder {
     /// Create a Builder
-    pub fn new(name: String, typesense_type: FieldType) -> Self {
+    pub fn new(name: impl Into<String>, typesense_type: FieldType) -> Self {
         Self {
-            name,
+            name: name.into(),
             typesense_type,
             ..Default::default()
         }

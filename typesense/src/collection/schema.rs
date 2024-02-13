@@ -16,9 +16,9 @@ pub struct CollectionSchemaBuilder {
 
 impl CollectionSchemaBuilder {
     /// Create a builder for [CollectionSchema]
-    pub fn new(name: String) -> Self {
+    pub fn new(name: impl Into<String>) -> Self {
         Self {
-            name,
+            name: name.into(),
             ..Default::default()
         }
     }

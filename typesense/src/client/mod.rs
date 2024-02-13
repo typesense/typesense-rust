@@ -39,12 +39,12 @@ impl<T> Client<T> {
 impl Client<crate::transport::HyperHttpsClient> {
     /// Create client builder with a [`hyper`](https://docs.rs/hyper) client.
     /// The connector used is [`HttpsConnector`](hyper_tls::HttpsConnector).
-    pub fn new(host: String, api_key: String) -> Self {
+    pub fn new(host: impl Into<String>, api_key: impl Into<String>) -> Self {
         let transport = crate::transport::Transport::new();
         Self {
             transport,
-            host: Arc::new(host),
-            api_key: Arc::new(api_key),
+            host: Arc::new(host.into()),
+            api_key: Arc::new(api_key.into()),
         }
     }
 }
@@ -53,12 +53,12 @@ impl Client<crate::transport::HyperHttpsClient> {
 #[cfg_attr(docsrs, doc(cfg(target_arch = "wasm32")))]
 impl Client<WasmClient> {
     /// Create client builder using default wasm client
-    pub fn new(host: String, api_key: String) -> Self {
+    pub fn new(host: impl Into<String>, api_key: impl Into<String>) -> Self {
         let transport = crate::transport::Transport::new();
         Self {
             transport,
-            host: Arc::new(host),
-            api_key: Arc::new(api_key),
+            host: Arc::new(host.into()),
+            api_key: Arc::new(api_key.into()),
         }
     }
 }
@@ -119,9 +119,9 @@ mod hyper_tests {
 
     #[tokio::test]
     async fn hyper() -> crate::Result<()> {
-        dotenvy::dotenv().unwrap();
+        let _ = dotenvy::dotenv();
 
-        let host = std::env::var("HOST").expect("HOST must be present in .env");
+        let host = std::env::var("URL").expect("URL must be present in .env");
         let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
 
         let body = String::from("Test with api key successful");
@@ -174,10 +174,8 @@ mod wasm_test {
     }
 
     async fn try_wasm() -> crate::Result<()> {
-        dotenvy::dotenv().unwrap();
-
-        let host = std::env::var("HOST").expect("HOST must be present in .env");
-        let api_key = std::env::var("API_KEY").expect("API_KEY must be present in .env");
+        let host = "http://localhost:5000";
+        let api_key = "VerySecretKey";
 
         let body = String::from("Test with api key successful");
         let client = Client::new(host, api_key);
