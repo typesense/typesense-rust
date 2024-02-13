@@ -42,15 +42,21 @@ where
     }
 }
 
+#[allow(missing_docs)]
+pub trait TransportCreator {
+    /// Create new Transport
+    fn new() -> Self;
+}
+
 #[cfg(all(feature = "tokio-rt", not(target_arch = "wasm32")))]
 #[cfg_attr(
     docsrs,
     doc(cfg(all(feature = "tokio-rt", not(target_arch = "wasm32"))))
 )]
-impl Transport<HyperHttpsClient> {
+impl TransportCreator for Transport<HyperHttpsClient> {
     /// Used to make a new [`hyper`](https://docs.rs/hyper) client.
     /// The connector used is [`HttpsConnector`](hyper_tls::HttpsConnector).
-    pub fn new() -> Self {
+    fn new() -> Self {
         let https = http_low_level::HttpsConnector::new();
         let client = hyper::Client::builder().build(https);
 
@@ -60,7 +66,7 @@ impl Transport<HyperHttpsClient> {
 
 #[cfg(target_arch = "wasm32")]
 #[cfg_attr(docsrs, doc(cfg(target_arch = "wasm32")))]
-impl Transport<WasmClient> {
+impl TransportCreator for Transport<WasmClient> {
     /// Used to make a new wasm client.
     pub fn new() -> Self {
         Self {

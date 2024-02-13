@@ -5,6 +5,7 @@ use http::Response;
 use crate::collection::CollectionClient;
 use crate::transport::HttpLowLevel;
 use crate::transport::Transport;
+use crate::transport::TransportCreator;
 use crate::Result;
 
 #[cfg(target_arch = "wasm32")]
@@ -18,43 +19,29 @@ pub const TYPESENSE_API_KEY_HEADER_NAME: &str = "X-TYPESENSE-API-KEY";
 
 /// Root client for top level APIs
 #[derive(Clone)]
-pub struct Client<T> {
-    transport: Transport<T>,
+pub struct Client<C> {
+    transport: Transport<C>,
     host: Arc<String>,
     api_key: Arc<String>,
 }
 
-impl<T> Client<T> {
+impl<C> Client<C> {
     /// Gets the transport of the client
-    pub fn transport(&self) -> &Transport<T> {
+    pub fn transport(&self) -> &Transport<C> {
         &self.transport
     }
 }
 
-#[cfg(all(feature = "tokio-rt", not(target_arch = "wasm32")))]
-#[cfg_attr(
-    docsrs,
-    doc(cfg(all(feature = "tokio-rt", not(target_arch = "wasm32"))))
-)]
-impl Client<crate::transport::HyperHttpsClient> {
-    /// Create client builder with a [`hyper`](https://docs.rs/hyper) client.
-    /// The connector used is [`HttpsConnector`](hyper_tls::HttpsConnector).
+#[cfg(any(feature = "tokio-rt", target_arch = "wasm32"))]
+#[cfg_attr(docsrs, doc(cfg(any(feature = "tokio-rt", target_arch = "wasm32"))))]
+impl<C> Client<C>
+where
+    Transport<C>: TransportCreator,
+{
+    /// Create Client
     pub fn new(host: impl Into<String>, api_key: impl Into<String>) -> Self {
         let transport = crate::transport::Transport::new();
-        Self {
-            transport,
-            host: Arc::new(host.into()),
-            api_key: Arc::new(api_key.into()),
-        }
-    }
-}
 
-#[cfg(target_arch = "wasm32")]
-#[cfg_attr(docsrs, doc(cfg(target_arch = "wasm32")))]
-impl Client<WasmClient> {
-    /// Create client builder using default wasm client
-    pub fn new(host: impl Into<String>, api_key: impl Into<String>) -> Self {
-        let transport = crate::transport::Transport::new();
         Self {
             transport,
             host: Arc::new(host.into()),
@@ -73,6 +60,7 @@ where
             client: self.clone(),
         }
     }
+
     /// Creates a [`CollectionClient`] to interact with the Typesense Collection API
     pub fn collection(&self) -> CollectionClient<T> {
         CollectionClient {
