@@ -1,7 +1,9 @@
 use http::Response;
 
 use crate::collection::CollectionClient;
-use crate::transport::{HttpLowLevel, Transport, TransportCreator};
+#[allow(unused_imports)]
+use crate::transport::TransportCreator;
+use crate::transport::{HttpLowLevel, Transport};
 use crate::Result;
 
 #[cfg(target_arch = "wasm32")]

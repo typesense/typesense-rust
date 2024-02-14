@@ -1,6 +1,7 @@
 use proc_macro::TokenStream;
+use proc_macro2::{Ident, TokenTree};
 use quote::quote;
-use syn::{Attribute, Field, ItemStruct};
+use syn::{spanned::Spanned, Attribute, Field, ItemStruct};
 
 #[proc_macro_derive(Document, attributes(typesense))]
 pub fn typesense_collection_derive(input: TokenStream) -> TokenStream {
@@ -11,31 +12,48 @@ pub fn typesense_collection_derive(input: TokenStream) -> TokenStream {
 }
 
 fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
-    let name = &item.ident;
-    let generics = add_trait_bounds(item.generics.clone());
-    let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
+    let span = item.span();
 
-    let default_sorting_field = extract_default_sorting_field(&item.attrs)?;
-    let collection_name =
-        extract_collection_name(&item.attrs)?.unwrap_or_else(|| name.to_string().to_lowercase());
+    let ItemStruct {
+        attrs,
+        vis: _,
+        struct_token: _,
+        ident,
+        generics,
+        fields,
+        semi_token: _,
+    } = item;
 
-    let fields = if let syn::Fields::Named(syn::FieldsNamed { ref named, .. }, ..) = &item.fields {
+    let fields = if let syn::Fields::Named(syn::FieldsNamed { named, .. }, ..) = fields {
         named
     } else {
         return Err(syn::Error::new_spanned(
-            item.fields,
+            fields,
             "Document derive macro only can be used on structs with named fields.",
         ));
     };
+
+    let generics = add_trait_bounds(generics);
+    let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
+
+    let Attrs {
+        collection_name,
+        default_sorting_field,
+        enable_nested_fields,
+    } = extract_attrs(attrs)?;
+    let collection_name = collection_name.unwrap_or_else(|| ident.to_string().to_lowercase());
 
     if let Some(ref sorting_field) = default_sorting_field {
         if !fields.iter().any(|field|
                 // At this point we are sure that this field is a named field.
                 field.ident.as_ref().unwrap() == sorting_field)
         {
-            return Err(syn::Error::new_spanned(
-                &item,
-                "defined default_sorting_field does not match with any field.",
+            return Err(syn::Error::new(
+                span,
+                format!(
+                    "defined default_sorting_field = \"{}\" does not match with any field.",
+                    sorting_field
+                ),
             ));
         }
     }
@@ -45,19 +63,34 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
         .map(to_typesense_field_type)
         .collect::<syn::Result<Vec<_>>>()?;
 
+    let default_sorting_field = if let Some(v) = default_sorting_field {
+        quote! {
+            builder = builder.default_sorting_field(std::string::String::from(#v));
+        }
+    } else {
+        proc_macro2::TokenStream::new()
+    };
+
+    let enable_nested_fields = if let Some(v) = enable_nested_fields {
+        quote! {
+            builder = builder.enable_nested_fields(Some(#v));
+        }
+    } else {
+        proc_macro2::TokenStream::new()
+    };
+
     let gen = quote! {
-        impl  #impl_generics  typesense::document::Document for #name #ty_generics #where_clause {
+        impl #impl_generics typesense::document::Document for #ident #ty_generics #where_clause {
             fn collection_schema() -> typesense::collection::CollectionSchema {
                 let name = #collection_name.to_owned();
-
                 let fields = &[#(#typesense_fields,)*];
 
-                let default_sorting_field = std::string::String::from(#default_sorting_field);
+                let mut builder = typesense::collection::CollectionSchemaBuilder::new(name).fields(fields);
 
-                typesense::collection::CollectionSchemaBuilder::new(name)
-                   .fields(fields)
-                   .default_sorting_field(default_sorting_field)
-                   .build()
+                #default_sorting_field
+                #enable_nested_fields
+
+                builder.build()
             }
         }
     };
@@ -94,228 +127,100 @@ fn add_trait_bounds(mut generics: syn::Generics) -> syn::Generics {
     generics
 }
 
-// Iterate over all attributes and return the default field defined with the attribute:
-//#[typesense_collection(default_sorting_field = "name_of_the_field")]
-fn extract_default_sorting_field(attributes: &[Attribute]) -> syn::Result<Option<String>> {
-    let default_sorting_field = attributes
-        .iter()
-        .filter_map(|attr| {
-            if attr.path.segments.len() == 1 && attr.path.segments[0].ident == "typesense" {
-                if let Some(proc_macro2::TokenTree::Group(g)) =
-                    attr.tokens.clone().into_iter().next()
-                {
-                    let mut tokens = g.stream().into_iter();
-                    let attribute_tt = match tokens.next() {
-                        Some(proc_macro2::TokenTree::Ident(ref i)) => {
-                            if i == "default_sorting_field" {
-                                i.clone()
-                            } else if i == "collection_name" {
-                                return None;
-                            } else {
-                                return Some(Err(syn::Error::new(
-                                    i.span(),
-                                    "expected: typesense(default_sorting_field  = \"...\")",
-                                )));
-                            }
-                        }
-                        Some(tt) => {
-                            return Some(Err(syn::Error::new_spanned(
-                                &tt,
-                                format!("Unexpected {}", tt),
-                            )));
-                        }
-                        None => {
-                            return Some(Err(syn::Error::new_spanned(
-                                attr,
-                                "expected: typesense(default_sorting_field  = \"...\")",
-                            )));
-                        }
-                    };
-                    let eq_sign = match tokens.next() {
-                        Some(proc_macro2::TokenTree::Punct(ref p)) => {
-                            assert_eq!(p.as_char(), '=');
-                            p.clone()
-                        }
-                        Some(tt) => {
-                            return Some(Err(syn::Error::new_spanned(
-                                &tt,
-                                format!("Unexpected {}, expected equal sign(=)", tt),
-                            )));
-                        }
-                        None => {
-                            return Some(Err(syn::Error::new_spanned(
-                                attribute_tt,
-                                "expected: equal sign(=)",
-                            )));
-                        }
-                    };
-                    let default_sorting_field = {
-                        let lit = match tokens.next() {
-                            Some(proc_macro2::TokenTree::Literal(ref i)) => {
-                                syn::Lit::new(i.clone())
-                            }
-                            Some(tt) => {
-                                return Some(Err(syn::Error::new_spanned(
-                                    &tt,
-                                    format!("Expected string literal, do you mean \"{}\"?", tt),
-                                )));
-                            }
-                            _ => {
-                                return Some(Err(syn::Error::new_spanned(
-                                    eq_sign,
-                                    "Expected string literal",
-                                )))
-                            }
-                        };
-                        if let syn::Lit::Str(s) = lit {
-                            s.value()
-                        } else {
-                            return Some(Err(syn::Error::new_spanned(
-                                lit,
-                                "default_sorting_field must be equal to a literal string",
-                            )));
-                        }
-                    };
-                    if let Some(tt) = tokens.next() {
-                        return Some(Err(syn::Error::new_spanned(tt, "Unexpected token")));
-                    }
-                    Some(Ok(default_sorting_field))
-                } else {
-                    None
-                }
-            } else {
-                None
-            }
-        })
-        .collect::<syn::Result<Vec<String>>>();
-    match default_sorting_field {
-        Ok(mut default_sorting_field) => {
-            if default_sorting_field.len() <= 1 {
-                Ok(default_sorting_field.pop())
-            } else {
-                Err(syn::Error::new_spanned(
-                    // This will not fail since if we are at this point is because attributes is not empty.
-                    attributes.first().unwrap(),
-                    format!(
-                        "Expected only one default_sorting_field, found {}",
-                        default_sorting_field.len(),
-                    ),
-                ))
-            }
-        }
-        Err(err) => Err(err),
+#[derive(Default)]
+struct Attrs {
+    collection_name: Option<String>,
+    default_sorting_field: Option<String>,
+    enable_nested_fields: Option<bool>,
+}
+
+fn skip_eq(i: Ident, tt_iter: &mut impl Iterator<Item = TokenTree>) -> syn::Result<()> {
+    match tt_iter.next() {
+        Some(TokenTree::Punct(p)) if p.as_char() == '=' => Ok(()),
+        Some(tt) => Err(syn::Error::new_spanned(
+            &tt,
+            format!("Unexpected \"{}\", expected equal sign \"=\"", tt),
+        )),
+        None => Err(syn::Error::new_spanned(i, "expected: equal sign \"=\"")),
     }
 }
 
-fn extract_collection_name(attributes: &[Attribute]) -> syn::Result<Option<String>> {
-    let collection_name = attributes
-        .iter()
-        .filter_map(|attr| {
-            if attr.path.segments.len() == 1 && attr.path.segments[0].ident == "typesense" {
-                if let Some(proc_macro2::TokenTree::Group(g)) =
-                    attr.tokens.clone().into_iter().next()
-                {
-                    let mut tokens = g.stream().into_iter();
-                    let attribute_tt = match tokens.next() {
-                        Some(proc_macro2::TokenTree::Ident(ref i)) => {
-                            if i == "collection_name" {
-                                i.clone()
-                            } else if i == "default_sorting_field" {
-                                return None;
-                            } else {
-                                return Some(Err(syn::Error::new(
-                                    i.span(),
-                                    "expected: typesense(collection_name  = \"...\")",
-                                )));
-                            }
-                        }
-                        Some(tt) => {
-                            return Some(Err(syn::Error::new_spanned(
-                                &tt,
-                                format!("Unexpected {}", tt),
-                            )));
-                        }
-                        None => {
-                            return Some(Err(syn::Error::new_spanned(
-                                attr,
-                                "expected: typesense(collection_name  = \"...\")",
-                            )));
-                        }
-                    };
-                    let eq_sign = match tokens.next() {
-                        Some(proc_macro2::TokenTree::Punct(ref p)) => {
-                            assert_eq!(p.as_char(), '=');
-                            p.clone()
-                        }
-                        Some(tt) => {
-                            return Some(Err(syn::Error::new_spanned(
-                                &tt,
-                                format!("Unexpected {}, expected equal sign(=)", tt),
-                            )));
-                        }
-                        None => {
-                            return Some(Err(syn::Error::new_spanned(
-                                attribute_tt,
-                                "expected: equal sign(=)",
-                            )));
-                        }
-                    };
-                    let collection_name = {
-                        let lit = match tokens.next() {
-                            Some(proc_macro2::TokenTree::Literal(ref i)) => {
-                                syn::Lit::new(i.clone())
-                            }
-                            Some(tt) => {
-                                return Some(Err(syn::Error::new_spanned(
-                                    &tt,
-                                    format!("Expected string literal, do you mean \"{}\"?", tt),
-                                )));
-                            }
-                            _ => {
-                                return Some(Err(syn::Error::new_spanned(
-                                    eq_sign,
-                                    "Expected string literal",
-                                )))
-                            }
-                        };
-                        if let syn::Lit::Str(s) = lit {
-                            s.value()
-                        } else {
-                            return Some(Err(syn::Error::new_spanned(
-                                lit,
-                                "collection_name must be equal to a literal string",
-                            )));
-                        }
-                    };
-                    if let Some(tt) = tokens.next() {
-                        return Some(Err(syn::Error::new_spanned(tt, "Unexpected token")));
-                    }
-                    Some(Ok(collection_name))
-                } else {
-                    None
-                }
-            } else {
-                None
-            }
-        })
-        .collect::<syn::Result<Vec<String>>>();
-    match collection_name {
-        Ok(mut collection_name) => {
-            if collection_name.len() <= 1 {
-                Ok(collection_name.pop())
+fn string_literal(tt_iter: &mut impl Iterator<Item = TokenTree>) -> syn::Result<String> {
+    match tt_iter.next() {
+        Some(TokenTree::Literal(l)) => {
+            let lit = syn::Lit::new(l);
+            if let syn::Lit::Str(s) = lit {
+                Ok(s.value())
             } else {
                 Err(syn::Error::new_spanned(
-                    // This will not fail since if we are at this point is because attributes is not empty.
-                    attributes.first().unwrap(),
-                    format!(
-                        "Expected only one collection_name, found {}",
-                        collection_name.len(),
-                    ),
+                    lit,
+                    "it must be equal to a literal string",
                 ))
             }
         }
-        Err(err) => Err(err),
+        Some(TokenTree::Ident(i)) => Err(syn::Error::new(
+            i.span(),
+            format!("Expected string literal, did you mean \"{}\"?", i),
+        )),
+        tt => Err(syn::Error::new(tt.span(), "Expected string literal")),
     }
+}
+
+fn extract_attrs(attrs: Vec<Attribute>) -> syn::Result<Attrs> {
+    let mut res = Attrs::default();
+
+    let attr = match attrs
+        .into_iter()
+        .find(|a| a.path.segments.first().map(|s| s.ident == "typesense") == Some(true))
+    {
+        Some(a) => a,
+        None => return Ok(res),
+    };
+
+    if let Some(TokenTree::Group(g)) = attr.tokens.into_iter().next() {
+        let mut tt_iter = g.stream().into_iter();
+        while let Some(tt) = tt_iter.next() {
+            if let TokenTree::Ident(i) = tt {
+                match &i.to_string() as &str {
+                    "collection_name" => {
+                        skip_eq(i, &mut tt_iter)?;
+                        res.collection_name = Some(string_literal(&mut tt_iter)?);
+                    }
+                    "default_sorting_field" => {
+                        skip_eq(i, &mut tt_iter)?;
+                        res.default_sorting_field = Some(string_literal(&mut tt_iter)?);
+                    }
+                    "enable_nested_fields" => {
+                        skip_eq(i, &mut tt_iter)?;
+                        let val = match tt_iter.next() {
+                            Some(TokenTree::Ident(i)) => &i.to_string() == "true",
+                            tt => {
+                                return Err(syn::Error::new(
+                                    tt.span(),
+                                    "Expected boolean, without quotation marks (\"\")",
+                                ))
+                            }
+                        };
+                        res.enable_nested_fields = Some(val);
+                    }
+                    v => {
+                        return Err(syn::Error::new(i.span(), format!("Unexpected \"{}\"", v)));
+                    }
+                }
+            };
+            if let Some(TokenTree::Punct(p)) = tt_iter.next() {
+                let ch = p.as_char();
+                if ch != ',' {
+                    return Err(syn::Error::new(
+                        p.span(),
+                        format!("Unexpected \"{}\", expected comma \",\"", ch),
+                    ));
+                }
+            }
+        }
+    }
+
+    Ok(res)
 }
 
 /// Convert a given field in a typesense field type.
@@ -337,14 +242,14 @@ fn to_typesense_field_type(field: &Field) -> syn::Result<proc_macro2::TokenStrea
                                 if i != "facet" {
                                     return Some(Err(syn::Error::new_spanned(
                                         i,
-                                        format!("Unexpected token {}. Do you mean `facet`?", i),
+                                        format!("Unexpected token {}. Did you mean `facet`?", i),
                                     )));
                                 }
                             }
                             Some(ref tt) => {
                                 return Some(Err(syn::Error::new_spanned(
                                     tt,
-                                    format!("Unexpected token {}. Do you mean `facet`?", tt),
+                                    format!("Unexpected token {}. Did you mean `facet`?", tt),
                                 )))
                             }
                             None => {
@@ -383,8 +288,9 @@ fn to_typesense_field_type(field: &Field) -> syn::Result<proc_macro2::TokenStrea
         (&field.ty, quote!(None))
     };
     let typesense_field_type = quote!(
-            <#ty as typesense::field::ToTypesenseField>::to_typesense_type().to_owned()
+        <#ty as typesense::field::ToTypesenseField>::to_typesense_type().to_owned()
     );
+
     Ok(quote! {
         typesense::field::FieldBuilder::new(std::string::String::from(stringify!(#name)), #typesense_field_type)
             .optional(#optional)

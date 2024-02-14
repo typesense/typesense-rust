@@ -1,4 +1,4 @@
-error: Expected string literal, do you mean "company_name"?
+error: Expected string literal, did you mean "company_name"?
  --> $DIR/non_strliteral_default_field.rs:5:37
   |
 5 | #[typesense(default_sorting_field = company_name)]

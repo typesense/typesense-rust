@@ -29,7 +29,8 @@ fn derived_document_generates_schema() {
                 "optional" :  true
               }
             ],
-            "default_sorting_field": "num_employees"
+            "default_sorting_field": "num_employees",
+            "enable_nested_fields": true
           }
     );
 
@@ -38,8 +39,11 @@ fn derived_document_generates_schema() {
 
 #[allow(dead_code)]
 #[derive(Document, Serialize, Deserialize)]
-#[typesense(default_sorting_field = "num_employees")]
-#[typesense(collection_name = "companies")]
+#[typesense(
+    collection_name = "companies",
+    default_sorting_field = "num_employees",
+    enable_nested_fields = true
+)]
 struct Company {
     company_name: String,
     num_employees: i32,
