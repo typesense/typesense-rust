@@ -21,6 +21,7 @@ pub struct Transport<C> {
 
 #[cfg(all(feature = "tokio-rt", not(target_arch = "wasm32")))]
 impl Default for Transport<HyperHttpsClient> {
+    #[inline]
     fn default() -> Self {
         Transport::new()
     }
@@ -42,7 +43,7 @@ where
     }
 }
 
-#[allow(missing_docs)]
+#[doc(hidden)]
 pub trait TransportCreator {
     /// Create new Transport
     fn new() -> Self;
@@ -68,6 +69,7 @@ impl TransportCreator for Transport<HyperHttpsClient> {
 #[cfg_attr(docsrs, doc(cfg(target_arch = "wasm32")))]
 impl TransportCreator for Transport<WasmClient> {
     /// Used to make a new wasm client.
+    #[inline]
     fn new() -> Self {
         Self {
             client: http_low_level::WasmClient,

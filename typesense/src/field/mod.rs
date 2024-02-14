@@ -24,6 +24,7 @@ pub struct FieldBuilder {
 
 impl FieldBuilder {
     /// Create a Builder
+    #[inline]
     pub fn new(name: impl Into<String>, typesense_type: FieldType) -> Self {
         Self {
             name: name.into(),
@@ -32,50 +33,65 @@ impl FieldBuilder {
         }
     }
 
-    /// Set if field is facet.
-    pub fn facet(mut self, facet: Option<bool>) -> Self {
-        self.facet = facet;
-        self
-    }
-
     /// Set if field is optional.
+    #[inline]
     pub fn optional(mut self, optional: Option<bool>) -> Self {
         self.optional = optional;
         self
     }
 
+    /// Set if field is facet.
+    #[inline]
+    pub fn facet(mut self, facet: Option<bool>) -> Self {
+        self.facet = facet;
+        self
+    }
+
     /// Set if field is index.
+    #[inline]
     pub fn index(mut self, index: Option<bool>) -> Self {
         self.index = index;
         self
     }
 
     /// Set field locale.
+    #[inline]
     pub fn locale(mut self, locale: Option<String>) -> Self {
         self.locale = locale;
         self
     }
 
-    /// Set sort attribute from field
+    /// Set sort attribute for field
+    #[inline]
     pub fn sort(mut self, sort: Option<bool>) -> Self {
         self.sort = sort;
         self
     }
 
-    /// Set drop attribute from field
-    pub fn drop(mut self, drop: Option<bool>) -> Self {
-        self.drop = drop;
-        self
-    }
-
-    /// Set infix attribute from field
+    /// Set infix attribute for field
+    #[inline]
     pub fn infix(mut self, infix: Option<bool>) -> Self {
         self.infix = infix;
         self
     }
 
+    /// Set num_dim attribute for field
+    #[inline]
+    pub fn num_dim(mut self, num_dim: Option<i32>) -> Self {
+        self.num_dim = num_dim;
+        self
+    }
+
+    /// Set drop attribute for field
+    #[inline]
+    pub fn drop(mut self, drop: Option<bool>) -> Self {
+        self.drop = drop;
+        self
+    }
+
     /// Create a `Field` with the current values of the builder,
     /// It can fail if the name or the typesense_type are not defined.
+    #[inline]
     pub fn build(self) -> Field {
         Field {
             name: self.name,
