@@ -1,4 +1,4 @@
-error: defined default_sorting_field does not match with any field.
+error: defined default_sorting_field = "wrong_field" does not match with any field.
   --> $DIR/wrong_sorting_field.rs:5:1
    |
 5  | / #[typesense(default_sorting_field = "wrong_field")]

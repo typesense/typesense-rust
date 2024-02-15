@@ -86,8 +86,7 @@ mod hyper_tests {
 
 #[allow(dead_code)]
 #[derive(Document, Serialize, Deserialize)]
-#[typesense(default_sorting_field = "num_employees")]
-#[typesense(collection_name = "companies")]
+#[typesense(collection_name = "companies", default_sorting_field = "num_employees")]
 struct Company {
     company_name: String,
     num_employees: i32,

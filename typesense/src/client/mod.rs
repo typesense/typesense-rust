@@ -1,7 +1,9 @@
 use http::Response;
 
 use crate::collection::CollectionClient;
-use crate::transport::{HttpLowLevel, Transport, TransportCreator};
+#[allow(unused_imports)]
+use crate::transport::TransportCreator;
+use crate::transport::{HttpLowLevel, Transport};
 use crate::Result;
 
 #[cfg(target_arch = "wasm32")]
@@ -23,6 +25,7 @@ pub struct Client<C> {
 
 impl<C> Client<C> {
     /// Gets the transport of the client
+    #[inline]
     pub fn transport(&self) -> &Transport<C> {
         &self.transport
     }
@@ -35,11 +38,10 @@ where
     Transport<C>: TransportCreator,
 {
     /// Create Client
+    #[inline]
     pub fn new(host: impl Into<String>, api_key: impl Into<String>) -> Self {
-        let transport = crate::transport::Transport::new();
-
         Self {
-            transport,
+            transport: Transport::new(),
             host: host.into(),
             api_key: api_key.into(),
         }
@@ -48,11 +50,13 @@ where
 
 impl<T> Client<T> {
     /// Make the ClientKeys struct, to interact with the Keys API.
+    #[inline]
     pub fn keys(&self) -> ClientKeys<'_, T> {
         ClientKeys { client: self }
     }
 
     /// Creates a [`CollectionClient`] to interact with the Typesense Collection API
+    #[inline]
     pub fn collection(&self) -> CollectionClient<'_, T> {
         CollectionClient { client: self }
     }
@@ -75,14 +79,17 @@ where
         self.transport.send(method, &uri, headers, body).await
     }
 
+    #[inline]
     pub(crate) async fn get(&self, path: &str) -> Result<Response<Vec<u8>>> {
         self.send(http::Method::GET, path, Vec::new()).await
     }
 
+    #[inline]
     pub(crate) async fn post(&self, path: &str, body: Vec<u8>) -> Result<Response<Vec<u8>>> {
         self.send(http::Method::POST, path, body).await
     }
 
+    #[inline]
     pub(crate) async fn delete(&self, path: &str) -> Result<Response<Vec<u8>>> {
         self.send(http::Method::DELETE, path, Vec::new()).await
     }
