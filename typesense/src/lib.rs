@@ -5,18 +5,12 @@
 //!
 //! Welcome to typesense, the rust library for the Typesense API.
 
-#[cfg(feature = "openapi_client")]
-pub use typesense_codegen as openapi_client;
+pub use typesense_codegen as openapi;
 
-mod client;
-pub mod collection;
+pub mod collection_schema;
 pub mod document;
-mod error;
 pub mod field;
-pub mod transport;
-
-pub use client::{keys, Client};
-pub use error::{Result, TypesenseError};
+pub mod keys;
 
 #[cfg(feature = "typesense_derive")]
 #[doc(hidden)]

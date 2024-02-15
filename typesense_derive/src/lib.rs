@@ -81,11 +81,11 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
 
     let gen = quote! {
         impl #impl_generics typesense::document::Document for #ident #ty_generics #where_clause {
-            fn collection_schema() -> typesense::collection::CollectionSchema {
+            fn collection_schema() -> typesense::collection_schema::CollectionSchema {
                 let name = #collection_name.to_owned();
                 let fields = vec![#(#typesense_fields,)*];
 
-                let mut builder = typesense::collection::CollectionSchemaBuilder::new(name, fields);
+                let mut builder = typesense::collection_schema::CollectionSchemaBuilder::new(name, fields);
 
                 #default_sorting_field
                 #enable_nested_fields

@@ -4,6 +4,7 @@
 //! is roughly equivalent to a table in a relational database.
 //!
 use crate::field::Field;
+
 pub use typesense_codegen::models::CollectionSchema;
 
 /// Builder for the [CollectionSchema] struct.

@@ -1,6 +1,7 @@
+#![allow(dead_code)]
+
 use serde::{Deserialize, Serialize};
 use typesense::document::Document as DocumentTrait;
-use typesense::Client;
 use typesense::Document;
 use typesense_codegen::apis::collections_api;
 use typesense_codegen::apis::configuration::{ApiKey, Configuration};
