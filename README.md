@@ -1,11 +1,11 @@
-# typesense-rust
+# Typesense (rust library)
 
 [![Crate](https://img.shields.io/crates/v/typesense.svg)](https://crates.io/crates/typesense)
 [![API](https://docs.rs/typesense/badge.svg)](https://docs.rs/typesense)
 
-Rust client for Typesense | Work In Progress &amp; Help Wanted!
+Rust client library for Typesense | Work In Progress &amp; Help Wanted!
 
-Codegen was generated with:
+OpenAPI codegen folder was generated with:
 
 ```
 docker run --rm \
