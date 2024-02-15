@@ -60,5 +60,5 @@ jobs:
           args: --all-features
       - name: Tests in WASM
         if: matrix.platform.target == 'wasm32-unknown-unknown'
-        run: wasm-pack test --headless --chrome
+        run: RUST_LOG=wasm_bindgen_test_runner wasm-pack test --headless --chrome
         working-directory: ./typesense

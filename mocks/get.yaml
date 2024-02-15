@@ -9,6 +9,4 @@ then:
   header:
     - name: content-type
       value: text/html
-    - name: Access-Control-Allow-Origin
-      value: \*
   body: "Test Successful"
