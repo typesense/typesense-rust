@@ -19,5 +19,6 @@ then:
            {"name": "num_employees", "type": "int32" },
            {"name": "country", "type": "string", "facet": true }
         ],
-        "default_sorting_field": "num_employees"
+        "default_sorting_field": "num_employees",
+        "created_at": 1
   }'

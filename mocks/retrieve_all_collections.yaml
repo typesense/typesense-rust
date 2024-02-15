@@ -19,7 +19,7 @@ then:
       {"name": "country", "type": "string", "facet": true}
     ],
     "default_sorting_field": "num_employees",
-    "created_at": 0
+    "created_at": 1
   },
   {
     "num_documents": 1250,
@@ -30,5 +30,5 @@ then:
       {"name": "from_year", "type": "int32"}
     ],
     "default_sorting_field": "num_employees",
-    "created_at": 0
+    "created_at": 1
   }]'
