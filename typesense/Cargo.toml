@@ -10,7 +10,7 @@ description = "WIP client for typesense"
 default = ["derive"]
 tokio-rt = []
 
-# Provide derive(Document) macro.
+# Provide derive(Typesense) macro.
 derive = ["typesense_derive"]
 
 [lib]

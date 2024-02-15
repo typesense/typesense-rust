@@ -1,7 +1,7 @@
-use typesense::Document;
+use typesense::Typesense;
 use serde::{Serialize, Deserialize};
 
-#[derive(Document, Serialize, Deserialize)]
+#[derive(Typesense, Serialize, Deserialize)]
 #[typesense(default_sorting_field = company_name)]
 struct Company {
     company_name: String,

@@ -3,9 +3,9 @@ use proc_macro2::{Ident, TokenTree};
 use quote::{quote, ToTokens};
 use syn::{spanned::Spanned, Attribute, Field, ItemStruct};
 
-#[proc_macro_derive(Document, attributes(typesense))]
+#[proc_macro_derive(Typesense, attributes(typesense))]
 pub fn typesense_collection_derive(input: TokenStream) -> TokenStream {
-    let item: ItemStruct = syn::parse(input).expect("Document can be only be derived for structs");
+    let item: ItemStruct = syn::parse(input).expect("Typesense can be only be derived for structs");
 
     // Build the trait implementation
     impl_typesense_collection(item).unwrap_or_else(|err| err.into_compile_error().into())
@@ -29,7 +29,7 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
     } else {
         return Err(syn::Error::new_spanned(
             fields,
-            "Document derive macro only can be used on structs with named fields.",
+            "Typesense derive macro only can be used on structs with named fields.",
         ));
     };
 

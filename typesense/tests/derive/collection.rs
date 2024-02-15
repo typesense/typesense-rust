@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
-use typesense::document::Document as DocumentTrait;
-use typesense::Document;
+use typesense::document::Document;
+use typesense::Typesense;
 
 #[test]
 fn derived_document_generates_schema() {
@@ -38,7 +38,7 @@ fn derived_document_generates_schema() {
 }
 
 #[allow(dead_code)]
-#[derive(Document, Serialize, Deserialize)]
+#[derive(Typesense, Serialize, Deserialize)]
 #[typesense(
     collection_name = "companies",
     default_sorting_field = "num_employees",

@@ -1,15 +1,15 @@
 #![allow(dead_code)]
 
 use serde::{Deserialize, Serialize};
-use typesense::document::Document as DocumentTrait;
-use typesense::Document;
+use typesense::document::Document;
+use typesense::Typesense;
 use typesense_codegen::apis::collections_api;
 use typesense_codegen::apis::configuration::{ApiKey, Configuration};
 use typesense_codegen::models::CollectionResponse;
 use typesense_codegen::models::CollectionSchema;
 
 #[allow(dead_code)]
-#[derive(Document, Serialize, Deserialize)]
+#[derive(Typesense, Serialize, Deserialize)]
 #[typesense(collection_name = "companies", default_sorting_field = "num_employees")]
 struct Company {
     company_name: String,

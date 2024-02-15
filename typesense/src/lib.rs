@@ -9,12 +9,12 @@
 //!
 //! ```
 //! use serde::{Deserialize, Serialize};
-//! use typesense::document::Document as DocumentTrait;
-//! use typesense::Document;
-//! use typesense::openapi::apis::collections_api;
-//! use typesense::openapi::apis::configuration::{ApiKey, Configuration};
+//! use typesense::document::Document;
+//! use typesense::Typesense;
+//! use typesense::apis::collections_api;
+//! use typesense::apis::configuration::{ApiKey, Configuration};
 //!
-//! #[derive(Document, Serialize, Deserialize)]
+//! #[derive(Typesense, Serialize, Deserialize)]
 //! #[typesense(collection_name = "companies", default_sorting_field = "num_employees")]
 //! struct Company {
 //!     company_name: String,
@@ -40,12 +40,12 @@
 //! }
 //! ```
 
-pub use typesense_codegen as openapi;
-
 pub mod collection_schema;
 pub mod document;
 pub mod field;
 pub mod keys;
+
+pub use typesense_codegen::*;
 
 #[cfg(feature = "typesense_derive")]
 #[doc(hidden)]
