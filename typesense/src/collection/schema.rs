@@ -20,9 +20,10 @@ pub struct CollectionSchemaBuilder {
 impl CollectionSchemaBuilder {
     /// Create a builder for [CollectionSchema]
     #[inline]
-    pub fn new(name: impl Into<String>) -> Self {
+    pub fn new(name: impl Into<String>, fields: Vec<Field>) -> Self {
         Self {
             name: name.into(),
+            fields,
             ..Default::default()
         }
     }
@@ -43,8 +44,8 @@ impl CollectionSchemaBuilder {
 
     /// Set default sorting field
     #[inline]
-    pub fn default_sorting_field(mut self, default_sorting_field: String) -> Self {
-        self.default_sorting_field = Some(default_sorting_field);
+    pub fn default_sorting_field(mut self, default_sorting_field: impl Into<String>) -> Self {
+        self.default_sorting_field = Some(default_sorting_field.into());
         self
     }
 
@@ -93,17 +94,17 @@ mod test {
     #[test]
     fn collection_schema_serializes_as_expected() {
         let fields = [
-            ("company_name".to_owned(), "string".to_owned(), None),
-            ("num_employees".to_owned(), "int32".to_owned(), None),
-            ("country".to_owned(), "string".to_owned(), Some(true)),
+            ("company_name", "string".to_owned(), None),
+            ("num_employees", "int32".to_owned(), None),
+            ("country", "string".to_owned(), Some(true)),
         ]
         .map(|(name, typesense_type, facet)| {
             FieldBuilder::new(name, typesense_type).facet(facet).build()
-        });
+        })
+        .to_vec();
 
-        let collection = CollectionSchemaBuilder::new("companies".to_owned())
+        let collection = CollectionSchemaBuilder::new("companies", fields)
             .default_sorting_field("num_employees".to_owned())
-            .fields(&fields)
             .build();
 
         let expected = json!(

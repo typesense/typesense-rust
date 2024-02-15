@@ -65,7 +65,7 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
 
     let default_sorting_field = if let Some(v) = default_sorting_field {
         quote! {
-            builder = builder.default_sorting_field(std::string::String::from(#v));
+            builder = builder.default_sorting_field(#v);
         }
     } else {
         proc_macro2::TokenStream::new()
@@ -83,9 +83,9 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
         impl #impl_generics typesense::document::Document for #ident #ty_generics #where_clause {
             fn collection_schema() -> typesense::collection::CollectionSchema {
                 let name = #collection_name.to_owned();
-                let fields = &[#(#typesense_fields,)*];
+                let fields = vec![#(#typesense_fields,)*];
 
-                let mut builder = typesense::collection::CollectionSchemaBuilder::new(name).fields(fields);
+                let mut builder = typesense::collection::CollectionSchemaBuilder::new(name, fields);
 
                 #default_sorting_field
                 #enable_nested_fields
