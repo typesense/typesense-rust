@@ -1,6 +1,6 @@
 use proc_macro::TokenStream;
 use proc_macro2::{Ident, TokenTree};
-use quote::quote;
+use quote::{quote, ToTokens};
 use syn::{spanned::Spanned, Attribute, Field, ItemStruct};
 
 #[proc_macro_derive(Document, attributes(typesense))]
@@ -12,7 +12,7 @@ pub fn typesense_collection_derive(input: TokenStream) -> TokenStream {
 }
 
 fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
-    let span = item.span();
+    let item_ts = item.to_token_stream();
 
     let ItemStruct {
         attrs,
@@ -48,8 +48,8 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
                 // At this point we are sure that this field is a named field.
                 field.ident.as_ref().unwrap() == sorting_field)
         {
-            return Err(syn::Error::new(
-                span,
+            return Err(syn::Error::new_spanned(
+                item_ts,
                 format!(
                     "defined default_sorting_field = \"{}\" does not match with any field.",
                     sorting_field
