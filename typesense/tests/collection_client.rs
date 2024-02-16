@@ -110,7 +110,7 @@ async fn get_collections(host: impl Into<String>, api_key: impl Into<String>) {
     assert_eq!(collection_schema_response.len(), 2);
 }
 
-#[cfg(all(feature = "tokio-rt", not(target_arch = "wasm32")))]
+#[cfg(all(feature = "tokio_test", not(target_arch = "wasm32")))]
 mod tokio_test {
     use super::*;
 

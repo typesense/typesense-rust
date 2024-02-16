@@ -8,7 +8,7 @@ description = "WIP client for typesense"
 
 [features]
 default = ["derive"]
-tokio-rt = []
+tokio_test = []
 
 # Provide derive(Typesense) macro.
 derive = ["typesense_derive"]

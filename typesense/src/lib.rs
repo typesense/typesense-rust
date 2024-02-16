@@ -8,6 +8,8 @@
 //! # Examples
 //!
 //! ```
+//! #[cfg(any(feature = "tokio_test", target_arch = "wasm32"))]
+//! {
 //! use serde::{Deserialize, Serialize};
 //! use typesense::document::Document;
 //! use typesense::Typesense;
@@ -37,6 +39,7 @@
 //!     let collection = collections_api::create_collection(&config, Company::collection_schema())
 //!         .await
 //!         .unwrap();
+//! }
 //! }
 //! ```
 
