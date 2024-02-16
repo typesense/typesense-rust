@@ -8,7 +8,6 @@ use typesense_codegen::apis::configuration::{ApiKey, Configuration};
 use typesense_codegen::models::CollectionResponse;
 use typesense_codegen::models::CollectionSchema;
 
-#[allow(dead_code)]
 #[derive(Typesense, Serialize, Deserialize)]
 #[typesense(collection_name = "companies", default_sorting_field = "num_employees")]
 struct Company {
