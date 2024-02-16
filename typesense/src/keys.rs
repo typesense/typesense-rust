@@ -15,7 +15,7 @@ use typesense_codegen::models::ScopedKeyParameters;
 pub async fn generate_scoped_search_key(
     key: impl AsRef<str>,
     filter_by: impl Into<String>,
-    expires_at: f32,
+    expires_at: i64,
 ) -> anyhow::Result<String> {
     let generate_scoped_search_key = ScopedKeyParameters {
         filter_by: Some(filter_by.into()),

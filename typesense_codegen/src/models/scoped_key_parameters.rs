@@ -13,7 +13,7 @@ pub struct ScopedKeyParameters {
     #[serde(rename = "filter_by", skip_serializing_if = "Option::is_none")]
     pub filter_by: Option<String>,
     #[serde(rename = "expires_at", skip_serializing_if = "Option::is_none")]
-    pub expires_at: Option<f32>,
+    pub expires_at: Option<i64>,
 }
 
 impl ScopedKeyParameters {

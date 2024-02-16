@@ -1826,7 +1826,8 @@ components:
         filter_by:
           type: string
         expires_at:
-          type: number
+          type: integer
+          format: int64
     SnapshotParameters:
       type: object
       properties:
