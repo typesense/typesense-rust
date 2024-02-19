@@ -8,47 +8,34 @@ description = "WIP client for typesense"
 
 [features]
 default = ["derive"]
-openapi_client = []
-tokio-rt = ["hyper/runtime", "hyper/tcp", "hyper-tls"]
+tokio_test = []
 
-# Provide derive(Document) macro.
+# Provide derive(Typesense) macro.
 derive = ["typesense_derive"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-async-trait = "0.1"
+anyhow = "1.0"
 base64 = "0.21"
 hmac = "0.12"
-http = "0.2"
 serde = { version = "1", features = ["derive"] }
-serde_json = "1"
+serde_json = "1.0"
 sha2 = "0.10"
-thiserror = "1"
 typesense_derive = { version = "0.1.0", path="../typesense_derive", optional = true }
 typesense_codegen = { version = "0.25.0", path="../typesense_codegen" }
 
 [dev-dependencies]
 dotenvy = "0.15"
-serde_json = "1.0"
 trybuild = "1.0.42"
-
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-hyper = { version = "0.14", features = ["http1", "http2", "client"] }
-hyper-tls = { version = "0.5.0", optional = true }
-
-[target.'cfg(target_arch = "wasm32")'.dependencies]
-js-sys = { version = "0.3" }
-wasm-bindgen = { version = "0.2" }
-wasm-bindgen-futures = { version = "0.4" }
-web-sys = { version = "0.3", features = ["Headers", "Response", "Request", "RequestInit", "RequestMode", "Window", "WorkerGlobalScope"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 tokio = { version = "1.5", features = ["macros", "rt", "rt-multi-thread"] }
 
 [target.'cfg(target_arch = "wasm32")'.dev-dependencies]
 console_error_panic_hook = "0.1.6"
+wasm-bindgen = "0.2"
 wasm-bindgen-test = "0.3.23"
 
 [[test]]

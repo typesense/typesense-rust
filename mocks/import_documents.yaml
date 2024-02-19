@@ -1,0 +1,13 @@
+when:
+  method: POST
+  path: /collections/companies/documents/import
+  header:
+    - name: X-TYPESENSE-API-KEY
+      value: VerySecretKey
+  body: "{\"company_name\": \"test\", \"num_employees\": 1, \"country\": \"c1\"}\n{\"company_name\": \"test2\", \"num_employees\": 2, \"country\": \"c2\"}"
+then:
+  status: 200
+  header:
+    - name: content-type
+      value: application/text
+  body: "{\"success\":true}\n{\"success\":true}"

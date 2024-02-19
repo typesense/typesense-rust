@@ -18,6 +18,7 @@ jobs:
           { os: "ubuntu", target: "wasm32-unknown-unknown" },
         ]
     env:
+      # used to connect to httpmock
       URL: "http://localhost:5000"
       API_KEY: "VerySecretKey"
     steps:

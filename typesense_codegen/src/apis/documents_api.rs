@@ -692,7 +692,7 @@ pub async fn get_search_synonyms(
 pub async fn import_documents(
     configuration: &configuration::Configuration,
     collection_name: &str,
-    body: &str,
+    body: String,
     import_documents_parameters: Option<
         crate::models::ImportDocumentsImportDocumentsParametersParameter,
     >,
@@ -725,7 +725,8 @@ pub async fn import_documents(
         local_var_req_builder =
             local_var_req_builder.header("X-TYPESENSE-API-KEY", local_var_value);
     };
-    local_var_req_builder = local_var_req_builder.json(&body);
+    // was changed by hand
+    local_var_req_builder = local_var_req_builder.body(body);
 
     let local_var_req = local_var_req_builder.build()?;
     let local_var_resp = local_var_client.execute(local_var_req).await?;
@@ -734,7 +735,8 @@ pub async fn import_documents(
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
+        // was changed by hand
+        Ok(local_var_content)
     } else {
         let local_var_entity: Option<ImportDocumentsError> =
             serde_json::from_str(&local_var_content).ok();

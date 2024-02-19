@@ -1,7 +1,7 @@
-use typesense::Document;
+use typesense::Typesense;
 use serde::{Serialize, Deserialize};
 
-#[derive(Document, Serialize, Deserialize)]
+#[derive(Typesense, Serialize, Deserialize)]
 enum SomeEnum {
     First,
     Second,

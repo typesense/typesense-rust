@@ -1,7 +1,7 @@
 error: proc-macro derive panicked
  --> $DIR/enum.rs:4:10
   |
-4 | #[derive(Document, Serialize, Deserialize)]
-  |          ^^^^^^^^
+4 | #[derive(Typesense, Serialize, Deserialize)]
+  |          ^^^^^^^^^
   |
-  = help: message: Document can be only be derived for structs: Error("expected `struct`")
+  = help: message: Typesense can be only be derived for structs: Error("expected `struct`")

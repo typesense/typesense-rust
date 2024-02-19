@@ -32,10 +32,15 @@ macro_rules! impl_to_typesense_field (
 );
 
 impl_to_typesense_field!(String, "string");
+impl_to_typesense_field!(i8, "int32");
 impl_to_typesense_field!(u8, "int32");
+impl_to_typesense_field!(i16, "int32");
+impl_to_typesense_field!(u16, "int32");
 impl_to_typesense_field!(i32, "int32");
-impl_to_typesense_field!(i64, "int64");
 impl_to_typesense_field!(u32, "int64");
+impl_to_typesense_field!(i64, "int64");
+impl_to_typesense_field!(u64, "int64");
+impl_to_typesense_field!(isize, "int64");
 impl_to_typesense_field!(usize, "int64");
 impl_to_typesense_field!(f32, "float");
 impl_to_typesense_field!(f64, "float");
@@ -44,10 +49,15 @@ impl_to_typesense_field!(HashMap<String, T>, "object", T);
 impl_to_typesense_field!(BTreeMap<String, T>, "object", T);
 
 impl_to_typesense_field!(Vec<String>, "string[]");
+impl_to_typesense_field!(Vec<i8>, "int32[]");
 impl_to_typesense_field!(Vec<u8>, "int32[]");
+impl_to_typesense_field!(Vec<i16>, "int32[]");
+impl_to_typesense_field!(Vec<u16>, "int32[]");
 impl_to_typesense_field!(Vec<i32>, "int32[]");
-impl_to_typesense_field!(Vec<i64>, "int64[]");
 impl_to_typesense_field!(Vec<u32>, "int64[]");
+impl_to_typesense_field!(Vec<i64>, "int64[]");
+impl_to_typesense_field!(Vec<u64>, "int64[]");
+impl_to_typesense_field!(Vec<isize>, "int64[]");
 impl_to_typesense_field!(Vec<usize>, "int64[]");
 impl_to_typesense_field!(Vec<f32>, "float[]");
 impl_to_typesense_field!(Vec<f64>, "float[]");
