@@ -9,22 +9,22 @@
  */
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchGroupedHit {
+pub struct SearchGroupedHit<D> {
     #[serde(rename = "found", skip_serializing_if = "Option::is_none")]
     pub found: Option<i32>,
     #[serde(rename = "group_key")]
     pub group_key: Vec<serde_json::Value>,
     /// The documents that matched the search query
     #[serde(rename = "hits")]
-    pub hits: Vec<crate::models::SearchResultHit>,
+    pub hits: Vec<crate::models::SearchResultHit<D>>,
 }
 
-impl SearchGroupedHit {
+impl<D> SearchGroupedHit<D> {
     pub fn new(
         group_key: Vec<serde_json::Value>,
-        hits: Vec<crate::models::SearchResultHit>,
-    ) -> SearchGroupedHit {
-        SearchGroupedHit {
+        hits: Vec<crate::models::SearchResultHit<D>>,
+    ) -> Self {
+        Self {
             found: None,
             group_key,
             hits,

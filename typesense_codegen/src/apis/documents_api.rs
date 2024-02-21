@@ -808,11 +808,11 @@ pub async fn index_document(
 }
 
 /// This is especially useful to avoid round-trip network latencies incurred otherwise if each of these requests are sent in separate HTTP requests. You can also use this feature to do a federated search across multiple collections in a single HTTP request.
-pub async fn multi_search(
+pub async fn multi_search<D: for<'d> serde::Deserialize<'d>>(
     configuration: &configuration::Configuration,
     multi_search_parameters: crate::models::MultiSearchParameters,
     multi_search_searches_parameter: Option<crate::models::MultiSearchSearchesParameter>,
-) -> Result<crate::models::MultiSearchResult, Error<MultiSearchError>> {
+) -> Result<crate::models::MultiSearchResult<D>, Error<MultiSearchError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;
@@ -858,11 +858,11 @@ pub async fn multi_search(
 }
 
 /// Search for documents in a collection that match the search criteria.
-pub async fn search_collection(
+pub async fn search_collection<D: for<'d> serde::Deserialize<'d>>(
     configuration: &configuration::Configuration,
     collection_name: &str,
     search_parameters: crate::models::SearchParameters,
-) -> Result<crate::models::SearchResult, Error<SearchCollectionError>> {
+) -> Result<crate::models::SearchResult<D>, Error<SearchCollectionError>> {
     let local_var_configuration = configuration;
 
     let local_var_client = &local_var_configuration.client;

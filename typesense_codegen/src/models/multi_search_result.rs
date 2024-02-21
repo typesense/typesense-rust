@@ -9,13 +9,13 @@
  */
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct MultiSearchResult {
+pub struct MultiSearchResult<D> {
     #[serde(rename = "results")]
-    pub results: Vec<crate::models::SearchResult>,
+    pub results: Vec<crate::models::SearchResult<D>>,
 }
 
-impl MultiSearchResult {
-    pub fn new(results: Vec<crate::models::SearchResult>) -> MultiSearchResult {
-        MultiSearchResult { results }
+impl<D> MultiSearchResult<D> {
+    pub fn new(results: Vec<crate::models::SearchResult<D>>) -> Self {
+        Self { results }
     }
 }
