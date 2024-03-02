@@ -54,13 +54,13 @@ pub async fn delete_search_override(
 
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
         local_var_req_builder =
-            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent);
     }
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
-        let local_var_key = local_var_apikey.key.clone();
+        let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
             Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
-            None => local_var_key,
+            None => local_var_key.clone(),
         };
         local_var_req_builder =
             local_var_req_builder.header("X-TYPESENSE-API-KEY", local_var_value);
@@ -104,13 +104,13 @@ pub async fn get_search_overrides(
 
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
         local_var_req_builder =
-            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent);
     }
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
-        let local_var_key = local_var_apikey.key.clone();
+        let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
             Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
-            None => local_var_key,
+            None => local_var_key.clone(),
         };
         local_var_req_builder =
             local_var_req_builder.header("X-TYPESENSE-API-KEY", local_var_value);
@@ -158,13 +158,13 @@ pub async fn upsert_search_override(
 
     if let Some(ref local_var_user_agent) = local_var_configuration.user_agent {
         local_var_req_builder =
-            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent);
     }
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
-        let local_var_key = local_var_apikey.key.clone();
+        let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
             Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
-            None => local_var_key,
+            None => local_var_key.clone(),
         };
         local_var_req_builder =
             local_var_req_builder.header("X-TYPESENSE-API-KEY", local_var_value);

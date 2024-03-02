@@ -16,6 +16,21 @@ struct Company {
 }
 
 async fn import_documents(host: impl Into<String>, api_key: impl Into<String>) {
+    let documents = [
+        Company {
+            company_name: "test".to_owned(),
+            num_employees: 1,
+            country: "c1".to_owned(),
+        },
+        Company {
+            company_name: "test2".to_owned(),
+            num_employees: 2,
+            country: "c2".to_owned(),
+        },
+    ]
+    .map(|c| serde_json::to_string(&c).unwrap())
+    .join("\n");
+
     let config = Configuration {
         base_path: host.into(),
         api_key: Some(ApiKey {
@@ -28,8 +43,8 @@ async fn import_documents(host: impl Into<String>, api_key: impl Into<String>) {
     let resp = documents_api::import_documents(
         &config,
         &Company::collection_schema().name,
-        "{\"company_name\": \"test\", \"num_employees\": 1, \"country\": \"c1\"}\n{\"company_name\": \"test2\", \"num_employees\": 2, \"country\": \"c2\"}".to_owned(),
-        None
+        documents,
+        None,
     )
     .await
     .unwrap();
