@@ -60,6 +60,17 @@ async fn search_collection() {
     .unwrap();
 
     assert_eq!(resp.found, Some(2));
+    assert_eq!(
+        resp.hits
+            .unwrap()
+            .first()
+            .unwrap()
+            .document
+            .as_ref()
+            .unwrap()
+            .company_name,
+        "test".to_owned()
+    );
 }
 
 #[cfg(all(feature = "tokio_test", not(target_arch = "wasm32")))]
