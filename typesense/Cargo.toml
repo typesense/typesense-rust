@@ -18,13 +18,13 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 anyhow = "1.0"
-base64 = "0.21"
+base64 = "0.22"
 hmac = "0.12"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1.0"
 sha2 = "0.10"
-typesense_derive = { version = "0.1.0", path="../typesense_derive", optional = true }
-typesense_codegen = { version = "0.25.0", path="../typesense_codegen" }
+typesense_derive = { version = "0.1.0", path = "../typesense_derive", optional = true }
+typesense_codegen = { version = "0.25.0", path = "../typesense_codegen" }
 
 [dev-dependencies]
 dotenvy = "0.15"
@@ -42,3 +42,7 @@ wasm-bindgen-test = "0.3.23"
 name = "derive_tests"
 path = "tests/derive/lib.rs"
 required-features = ["derive"]
+
+[[test]]
+name = "api_tests"
+path = "tests/api/lib.rs"
