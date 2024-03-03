@@ -1,4 +1,3 @@
-use crate as typesense;
 use std::collections::{BTreeMap, HashMap};
 
 /// Type for a field. Currently it is a wrapping to a `String` but it could be extended to a enum
@@ -15,7 +14,7 @@ pub trait ToTypesenseField {
 #[macro_export]
 macro_rules! impl_to_typesense_field (
     ($for:ty, $typesense_variant:expr) => {
-        impl typesense::field::ToTypesenseField for $for {
+        impl $crate::field::ToTypesenseField for $for {
             #[inline(always)]
             fn to_typesense_type() -> &'static str {
                 $typesense_variant
@@ -23,7 +22,7 @@ macro_rules! impl_to_typesense_field (
         }
     };
     ($for:ty, $typesense_variant:expr, $any:ident) => {
-        impl<$any> typesense::field::ToTypesenseField for $for {
+        impl<$any> $crate::field::ToTypesenseField for $for {
             #[inline(always)]
             fn to_typesense_type() -> &'static str {
                 $typesense_variant
