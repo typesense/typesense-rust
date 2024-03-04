@@ -9,7 +9,7 @@
  */
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchResult {
+pub struct SearchResult<D> {
     #[serde(rename = "facet_counts", skip_serializing_if = "Option::is_none")]
     pub facet_counts: Option<Vec<crate::models::FacetCounts>>,
     /// The number of documents found
@@ -28,17 +28,17 @@ pub struct SearchResult {
     #[serde(rename = "page", skip_serializing_if = "Option::is_none")]
     pub page: Option<i32>,
     #[serde(rename = "grouped_hits", skip_serializing_if = "Option::is_none")]
-    pub grouped_hits: Option<Vec<crate::models::SearchGroupedHit>>,
+    pub grouped_hits: Option<Vec<crate::models::SearchGroupedHit<D>>>,
     /// The documents that matched the search query
     #[serde(rename = "hits", skip_serializing_if = "Option::is_none")]
-    pub hits: Option<Vec<crate::models::SearchResultHit>>,
+    pub hits: Option<Vec<crate::models::SearchResultHit<D>>>,
     #[serde(rename = "request_params", skip_serializing_if = "Option::is_none")]
     pub request_params: Option<Box<crate::models::SearchResultRequestParams>>,
 }
 
-impl SearchResult {
-    pub fn new() -> SearchResult {
-        SearchResult {
+impl<D> SearchResult<D> {
+    pub fn new() -> Self {
+        Self {
             facet_counts: None,
             found: None,
             search_time_ms: None,

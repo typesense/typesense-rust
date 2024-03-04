@@ -4,8 +4,8 @@ when:
   header:
     - name: X-TYPESENSE-API-KEY
       value: VerySecretKey
-  status: 200
 then:
+  status: 200
   header:
     - name: content-type
       value: text/json
