@@ -5,6 +5,7 @@ authors = ["Typesense  <contact@typesense.org>"]
 edition = "2018"
 license = "Apache-2.0"
 description = "WIP client for typesense"
+repository = "https://github.com/typesense/typesense-rust"
 
 [features]
 default = ["derive"]
