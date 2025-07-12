@@ -43,6 +43,7 @@
 //! }
 //! ```
 
+pub mod client;
 pub mod collection_schema;
 pub mod document;
 pub mod field;

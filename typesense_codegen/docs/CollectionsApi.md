@@ -18,7 +18,7 @@ Method | HTTP request | Description
 
 ## create_collection
 
-> crate::models::CollectionResponse create_collection(collection_schema)
+> models::CollectionResponse create_collection(collection_schema)
 Create a new collection
 
 When a collection is created, we give it a name and describe the fields that will be indexed from the documents added to the collection.
@@ -32,7 +32,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::CollectionResponse**](CollectionResponse.md)
+[**models::CollectionResponse**](CollectionResponse.md)
 
 ### Authorization
 
@@ -48,7 +48,7 @@ Name | Type | Description  | Required | Notes
 
 ## delete_alias
 
-> crate::models::CollectionAlias delete_alias(alias_name)
+> models::CollectionAlias delete_alias(alias_name)
 Delete an alias
 
 ### Parameters
@@ -60,7 +60,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::CollectionAlias**](CollectionAlias.md)
+[**models::CollectionAlias**](CollectionAlias.md)
 
 ### Authorization
 
@@ -76,7 +76,7 @@ Name | Type | Description  | Required | Notes
 
 ## delete_collection
 
-> crate::models::CollectionResponse delete_collection(collection_name)
+> models::CollectionResponse delete_collection(collection_name)
 Delete a collection
 
 Permanently drops a collection. This action cannot be undone. For large collections, this might have an impact on read latencies.
@@ -90,7 +90,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::CollectionResponse**](CollectionResponse.md)
+[**models::CollectionResponse**](CollectionResponse.md)
 
 ### Authorization
 
@@ -106,7 +106,7 @@ Name | Type | Description  | Required | Notes
 
 ## get_alias
 
-> crate::models::CollectionAlias get_alias(alias_name)
+> models::CollectionAlias get_alias(alias_name)
 Retrieve an alias
 
 Find out which collection an alias points to by fetching it
@@ -120,7 +120,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::CollectionAlias**](CollectionAlias.md)
+[**models::CollectionAlias**](CollectionAlias.md)
 
 ### Authorization
 
@@ -136,7 +136,7 @@ Name | Type | Description  | Required | Notes
 
 ## get_aliases
 
-> crate::models::CollectionAliasesResponse get_aliases()
+> models::CollectionAliasesResponse get_aliases()
 List all aliases
 
 List all aliases and the corresponding collections that they map to.
@@ -147,7 +147,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**crate::models::CollectionAliasesResponse**](CollectionAliasesResponse.md)
+[**models::CollectionAliasesResponse**](CollectionAliasesResponse.md)
 
 ### Authorization
 
@@ -163,7 +163,7 @@ This endpoint does not need any parameter.
 
 ## get_collection
 
-> crate::models::CollectionResponse get_collection(collection_name)
+> models::CollectionResponse get_collection(collection_name)
 Retrieve a single collection
 
 Retrieve the details of a collection, given its name.
@@ -177,7 +177,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::CollectionResponse**](CollectionResponse.md)
+[**models::CollectionResponse**](CollectionResponse.md)
 
 ### Authorization
 
@@ -193,7 +193,7 @@ Name | Type | Description  | Required | Notes
 
 ## get_collections
 
-> Vec<crate::models::CollectionResponse> get_collections()
+> Vec<models::CollectionResponse> get_collections()
 List all collections
 
 Returns a summary of all your collections. The collections are returned sorted by creation date, with the most recent collections appearing first.
@@ -204,7 +204,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**Vec<crate::models::CollectionResponse>**](CollectionResponse.md)
+[**Vec<models::CollectionResponse>**](CollectionResponse.md)
 
 ### Authorization
 
@@ -220,7 +220,7 @@ This endpoint does not need any parameter.
 
 ## update_collection
 
-> crate::models::CollectionUpdateSchema update_collection(collection_name, collection_update_schema)
+> models::CollectionUpdateSchema update_collection(collection_name, collection_update_schema)
 Update a collection
 
 Update a collection's schema to modify the fields and their types.
@@ -235,7 +235,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::CollectionUpdateSchema**](CollectionUpdateSchema.md)
+[**models::CollectionUpdateSchema**](CollectionUpdateSchema.md)
 
 ### Authorization
 
@@ -251,7 +251,7 @@ Name | Type | Description  | Required | Notes
 
 ## upsert_alias
 
-> crate::models::CollectionAlias upsert_alias(alias_name, collection_alias_schema)
+> models::CollectionAlias upsert_alias(alias_name, collection_alias_schema)
 Create or update a collection alias
 
 Create or update a collection alias. An alias is a virtual collection name that points to a real collection. If you're familiar with symbolic links on Linux, it's very similar to that. Aliases are useful when you want to reindex your data in the background on a new collection and switch your application to it without any changes to your code.
@@ -266,7 +266,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::CollectionAlias**](CollectionAlias.md)
+[**models::CollectionAlias**](CollectionAlias.md)
 
 ### Authorization
 
