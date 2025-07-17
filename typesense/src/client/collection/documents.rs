@@ -31,13 +31,12 @@ impl<'a> Documents<'a> {
 
     /// Indexes a document in the collection.
     ///
-    /// If the document has an 'id' field, it will be used as the document's ID.
-    /// Otherwise, Typesense will auto-generate an ID.
+
     ///
     /// # Arguments
     /// * `document` - A `serde_json::Value` representing the document.
-    /// * `action` - The indexing action to perform (e.g., "create", "upsert", "update").
-    pub async fn index(
+    /// * `action` - The indexing action to perform (e.g., "create", "upsert").
+    async fn index(
         &self,
         document: serde_json::Value,
         action: &str,
@@ -54,6 +53,33 @@ impl<'a> Documents<'a> {
                 async move { documents_api::index_document(&config, params_for_move).await }
             })
             .await
+    }
+
+    /// Creates a new document in the collection.
+    /// Fails if a document with the same id already exists
+    ///
+    /// If the document has an `id` field of type `string`, it will be used as the document's ID.
+    /// Otherwise, Typesense will auto-generate an ID.
+    ///
+    /// # Arguments
+    /// * `document` - A `serde_json::Value` representing the document to create.
+    pub async fn create(
+        &self,
+        document: serde_json::Value,
+    ) -> Result<serde_json::Value, Error<documents_api::IndexDocumentError>> {
+        self.index(document, "create").await
+    }
+
+    /// Creates a new document or updates an existing document if a document with the same id already exists.
+    /// Requires the whole document to be sent. For partial updates, use the `update()` action.
+    ///
+    /// # Arguments
+    /// * `document` - A `serde_json::Value` representing the document to upsert.
+    pub async fn upsert(
+        &self,
+        document: serde_json::Value,
+    ) -> Result<serde_json::Value, Error<documents_api::IndexDocumentError>> {
+        self.index(document, "upsert").await
     }
 
     /// Fetches an individual document from the collection by its ID.
@@ -73,50 +99,6 @@ impl<'a> Documents<'a> {
             .execute(|config: Arc<configuration::Configuration>| {
                 let params_for_move = params.clone();
                 async move { documents_api::get_document(&config, params_for_move).await }
-            })
-            .await
-    }
-
-    /// Updates an individual document from the collection by its ID. The update can be partial.
-    ///
-    /// # Arguments
-    /// * `document_id` - The ID of the document to update.
-    /// * `document` - A `serde_json::Value` containing the fields to update.
-    pub async fn update(
-        &self,
-        document_id: &str,
-        document: serde_json::Value,
-    ) -> Result<serde_json::Value, Error<documents_api::UpdateDocumentError>> {
-        let params = documents_api::UpdateDocumentParams {
-            collection_name: self.collection_name.to_string(),
-            document_id: document_id.to_string(),
-            body: document,
-            dirty_values: None,
-        };
-        self.client
-            .execute(|config: Arc<configuration::Configuration>| {
-                let params_for_move = params.clone();
-                async move { documents_api::update_document(&config, params_for_move).await }
-            })
-            .await
-    }
-
-    /// Deletes an individual document from the collection by its ID.
-    ///
-    /// # Arguments
-    /// * `document_id` - The ID of the document to delete.
-    pub async fn delete(
-        &self,
-        document_id: &str,
-    ) -> Result<serde_json::Value, Error<documents_api::DeleteDocumentError>> {
-        let params = documents_api::DeleteDocumentParams {
-            collection_name: self.collection_name.to_string(),
-            document_id: document_id.to_string(),
-        };
-        self.client
-            .execute(|config: Arc<configuration::Configuration>| {
-                let params_for_move = params.clone();
-                async move { documents_api::delete_document(&config, params_for_move).await }
             })
             .await
     }
