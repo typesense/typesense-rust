@@ -13,17 +13,17 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MultiSearchResult {
-    #[serde(rename = "conversation", skip_serializing_if = "Option::is_none")]
-    pub conversation: Option<Box<models::SearchResultConversation>>,
     #[serde(rename = "results")]
     pub results: Vec<models::MultiSearchResultItem>,
+    #[serde(rename = "conversation", skip_serializing_if = "Option::is_none")]
+    pub conversation: Option<Box<models::SearchResultConversation>>,
 }
 
 impl MultiSearchResult {
     pub fn new(results: Vec<models::MultiSearchResultItem>) -> MultiSearchResult {
         MultiSearchResult {
-            conversation: None,
             results,
+            conversation: None,
         }
     }
 }

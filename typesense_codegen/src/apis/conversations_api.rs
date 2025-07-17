@@ -14,6 +14,34 @@ use serde::{Deserialize, Serialize, de::Error as _};
 use crate::{apis::ResponseContent, models};
 use super::{Error, configuration, ContentType};
 
+/// struct for passing parameters to the method [`create_conversation_model`]
+#[derive(Clone, Debug)]
+pub struct CreateConversationModelParams {
+    pub conversation_model_create_schema: models::ConversationModelCreateSchema
+}
+
+/// struct for passing parameters to the method [`delete_conversation_model`]
+#[derive(Clone, Debug)]
+pub struct DeleteConversationModelParams {
+    /// The id of the conversation model to delete
+    pub model_id: String
+}
+
+/// struct for passing parameters to the method [`retrieve_conversation_model`]
+#[derive(Clone, Debug)]
+pub struct RetrieveConversationModelParams {
+    /// The id of the conversation model to retrieve
+    pub model_id: String
+}
+
+/// struct for passing parameters to the method [`update_conversation_model`]
+#[derive(Clone, Debug)]
+pub struct UpdateConversationModelParams {
+    /// The id of the conversation model to update
+    pub model_id: String,
+    pub conversation_model_update_schema: models::ConversationModelUpdateSchema
+}
+
 
 /// struct for typed errors of method [`create_conversation_model`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -53,9 +81,7 @@ pub enum UpdateConversationModelError {
 
 
 /// Create a Conversation Model
-pub async fn create_conversation_model(configuration: &configuration::Configuration, conversation_model_create_schema: models::ConversationModelCreateSchema) -> Result<models::ConversationModelSchema, Error<CreateConversationModelError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_conversation_model_create_schema = conversation_model_create_schema;
+pub async fn create_conversation_model(configuration: &configuration::Configuration, params: CreateConversationModelParams) -> Result<models::ConversationModelSchema, Error<CreateConversationModelError>> {
 
     let uri_str = format!("{}/conversations/models", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::POST, &uri_str);
@@ -71,7 +97,7 @@ pub async fn create_conversation_model(configuration: &configuration::Configurat
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&p_conversation_model_create_schema);
+    req_builder = req_builder.json(&params.conversation_model_create_schema);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -99,11 +125,9 @@ pub async fn create_conversation_model(configuration: &configuration::Configurat
 }
 
 /// Delete a conversation model
-pub async fn delete_conversation_model(configuration: &configuration::Configuration, model_id: &str) -> Result<models::ConversationModelSchema, Error<DeleteConversationModelError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_model_id = model_id;
+pub async fn delete_conversation_model(configuration: &configuration::Configuration, params: DeleteConversationModelParams) -> Result<models::ConversationModelSchema, Error<DeleteConversationModelError>> {
 
-    let uri_str = format!("{}/conversations/models/{modelId}", configuration.base_path, modelId=crate::apis::urlencode(p_model_id));
+    let uri_str = format!("{}/conversations/models/{modelId}", configuration.base_path, modelId=crate::apis::urlencode(params.model_id));
     let mut req_builder = configuration.client.request(reqwest::Method::DELETE, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -144,7 +168,7 @@ pub async fn delete_conversation_model(configuration: &configuration::Configurat
 }
 
 /// Retrieve all conversation models
-pub async fn retrieve_all_conversation_models(configuration: &configuration::Configuration, ) -> Result<Vec<models::ConversationModelSchema>, Error<RetrieveAllConversationModelsError>> {
+pub async fn retrieve_all_conversation_models(configuration: &configuration::Configuration) -> Result<Vec<models::ConversationModelSchema>, Error<RetrieveAllConversationModelsError>> {
 
     let uri_str = format!("{}/conversations/models", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -187,11 +211,9 @@ pub async fn retrieve_all_conversation_models(configuration: &configuration::Con
 }
 
 /// Retrieve a conversation model
-pub async fn retrieve_conversation_model(configuration: &configuration::Configuration, model_id: &str) -> Result<models::ConversationModelSchema, Error<RetrieveConversationModelError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_model_id = model_id;
+pub async fn retrieve_conversation_model(configuration: &configuration::Configuration, params: RetrieveConversationModelParams) -> Result<models::ConversationModelSchema, Error<RetrieveConversationModelError>> {
 
-    let uri_str = format!("{}/conversations/models/{modelId}", configuration.base_path, modelId=crate::apis::urlencode(p_model_id));
+    let uri_str = format!("{}/conversations/models/{modelId}", configuration.base_path, modelId=crate::apis::urlencode(params.model_id));
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -232,12 +254,9 @@ pub async fn retrieve_conversation_model(configuration: &configuration::Configur
 }
 
 /// Update a conversation model
-pub async fn update_conversation_model(configuration: &configuration::Configuration, model_id: &str, conversation_model_update_schema: models::ConversationModelUpdateSchema) -> Result<models::ConversationModelSchema, Error<UpdateConversationModelError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_model_id = model_id;
-    let p_conversation_model_update_schema = conversation_model_update_schema;
+pub async fn update_conversation_model(configuration: &configuration::Configuration, params: UpdateConversationModelParams) -> Result<models::ConversationModelSchema, Error<UpdateConversationModelError>> {
 
-    let uri_str = format!("{}/conversations/models/{modelId}", configuration.base_path, modelId=crate::apis::urlencode(p_model_id));
+    let uri_str = format!("{}/conversations/models/{modelId}", configuration.base_path, modelId=crate::apis::urlencode(params.model_id));
     let mut req_builder = configuration.client.request(reqwest::Method::PUT, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -251,7 +270,7 @@ pub async fn update_conversation_model(configuration: &configuration::Configurat
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&p_conversation_model_update_schema);
+    req_builder = req_builder.json(&params.conversation_model_update_schema);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;

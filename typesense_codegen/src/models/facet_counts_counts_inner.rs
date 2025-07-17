@@ -17,10 +17,10 @@ pub struct FacetCountsCountsInner {
     pub count: Option<i32>,
     #[serde(rename = "highlighted", skip_serializing_if = "Option::is_none")]
     pub highlighted: Option<String>,
-    #[serde(rename = "parent", skip_serializing_if = "Option::is_none")]
-    pub parent: Option<serde_json::Value>,
     #[serde(rename = "value", skip_serializing_if = "Option::is_none")]
     pub value: Option<String>,
+    #[serde(rename = "parent", skip_serializing_if = "Option::is_none")]
+    pub parent: Option<serde_json::Value>,
 }
 
 impl FacetCountsCountsInner {
@@ -28,8 +28,8 @@ impl FacetCountsCountsInner {
         FacetCountsCountsInner {
             count: None,
             highlighted: None,
-            parent: None,
             value: None,
+            parent: None,
         }
     }
 }

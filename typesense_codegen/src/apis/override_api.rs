@@ -14,6 +14,15 @@ use serde::{Deserialize, Serialize, de::Error as _};
 use crate::{apis::ResponseContent, models};
 use super::{Error, configuration, ContentType};
 
+/// struct for passing parameters to the method [`get_search_override`]
+#[derive(Clone, Debug)]
+pub struct GetSearchOverrideParams {
+    /// The name of the collection
+    pub collection_name: String,
+    /// The id of the search override
+    pub override_id: String
+}
+
 
 /// struct for typed errors of method [`get_search_override`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -24,12 +33,9 @@ pub enum GetSearchOverrideError {
 
 
 /// Retrieve the details of a search override, given its id.
-pub async fn get_search_override(configuration: &configuration::Configuration, collection_name: &str, override_id: &str) -> Result<models::SearchOverride, Error<GetSearchOverrideError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_name = collection_name;
-    let p_override_id = override_id;
+pub async fn get_search_override(configuration: &configuration::Configuration, params: GetSearchOverrideParams) -> Result<models::SearchOverride, Error<GetSearchOverrideError>> {
 
-    let uri_str = format!("{}/collections/{collectionName}/overrides/{overrideId}", configuration.base_path, collectionName=crate::apis::urlencode(p_collection_name), overrideId=crate::apis::urlencode(p_override_id));
+    let uri_str = format!("{}/collections/{collectionName}/overrides/{overrideId}", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name), overrideId=crate::apis::urlencode(params.override_id));
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {

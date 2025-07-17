@@ -14,6 +14,29 @@ use serde::{Deserialize, Serialize, de::Error as _};
 use crate::{apis::ResponseContent, models};
 use super::{Error, configuration, ContentType};
 
+/// struct for passing parameters to the method [`delete_preset`]
+#[derive(Clone, Debug)]
+pub struct DeletePresetParams {
+    /// The ID of the preset to delete.
+    pub preset_id: String
+}
+
+/// struct for passing parameters to the method [`retrieve_preset`]
+#[derive(Clone, Debug)]
+pub struct RetrievePresetParams {
+    /// The ID of the preset to retrieve.
+    pub preset_id: String
+}
+
+/// struct for passing parameters to the method [`upsert_preset`]
+#[derive(Clone, Debug)]
+pub struct UpsertPresetParams {
+    /// The name of the preset set to upsert.
+    pub preset_id: String,
+    /// The stopwords set to upsert.
+    pub preset_upsert_schema: models::PresetUpsertSchema
+}
+
 
 /// struct for typed errors of method [`delete_preset`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -48,11 +71,9 @@ pub enum UpsertPresetError {
 
 
 /// Permanently deletes a preset, given it's name.
-pub async fn delete_preset(configuration: &configuration::Configuration, preset_id: &str) -> Result<models::PresetDeleteSchema, Error<DeletePresetError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_preset_id = preset_id;
+pub async fn delete_preset(configuration: &configuration::Configuration, params: DeletePresetParams) -> Result<models::PresetDeleteSchema, Error<DeletePresetError>> {
 
-    let uri_str = format!("{}/presets/{presetId}", configuration.base_path, presetId=crate::apis::urlencode(p_preset_id));
+    let uri_str = format!("{}/presets/{presetId}", configuration.base_path, presetId=crate::apis::urlencode(params.preset_id));
     let mut req_builder = configuration.client.request(reqwest::Method::DELETE, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -93,7 +114,7 @@ pub async fn delete_preset(configuration: &configuration::Configuration, preset_
 }
 
 /// Retrieve the details of all presets
-pub async fn retrieve_all_presets(configuration: &configuration::Configuration, ) -> Result<models::PresetsRetrieveSchema, Error<RetrieveAllPresetsError>> {
+pub async fn retrieve_all_presets(configuration: &configuration::Configuration) -> Result<models::PresetsRetrieveSchema, Error<RetrieveAllPresetsError>> {
 
     let uri_str = format!("{}/presets", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -136,11 +157,9 @@ pub async fn retrieve_all_presets(configuration: &configuration::Configuration, 
 }
 
 /// Retrieve the details of a preset, given it's name.
-pub async fn retrieve_preset(configuration: &configuration::Configuration, preset_id: &str) -> Result<models::PresetSchema, Error<RetrievePresetError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_preset_id = preset_id;
+pub async fn retrieve_preset(configuration: &configuration::Configuration, params: RetrievePresetParams) -> Result<models::PresetSchema, Error<RetrievePresetError>> {
 
-    let uri_str = format!("{}/presets/{presetId}", configuration.base_path, presetId=crate::apis::urlencode(p_preset_id));
+    let uri_str = format!("{}/presets/{presetId}", configuration.base_path, presetId=crate::apis::urlencode(params.preset_id));
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -181,12 +200,9 @@ pub async fn retrieve_preset(configuration: &configuration::Configuration, prese
 }
 
 /// Create or update an existing preset.
-pub async fn upsert_preset(configuration: &configuration::Configuration, preset_id: &str, preset_upsert_schema: models::PresetUpsertSchema) -> Result<models::PresetSchema, Error<UpsertPresetError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_preset_id = preset_id;
-    let p_preset_upsert_schema = preset_upsert_schema;
+pub async fn upsert_preset(configuration: &configuration::Configuration, params: UpsertPresetParams) -> Result<models::PresetSchema, Error<UpsertPresetError>> {
 
-    let uri_str = format!("{}/presets/{presetId}", configuration.base_path, presetId=crate::apis::urlencode(p_preset_id));
+    let uri_str = format!("{}/presets/{presetId}", configuration.base_path, presetId=crate::apis::urlencode(params.preset_id));
     let mut req_builder = configuration.client.request(reqwest::Method::PUT, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -200,7 +216,7 @@ pub async fn upsert_preset(configuration: &configuration::Configuration, preset_
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&p_preset_upsert_schema);
+    req_builder = req_builder.json(&params.preset_upsert_schema);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;

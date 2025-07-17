@@ -14,6 +14,27 @@ use serde::{Deserialize, Serialize, de::Error as _};
 use crate::{apis::ResponseContent, models};
 use super::{Error, configuration, ContentType};
 
+/// struct for passing parameters to the method [`create_key`]
+#[derive(Clone, Debug)]
+pub struct CreateKeyParams {
+    /// The object that describes API key scope
+    pub api_key_schema: Option<models::ApiKeySchema>
+}
+
+/// struct for passing parameters to the method [`delete_key`]
+#[derive(Clone, Debug)]
+pub struct DeleteKeyParams {
+    /// The ID of the key to delete
+    pub key_id: i64
+}
+
+/// struct for passing parameters to the method [`get_key`]
+#[derive(Clone, Debug)]
+pub struct GetKeyParams {
+    /// The ID of the key to retrieve
+    pub key_id: i64
+}
+
 
 /// struct for typed errors of method [`create_key`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -50,9 +71,7 @@ pub enum GetKeysError {
 
 
 /// Create an API Key with fine-grain access control. You can restrict access on both a per-collection and per-action level. The generated key is returned only during creation. You want to store this key carefully in a secure place.
-pub async fn create_key(configuration: &configuration::Configuration, api_key_schema: Option<models::ApiKeySchema>) -> Result<models::ApiKey, Error<CreateKeyError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_api_key_schema = api_key_schema;
+pub async fn create_key(configuration: &configuration::Configuration, params: CreateKeyParams) -> Result<models::ApiKey, Error<CreateKeyError>> {
 
     let uri_str = format!("{}/keys", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::POST, &uri_str);
@@ -68,7 +87,7 @@ pub async fn create_key(configuration: &configuration::Configuration, api_key_sc
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&p_api_key_schema);
+    req_builder = req_builder.json(&params.api_key_schema);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -95,11 +114,9 @@ pub async fn create_key(configuration: &configuration::Configuration, api_key_sc
     }
 }
 
-pub async fn delete_key(configuration: &configuration::Configuration, key_id: i64) -> Result<models::ApiKeyDeleteResponse, Error<DeleteKeyError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_key_id = key_id;
+pub async fn delete_key(configuration: &configuration::Configuration, params: DeleteKeyParams) -> Result<models::ApiKeyDeleteResponse, Error<DeleteKeyError>> {
 
-    let uri_str = format!("{}/keys/{keyId}", configuration.base_path, keyId=p_key_id);
+    let uri_str = format!("{}/keys/{keyId}", configuration.base_path, keyId=params.key_id);
     let mut req_builder = configuration.client.request(reqwest::Method::DELETE, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -140,11 +157,9 @@ pub async fn delete_key(configuration: &configuration::Configuration, key_id: i6
 }
 
 /// Retrieve (metadata about) a key. Only the key prefix is returned when you retrieve a key. Due to security reasons, only the create endpoint returns the full API key.
-pub async fn get_key(configuration: &configuration::Configuration, key_id: i64) -> Result<models::ApiKey, Error<GetKeyError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_key_id = key_id;
+pub async fn get_key(configuration: &configuration::Configuration, params: GetKeyParams) -> Result<models::ApiKey, Error<GetKeyError>> {
 
-    let uri_str = format!("{}/keys/{keyId}", configuration.base_path, keyId=p_key_id);
+    let uri_str = format!("{}/keys/{keyId}", configuration.base_path, keyId=params.key_id);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -184,7 +199,7 @@ pub async fn get_key(configuration: &configuration::Configuration, key_id: i64) 
     }
 }
 
-pub async fn get_keys(configuration: &configuration::Configuration, ) -> Result<models::ApiKeysResponse, Error<GetKeysError>> {
+pub async fn get_keys(configuration: &configuration::Configuration) -> Result<models::ApiKeysResponse, Error<GetKeysError>> {
 
     let uri_str = format!("{}/keys", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);

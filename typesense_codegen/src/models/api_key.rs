@@ -13,16 +13,16 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ApiKey {
+    #[serde(rename = "value", skip_serializing_if = "Option::is_none")]
+    pub value: Option<String>,
+    #[serde(rename = "description")]
+    pub description: String,
     #[serde(rename = "actions")]
     pub actions: Vec<String>,
     #[serde(rename = "collections")]
     pub collections: Vec<String>,
-    #[serde(rename = "description")]
-    pub description: String,
     #[serde(rename = "expires_at", skip_serializing_if = "Option::is_none")]
     pub expires_at: Option<i64>,
-    #[serde(rename = "value", skip_serializing_if = "Option::is_none")]
-    pub value: Option<String>,
     #[serde(rename = "id", skip_serializing_if = "Option::is_none")]
     pub id: Option<i64>,
     #[serde(rename = "value_prefix", skip_serializing_if = "Option::is_none")]
@@ -30,13 +30,13 @@ pub struct ApiKey {
 }
 
 impl ApiKey {
-    pub fn new(actions: Vec<String>, collections: Vec<String>, description: String) -> ApiKey {
+    pub fn new(description: String, actions: Vec<String>, collections: Vec<String>) -> ApiKey {
         ApiKey {
+            value: None,
+            description,
             actions,
             collections,
-            description,
             expires_at: None,
-            value: None,
             id: None,
             value_prefix: None,
         }

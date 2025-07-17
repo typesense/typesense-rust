@@ -14,6 +14,22 @@ use serde::{Deserialize, Serialize, de::Error as _};
 use crate::{apis::ResponseContent, models};
 use super::{Error, configuration, ContentType};
 
+/// struct for passing parameters to the method [`get_stemming_dictionary`]
+#[derive(Clone, Debug)]
+pub struct GetStemmingDictionaryParams {
+    /// The ID of the dictionary to retrieve
+    pub dictionary_id: String
+}
+
+/// struct for passing parameters to the method [`import_stemming_dictionary`]
+#[derive(Clone, Debug)]
+pub struct ImportStemmingDictionaryParams {
+    /// The ID to assign to the dictionary
+    pub id: String,
+    /// The JSONL file containing word mappings
+    pub body: String
+}
+
 
 /// struct for typed errors of method [`get_stemming_dictionary`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -40,11 +56,9 @@ pub enum ListStemmingDictionariesError {
 
 
 /// Fetch details of a specific stemming dictionary.
-pub async fn get_stemming_dictionary(configuration: &configuration::Configuration, dictionary_id: &str) -> Result<models::StemmingDictionary, Error<GetStemmingDictionaryError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_dictionary_id = dictionary_id;
+pub async fn get_stemming_dictionary(configuration: &configuration::Configuration, params: GetStemmingDictionaryParams) -> Result<models::StemmingDictionary, Error<GetStemmingDictionaryError>> {
 
-    let uri_str = format!("{}/stemming/dictionaries/{dictionaryId}", configuration.base_path, dictionaryId=crate::apis::urlencode(p_dictionary_id));
+    let uri_str = format!("{}/stemming/dictionaries/{dictionaryId}", configuration.base_path, dictionaryId=crate::apis::urlencode(params.dictionary_id));
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -85,15 +99,12 @@ pub async fn get_stemming_dictionary(configuration: &configuration::Configuratio
 }
 
 /// Upload a JSONL file containing word mappings to create or update a stemming dictionary.
-pub async fn import_stemming_dictionary(configuration: &configuration::Configuration, id: &str, body: &str) -> Result<String, Error<ImportStemmingDictionaryError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_id = id;
-    let p_body = body;
+pub async fn import_stemming_dictionary(configuration: &configuration::Configuration, params: ImportStemmingDictionaryParams) -> Result<String, Error<ImportStemmingDictionaryError>> {
 
     let uri_str = format!("{}/stemming/dictionaries/import", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::POST, &uri_str);
 
-    req_builder = req_builder.query(&[("id", &p_id.to_string())]);
+    req_builder = req_builder.query(&[("id", &params.id.to_string())]);
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
     }
@@ -105,7 +116,7 @@ pub async fn import_stemming_dictionary(configuration: &configuration::Configura
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&p_body);
+    req_builder = req_builder.json(&params.body);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -133,7 +144,7 @@ pub async fn import_stemming_dictionary(configuration: &configuration::Configura
 }
 
 /// Retrieve a list of all available stemming dictionaries.
-pub async fn list_stemming_dictionaries(configuration: &configuration::Configuration, ) -> Result<models::ListStemmingDictionaries200Response, Error<ListStemmingDictionariesError>> {
+pub async fn list_stemming_dictionaries(configuration: &configuration::Configuration) -> Result<models::ListStemmingDictionaries200Response, Error<ListStemmingDictionariesError>> {
 
     let uri_str = format!("{}/stemming/dictionaries", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);

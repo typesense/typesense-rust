@@ -14,6 +14,13 @@ use serde::{Deserialize, Serialize, de::Error as _};
 use crate::{apis::ResponseContent, models};
 use super::{Error, configuration, ContentType};
 
+/// struct for passing parameters to the method [`take_snapshot`]
+#[derive(Clone, Debug)]
+pub struct TakeSnapshotParams {
+    /// The directory on the server where the snapshot should be saved.
+    pub snapshot_path: String
+}
+
 
 /// struct for typed errors of method [`get_schema_changes`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -52,7 +59,7 @@ pub enum VoteError {
 
 
 /// Returns the status of any ongoing schema change operations. If no schema changes are in progress, returns an empty response.
-pub async fn get_schema_changes(configuration: &configuration::Configuration, ) -> Result<Vec<models::SchemaChangeStatus>, Error<GetSchemaChangesError>> {
+pub async fn get_schema_changes(configuration: &configuration::Configuration) -> Result<Vec<models::SchemaChangeStatus>, Error<GetSchemaChangesError>> {
 
     let uri_str = format!("{}/operations/schema_changes", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -95,7 +102,7 @@ pub async fn get_schema_changes(configuration: &configuration::Configuration, ) 
 }
 
 /// Retrieve the stats about API endpoints.
-pub async fn retrieve_api_stats(configuration: &configuration::Configuration, ) -> Result<models::ApiStatsResponse, Error<RetrieveApiStatsError>> {
+pub async fn retrieve_api_stats(configuration: &configuration::Configuration) -> Result<models::ApiStatsResponse, Error<RetrieveApiStatsError>> {
 
     let uri_str = format!("{}/stats.json", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -138,7 +145,7 @@ pub async fn retrieve_api_stats(configuration: &configuration::Configuration, ) 
 }
 
 /// Retrieve the metrics.
-pub async fn retrieve_metrics(configuration: &configuration::Configuration, ) -> Result<serde_json::Value, Error<RetrieveMetricsError>> {
+pub async fn retrieve_metrics(configuration: &configuration::Configuration) -> Result<serde_json::Value, Error<RetrieveMetricsError>> {
 
     let uri_str = format!("{}/metrics.json", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -181,14 +188,12 @@ pub async fn retrieve_metrics(configuration: &configuration::Configuration, ) ->
 }
 
 /// Creates a point-in-time snapshot of a Typesense node's state and data in the specified directory. You can then backup the snapshot directory that gets created and later restore it as a data directory, as needed.
-pub async fn take_snapshot(configuration: &configuration::Configuration, snapshot_path: &str) -> Result<models::SuccessStatus, Error<TakeSnapshotError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_snapshot_path = snapshot_path;
+pub async fn take_snapshot(configuration: &configuration::Configuration, params: TakeSnapshotParams) -> Result<models::SuccessStatus, Error<TakeSnapshotError>> {
 
     let uri_str = format!("{}/operations/snapshot", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::POST, &uri_str);
 
-    req_builder = req_builder.query(&[("snapshot_path", &p_snapshot_path.to_string())]);
+    req_builder = req_builder.query(&[("snapshot_path", &params.snapshot_path.to_string())]);
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
     }
@@ -227,7 +232,7 @@ pub async fn take_snapshot(configuration: &configuration::Configuration, snapsho
 }
 
 /// Triggers a follower node to initiate the raft voting process, which triggers leader re-election. The follower node that you run this operation against will become the new leader, once this command succeeds.
-pub async fn vote(configuration: &configuration::Configuration, ) -> Result<models::SuccessStatus, Error<VoteError>> {
+pub async fn vote(configuration: &configuration::Configuration) -> Result<models::SuccessStatus, Error<VoteError>> {
 
     let uri_str = format!("{}/operations/vote", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::POST, &uri_str);

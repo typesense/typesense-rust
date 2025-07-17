@@ -14,6 +14,59 @@ use serde::{Deserialize, Serialize, de::Error as _};
 use crate::{apis::ResponseContent, models};
 use super::{Error, configuration, ContentType};
 
+/// struct for passing parameters to the method [`create_collection`]
+#[derive(Clone, Debug)]
+pub struct CreateCollectionParams {
+    /// The collection object to be created
+    pub collection_schema: models::CollectionSchema
+}
+
+/// struct for passing parameters to the method [`delete_alias`]
+#[derive(Clone, Debug)]
+pub struct DeleteAliasParams {
+    /// The name of the alias to delete
+    pub alias_name: String
+}
+
+/// struct for passing parameters to the method [`delete_collection`]
+#[derive(Clone, Debug)]
+pub struct DeleteCollectionParams {
+    /// The name of the collection to delete
+    pub collection_name: String
+}
+
+/// struct for passing parameters to the method [`get_alias`]
+#[derive(Clone, Debug)]
+pub struct GetAliasParams {
+    /// The name of the alias to retrieve
+    pub alias_name: String
+}
+
+/// struct for passing parameters to the method [`get_collection`]
+#[derive(Clone, Debug)]
+pub struct GetCollectionParams {
+    /// The name of the collection to retrieve
+    pub collection_name: String
+}
+
+/// struct for passing parameters to the method [`update_collection`]
+#[derive(Clone, Debug)]
+pub struct UpdateCollectionParams {
+    /// The name of the collection to update
+    pub collection_name: String,
+    /// The document object with fields to be updated
+    pub collection_update_schema: models::CollectionUpdateSchema
+}
+
+/// struct for passing parameters to the method [`upsert_alias`]
+#[derive(Clone, Debug)]
+pub struct UpsertAliasParams {
+    /// The name of the alias to create/update
+    pub alias_name: String,
+    /// Collection alias to be created/updated
+    pub collection_alias_schema: Option<models::CollectionAliasSchema>
+}
+
 
 /// struct for typed errors of method [`create_collection`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -90,9 +143,7 @@ pub enum UpsertAliasError {
 
 
 /// When a collection is created, we give it a name and describe the fields that will be indexed from the documents added to the collection.
-pub async fn create_collection(configuration: &configuration::Configuration, collection_schema: models::CollectionSchema) -> Result<models::CollectionResponse, Error<CreateCollectionError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_schema = collection_schema;
+pub async fn create_collection(configuration: &configuration::Configuration, params: CreateCollectionParams) -> Result<models::CollectionResponse, Error<CreateCollectionError>> {
 
     let uri_str = format!("{}/collections", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::POST, &uri_str);
@@ -108,7 +159,7 @@ pub async fn create_collection(configuration: &configuration::Configuration, col
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&p_collection_schema);
+    req_builder = req_builder.json(&params.collection_schema);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -135,11 +186,9 @@ pub async fn create_collection(configuration: &configuration::Configuration, col
     }
 }
 
-pub async fn delete_alias(configuration: &configuration::Configuration, alias_name: &str) -> Result<models::CollectionAlias, Error<DeleteAliasError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_alias_name = alias_name;
+pub async fn delete_alias(configuration: &configuration::Configuration, params: DeleteAliasParams) -> Result<models::CollectionAlias, Error<DeleteAliasError>> {
 
-    let uri_str = format!("{}/aliases/{aliasName}", configuration.base_path, aliasName=crate::apis::urlencode(p_alias_name));
+    let uri_str = format!("{}/aliases/{aliasName}", configuration.base_path, aliasName=crate::apis::urlencode(params.alias_name));
     let mut req_builder = configuration.client.request(reqwest::Method::DELETE, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -180,11 +229,9 @@ pub async fn delete_alias(configuration: &configuration::Configuration, alias_na
 }
 
 /// Permanently drops a collection. This action cannot be undone. For large collections, this might have an impact on read latencies.
-pub async fn delete_collection(configuration: &configuration::Configuration, collection_name: &str) -> Result<models::CollectionResponse, Error<DeleteCollectionError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_name = collection_name;
+pub async fn delete_collection(configuration: &configuration::Configuration, params: DeleteCollectionParams) -> Result<models::CollectionResponse, Error<DeleteCollectionError>> {
 
-    let uri_str = format!("{}/collections/{collectionName}", configuration.base_path, collectionName=crate::apis::urlencode(p_collection_name));
+    let uri_str = format!("{}/collections/{collectionName}", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name));
     let mut req_builder = configuration.client.request(reqwest::Method::DELETE, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -225,11 +272,9 @@ pub async fn delete_collection(configuration: &configuration::Configuration, col
 }
 
 /// Find out which collection an alias points to by fetching it
-pub async fn get_alias(configuration: &configuration::Configuration, alias_name: &str) -> Result<models::CollectionAlias, Error<GetAliasError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_alias_name = alias_name;
+pub async fn get_alias(configuration: &configuration::Configuration, params: GetAliasParams) -> Result<models::CollectionAlias, Error<GetAliasError>> {
 
-    let uri_str = format!("{}/aliases/{aliasName}", configuration.base_path, aliasName=crate::apis::urlencode(p_alias_name));
+    let uri_str = format!("{}/aliases/{aliasName}", configuration.base_path, aliasName=crate::apis::urlencode(params.alias_name));
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -270,7 +315,7 @@ pub async fn get_alias(configuration: &configuration::Configuration, alias_name:
 }
 
 /// List all aliases and the corresponding collections that they map to.
-pub async fn get_aliases(configuration: &configuration::Configuration, ) -> Result<models::CollectionAliasesResponse, Error<GetAliasesError>> {
+pub async fn get_aliases(configuration: &configuration::Configuration) -> Result<models::CollectionAliasesResponse, Error<GetAliasesError>> {
 
     let uri_str = format!("{}/aliases", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -313,11 +358,9 @@ pub async fn get_aliases(configuration: &configuration::Configuration, ) -> Resu
 }
 
 /// Retrieve the details of a collection, given its name.
-pub async fn get_collection(configuration: &configuration::Configuration, collection_name: &str) -> Result<models::CollectionResponse, Error<GetCollectionError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_name = collection_name;
+pub async fn get_collection(configuration: &configuration::Configuration, params: GetCollectionParams) -> Result<models::CollectionResponse, Error<GetCollectionError>> {
 
-    let uri_str = format!("{}/collections/{collectionName}", configuration.base_path, collectionName=crate::apis::urlencode(p_collection_name));
+    let uri_str = format!("{}/collections/{collectionName}", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name));
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -358,7 +401,7 @@ pub async fn get_collection(configuration: &configuration::Configuration, collec
 }
 
 /// Returns a summary of all your collections. The collections are returned sorted by creation date, with the most recent collections appearing first.
-pub async fn get_collections(configuration: &configuration::Configuration, ) -> Result<Vec<models::CollectionResponse>, Error<GetCollectionsError>> {
+pub async fn get_collections(configuration: &configuration::Configuration) -> Result<Vec<models::CollectionResponse>, Error<GetCollectionsError>> {
 
     let uri_str = format!("{}/collections", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -401,12 +444,9 @@ pub async fn get_collections(configuration: &configuration::Configuration, ) -> 
 }
 
 /// Update a collection's schema to modify the fields and their types.
-pub async fn update_collection(configuration: &configuration::Configuration, collection_name: &str, collection_update_schema: models::CollectionUpdateSchema) -> Result<models::CollectionUpdateSchema, Error<UpdateCollectionError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_name = collection_name;
-    let p_collection_update_schema = collection_update_schema;
+pub async fn update_collection(configuration: &configuration::Configuration, params: UpdateCollectionParams) -> Result<models::CollectionUpdateSchema, Error<UpdateCollectionError>> {
 
-    let uri_str = format!("{}/collections/{collectionName}", configuration.base_path, collectionName=crate::apis::urlencode(p_collection_name));
+    let uri_str = format!("{}/collections/{collectionName}", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name));
     let mut req_builder = configuration.client.request(reqwest::Method::PATCH, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -420,7 +460,7 @@ pub async fn update_collection(configuration: &configuration::Configuration, col
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&p_collection_update_schema);
+    req_builder = req_builder.json(&params.collection_update_schema);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -448,12 +488,9 @@ pub async fn update_collection(configuration: &configuration::Configuration, col
 }
 
 /// Create or update a collection alias. An alias is a virtual collection name that points to a real collection. If you're familiar with symbolic links on Linux, it's very similar to that. Aliases are useful when you want to reindex your data in the background on a new collection and switch your application to it without any changes to your code.
-pub async fn upsert_alias(configuration: &configuration::Configuration, alias_name: &str, collection_alias_schema: Option<models::CollectionAliasSchema>) -> Result<models::CollectionAlias, Error<UpsertAliasError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_alias_name = alias_name;
-    let p_collection_alias_schema = collection_alias_schema;
+pub async fn upsert_alias(configuration: &configuration::Configuration, params: UpsertAliasParams) -> Result<models::CollectionAlias, Error<UpsertAliasError>> {
 
-    let uri_str = format!("{}/aliases/{aliasName}", configuration.base_path, aliasName=crate::apis::urlencode(p_alias_name));
+    let uri_str = format!("{}/aliases/{aliasName}", configuration.base_path, aliasName=crate::apis::urlencode(params.alias_name));
     let mut req_builder = configuration.client.request(reqwest::Method::PUT, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -467,7 +504,7 @@ pub async fn upsert_alias(configuration: &configuration::Configuration, alias_na
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&p_collection_alias_schema);
+    req_builder = req_builder.json(&params.collection_alias_schema);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;

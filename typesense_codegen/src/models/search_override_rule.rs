@@ -13,27 +13,27 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SearchOverrideRule {
-    /// Indicates that the override should apply when the filter_by parameter in a search query exactly matches the string specified here (including backticks, spaces, brackets, etc). 
-    #[serde(rename = "filter_by", skip_serializing_if = "Option::is_none")]
-    pub filter_by: Option<String>,
-    /// Indicates whether the match on the query term should be `exact` or `contains`. If we want to match all queries that contained the word `apple`, we will use the `contains` match instead. 
-    #[serde(rename = "match", skip_serializing_if = "Option::is_none")]
-    pub r#match: Option<Match>,
-    /// Indicates what search queries should be overridden
-    #[serde(rename = "query", skip_serializing_if = "Option::is_none")]
-    pub query: Option<String>,
     /// List of tag values to associate with this override rule.
     #[serde(rename = "tags", skip_serializing_if = "Option::is_none")]
     pub tags: Option<Vec<String>>,
+    /// Indicates what search queries should be overridden
+    #[serde(rename = "query", skip_serializing_if = "Option::is_none")]
+    pub query: Option<String>,
+    /// Indicates whether the match on the query term should be `exact` or `contains`. If we want to match all queries that contained the word `apple`, we will use the `contains` match instead. 
+    #[serde(rename = "match", skip_serializing_if = "Option::is_none")]
+    pub r#match: Option<Match>,
+    /// Indicates that the override should apply when the filter_by parameter in a search query exactly matches the string specified here (including backticks, spaces, brackets, etc). 
+    #[serde(rename = "filter_by", skip_serializing_if = "Option::is_none")]
+    pub filter_by: Option<String>,
 }
 
 impl SearchOverrideRule {
     pub fn new() -> SearchOverrideRule {
         SearchOverrideRule {
-            filter_by: None,
-            r#match: None,
-            query: None,
             tags: None,
+            query: None,
+            r#match: None,
+            filter_by: None,
         }
     }
 }

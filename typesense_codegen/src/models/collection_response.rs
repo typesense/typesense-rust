@@ -13,46 +13,46 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct CollectionResponse {
-    /// The name of an int32 / float field that determines the order in which the search results are ranked when a sort_by clause is not provided during searching. This field must indicate some kind of popularity.
-    #[serde(rename = "default_sorting_field", skip_serializing_if = "Option::is_none")]
-    pub default_sorting_field: Option<String>,
-    /// Enables experimental support at a collection level for nested object or object array fields. This field is only available if the Typesense server is version `0.24.0.rcn34` or later.
-    #[serde(rename = "enable_nested_fields", skip_serializing_if = "Option::is_none")]
-    pub enable_nested_fields: Option<bool>,
-    /// A list of fields for querying, filtering and faceting
-    #[serde(rename = "fields")]
-    pub fields: Vec<models::Field>,
     /// Name of the collection
     #[serde(rename = "name")]
     pub name: String,
-    /// List of symbols or special characters to be indexed. 
-    #[serde(rename = "symbols_to_index", skip_serializing_if = "Option::is_none")]
-    pub symbols_to_index: Option<Vec<String>>,
+    /// A list of fields for querying, filtering and faceting
+    #[serde(rename = "fields")]
+    pub fields: Vec<models::Field>,
+    /// The name of an int32 / float field that determines the order in which the search results are ranked when a sort_by clause is not provided during searching. This field must indicate some kind of popularity.
+    #[serde(rename = "default_sorting_field", skip_serializing_if = "Option::is_none")]
+    pub default_sorting_field: Option<String>,
     /// List of symbols or special characters to be used for splitting the text into individual words in addition to space and new-line characters. 
     #[serde(rename = "token_separators", skip_serializing_if = "Option::is_none")]
     pub token_separators: Option<Vec<String>>,
+    /// Enables experimental support at a collection level for nested object or object array fields. This field is only available if the Typesense server is version `0.24.0.rcn34` or later.
+    #[serde(rename = "enable_nested_fields", skip_serializing_if = "Option::is_none")]
+    pub enable_nested_fields: Option<bool>,
+    /// List of symbols or special characters to be indexed. 
+    #[serde(rename = "symbols_to_index", skip_serializing_if = "Option::is_none")]
+    pub symbols_to_index: Option<Vec<String>>,
     #[serde(rename = "voice_query_model", skip_serializing_if = "Option::is_none")]
     pub voice_query_model: Option<Box<models::VoiceQueryModelCollectionConfig>>,
-    /// Timestamp of when the collection was created (Unix epoch in seconds)
-    #[serde(rename = "created_at")]
-    pub created_at: i64,
     /// Number of documents in the collection
     #[serde(rename = "num_documents")]
     pub num_documents: i64,
+    /// Timestamp of when the collection was created (Unix epoch in seconds)
+    #[serde(rename = "created_at")]
+    pub created_at: i64,
 }
 
 impl CollectionResponse {
-    pub fn new(fields: Vec<models::Field>, name: String, created_at: i64, num_documents: i64) -> CollectionResponse {
+    pub fn new(name: String, fields: Vec<models::Field>, num_documents: i64, created_at: i64) -> CollectionResponse {
         CollectionResponse {
-            default_sorting_field: None,
-            enable_nested_fields: None,
-            fields,
             name,
-            symbols_to_index: None,
+            fields,
+            default_sorting_field: None,
             token_separators: None,
+            enable_nested_fields: None,
+            symbols_to_index: None,
             voice_query_model: None,
-            created_at,
             num_documents,
+            created_at,
         }
     }
 }

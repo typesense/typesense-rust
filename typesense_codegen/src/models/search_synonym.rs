@@ -13,18 +13,18 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SearchSynonym {
-    /// Locale for the synonym, leave blank to use the standard tokenizer.
-    #[serde(rename = "locale", skip_serializing_if = "Option::is_none")]
-    pub locale: Option<String>,
     /// For 1-way synonyms, indicates the root word that words in the `synonyms` parameter map to.
     #[serde(rename = "root", skip_serializing_if = "Option::is_none")]
     pub root: Option<String>,
-    /// By default, special characters are dropped from synonyms. Use this attribute to specify which special characters should be indexed as is.
-    #[serde(rename = "symbols_to_index", skip_serializing_if = "Option::is_none")]
-    pub symbols_to_index: Option<Vec<String>>,
     /// Array of words that should be considered as synonyms.
     #[serde(rename = "synonyms")]
     pub synonyms: Vec<String>,
+    /// Locale for the synonym, leave blank to use the standard tokenizer.
+    #[serde(rename = "locale", skip_serializing_if = "Option::is_none")]
+    pub locale: Option<String>,
+    /// By default, special characters are dropped from synonyms. Use this attribute to specify which special characters should be indexed as is.
+    #[serde(rename = "symbols_to_index", skip_serializing_if = "Option::is_none")]
+    pub symbols_to_index: Option<Vec<String>>,
     #[serde(rename = "id")]
     pub id: String,
 }
@@ -32,10 +32,10 @@ pub struct SearchSynonym {
 impl SearchSynonym {
     pub fn new(synonyms: Vec<String>, id: String) -> SearchSynonym {
         SearchSynonym {
-            locale: None,
             root: None,
-            symbols_to_index: None,
             synonyms,
+            locale: None,
+            symbols_to_index: None,
             id,
         }
     }

@@ -3,16 +3,17 @@ name = "typesense_codegen"
 version = "0.25.0"
 authors = ["OpenAPI Generator team and contributors"]
 description = "client for typesense generated with openapi spec"
-edition = "2018"
+edition = "2021"
 license = "Apache-2.0"
 
 [dependencies]
-serde = "^1.0"
-serde_derive = "^1.0"
+serde = { version = "^1.0", features = ["derive"] }
 serde_json = "^1.0"
-url = "^2.2"
-uuid = { version = "^1.0", features = ["serde", "v4", "js"] }
-
-[dependencies.reqwest]
-version = "^0.12"
-features = ["json", "multipart"]
+serde_repr = "^0.1"
+url = "^2.5"
+reqwest = { version = "^0.12", default-features = false, features = ["json", "multipart"] }
+reqwest-middleware = { version = "^0.4", features = ["json", "multipart"] }
+[features]
+default = ["native-tls"]
+native-tls = ["reqwest/native-tls"]
+rustls = ["reqwest/rustls-tls"]

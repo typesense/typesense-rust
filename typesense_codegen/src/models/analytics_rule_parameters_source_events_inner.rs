@@ -13,20 +13,20 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct AnalyticsRuleParametersSourceEventsInner {
-    #[serde(rename = "name")]
-    pub name: String,
     #[serde(rename = "type")]
     pub r#type: String,
     #[serde(rename = "weight")]
     pub weight: f32,
+    #[serde(rename = "name")]
+    pub name: String,
 }
 
 impl AnalyticsRuleParametersSourceEventsInner {
-    pub fn new(name: String, r#type: String, weight: f32) -> AnalyticsRuleParametersSourceEventsInner {
+    pub fn new(r#type: String, weight: f32, name: String) -> AnalyticsRuleParametersSourceEventsInner {
         AnalyticsRuleParametersSourceEventsInner {
-            name,
             r#type,
             weight,
+            name,
         }
     }
 }

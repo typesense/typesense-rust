@@ -4,11 +4,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**value** | Option<**String**> |  | [optional]
+**description** | **String** |  | 
 **actions** | **Vec<String>** |  | 
 **collections** | **Vec<String>** |  | 
-**description** | **String** |  | 
 **expires_at** | Option<**i64**> |  | [optional]
-**value** | Option<**String**> |  | [optional]
 **id** | Option<**i64**> |  | [optional][readonly]
 **value_prefix** | Option<**String**> |  | [optional][readonly]
 

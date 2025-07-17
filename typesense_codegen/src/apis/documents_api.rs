@@ -14,6 +14,277 @@ use serde::{Deserialize, Serialize, de::Error as _};
 use crate::{apis::ResponseContent, models};
 use super::{Error, configuration, ContentType};
 
+/// struct for passing parameters to the method [`delete_document`]
+#[derive(Clone, Debug)]
+pub struct DeleteDocumentParams {
+    /// The name of the collection to search for the document under
+    pub collection_name: String,
+    /// The Document ID
+    pub document_id: String
+}
+
+/// struct for passing parameters to the method [`delete_documents`]
+#[derive(Clone, Debug)]
+pub struct DeleteDocumentsParams {
+    /// The name of the collection to delete documents from
+    pub collection_name: String,
+    pub filter_by: Option<String>,
+    pub batch_size: Option<i32>,
+    pub ignore_not_found: Option<bool>,
+    pub truncate: Option<bool>
+}
+
+/// struct for passing parameters to the method [`delete_search_override`]
+#[derive(Clone, Debug)]
+pub struct DeleteSearchOverrideParams {
+    /// The name of the collection
+    pub collection_name: String,
+    /// The ID of the search override to delete
+    pub override_id: String
+}
+
+/// struct for passing parameters to the method [`export_documents`]
+#[derive(Clone, Debug)]
+pub struct ExportDocumentsParams {
+    /// The name of the collection
+    pub collection_name: String,
+    pub filter_by: Option<String>,
+    pub include_fields: Option<String>,
+    pub exclude_fields: Option<String>
+}
+
+/// struct for passing parameters to the method [`get_document`]
+#[derive(Clone, Debug)]
+pub struct GetDocumentParams {
+    /// The name of the collection to search for the document under
+    pub collection_name: String,
+    /// The Document ID
+    pub document_id: String
+}
+
+/// struct for passing parameters to the method [`get_search_override`]
+#[derive(Clone, Debug)]
+pub struct GetSearchOverrideParams {
+    /// The name of the collection
+    pub collection_name: String,
+    /// The id of the search override
+    pub override_id: String
+}
+
+/// struct for passing parameters to the method [`get_search_overrides`]
+#[derive(Clone, Debug)]
+pub struct GetSearchOverridesParams {
+    /// The name of the collection
+    pub collection_name: String
+}
+
+/// struct for passing parameters to the method [`import_documents`]
+#[derive(Clone, Debug)]
+pub struct ImportDocumentsParams {
+    /// The name of the collection
+    pub collection_name: String,
+    /// The json array of documents or the JSONL file to import
+    pub body: String,
+    pub batch_size: Option<i32>,
+    pub return_id: Option<bool>,
+    pub remote_embedding_batch_size: Option<i32>,
+    pub return_doc: Option<bool>,
+    pub action: Option<models::IndexAction>,
+    pub dirty_values: Option<models::DirtyValues>
+}
+
+/// struct for passing parameters to the method [`index_document`]
+#[derive(Clone, Debug)]
+pub struct IndexDocumentParams {
+    /// The name of the collection to add the document to
+    pub collection_name: String,
+    /// The document object to be indexed
+    pub body: serde_json::Value,
+    /// Additional action to perform
+    pub action: Option<String>,
+    /// Dealing with Dirty Data
+    pub dirty_values: Option<models::DirtyValues>
+}
+
+/// struct for passing parameters to the method [`multi_search`]
+#[derive(Clone, Debug)]
+pub struct MultiSearchParams {
+    pub q: Option<String>,
+    pub query_by: Option<String>,
+    pub query_by_weights: Option<String>,
+    pub text_match_type: Option<String>,
+    pub prefix: Option<String>,
+    pub infix: Option<String>,
+    pub max_extra_prefix: Option<i32>,
+    pub max_extra_suffix: Option<i32>,
+    pub filter_by: Option<String>,
+    pub sort_by: Option<String>,
+    pub facet_by: Option<String>,
+    pub max_facet_values: Option<i32>,
+    pub facet_query: Option<String>,
+    pub num_typos: Option<String>,
+    pub page: Option<i32>,
+    pub per_page: Option<i32>,
+    pub limit: Option<i32>,
+    pub offset: Option<i32>,
+    pub group_by: Option<String>,
+    pub group_limit: Option<i32>,
+    pub group_missing_values: Option<bool>,
+    pub include_fields: Option<String>,
+    pub exclude_fields: Option<String>,
+    pub highlight_full_fields: Option<String>,
+    pub highlight_affix_num_tokens: Option<i32>,
+    pub highlight_start_tag: Option<String>,
+    pub highlight_end_tag: Option<String>,
+    pub snippet_threshold: Option<i32>,
+    pub drop_tokens_threshold: Option<i32>,
+    pub drop_tokens_mode: Option<models::DropTokensMode>,
+    pub typo_tokens_threshold: Option<i32>,
+    pub enable_typos_for_alpha_numerical_tokens: Option<bool>,
+    pub filter_curated_hits: Option<bool>,
+    pub enable_synonyms: Option<bool>,
+    pub synonym_prefix: Option<bool>,
+    pub synonym_num_typos: Option<i32>,
+    pub pinned_hits: Option<String>,
+    pub hidden_hits: Option<String>,
+    pub override_tags: Option<String>,
+    pub highlight_fields: Option<String>,
+    pub pre_segmented_query: Option<bool>,
+    pub preset: Option<String>,
+    pub enable_overrides: Option<bool>,
+    pub prioritize_exact_match: Option<bool>,
+    pub prioritize_token_position: Option<bool>,
+    pub prioritize_num_matching_fields: Option<bool>,
+    pub enable_typos_for_numerical_tokens: Option<bool>,
+    pub exhaustive_search: Option<bool>,
+    pub search_cutoff_ms: Option<i32>,
+    pub use_cache: Option<bool>,
+    pub cache_ttl: Option<i32>,
+    pub min_len_1typo: Option<i32>,
+    pub min_len_2typo: Option<i32>,
+    pub vector_query: Option<String>,
+    pub remote_embedding_timeout_ms: Option<i32>,
+    pub remote_embedding_num_tries: Option<i32>,
+    pub facet_strategy: Option<String>,
+    pub stopwords: Option<String>,
+    pub facet_return_parent: Option<String>,
+    pub voice_query: Option<String>,
+    pub conversation: Option<bool>,
+    pub conversation_model_id: Option<String>,
+    pub conversation_id: Option<String>,
+    pub multi_search_searches_parameter: Option<models::MultiSearchSearchesParameter>
+}
+
+/// struct for passing parameters to the method [`search_collection`]
+#[derive(Clone, Debug)]
+pub struct SearchCollectionParams {
+    /// The name of the collection to search for the document under
+    pub collection_name: String,
+    pub q: Option<String>,
+    pub query_by: Option<String>,
+    pub nl_query: Option<bool>,
+    pub nl_model_id: Option<String>,
+    pub query_by_weights: Option<String>,
+    pub text_match_type: Option<String>,
+    pub prefix: Option<String>,
+    pub infix: Option<String>,
+    pub max_extra_prefix: Option<i32>,
+    pub max_extra_suffix: Option<i32>,
+    pub filter_by: Option<String>,
+    pub max_filter_by_candidates: Option<i32>,
+    pub sort_by: Option<String>,
+    pub facet_by: Option<String>,
+    pub max_facet_values: Option<i32>,
+    pub facet_query: Option<String>,
+    pub num_typos: Option<String>,
+    pub page: Option<i32>,
+    pub per_page: Option<i32>,
+    pub limit: Option<i32>,
+    pub offset: Option<i32>,
+    pub group_by: Option<String>,
+    pub group_limit: Option<i32>,
+    pub group_missing_values: Option<bool>,
+    pub include_fields: Option<String>,
+    pub exclude_fields: Option<String>,
+    pub highlight_full_fields: Option<String>,
+    pub highlight_affix_num_tokens: Option<i32>,
+    pub highlight_start_tag: Option<String>,
+    pub highlight_end_tag: Option<String>,
+    pub enable_highlight_v1: Option<bool>,
+    pub snippet_threshold: Option<i32>,
+    pub drop_tokens_threshold: Option<i32>,
+    pub drop_tokens_mode: Option<models::DropTokensMode>,
+    pub typo_tokens_threshold: Option<i32>,
+    pub enable_typos_for_alpha_numerical_tokens: Option<bool>,
+    pub filter_curated_hits: Option<bool>,
+    pub enable_synonyms: Option<bool>,
+    pub synonym_prefix: Option<bool>,
+    pub synonym_num_typos: Option<i32>,
+    pub pinned_hits: Option<String>,
+    pub hidden_hits: Option<String>,
+    pub override_tags: Option<String>,
+    pub highlight_fields: Option<String>,
+    pub split_join_tokens: Option<String>,
+    pub pre_segmented_query: Option<bool>,
+    pub preset: Option<String>,
+    pub enable_overrides: Option<bool>,
+    pub prioritize_exact_match: Option<bool>,
+    pub max_candidates: Option<i32>,
+    pub prioritize_token_position: Option<bool>,
+    pub prioritize_num_matching_fields: Option<bool>,
+    pub enable_typos_for_numerical_tokens: Option<bool>,
+    pub exhaustive_search: Option<bool>,
+    pub search_cutoff_ms: Option<i32>,
+    pub use_cache: Option<bool>,
+    pub cache_ttl: Option<i32>,
+    pub min_len_1typo: Option<i32>,
+    pub min_len_2typo: Option<i32>,
+    pub vector_query: Option<String>,
+    pub remote_embedding_timeout_ms: Option<i32>,
+    pub remote_embedding_num_tries: Option<i32>,
+    pub facet_strategy: Option<String>,
+    pub stopwords: Option<String>,
+    pub facet_return_parent: Option<String>,
+    pub voice_query: Option<String>,
+    pub conversation: Option<bool>,
+    pub conversation_model_id: Option<String>,
+    pub conversation_id: Option<String>
+}
+
+/// struct for passing parameters to the method [`update_document`]
+#[derive(Clone, Debug)]
+pub struct UpdateDocumentParams {
+    /// The name of the collection to search for the document under
+    pub collection_name: String,
+    /// The Document ID
+    pub document_id: String,
+    /// The document object with fields to be updated
+    pub body: serde_json::Value,
+    /// Dealing with Dirty Data
+    pub dirty_values: Option<models::DirtyValues>
+}
+
+/// struct for passing parameters to the method [`update_documents`]
+#[derive(Clone, Debug)]
+pub struct UpdateDocumentsParams {
+    /// The name of the collection to update documents in
+    pub collection_name: String,
+    /// The document fields to be updated
+    pub body: serde_json::Value,
+    pub filter_by: Option<String>
+}
+
+/// struct for passing parameters to the method [`upsert_search_override`]
+#[derive(Clone, Debug)]
+pub struct UpsertSearchOverrideParams {
+    /// The name of the collection
+    pub collection_name: String,
+    /// The ID of the search override to create/update
+    pub override_id: String,
+    /// The search override object to be created/updated
+    pub search_override_schema: models::SearchOverrideSchema
+}
+
 
 /// struct for typed errors of method [`delete_document`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -130,12 +401,9 @@ pub enum UpsertSearchOverrideError {
 
 
 /// Delete an individual document from a collection by using its ID.
-pub async fn delete_document(configuration: &configuration::Configuration, collection_name: &str, document_id: &str) -> Result<serde_json::Value, Error<DeleteDocumentError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_name = collection_name;
-    let p_document_id = document_id;
+pub async fn delete_document(configuration: &configuration::Configuration, params: DeleteDocumentParams) -> Result<serde_json::Value, Error<DeleteDocumentError>> {
 
-    let uri_str = format!("{}/collections/{collectionName}/documents/{documentId}", configuration.base_path, collectionName=crate::apis::urlencode(p_collection_name), documentId=crate::apis::urlencode(p_document_id));
+    let uri_str = format!("{}/collections/{collectionName}/documents/{documentId}", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name), documentId=crate::apis::urlencode(params.document_id));
     let mut req_builder = configuration.client.request(reqwest::Method::DELETE, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -176,27 +444,21 @@ pub async fn delete_document(configuration: &configuration::Configuration, colle
 }
 
 /// Delete a bunch of documents that match a specific filter condition. Use the `batch_size` parameter to control the number of documents that should deleted at a time. A larger value will speed up deletions, but will impact performance of other operations running on the server.
-pub async fn delete_documents(configuration: &configuration::Configuration, collection_name: &str, batch_size: Option<i32>, filter_by: Option<&str>, ignore_not_found: Option<bool>, truncate: Option<bool>) -> Result<models::DeleteDocuments200Response, Error<DeleteDocumentsError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_name = collection_name;
-    let p_batch_size = batch_size;
-    let p_filter_by = filter_by;
-    let p_ignore_not_found = ignore_not_found;
-    let p_truncate = truncate;
+pub async fn delete_documents(configuration: &configuration::Configuration, params: DeleteDocumentsParams) -> Result<models::DeleteDocuments200Response, Error<DeleteDocumentsError>> {
 
-    let uri_str = format!("{}/collections/{collectionName}/documents", configuration.base_path, collectionName=crate::apis::urlencode(p_collection_name));
+    let uri_str = format!("{}/collections/{collectionName}/documents", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name));
     let mut req_builder = configuration.client.request(reqwest::Method::DELETE, &uri_str);
 
-    if let Some(ref param_value) = p_batch_size {
-        req_builder = req_builder.query(&[("batch_size", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_filter_by {
+    if let Some(ref param_value) = params.filter_by {
         req_builder = req_builder.query(&[("filter_by", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = p_ignore_not_found {
+    if let Some(ref param_value) = params.batch_size {
+        req_builder = req_builder.query(&[("batch_size", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.ignore_not_found {
         req_builder = req_builder.query(&[("ignore_not_found", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = p_truncate {
+    if let Some(ref param_value) = params.truncate {
         req_builder = req_builder.query(&[("truncate", &param_value.to_string())]);
     }
     if let Some(ref user_agent) = configuration.user_agent {
@@ -236,12 +498,9 @@ pub async fn delete_documents(configuration: &configuration::Configuration, coll
     }
 }
 
-pub async fn delete_search_override(configuration: &configuration::Configuration, collection_name: &str, override_id: &str) -> Result<models::SearchOverrideDeleteResponse, Error<DeleteSearchOverrideError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_name = collection_name;
-    let p_override_id = override_id;
+pub async fn delete_search_override(configuration: &configuration::Configuration, params: DeleteSearchOverrideParams) -> Result<models::SearchOverrideDeleteResponse, Error<DeleteSearchOverrideError>> {
 
-    let uri_str = format!("{}/collections/{collectionName}/overrides/{overrideId}", configuration.base_path, collectionName=crate::apis::urlencode(p_collection_name), overrideId=crate::apis::urlencode(p_override_id));
+    let uri_str = format!("{}/collections/{collectionName}/overrides/{overrideId}", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name), overrideId=crate::apis::urlencode(params.override_id));
     let mut req_builder = configuration.client.request(reqwest::Method::DELETE, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -282,24 +541,19 @@ pub async fn delete_search_override(configuration: &configuration::Configuration
 }
 
 /// Export all documents in a collection in JSON lines format.
-pub async fn export_documents(configuration: &configuration::Configuration, collection_name: &str, exclude_fields: Option<&str>, filter_by: Option<&str>, include_fields: Option<&str>) -> Result<String, Error<ExportDocumentsError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_name = collection_name;
-    let p_exclude_fields = exclude_fields;
-    let p_filter_by = filter_by;
-    let p_include_fields = include_fields;
+pub async fn export_documents(configuration: &configuration::Configuration, params: ExportDocumentsParams) -> Result<String, Error<ExportDocumentsError>> {
 
-    let uri_str = format!("{}/collections/{collectionName}/documents/export", configuration.base_path, collectionName=crate::apis::urlencode(p_collection_name));
+    let uri_str = format!("{}/collections/{collectionName}/documents/export", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name));
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
-    if let Some(ref param_value) = p_exclude_fields {
-        req_builder = req_builder.query(&[("exclude_fields", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_filter_by {
+    if let Some(ref param_value) = params.filter_by {
         req_builder = req_builder.query(&[("filter_by", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = p_include_fields {
+    if let Some(ref param_value) = params.include_fields {
         req_builder = req_builder.query(&[("include_fields", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.exclude_fields {
+        req_builder = req_builder.query(&[("exclude_fields", &param_value.to_string())]);
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
@@ -339,12 +593,9 @@ pub async fn export_documents(configuration: &configuration::Configuration, coll
 }
 
 /// Fetch an individual document from a collection by using its ID.
-pub async fn get_document(configuration: &configuration::Configuration, collection_name: &str, document_id: &str) -> Result<serde_json::Value, Error<GetDocumentError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_name = collection_name;
-    let p_document_id = document_id;
+pub async fn get_document(configuration: &configuration::Configuration, params: GetDocumentParams) -> Result<serde_json::Value, Error<GetDocumentError>> {
 
-    let uri_str = format!("{}/collections/{collectionName}/documents/{documentId}", configuration.base_path, collectionName=crate::apis::urlencode(p_collection_name), documentId=crate::apis::urlencode(p_document_id));
+    let uri_str = format!("{}/collections/{collectionName}/documents/{documentId}", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name), documentId=crate::apis::urlencode(params.document_id));
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -385,12 +636,9 @@ pub async fn get_document(configuration: &configuration::Configuration, collecti
 }
 
 /// Retrieve the details of a search override, given its id.
-pub async fn get_search_override(configuration: &configuration::Configuration, collection_name: &str, override_id: &str) -> Result<models::SearchOverride, Error<GetSearchOverrideError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_name = collection_name;
-    let p_override_id = override_id;
+pub async fn get_search_override(configuration: &configuration::Configuration, params: GetSearchOverrideParams) -> Result<models::SearchOverride, Error<GetSearchOverrideError>> {
 
-    let uri_str = format!("{}/collections/{collectionName}/overrides/{overrideId}", configuration.base_path, collectionName=crate::apis::urlencode(p_collection_name), overrideId=crate::apis::urlencode(p_override_id));
+    let uri_str = format!("{}/collections/{collectionName}/overrides/{overrideId}", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name), overrideId=crate::apis::urlencode(params.override_id));
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -430,11 +678,9 @@ pub async fn get_search_override(configuration: &configuration::Configuration, c
     }
 }
 
-pub async fn get_search_overrides(configuration: &configuration::Configuration, collection_name: &str) -> Result<models::SearchOverridesResponse, Error<GetSearchOverridesError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_name = collection_name;
+pub async fn get_search_overrides(configuration: &configuration::Configuration, params: GetSearchOverridesParams) -> Result<models::SearchOverridesResponse, Error<GetSearchOverridesError>> {
 
-    let uri_str = format!("{}/collections/{collectionName}/overrides", configuration.base_path, collectionName=crate::apis::urlencode(p_collection_name));
+    let uri_str = format!("{}/collections/{collectionName}/overrides", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name));
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -475,37 +721,28 @@ pub async fn get_search_overrides(configuration: &configuration::Configuration, 
 }
 
 /// The documents to be imported must be formatted in a newline delimited JSON structure. You can feed the output file from a Typesense export operation directly as import.
-pub async fn import_documents(configuration: &configuration::Configuration, collection_name: &str, body: &str, action: Option<models::IndexAction>, batch_size: Option<i32>, dirty_values: Option<models::DirtyValues>, remote_embedding_batch_size: Option<i32>, return_doc: Option<bool>, return_id: Option<bool>) -> Result<String, Error<ImportDocumentsError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_name = collection_name;
-    let p_body = body;
-    let p_action = action;
-    let p_batch_size = batch_size;
-    let p_dirty_values = dirty_values;
-    let p_remote_embedding_batch_size = remote_embedding_batch_size;
-    let p_return_doc = return_doc;
-    let p_return_id = return_id;
+pub async fn import_documents(configuration: &configuration::Configuration, params: ImportDocumentsParams) -> Result<String, Error<ImportDocumentsError>> {
 
-    let uri_str = format!("{}/collections/{collectionName}/documents/import", configuration.base_path, collectionName=crate::apis::urlencode(p_collection_name));
+    let uri_str = format!("{}/collections/{collectionName}/documents/import", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name));
     let mut req_builder = configuration.client.request(reqwest::Method::POST, &uri_str);
 
-    if let Some(ref param_value) = p_action {
-        req_builder = req_builder.query(&[("action", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_batch_size {
+    if let Some(ref param_value) = params.batch_size {
         req_builder = req_builder.query(&[("batch_size", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = p_dirty_values {
-        req_builder = req_builder.query(&[("dirty_values", &param_value.to_string())]);
+    if let Some(ref param_value) = params.return_id {
+        req_builder = req_builder.query(&[("return_id", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = p_remote_embedding_batch_size {
+    if let Some(ref param_value) = params.remote_embedding_batch_size {
         req_builder = req_builder.query(&[("remote_embedding_batch_size", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = p_return_doc {
+    if let Some(ref param_value) = params.return_doc {
         req_builder = req_builder.query(&[("return_doc", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = p_return_id {
-        req_builder = req_builder.query(&[("return_id", &param_value.to_string())]);
+    if let Some(ref param_value) = params.action {
+        req_builder = req_builder.query(&[("action", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.dirty_values {
+        req_builder = req_builder.query(&[("dirty_values", &param_value.to_string())]);
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
@@ -518,7 +755,7 @@ pub async fn import_documents(configuration: &configuration::Configuration, coll
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&p_body);
+    req_builder = req_builder.json(&params.body);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -546,20 +783,15 @@ pub async fn import_documents(configuration: &configuration::Configuration, coll
 }
 
 /// A document to be indexed in a given collection must conform to the schema of the collection.
-pub async fn index_document(configuration: &configuration::Configuration, collection_name: &str, body: serde_json::Value, action: Option<&str>, dirty_values: Option<models::DirtyValues>) -> Result<serde_json::Value, Error<IndexDocumentError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_name = collection_name;
-    let p_body = body;
-    let p_action = action;
-    let p_dirty_values = dirty_values;
+pub async fn index_document(configuration: &configuration::Configuration, params: IndexDocumentParams) -> Result<serde_json::Value, Error<IndexDocumentError>> {
 
-    let uri_str = format!("{}/collections/{collectionName}/documents", configuration.base_path, collectionName=crate::apis::urlencode(p_collection_name));
+    let uri_str = format!("{}/collections/{collectionName}/documents", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name));
     let mut req_builder = configuration.client.request(reqwest::Method::POST, &uri_str);
 
-    if let Some(ref param_value) = p_action {
+    if let Some(ref param_value) = params.action {
         req_builder = req_builder.query(&[("action", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = p_dirty_values {
+    if let Some(ref param_value) = params.dirty_values {
         req_builder = req_builder.query(&[("dirty_values", &param_value.to_string())]);
     }
     if let Some(ref user_agent) = configuration.user_agent {
@@ -573,7 +805,7 @@ pub async fn index_document(configuration: &configuration::Configuration, collec
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&p_body);
+    req_builder = req_builder.json(&params.body);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -601,280 +833,199 @@ pub async fn index_document(configuration: &configuration::Configuration, collec
 }
 
 /// This is especially useful to avoid round-trip network latencies incurred otherwise if each of these requests are sent in separate HTTP requests. You can also use this feature to do a federated search across multiple collections in a single HTTP request.
-pub async fn multi_search(configuration: &configuration::Configuration, cache_ttl: Option<i32>, conversation: Option<bool>, conversation_id: Option<&str>, conversation_model_id: Option<&str>, drop_tokens_mode: Option<models::DropTokensMode>, drop_tokens_threshold: Option<i32>, enable_highlight_v1: Option<bool>, enable_overrides: Option<bool>, enable_synonyms: Option<bool>, enable_typos_for_alpha_numerical_tokens: Option<bool>, enable_typos_for_numerical_tokens: Option<bool>, exclude_fields: Option<&str>, exhaustive_search: Option<bool>, facet_by: Option<&str>, facet_query: Option<&str>, facet_return_parent: Option<&str>, facet_strategy: Option<&str>, filter_by: Option<&str>, filter_curated_hits: Option<bool>, group_by: Option<&str>, group_limit: Option<i32>, group_missing_values: Option<bool>, hidden_hits: Option<&str>, highlight_affix_num_tokens: Option<i32>, highlight_end_tag: Option<&str>, highlight_fields: Option<&str>, highlight_full_fields: Option<&str>, highlight_start_tag: Option<&str>, include_fields: Option<&str>, infix: Option<&str>, limit: Option<i32>, max_candidates: Option<i32>, max_extra_prefix: Option<i32>, max_extra_suffix: Option<i32>, max_facet_values: Option<i32>, max_filter_by_candidates: Option<i32>, min_len_1typo: Option<i32>, min_len_2typo: Option<i32>, num_typos: Option<&str>, offset: Option<i32>, override_tags: Option<&str>, page: Option<i32>, per_page: Option<i32>, pinned_hits: Option<&str>, pre_segmented_query: Option<bool>, prefix: Option<&str>, preset: Option<&str>, prioritize_exact_match: Option<bool>, prioritize_num_matching_fields: Option<bool>, prioritize_token_position: Option<bool>, q: Option<&str>, query_by: Option<&str>, query_by_weights: Option<&str>, remote_embedding_num_tries: Option<i32>, remote_embedding_timeout_ms: Option<i32>, search_cutoff_ms: Option<i32>, snippet_threshold: Option<i32>, sort_by: Option<&str>, split_join_tokens: Option<&str>, stopwords: Option<&str>, synonym_num_typos: Option<i32>, synonym_prefix: Option<bool>, text_match_type: Option<&str>, typo_tokens_threshold: Option<i32>, use_cache: Option<bool>, vector_query: Option<&str>, voice_query: Option<&str>, multi_search_searches_parameter: Option<models::MultiSearchSearchesParameter>) -> Result<models::MultiSearchResult, Error<MultiSearchError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_cache_ttl = cache_ttl;
-    let p_conversation = conversation;
-    let p_conversation_id = conversation_id;
-    let p_conversation_model_id = conversation_model_id;
-    let p_drop_tokens_mode = drop_tokens_mode;
-    let p_drop_tokens_threshold = drop_tokens_threshold;
-    let p_enable_highlight_v1 = enable_highlight_v1;
-    let p_enable_overrides = enable_overrides;
-    let p_enable_synonyms = enable_synonyms;
-    let p_enable_typos_for_alpha_numerical_tokens = enable_typos_for_alpha_numerical_tokens;
-    let p_enable_typos_for_numerical_tokens = enable_typos_for_numerical_tokens;
-    let p_exclude_fields = exclude_fields;
-    let p_exhaustive_search = exhaustive_search;
-    let p_facet_by = facet_by;
-    let p_facet_query = facet_query;
-    let p_facet_return_parent = facet_return_parent;
-    let p_facet_strategy = facet_strategy;
-    let p_filter_by = filter_by;
-    let p_filter_curated_hits = filter_curated_hits;
-    let p_group_by = group_by;
-    let p_group_limit = group_limit;
-    let p_group_missing_values = group_missing_values;
-    let p_hidden_hits = hidden_hits;
-    let p_highlight_affix_num_tokens = highlight_affix_num_tokens;
-    let p_highlight_end_tag = highlight_end_tag;
-    let p_highlight_fields = highlight_fields;
-    let p_highlight_full_fields = highlight_full_fields;
-    let p_highlight_start_tag = highlight_start_tag;
-    let p_include_fields = include_fields;
-    let p_infix = infix;
-    let p_limit = limit;
-    let p_max_candidates = max_candidates;
-    let p_max_extra_prefix = max_extra_prefix;
-    let p_max_extra_suffix = max_extra_suffix;
-    let p_max_facet_values = max_facet_values;
-    let p_max_filter_by_candidates = max_filter_by_candidates;
-    let p_min_len_1typo = min_len_1typo;
-    let p_min_len_2typo = min_len_2typo;
-    let p_num_typos = num_typos;
-    let p_offset = offset;
-    let p_override_tags = override_tags;
-    let p_page = page;
-    let p_per_page = per_page;
-    let p_pinned_hits = pinned_hits;
-    let p_pre_segmented_query = pre_segmented_query;
-    let p_prefix = prefix;
-    let p_preset = preset;
-    let p_prioritize_exact_match = prioritize_exact_match;
-    let p_prioritize_num_matching_fields = prioritize_num_matching_fields;
-    let p_prioritize_token_position = prioritize_token_position;
-    let p_q = q;
-    let p_query_by = query_by;
-    let p_query_by_weights = query_by_weights;
-    let p_remote_embedding_num_tries = remote_embedding_num_tries;
-    let p_remote_embedding_timeout_ms = remote_embedding_timeout_ms;
-    let p_search_cutoff_ms = search_cutoff_ms;
-    let p_snippet_threshold = snippet_threshold;
-    let p_sort_by = sort_by;
-    let p_split_join_tokens = split_join_tokens;
-    let p_stopwords = stopwords;
-    let p_synonym_num_typos = synonym_num_typos;
-    let p_synonym_prefix = synonym_prefix;
-    let p_text_match_type = text_match_type;
-    let p_typo_tokens_threshold = typo_tokens_threshold;
-    let p_use_cache = use_cache;
-    let p_vector_query = vector_query;
-    let p_voice_query = voice_query;
-    let p_multi_search_searches_parameter = multi_search_searches_parameter;
+pub async fn multi_search(configuration: &configuration::Configuration, params: MultiSearchParams) -> Result<models::MultiSearchResult, Error<MultiSearchError>> {
 
     let uri_str = format!("{}/multi_search", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::POST, &uri_str);
 
-    if let Some(ref param_value) = p_cache_ttl {
-        req_builder = req_builder.query(&[("cache_ttl", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_conversation {
-        req_builder = req_builder.query(&[("conversation", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_conversation_id {
-        req_builder = req_builder.query(&[("conversation_id", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_conversation_model_id {
-        req_builder = req_builder.query(&[("conversation_model_id", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_drop_tokens_mode {
-        req_builder = req_builder.query(&[("drop_tokens_mode", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_drop_tokens_threshold {
-        req_builder = req_builder.query(&[("drop_tokens_threshold", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_enable_highlight_v1 {
-        req_builder = req_builder.query(&[("enable_highlight_v1", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_enable_overrides {
-        req_builder = req_builder.query(&[("enable_overrides", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_enable_synonyms {
-        req_builder = req_builder.query(&[("enable_synonyms", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_enable_typos_for_alpha_numerical_tokens {
-        req_builder = req_builder.query(&[("enable_typos_for_alpha_numerical_tokens", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_enable_typos_for_numerical_tokens {
-        req_builder = req_builder.query(&[("enable_typos_for_numerical_tokens", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_exclude_fields {
-        req_builder = req_builder.query(&[("exclude_fields", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_exhaustive_search {
-        req_builder = req_builder.query(&[("exhaustive_search", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_facet_by {
-        req_builder = req_builder.query(&[("facet_by", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_facet_query {
-        req_builder = req_builder.query(&[("facet_query", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_facet_return_parent {
-        req_builder = req_builder.query(&[("facet_return_parent", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_facet_strategy {
-        req_builder = req_builder.query(&[("facet_strategy", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_filter_by {
-        req_builder = req_builder.query(&[("filter_by", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_filter_curated_hits {
-        req_builder = req_builder.query(&[("filter_curated_hits", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_group_by {
-        req_builder = req_builder.query(&[("group_by", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_group_limit {
-        req_builder = req_builder.query(&[("group_limit", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_group_missing_values {
-        req_builder = req_builder.query(&[("group_missing_values", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_hidden_hits {
-        req_builder = req_builder.query(&[("hidden_hits", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_highlight_affix_num_tokens {
-        req_builder = req_builder.query(&[("highlight_affix_num_tokens", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_highlight_end_tag {
-        req_builder = req_builder.query(&[("highlight_end_tag", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_highlight_fields {
-        req_builder = req_builder.query(&[("highlight_fields", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_highlight_full_fields {
-        req_builder = req_builder.query(&[("highlight_full_fields", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_highlight_start_tag {
-        req_builder = req_builder.query(&[("highlight_start_tag", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_include_fields {
-        req_builder = req_builder.query(&[("include_fields", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_infix {
-        req_builder = req_builder.query(&[("infix", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_limit {
-        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_max_candidates {
-        req_builder = req_builder.query(&[("max_candidates", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_max_extra_prefix {
-        req_builder = req_builder.query(&[("max_extra_prefix", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_max_extra_suffix {
-        req_builder = req_builder.query(&[("max_extra_suffix", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_max_facet_values {
-        req_builder = req_builder.query(&[("max_facet_values", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_max_filter_by_candidates {
-        req_builder = req_builder.query(&[("max_filter_by_candidates", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_min_len_1typo {
-        req_builder = req_builder.query(&[("min_len_1typo", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_min_len_2typo {
-        req_builder = req_builder.query(&[("min_len_2typo", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_num_typos {
-        req_builder = req_builder.query(&[("num_typos", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_offset {
-        req_builder = req_builder.query(&[("offset", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_override_tags {
-        req_builder = req_builder.query(&[("override_tags", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_page {
-        req_builder = req_builder.query(&[("page", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_per_page {
-        req_builder = req_builder.query(&[("per_page", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_pinned_hits {
-        req_builder = req_builder.query(&[("pinned_hits", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_pre_segmented_query {
-        req_builder = req_builder.query(&[("pre_segmented_query", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_prefix {
-        req_builder = req_builder.query(&[("prefix", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_preset {
-        req_builder = req_builder.query(&[("preset", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_prioritize_exact_match {
-        req_builder = req_builder.query(&[("prioritize_exact_match", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_prioritize_num_matching_fields {
-        req_builder = req_builder.query(&[("prioritize_num_matching_fields", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_prioritize_token_position {
-        req_builder = req_builder.query(&[("prioritize_token_position", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_q {
+    if let Some(ref param_value) = params.q {
         req_builder = req_builder.query(&[("q", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = p_query_by {
+    if let Some(ref param_value) = params.query_by {
         req_builder = req_builder.query(&[("query_by", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = p_query_by_weights {
+    if let Some(ref param_value) = params.query_by_weights {
         req_builder = req_builder.query(&[("query_by_weights", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = p_remote_embedding_num_tries {
-        req_builder = req_builder.query(&[("remote_embedding_num_tries", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_remote_embedding_timeout_ms {
-        req_builder = req_builder.query(&[("remote_embedding_timeout_ms", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_search_cutoff_ms {
-        req_builder = req_builder.query(&[("search_cutoff_ms", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_snippet_threshold {
-        req_builder = req_builder.query(&[("snippet_threshold", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_sort_by {
-        req_builder = req_builder.query(&[("sort_by", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_split_join_tokens {
-        req_builder = req_builder.query(&[("split_join_tokens", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_stopwords {
-        req_builder = req_builder.query(&[("stopwords", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_synonym_num_typos {
-        req_builder = req_builder.query(&[("synonym_num_typos", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_synonym_prefix {
-        req_builder = req_builder.query(&[("synonym_prefix", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_text_match_type {
+    if let Some(ref param_value) = params.text_match_type {
         req_builder = req_builder.query(&[("text_match_type", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = p_typo_tokens_threshold {
+    if let Some(ref param_value) = params.prefix {
+        req_builder = req_builder.query(&[("prefix", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.infix {
+        req_builder = req_builder.query(&[("infix", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.max_extra_prefix {
+        req_builder = req_builder.query(&[("max_extra_prefix", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.max_extra_suffix {
+        req_builder = req_builder.query(&[("max_extra_suffix", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.filter_by {
+        req_builder = req_builder.query(&[("filter_by", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.sort_by {
+        req_builder = req_builder.query(&[("sort_by", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.facet_by {
+        req_builder = req_builder.query(&[("facet_by", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.max_facet_values {
+        req_builder = req_builder.query(&[("max_facet_values", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.facet_query {
+        req_builder = req_builder.query(&[("facet_query", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.num_typos {
+        req_builder = req_builder.query(&[("num_typos", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.page {
+        req_builder = req_builder.query(&[("page", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.per_page {
+        req_builder = req_builder.query(&[("per_page", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.offset {
+        req_builder = req_builder.query(&[("offset", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.group_by {
+        req_builder = req_builder.query(&[("group_by", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.group_limit {
+        req_builder = req_builder.query(&[("group_limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.group_missing_values {
+        req_builder = req_builder.query(&[("group_missing_values", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.include_fields {
+        req_builder = req_builder.query(&[("include_fields", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.exclude_fields {
+        req_builder = req_builder.query(&[("exclude_fields", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.highlight_full_fields {
+        req_builder = req_builder.query(&[("highlight_full_fields", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.highlight_affix_num_tokens {
+        req_builder = req_builder.query(&[("highlight_affix_num_tokens", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.highlight_start_tag {
+        req_builder = req_builder.query(&[("highlight_start_tag", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.highlight_end_tag {
+        req_builder = req_builder.query(&[("highlight_end_tag", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.snippet_threshold {
+        req_builder = req_builder.query(&[("snippet_threshold", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.drop_tokens_threshold {
+        req_builder = req_builder.query(&[("drop_tokens_threshold", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.drop_tokens_mode {
+        req_builder = req_builder.query(&[("drop_tokens_mode", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.typo_tokens_threshold {
         req_builder = req_builder.query(&[("typo_tokens_threshold", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = p_use_cache {
+    if let Some(ref param_value) = params.enable_typos_for_alpha_numerical_tokens {
+        req_builder = req_builder.query(&[("enable_typos_for_alpha_numerical_tokens", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.filter_curated_hits {
+        req_builder = req_builder.query(&[("filter_curated_hits", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.enable_synonyms {
+        req_builder = req_builder.query(&[("enable_synonyms", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.synonym_prefix {
+        req_builder = req_builder.query(&[("synonym_prefix", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.synonym_num_typos {
+        req_builder = req_builder.query(&[("synonym_num_typos", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.pinned_hits {
+        req_builder = req_builder.query(&[("pinned_hits", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.hidden_hits {
+        req_builder = req_builder.query(&[("hidden_hits", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.override_tags {
+        req_builder = req_builder.query(&[("override_tags", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.highlight_fields {
+        req_builder = req_builder.query(&[("highlight_fields", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.pre_segmented_query {
+        req_builder = req_builder.query(&[("pre_segmented_query", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.preset {
+        req_builder = req_builder.query(&[("preset", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.enable_overrides {
+        req_builder = req_builder.query(&[("enable_overrides", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.prioritize_exact_match {
+        req_builder = req_builder.query(&[("prioritize_exact_match", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.prioritize_token_position {
+        req_builder = req_builder.query(&[("prioritize_token_position", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.prioritize_num_matching_fields {
+        req_builder = req_builder.query(&[("prioritize_num_matching_fields", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.enable_typos_for_numerical_tokens {
+        req_builder = req_builder.query(&[("enable_typos_for_numerical_tokens", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.exhaustive_search {
+        req_builder = req_builder.query(&[("exhaustive_search", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.search_cutoff_ms {
+        req_builder = req_builder.query(&[("search_cutoff_ms", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.use_cache {
         req_builder = req_builder.query(&[("use_cache", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = p_vector_query {
+    if let Some(ref param_value) = params.cache_ttl {
+        req_builder = req_builder.query(&[("cache_ttl", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.min_len_1typo {
+        req_builder = req_builder.query(&[("min_len_1typo", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.min_len_2typo {
+        req_builder = req_builder.query(&[("min_len_2typo", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.vector_query {
         req_builder = req_builder.query(&[("vector_query", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = p_voice_query {
+    if let Some(ref param_value) = params.remote_embedding_timeout_ms {
+        req_builder = req_builder.query(&[("remote_embedding_timeout_ms", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.remote_embedding_num_tries {
+        req_builder = req_builder.query(&[("remote_embedding_num_tries", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.facet_strategy {
+        req_builder = req_builder.query(&[("facet_strategy", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.stopwords {
+        req_builder = req_builder.query(&[("stopwords", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.facet_return_parent {
+        req_builder = req_builder.query(&[("facet_return_parent", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.voice_query {
         req_builder = req_builder.query(&[("voice_query", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.conversation {
+        req_builder = req_builder.query(&[("conversation", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.conversation_model_id {
+        req_builder = req_builder.query(&[("conversation_model_id", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.conversation_id {
+        req_builder = req_builder.query(&[("conversation_id", &param_value.to_string())]);
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
@@ -887,7 +1038,7 @@ pub async fn multi_search(configuration: &configuration::Configuration, cache_tt
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&p_multi_search_searches_parameter);
+    req_builder = req_builder.json(&params.multi_search_searches_parameter);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -915,280 +1066,217 @@ pub async fn multi_search(configuration: &configuration::Configuration, cache_tt
 }
 
 /// Search for documents in a collection that match the search criteria.
-pub async fn search_collection(configuration: &configuration::Configuration, collection_name: &str, cache_ttl: Option<i32>, conversation: Option<bool>, conversation_id: Option<&str>, conversation_model_id: Option<&str>, drop_tokens_mode: Option<models::DropTokensMode>, drop_tokens_threshold: Option<i32>, enable_highlight_v1: Option<bool>, enable_overrides: Option<bool>, enable_synonyms: Option<bool>, enable_typos_for_alpha_numerical_tokens: Option<bool>, enable_typos_for_numerical_tokens: Option<bool>, exclude_fields: Option<&str>, exhaustive_search: Option<bool>, facet_by: Option<&str>, facet_query: Option<&str>, facet_return_parent: Option<&str>, facet_strategy: Option<&str>, filter_by: Option<&str>, filter_curated_hits: Option<bool>, group_by: Option<&str>, group_limit: Option<i32>, group_missing_values: Option<bool>, hidden_hits: Option<&str>, highlight_affix_num_tokens: Option<i32>, highlight_end_tag: Option<&str>, highlight_fields: Option<&str>, highlight_full_fields: Option<&str>, highlight_start_tag: Option<&str>, include_fields: Option<&str>, infix: Option<&str>, limit: Option<i32>, max_candidates: Option<i32>, max_extra_prefix: Option<i32>, max_extra_suffix: Option<i32>, max_facet_values: Option<i32>, max_filter_by_candidates: Option<i32>, min_len_1typo: Option<i32>, min_len_2typo: Option<i32>, num_typos: Option<&str>, offset: Option<i32>, override_tags: Option<&str>, page: Option<i32>, per_page: Option<i32>, pinned_hits: Option<&str>, pre_segmented_query: Option<bool>, prefix: Option<&str>, preset: Option<&str>, prioritize_exact_match: Option<bool>, prioritize_num_matching_fields: Option<bool>, prioritize_token_position: Option<bool>, q: Option<&str>, query_by: Option<&str>, query_by_weights: Option<&str>, remote_embedding_num_tries: Option<i32>, remote_embedding_timeout_ms: Option<i32>, search_cutoff_ms: Option<i32>, snippet_threshold: Option<i32>, sort_by: Option<&str>, split_join_tokens: Option<&str>, stopwords: Option<&str>, synonym_num_typos: Option<i32>, synonym_prefix: Option<bool>, text_match_type: Option<&str>, typo_tokens_threshold: Option<i32>, use_cache: Option<bool>, vector_query: Option<&str>, voice_query: Option<&str>) -> Result<models::SearchResult, Error<SearchCollectionError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_name = collection_name;
-    let p_cache_ttl = cache_ttl;
-    let p_conversation = conversation;
-    let p_conversation_id = conversation_id;
-    let p_conversation_model_id = conversation_model_id;
-    let p_drop_tokens_mode = drop_tokens_mode;
-    let p_drop_tokens_threshold = drop_tokens_threshold;
-    let p_enable_highlight_v1 = enable_highlight_v1;
-    let p_enable_overrides = enable_overrides;
-    let p_enable_synonyms = enable_synonyms;
-    let p_enable_typos_for_alpha_numerical_tokens = enable_typos_for_alpha_numerical_tokens;
-    let p_enable_typos_for_numerical_tokens = enable_typos_for_numerical_tokens;
-    let p_exclude_fields = exclude_fields;
-    let p_exhaustive_search = exhaustive_search;
-    let p_facet_by = facet_by;
-    let p_facet_query = facet_query;
-    let p_facet_return_parent = facet_return_parent;
-    let p_facet_strategy = facet_strategy;
-    let p_filter_by = filter_by;
-    let p_filter_curated_hits = filter_curated_hits;
-    let p_group_by = group_by;
-    let p_group_limit = group_limit;
-    let p_group_missing_values = group_missing_values;
-    let p_hidden_hits = hidden_hits;
-    let p_highlight_affix_num_tokens = highlight_affix_num_tokens;
-    let p_highlight_end_tag = highlight_end_tag;
-    let p_highlight_fields = highlight_fields;
-    let p_highlight_full_fields = highlight_full_fields;
-    let p_highlight_start_tag = highlight_start_tag;
-    let p_include_fields = include_fields;
-    let p_infix = infix;
-    let p_limit = limit;
-    let p_max_candidates = max_candidates;
-    let p_max_extra_prefix = max_extra_prefix;
-    let p_max_extra_suffix = max_extra_suffix;
-    let p_max_facet_values = max_facet_values;
-    let p_max_filter_by_candidates = max_filter_by_candidates;
-    let p_min_len_1typo = min_len_1typo;
-    let p_min_len_2typo = min_len_2typo;
-    let p_num_typos = num_typos;
-    let p_offset = offset;
-    let p_override_tags = override_tags;
-    let p_page = page;
-    let p_per_page = per_page;
-    let p_pinned_hits = pinned_hits;
-    let p_pre_segmented_query = pre_segmented_query;
-    let p_prefix = prefix;
-    let p_preset = preset;
-    let p_prioritize_exact_match = prioritize_exact_match;
-    let p_prioritize_num_matching_fields = prioritize_num_matching_fields;
-    let p_prioritize_token_position = prioritize_token_position;
-    let p_q = q;
-    let p_query_by = query_by;
-    let p_query_by_weights = query_by_weights;
-    let p_remote_embedding_num_tries = remote_embedding_num_tries;
-    let p_remote_embedding_timeout_ms = remote_embedding_timeout_ms;
-    let p_search_cutoff_ms = search_cutoff_ms;
-    let p_snippet_threshold = snippet_threshold;
-    let p_sort_by = sort_by;
-    let p_split_join_tokens = split_join_tokens;
-    let p_stopwords = stopwords;
-    let p_synonym_num_typos = synonym_num_typos;
-    let p_synonym_prefix = synonym_prefix;
-    let p_text_match_type = text_match_type;
-    let p_typo_tokens_threshold = typo_tokens_threshold;
-    let p_use_cache = use_cache;
-    let p_vector_query = vector_query;
-    let p_voice_query = voice_query;
+pub async fn search_collection(configuration: &configuration::Configuration, params: SearchCollectionParams) -> Result<models::SearchResult, Error<SearchCollectionError>> {
 
-    let uri_str = format!("{}/collections/{collectionName}/documents/search", configuration.base_path, collectionName=crate::apis::urlencode(p_collection_name));
+    let uri_str = format!("{}/collections/{collectionName}/documents/search", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name));
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
-    if let Some(ref param_value) = p_cache_ttl {
-        req_builder = req_builder.query(&[("cache_ttl", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_conversation {
-        req_builder = req_builder.query(&[("conversation", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_conversation_id {
-        req_builder = req_builder.query(&[("conversation_id", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_conversation_model_id {
-        req_builder = req_builder.query(&[("conversation_model_id", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_drop_tokens_mode {
-        req_builder = req_builder.query(&[("drop_tokens_mode", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_drop_tokens_threshold {
-        req_builder = req_builder.query(&[("drop_tokens_threshold", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_enable_highlight_v1 {
-        req_builder = req_builder.query(&[("enable_highlight_v1", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_enable_overrides {
-        req_builder = req_builder.query(&[("enable_overrides", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_enable_synonyms {
-        req_builder = req_builder.query(&[("enable_synonyms", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_enable_typos_for_alpha_numerical_tokens {
-        req_builder = req_builder.query(&[("enable_typos_for_alpha_numerical_tokens", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_enable_typos_for_numerical_tokens {
-        req_builder = req_builder.query(&[("enable_typos_for_numerical_tokens", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_exclude_fields {
-        req_builder = req_builder.query(&[("exclude_fields", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_exhaustive_search {
-        req_builder = req_builder.query(&[("exhaustive_search", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_facet_by {
-        req_builder = req_builder.query(&[("facet_by", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_facet_query {
-        req_builder = req_builder.query(&[("facet_query", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_facet_return_parent {
-        req_builder = req_builder.query(&[("facet_return_parent", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_facet_strategy {
-        req_builder = req_builder.query(&[("facet_strategy", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_filter_by {
-        req_builder = req_builder.query(&[("filter_by", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_filter_curated_hits {
-        req_builder = req_builder.query(&[("filter_curated_hits", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_group_by {
-        req_builder = req_builder.query(&[("group_by", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_group_limit {
-        req_builder = req_builder.query(&[("group_limit", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_group_missing_values {
-        req_builder = req_builder.query(&[("group_missing_values", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_hidden_hits {
-        req_builder = req_builder.query(&[("hidden_hits", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_highlight_affix_num_tokens {
-        req_builder = req_builder.query(&[("highlight_affix_num_tokens", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_highlight_end_tag {
-        req_builder = req_builder.query(&[("highlight_end_tag", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_highlight_fields {
-        req_builder = req_builder.query(&[("highlight_fields", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_highlight_full_fields {
-        req_builder = req_builder.query(&[("highlight_full_fields", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_highlight_start_tag {
-        req_builder = req_builder.query(&[("highlight_start_tag", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_include_fields {
-        req_builder = req_builder.query(&[("include_fields", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_infix {
-        req_builder = req_builder.query(&[("infix", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_limit {
-        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_max_candidates {
-        req_builder = req_builder.query(&[("max_candidates", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_max_extra_prefix {
-        req_builder = req_builder.query(&[("max_extra_prefix", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_max_extra_suffix {
-        req_builder = req_builder.query(&[("max_extra_suffix", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_max_facet_values {
-        req_builder = req_builder.query(&[("max_facet_values", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_max_filter_by_candidates {
-        req_builder = req_builder.query(&[("max_filter_by_candidates", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_min_len_1typo {
-        req_builder = req_builder.query(&[("min_len_1typo", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_min_len_2typo {
-        req_builder = req_builder.query(&[("min_len_2typo", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_num_typos {
-        req_builder = req_builder.query(&[("num_typos", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_offset {
-        req_builder = req_builder.query(&[("offset", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_override_tags {
-        req_builder = req_builder.query(&[("override_tags", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_page {
-        req_builder = req_builder.query(&[("page", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_per_page {
-        req_builder = req_builder.query(&[("per_page", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_pinned_hits {
-        req_builder = req_builder.query(&[("pinned_hits", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_pre_segmented_query {
-        req_builder = req_builder.query(&[("pre_segmented_query", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_prefix {
-        req_builder = req_builder.query(&[("prefix", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_preset {
-        req_builder = req_builder.query(&[("preset", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_prioritize_exact_match {
-        req_builder = req_builder.query(&[("prioritize_exact_match", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_prioritize_num_matching_fields {
-        req_builder = req_builder.query(&[("prioritize_num_matching_fields", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_prioritize_token_position {
-        req_builder = req_builder.query(&[("prioritize_token_position", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_q {
+    if let Some(ref param_value) = params.q {
         req_builder = req_builder.query(&[("q", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = p_query_by {
+    if let Some(ref param_value) = params.query_by {
         req_builder = req_builder.query(&[("query_by", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = p_query_by_weights {
+    if let Some(ref param_value) = params.nl_query {
+        req_builder = req_builder.query(&[("nl_query", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.nl_model_id {
+        req_builder = req_builder.query(&[("nl_model_id", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.query_by_weights {
         req_builder = req_builder.query(&[("query_by_weights", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = p_remote_embedding_num_tries {
-        req_builder = req_builder.query(&[("remote_embedding_num_tries", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_remote_embedding_timeout_ms {
-        req_builder = req_builder.query(&[("remote_embedding_timeout_ms", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_search_cutoff_ms {
-        req_builder = req_builder.query(&[("search_cutoff_ms", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_snippet_threshold {
-        req_builder = req_builder.query(&[("snippet_threshold", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_sort_by {
-        req_builder = req_builder.query(&[("sort_by", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_split_join_tokens {
-        req_builder = req_builder.query(&[("split_join_tokens", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_stopwords {
-        req_builder = req_builder.query(&[("stopwords", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_synonym_num_typos {
-        req_builder = req_builder.query(&[("synonym_num_typos", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_synonym_prefix {
-        req_builder = req_builder.query(&[("synonym_prefix", &param_value.to_string())]);
-    }
-    if let Some(ref param_value) = p_text_match_type {
+    if let Some(ref param_value) = params.text_match_type {
         req_builder = req_builder.query(&[("text_match_type", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = p_typo_tokens_threshold {
+    if let Some(ref param_value) = params.prefix {
+        req_builder = req_builder.query(&[("prefix", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.infix {
+        req_builder = req_builder.query(&[("infix", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.max_extra_prefix {
+        req_builder = req_builder.query(&[("max_extra_prefix", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.max_extra_suffix {
+        req_builder = req_builder.query(&[("max_extra_suffix", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.filter_by {
+        req_builder = req_builder.query(&[("filter_by", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.max_filter_by_candidates {
+        req_builder = req_builder.query(&[("max_filter_by_candidates", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.sort_by {
+        req_builder = req_builder.query(&[("sort_by", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.facet_by {
+        req_builder = req_builder.query(&[("facet_by", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.max_facet_values {
+        req_builder = req_builder.query(&[("max_facet_values", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.facet_query {
+        req_builder = req_builder.query(&[("facet_query", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.num_typos {
+        req_builder = req_builder.query(&[("num_typos", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.page {
+        req_builder = req_builder.query(&[("page", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.per_page {
+        req_builder = req_builder.query(&[("per_page", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.limit {
+        req_builder = req_builder.query(&[("limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.offset {
+        req_builder = req_builder.query(&[("offset", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.group_by {
+        req_builder = req_builder.query(&[("group_by", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.group_limit {
+        req_builder = req_builder.query(&[("group_limit", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.group_missing_values {
+        req_builder = req_builder.query(&[("group_missing_values", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.include_fields {
+        req_builder = req_builder.query(&[("include_fields", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.exclude_fields {
+        req_builder = req_builder.query(&[("exclude_fields", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.highlight_full_fields {
+        req_builder = req_builder.query(&[("highlight_full_fields", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.highlight_affix_num_tokens {
+        req_builder = req_builder.query(&[("highlight_affix_num_tokens", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.highlight_start_tag {
+        req_builder = req_builder.query(&[("highlight_start_tag", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.highlight_end_tag {
+        req_builder = req_builder.query(&[("highlight_end_tag", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.enable_highlight_v1 {
+        req_builder = req_builder.query(&[("enable_highlight_v1", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.snippet_threshold {
+        req_builder = req_builder.query(&[("snippet_threshold", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.drop_tokens_threshold {
+        req_builder = req_builder.query(&[("drop_tokens_threshold", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.drop_tokens_mode {
+        req_builder = req_builder.query(&[("drop_tokens_mode", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.typo_tokens_threshold {
         req_builder = req_builder.query(&[("typo_tokens_threshold", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = p_use_cache {
+    if let Some(ref param_value) = params.enable_typos_for_alpha_numerical_tokens {
+        req_builder = req_builder.query(&[("enable_typos_for_alpha_numerical_tokens", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.filter_curated_hits {
+        req_builder = req_builder.query(&[("filter_curated_hits", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.enable_synonyms {
+        req_builder = req_builder.query(&[("enable_synonyms", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.synonym_prefix {
+        req_builder = req_builder.query(&[("synonym_prefix", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.synonym_num_typos {
+        req_builder = req_builder.query(&[("synonym_num_typos", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.pinned_hits {
+        req_builder = req_builder.query(&[("pinned_hits", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.hidden_hits {
+        req_builder = req_builder.query(&[("hidden_hits", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.override_tags {
+        req_builder = req_builder.query(&[("override_tags", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.highlight_fields {
+        req_builder = req_builder.query(&[("highlight_fields", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.split_join_tokens {
+        req_builder = req_builder.query(&[("split_join_tokens", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.pre_segmented_query {
+        req_builder = req_builder.query(&[("pre_segmented_query", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.preset {
+        req_builder = req_builder.query(&[("preset", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.enable_overrides {
+        req_builder = req_builder.query(&[("enable_overrides", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.prioritize_exact_match {
+        req_builder = req_builder.query(&[("prioritize_exact_match", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.max_candidates {
+        req_builder = req_builder.query(&[("max_candidates", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.prioritize_token_position {
+        req_builder = req_builder.query(&[("prioritize_token_position", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.prioritize_num_matching_fields {
+        req_builder = req_builder.query(&[("prioritize_num_matching_fields", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.enable_typos_for_numerical_tokens {
+        req_builder = req_builder.query(&[("enable_typos_for_numerical_tokens", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.exhaustive_search {
+        req_builder = req_builder.query(&[("exhaustive_search", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.search_cutoff_ms {
+        req_builder = req_builder.query(&[("search_cutoff_ms", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.use_cache {
         req_builder = req_builder.query(&[("use_cache", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = p_vector_query {
+    if let Some(ref param_value) = params.cache_ttl {
+        req_builder = req_builder.query(&[("cache_ttl", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.min_len_1typo {
+        req_builder = req_builder.query(&[("min_len_1typo", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.min_len_2typo {
+        req_builder = req_builder.query(&[("min_len_2typo", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.vector_query {
         req_builder = req_builder.query(&[("vector_query", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = p_voice_query {
+    if let Some(ref param_value) = params.remote_embedding_timeout_ms {
+        req_builder = req_builder.query(&[("remote_embedding_timeout_ms", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.remote_embedding_num_tries {
+        req_builder = req_builder.query(&[("remote_embedding_num_tries", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.facet_strategy {
+        req_builder = req_builder.query(&[("facet_strategy", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.stopwords {
+        req_builder = req_builder.query(&[("stopwords", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.facet_return_parent {
+        req_builder = req_builder.query(&[("facet_return_parent", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.voice_query {
         req_builder = req_builder.query(&[("voice_query", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.conversation {
+        req_builder = req_builder.query(&[("conversation", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.conversation_model_id {
+        req_builder = req_builder.query(&[("conversation_model_id", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.conversation_id {
+        req_builder = req_builder.query(&[("conversation_id", &param_value.to_string())]);
     }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
@@ -1228,17 +1316,12 @@ pub async fn search_collection(configuration: &configuration::Configuration, col
 }
 
 /// Update an individual document from a collection by using its ID. The update can be partial.
-pub async fn update_document(configuration: &configuration::Configuration, collection_name: &str, document_id: &str, body: serde_json::Value, dirty_values: Option<models::DirtyValues>) -> Result<serde_json::Value, Error<UpdateDocumentError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_name = collection_name;
-    let p_document_id = document_id;
-    let p_body = body;
-    let p_dirty_values = dirty_values;
+pub async fn update_document(configuration: &configuration::Configuration, params: UpdateDocumentParams) -> Result<serde_json::Value, Error<UpdateDocumentError>> {
 
-    let uri_str = format!("{}/collections/{collectionName}/documents/{documentId}", configuration.base_path, collectionName=crate::apis::urlencode(p_collection_name), documentId=crate::apis::urlencode(p_document_id));
+    let uri_str = format!("{}/collections/{collectionName}/documents/{documentId}", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name), documentId=crate::apis::urlencode(params.document_id));
     let mut req_builder = configuration.client.request(reqwest::Method::PATCH, &uri_str);
 
-    if let Some(ref param_value) = p_dirty_values {
+    if let Some(ref param_value) = params.dirty_values {
         req_builder = req_builder.query(&[("dirty_values", &param_value.to_string())]);
     }
     if let Some(ref user_agent) = configuration.user_agent {
@@ -1252,7 +1335,7 @@ pub async fn update_document(configuration: &configuration::Configuration, colle
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&p_body);
+    req_builder = req_builder.json(&params.body);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -1280,16 +1363,12 @@ pub async fn update_document(configuration: &configuration::Configuration, colle
 }
 
 /// The filter_by query parameter is used to filter to specify a condition against which the documents are matched. The request body contains the fields that should be updated for any documents that match the filter condition. This endpoint is only available if the Typesense server is version `0.25.0.rc12` or later.
-pub async fn update_documents(configuration: &configuration::Configuration, collection_name: &str, body: serde_json::Value, filter_by: Option<&str>) -> Result<models::UpdateDocuments200Response, Error<UpdateDocumentsError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_name = collection_name;
-    let p_body = body;
-    let p_filter_by = filter_by;
+pub async fn update_documents(configuration: &configuration::Configuration, params: UpdateDocumentsParams) -> Result<models::UpdateDocuments200Response, Error<UpdateDocumentsError>> {
 
-    let uri_str = format!("{}/collections/{collectionName}/documents", configuration.base_path, collectionName=crate::apis::urlencode(p_collection_name));
+    let uri_str = format!("{}/collections/{collectionName}/documents", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name));
     let mut req_builder = configuration.client.request(reqwest::Method::PATCH, &uri_str);
 
-    if let Some(ref param_value) = p_filter_by {
+    if let Some(ref param_value) = params.filter_by {
         req_builder = req_builder.query(&[("filter_by", &param_value.to_string())]);
     }
     if let Some(ref user_agent) = configuration.user_agent {
@@ -1303,7 +1382,7 @@ pub async fn update_documents(configuration: &configuration::Configuration, coll
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&p_body);
+    req_builder = req_builder.json(&params.body);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -1331,13 +1410,9 @@ pub async fn update_documents(configuration: &configuration::Configuration, coll
 }
 
 /// Create or update an override to promote certain documents over others. Using overrides, you can include or exclude specific documents for a given query.
-pub async fn upsert_search_override(configuration: &configuration::Configuration, collection_name: &str, override_id: &str, search_override_schema: models::SearchOverrideSchema) -> Result<models::SearchOverride, Error<UpsertSearchOverrideError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_name = collection_name;
-    let p_override_id = override_id;
-    let p_search_override_schema = search_override_schema;
+pub async fn upsert_search_override(configuration: &configuration::Configuration, params: UpsertSearchOverrideParams) -> Result<models::SearchOverride, Error<UpsertSearchOverrideError>> {
 
-    let uri_str = format!("{}/collections/{collectionName}/overrides/{overrideId}", configuration.base_path, collectionName=crate::apis::urlencode(p_collection_name), overrideId=crate::apis::urlencode(p_override_id));
+    let uri_str = format!("{}/collections/{collectionName}/overrides/{overrideId}", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name), overrideId=crate::apis::urlencode(params.override_id));
     let mut req_builder = configuration.client.request(reqwest::Method::PUT, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -1351,7 +1426,7 @@ pub async fn upsert_search_override(configuration: &configuration::Configuration
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&p_search_override_schema);
+    req_builder = req_builder.json(&params.search_override_schema);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;

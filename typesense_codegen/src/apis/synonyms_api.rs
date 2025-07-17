@@ -14,6 +14,42 @@ use serde::{Deserialize, Serialize, de::Error as _};
 use crate::{apis::ResponseContent, models};
 use super::{Error, configuration, ContentType};
 
+/// struct for passing parameters to the method [`delete_search_synonym`]
+#[derive(Clone, Debug)]
+pub struct DeleteSearchSynonymParams {
+    /// The name of the collection
+    pub collection_name: String,
+    /// The ID of the search synonym to delete
+    pub synonym_id: String
+}
+
+/// struct for passing parameters to the method [`get_search_synonym`]
+#[derive(Clone, Debug)]
+pub struct GetSearchSynonymParams {
+    /// The name of the collection
+    pub collection_name: String,
+    /// The id of the search synonym
+    pub synonym_id: String
+}
+
+/// struct for passing parameters to the method [`get_search_synonyms`]
+#[derive(Clone, Debug)]
+pub struct GetSearchSynonymsParams {
+    /// The name of the collection
+    pub collection_name: String
+}
+
+/// struct for passing parameters to the method [`upsert_search_synonym`]
+#[derive(Clone, Debug)]
+pub struct UpsertSearchSynonymParams {
+    /// The name of the collection
+    pub collection_name: String,
+    /// The ID of the search synonym to create/update
+    pub synonym_id: String,
+    /// The search synonym object to be created/updated
+    pub search_synonym_schema: models::SearchSynonymSchema
+}
+
 
 /// struct for typed errors of method [`delete_search_synonym`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -48,12 +84,9 @@ pub enum UpsertSearchSynonymError {
 }
 
 
-pub async fn delete_search_synonym(configuration: &configuration::Configuration, collection_name: &str, synonym_id: &str) -> Result<models::SearchSynonymDeleteResponse, Error<DeleteSearchSynonymError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_name = collection_name;
-    let p_synonym_id = synonym_id;
+pub async fn delete_search_synonym(configuration: &configuration::Configuration, params: DeleteSearchSynonymParams) -> Result<models::SearchSynonymDeleteResponse, Error<DeleteSearchSynonymError>> {
 
-    let uri_str = format!("{}/collections/{collectionName}/synonyms/{synonymId}", configuration.base_path, collectionName=crate::apis::urlencode(p_collection_name), synonymId=crate::apis::urlencode(p_synonym_id));
+    let uri_str = format!("{}/collections/{collectionName}/synonyms/{synonymId}", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name), synonymId=crate::apis::urlencode(params.synonym_id));
     let mut req_builder = configuration.client.request(reqwest::Method::DELETE, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -94,12 +127,9 @@ pub async fn delete_search_synonym(configuration: &configuration::Configuration,
 }
 
 /// Retrieve the details of a search synonym, given its id.
-pub async fn get_search_synonym(configuration: &configuration::Configuration, collection_name: &str, synonym_id: &str) -> Result<models::SearchSynonym, Error<GetSearchSynonymError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_name = collection_name;
-    let p_synonym_id = synonym_id;
+pub async fn get_search_synonym(configuration: &configuration::Configuration, params: GetSearchSynonymParams) -> Result<models::SearchSynonym, Error<GetSearchSynonymError>> {
 
-    let uri_str = format!("{}/collections/{collectionName}/synonyms/{synonymId}", configuration.base_path, collectionName=crate::apis::urlencode(p_collection_name), synonymId=crate::apis::urlencode(p_synonym_id));
+    let uri_str = format!("{}/collections/{collectionName}/synonyms/{synonymId}", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name), synonymId=crate::apis::urlencode(params.synonym_id));
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -139,11 +169,9 @@ pub async fn get_search_synonym(configuration: &configuration::Configuration, co
     }
 }
 
-pub async fn get_search_synonyms(configuration: &configuration::Configuration, collection_name: &str) -> Result<models::SearchSynonymsResponse, Error<GetSearchSynonymsError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_name = collection_name;
+pub async fn get_search_synonyms(configuration: &configuration::Configuration, params: GetSearchSynonymsParams) -> Result<models::SearchSynonymsResponse, Error<GetSearchSynonymsError>> {
 
-    let uri_str = format!("{}/collections/{collectionName}/synonyms", configuration.base_path, collectionName=crate::apis::urlencode(p_collection_name));
+    let uri_str = format!("{}/collections/{collectionName}/synonyms", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name));
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -184,13 +212,9 @@ pub async fn get_search_synonyms(configuration: &configuration::Configuration, c
 }
 
 /// Create or update a synonym  to define search terms that should be considered equivalent.
-pub async fn upsert_search_synonym(configuration: &configuration::Configuration, collection_name: &str, synonym_id: &str, search_synonym_schema: models::SearchSynonymSchema) -> Result<models::SearchSynonym, Error<UpsertSearchSynonymError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_name = collection_name;
-    let p_synonym_id = synonym_id;
-    let p_search_synonym_schema = search_synonym_schema;
+pub async fn upsert_search_synonym(configuration: &configuration::Configuration, params: UpsertSearchSynonymParams) -> Result<models::SearchSynonym, Error<UpsertSearchSynonymError>> {
 
-    let uri_str = format!("{}/collections/{collectionName}/synonyms/{synonymId}", configuration.base_path, collectionName=crate::apis::urlencode(p_collection_name), synonymId=crate::apis::urlencode(p_synonym_id));
+    let uri_str = format!("{}/collections/{collectionName}/synonyms/{synonymId}", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name), synonymId=crate::apis::urlencode(params.synonym_id));
     let mut req_builder = configuration.client.request(reqwest::Method::PUT, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -204,7 +228,7 @@ pub async fn upsert_search_synonym(configuration: &configuration::Configuration,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&p_search_synonym_schema);
+    req_builder = req_builder.json(&params.search_synonym_schema);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;

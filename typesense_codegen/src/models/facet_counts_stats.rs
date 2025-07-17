@@ -13,8 +13,6 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct FacetCountsStats {
-    #[serde(rename = "avg", skip_serializing_if = "Option::is_none")]
-    pub avg: Option<f64>,
     #[serde(rename = "max", skip_serializing_if = "Option::is_none")]
     pub max: Option<f64>,
     #[serde(rename = "min", skip_serializing_if = "Option::is_none")]
@@ -23,16 +21,18 @@ pub struct FacetCountsStats {
     pub sum: Option<f64>,
     #[serde(rename = "total_values", skip_serializing_if = "Option::is_none")]
     pub total_values: Option<i32>,
+    #[serde(rename = "avg", skip_serializing_if = "Option::is_none")]
+    pub avg: Option<f64>,
 }
 
 impl FacetCountsStats {
     pub fn new() -> FacetCountsStats {
         FacetCountsStats {
-            avg: None,
             max: None,
             min: None,
             sum: None,
             total_values: None,
+            avg: None,
         }
     }
 }

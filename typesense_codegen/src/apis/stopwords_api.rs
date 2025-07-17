@@ -14,6 +14,29 @@ use serde::{Deserialize, Serialize, de::Error as _};
 use crate::{apis::ResponseContent, models};
 use super::{Error, configuration, ContentType};
 
+/// struct for passing parameters to the method [`delete_stopwords_set`]
+#[derive(Clone, Debug)]
+pub struct DeleteStopwordsSetParams {
+    /// The ID of the stopwords set to delete.
+    pub set_id: String
+}
+
+/// struct for passing parameters to the method [`retrieve_stopwords_set`]
+#[derive(Clone, Debug)]
+pub struct RetrieveStopwordsSetParams {
+    /// The ID of the stopwords set to retrieve.
+    pub set_id: String
+}
+
+/// struct for passing parameters to the method [`upsert_stopwords_set`]
+#[derive(Clone, Debug)]
+pub struct UpsertStopwordsSetParams {
+    /// The ID of the stopwords set to upsert.
+    pub set_id: String,
+    /// The stopwords set to upsert.
+    pub stopwords_set_upsert_schema: models::StopwordsSetUpsertSchema
+}
+
 
 /// struct for typed errors of method [`delete_stopwords_set`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -48,11 +71,9 @@ pub enum UpsertStopwordsSetError {
 
 
 /// Permanently deletes a stopwords set, given it's name.
-pub async fn delete_stopwords_set(configuration: &configuration::Configuration, set_id: &str) -> Result<models::DeleteStopwordsSet200Response, Error<DeleteStopwordsSetError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_set_id = set_id;
+pub async fn delete_stopwords_set(configuration: &configuration::Configuration, params: DeleteStopwordsSetParams) -> Result<models::DeleteStopwordsSet200Response, Error<DeleteStopwordsSetError>> {
 
-    let uri_str = format!("{}/stopwords/{setId}", configuration.base_path, setId=crate::apis::urlencode(p_set_id));
+    let uri_str = format!("{}/stopwords/{setId}", configuration.base_path, setId=crate::apis::urlencode(params.set_id));
     let mut req_builder = configuration.client.request(reqwest::Method::DELETE, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -93,11 +114,9 @@ pub async fn delete_stopwords_set(configuration: &configuration::Configuration, 
 }
 
 /// Retrieve the details of a stopwords set, given it's name.
-pub async fn retrieve_stopwords_set(configuration: &configuration::Configuration, set_id: &str) -> Result<models::StopwordsSetRetrieveSchema, Error<RetrieveStopwordsSetError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_set_id = set_id;
+pub async fn retrieve_stopwords_set(configuration: &configuration::Configuration, params: RetrieveStopwordsSetParams) -> Result<models::StopwordsSetRetrieveSchema, Error<RetrieveStopwordsSetError>> {
 
-    let uri_str = format!("{}/stopwords/{setId}", configuration.base_path, setId=crate::apis::urlencode(p_set_id));
+    let uri_str = format!("{}/stopwords/{setId}", configuration.base_path, setId=crate::apis::urlencode(params.set_id));
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -138,7 +157,7 @@ pub async fn retrieve_stopwords_set(configuration: &configuration::Configuration
 }
 
 /// Retrieve the details of all stopwords sets
-pub async fn retrieve_stopwords_sets(configuration: &configuration::Configuration, ) -> Result<models::StopwordsSetsRetrieveAllSchema, Error<RetrieveStopwordsSetsError>> {
+pub async fn retrieve_stopwords_sets(configuration: &configuration::Configuration) -> Result<models::StopwordsSetsRetrieveAllSchema, Error<RetrieveStopwordsSetsError>> {
 
     let uri_str = format!("{}/stopwords", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -181,12 +200,9 @@ pub async fn retrieve_stopwords_sets(configuration: &configuration::Configuratio
 }
 
 /// When an analytics rule is created, we give it a name and describe the type, the source collections and the destination collection.
-pub async fn upsert_stopwords_set(configuration: &configuration::Configuration, set_id: &str, stopwords_set_upsert_schema: models::StopwordsSetUpsertSchema) -> Result<models::StopwordsSetSchema, Error<UpsertStopwordsSetError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_set_id = set_id;
-    let p_stopwords_set_upsert_schema = stopwords_set_upsert_schema;
+pub async fn upsert_stopwords_set(configuration: &configuration::Configuration, params: UpsertStopwordsSetParams) -> Result<models::StopwordsSetSchema, Error<UpsertStopwordsSetError>> {
 
-    let uri_str = format!("{}/stopwords/{setId}", configuration.base_path, setId=crate::apis::urlencode(p_set_id));
+    let uri_str = format!("{}/stopwords/{setId}", configuration.base_path, setId=crate::apis::urlencode(params.set_id));
     let mut req_builder = configuration.client.request(reqwest::Method::PUT, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -200,7 +216,7 @@ pub async fn upsert_stopwords_set(configuration: &configuration::Configuration, 
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&p_stopwords_set_upsert_schema);
+    req_builder = req_builder.json(&params.stopwords_set_upsert_schema);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;

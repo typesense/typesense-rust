@@ -13,20 +13,20 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct AnalyticsEventCreateSchema {
-    #[serde(rename = "data")]
-    pub data: serde_json::Value,
-    #[serde(rename = "name")]
-    pub name: String,
     #[serde(rename = "type")]
     pub r#type: String,
+    #[serde(rename = "name")]
+    pub name: String,
+    #[serde(rename = "data")]
+    pub data: serde_json::Value,
 }
 
 impl AnalyticsEventCreateSchema {
-    pub fn new(data: serde_json::Value, name: String, r#type: String) -> AnalyticsEventCreateSchema {
+    pub fn new(r#type: String, name: String, data: serde_json::Value) -> AnalyticsEventCreateSchema {
         AnalyticsEventCreateSchema {
-            data,
-            name,
             r#type,
+            name,
+            data,
         }
     }
 }

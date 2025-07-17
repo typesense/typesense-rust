@@ -13,23 +13,23 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct AnalyticsRuleParameters {
-    #[serde(rename = "destination")]
-    pub destination: Box<models::AnalyticsRuleParametersDestination>,
-    #[serde(rename = "expand_query", skip_serializing_if = "Option::is_none")]
-    pub expand_query: Option<bool>,
-    #[serde(rename = "limit", skip_serializing_if = "Option::is_none")]
-    pub limit: Option<i32>,
     #[serde(rename = "source")]
     pub source: Box<models::AnalyticsRuleParametersSource>,
+    #[serde(rename = "destination")]
+    pub destination: Box<models::AnalyticsRuleParametersDestination>,
+    #[serde(rename = "limit", skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i32>,
+    #[serde(rename = "expand_query", skip_serializing_if = "Option::is_none")]
+    pub expand_query: Option<bool>,
 }
 
 impl AnalyticsRuleParameters {
-    pub fn new(destination: models::AnalyticsRuleParametersDestination, source: models::AnalyticsRuleParametersSource) -> AnalyticsRuleParameters {
+    pub fn new(source: models::AnalyticsRuleParametersSource, destination: models::AnalyticsRuleParametersDestination) -> AnalyticsRuleParameters {
         AnalyticsRuleParameters {
-            destination: Box::new(destination),
-            expand_query: None,
-            limit: None,
             source: Box::new(source),
+            destination: Box::new(destination),
+            limit: None,
+            expand_query: None,
         }
     }
 }

@@ -3,12 +3,15 @@ use clap::{Parser, ValueEnum};
 use std::env;
 use std::fs;
 use std::process::Command;
+mod preprocess_openapi;
+use preprocess_openapi::preprocess_openapi_file;
 
 const SPEC_URL: &str =
-    "https://raw.githubusercontent.com/typesense/typesense-go/master/typesense/api/generator/generator.yml";
-// Input spec file, expected in the project root.
+    "https://raw.githubusercontent.com/typesense/typesense-api-spec/master/openapi.yml";
 
-const INPUT_SPEC_FILE: &str = "typesense-go-unwrapped-api-spec.yaml";
+// Input spec file, expected in the project root.
+const INPUT_SPEC_FILE: &str = "openapi.yml";
+const OUTPUT_PREPROCESSED_FILE: &str = "./preprocessed_openapi.yml";
 
 // Output directory for the generated code.
 const OUTPUT_DIR: &str = "typesense_codegen";
@@ -36,7 +39,6 @@ enum Task {
     CodeGen,
 }
 
-// 3. The main function now parses the CLI arguments and loops through the requested tasks
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
@@ -53,7 +55,6 @@ fn main() -> Result<()> {
 fn task_fetch_api_spec() -> Result<()> {
     println!("▶️  Running codegen task...");
 
-    // 1. Fetch the OpenAPI spec
     println!("  - Downloading spec from {}", SPEC_URL);
     let response =
         reqwest::blocking::get(SPEC_URL).context("Failed to download OpenAPI spec file")?;
@@ -76,6 +77,9 @@ fn task_fetch_api_spec() -> Result<()> {
 fn task_codegen() -> Result<()> {
     println!("▶️  Running codegen task via Docker...");
 
+    println!("Preprocessing the Open API spec file...");
+    preprocess_openapi_file(INPUT_SPEC_FILE, OUTPUT_PREPROCESSED_FILE)
+        .expect("Preprocess failed, aborting!");
     // 1. Get the absolute path to the project's root directory.
     // std::env::current_dir() gives us the directory from which `cargo xtask` was run.
     let project_root = env::current_dir().context("Failed to get current directory")?;
@@ -105,12 +109,20 @@ fn task_codegen() -> Result<()> {
         .arg("openapitools/openapi-generator-cli")
         .arg("generate")
         .arg("-i")
-        .arg(format!("/local/{}", INPUT_SPEC_FILE)) // Input path inside the container
+        .arg(format!("/local/{}", OUTPUT_PREPROCESSED_FILE)) // Input path inside the container
         .arg("-g")
-        .arg("rust") // The language generator
+        .arg("rust")
         .arg("-o")
         .arg(format!("/local/{}", OUTPUT_DIR)) // Output path inside the container
-        .status() // Execute the command and wait for it to finish
+        .arg("--additional-properties")
+        .arg("library=reqwest")
+        .arg("--additional-properties")
+        .arg("supportMiddleware=true")
+        .arg("--additional-properties")
+        .arg("useSingleRequestParameter=true")
+        // .arg("--additional-properties")
+        // .arg("useBonBuilder=true")
+        .status()
         .context("Failed to execute Docker command. Is Docker installed and running?")?;
 
     // 5. Check if the command was successful.

@@ -14,6 +14,43 @@ use serde::{Deserialize, Serialize, de::Error as _};
 use crate::{apis::ResponseContent, models};
 use super::{Error, configuration, ContentType};
 
+/// struct for passing parameters to the method [`create_analytics_event`]
+#[derive(Clone, Debug)]
+pub struct CreateAnalyticsEventParams {
+    /// The Analytics event to be created
+    pub analytics_event_create_schema: models::AnalyticsEventCreateSchema
+}
+
+/// struct for passing parameters to the method [`create_analytics_rule`]
+#[derive(Clone, Debug)]
+pub struct CreateAnalyticsRuleParams {
+    /// The Analytics rule to be created
+    pub analytics_rule_schema: models::AnalyticsRuleSchema
+}
+
+/// struct for passing parameters to the method [`delete_analytics_rule`]
+#[derive(Clone, Debug)]
+pub struct DeleteAnalyticsRuleParams {
+    /// The name of the analytics rule to delete
+    pub rule_name: String
+}
+
+/// struct for passing parameters to the method [`retrieve_analytics_rule`]
+#[derive(Clone, Debug)]
+pub struct RetrieveAnalyticsRuleParams {
+    /// The name of the analytics rule to retrieve
+    pub rule_name: String
+}
+
+/// struct for passing parameters to the method [`upsert_analytics_rule`]
+#[derive(Clone, Debug)]
+pub struct UpsertAnalyticsRuleParams {
+    /// The name of the analytics rule to upsert
+    pub rule_name: String,
+    /// The Analytics rule to be upserted
+    pub analytics_rule_upsert_schema: models::AnalyticsRuleUpsertSchema
+}
+
 
 /// struct for typed errors of method [`create_analytics_event`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -64,9 +101,7 @@ pub enum UpsertAnalyticsRuleError {
 
 
 /// Sending events for analytics e.g rank search results based on popularity.
-pub async fn create_analytics_event(configuration: &configuration::Configuration, analytics_event_create_schema: models::AnalyticsEventCreateSchema) -> Result<models::AnalyticsEventCreateResponse, Error<CreateAnalyticsEventError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_analytics_event_create_schema = analytics_event_create_schema;
+pub async fn create_analytics_event(configuration: &configuration::Configuration, params: CreateAnalyticsEventParams) -> Result<models::AnalyticsEventCreateResponse, Error<CreateAnalyticsEventError>> {
 
     let uri_str = format!("{}/analytics/events", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::POST, &uri_str);
@@ -82,7 +117,7 @@ pub async fn create_analytics_event(configuration: &configuration::Configuration
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&p_analytics_event_create_schema);
+    req_builder = req_builder.json(&params.analytics_event_create_schema);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -110,9 +145,7 @@ pub async fn create_analytics_event(configuration: &configuration::Configuration
 }
 
 /// When an analytics rule is created, we give it a name and describe the type, the source collections and the destination collection.
-pub async fn create_analytics_rule(configuration: &configuration::Configuration, analytics_rule_schema: models::AnalyticsRuleSchema) -> Result<models::AnalyticsRuleSchema, Error<CreateAnalyticsRuleError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_analytics_rule_schema = analytics_rule_schema;
+pub async fn create_analytics_rule(configuration: &configuration::Configuration, params: CreateAnalyticsRuleParams) -> Result<models::AnalyticsRuleSchema, Error<CreateAnalyticsRuleError>> {
 
     let uri_str = format!("{}/analytics/rules", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::POST, &uri_str);
@@ -128,7 +161,7 @@ pub async fn create_analytics_rule(configuration: &configuration::Configuration,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&p_analytics_rule_schema);
+    req_builder = req_builder.json(&params.analytics_rule_schema);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -156,11 +189,9 @@ pub async fn create_analytics_rule(configuration: &configuration::Configuration,
 }
 
 /// Permanently deletes an analytics rule, given it's name
-pub async fn delete_analytics_rule(configuration: &configuration::Configuration, rule_name: &str) -> Result<models::AnalyticsRuleDeleteResponse, Error<DeleteAnalyticsRuleError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_rule_name = rule_name;
+pub async fn delete_analytics_rule(configuration: &configuration::Configuration, params: DeleteAnalyticsRuleParams) -> Result<models::AnalyticsRuleDeleteResponse, Error<DeleteAnalyticsRuleError>> {
 
-    let uri_str = format!("{}/analytics/rules/{ruleName}", configuration.base_path, ruleName=crate::apis::urlencode(p_rule_name));
+    let uri_str = format!("{}/analytics/rules/{ruleName}", configuration.base_path, ruleName=crate::apis::urlencode(params.rule_name));
     let mut req_builder = configuration.client.request(reqwest::Method::DELETE, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -201,11 +232,9 @@ pub async fn delete_analytics_rule(configuration: &configuration::Configuration,
 }
 
 /// Retrieve the details of an analytics rule, given it's name
-pub async fn retrieve_analytics_rule(configuration: &configuration::Configuration, rule_name: &str) -> Result<models::AnalyticsRuleSchema, Error<RetrieveAnalyticsRuleError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_rule_name = rule_name;
+pub async fn retrieve_analytics_rule(configuration: &configuration::Configuration, params: RetrieveAnalyticsRuleParams) -> Result<models::AnalyticsRuleSchema, Error<RetrieveAnalyticsRuleError>> {
 
-    let uri_str = format!("{}/analytics/rules/{ruleName}", configuration.base_path, ruleName=crate::apis::urlencode(p_rule_name));
+    let uri_str = format!("{}/analytics/rules/{ruleName}", configuration.base_path, ruleName=crate::apis::urlencode(params.rule_name));
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -246,7 +275,7 @@ pub async fn retrieve_analytics_rule(configuration: &configuration::Configuratio
 }
 
 /// Retrieve the details of all analytics rules
-pub async fn retrieve_analytics_rules(configuration: &configuration::Configuration, ) -> Result<models::AnalyticsRulesRetrieveSchema, Error<RetrieveAnalyticsRulesError>> {
+pub async fn retrieve_analytics_rules(configuration: &configuration::Configuration) -> Result<models::AnalyticsRulesRetrieveSchema, Error<RetrieveAnalyticsRulesError>> {
 
     let uri_str = format!("{}/analytics/rules", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -289,12 +318,9 @@ pub async fn retrieve_analytics_rules(configuration: &configuration::Configurati
 }
 
 /// Upserts an analytics rule with the given name.
-pub async fn upsert_analytics_rule(configuration: &configuration::Configuration, rule_name: &str, analytics_rule_upsert_schema: models::AnalyticsRuleUpsertSchema) -> Result<models::AnalyticsRuleSchema, Error<UpsertAnalyticsRuleError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_rule_name = rule_name;
-    let p_analytics_rule_upsert_schema = analytics_rule_upsert_schema;
+pub async fn upsert_analytics_rule(configuration: &configuration::Configuration, params: UpsertAnalyticsRuleParams) -> Result<models::AnalyticsRuleSchema, Error<UpsertAnalyticsRuleError>> {
 
-    let uri_str = format!("{}/analytics/rules/{ruleName}", configuration.base_path, ruleName=crate::apis::urlencode(p_rule_name));
+    let uri_str = format!("{}/analytics/rules/{ruleName}", configuration.base_path, ruleName=crate::apis::urlencode(params.rule_name));
     let mut req_builder = configuration.client.request(reqwest::Method::PUT, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -308,7 +334,7 @@ pub async fn upsert_analytics_rule(configuration: &configuration::Configuration,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&p_analytics_rule_upsert_schema);
+    req_builder = req_builder.json(&params.analytics_rule_upsert_schema);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;

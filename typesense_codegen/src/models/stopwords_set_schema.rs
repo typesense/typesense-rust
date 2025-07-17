@@ -15,18 +15,18 @@ use serde::{Deserialize, Serialize};
 pub struct StopwordsSetSchema {
     #[serde(rename = "id")]
     pub id: String,
-    #[serde(rename = "locale", skip_serializing_if = "Option::is_none")]
-    pub locale: Option<String>,
     #[serde(rename = "stopwords")]
     pub stopwords: Vec<String>,
+    #[serde(rename = "locale", skip_serializing_if = "Option::is_none")]
+    pub locale: Option<String>,
 }
 
 impl StopwordsSetSchema {
     pub fn new(id: String, stopwords: Vec<String>) -> StopwordsSetSchema {
         StopwordsSetSchema {
             id,
-            locale: None,
             stopwords,
+            locale: None,
         }
     }
 }

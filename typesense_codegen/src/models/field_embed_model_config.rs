@@ -13,41 +13,41 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct FieldEmbedModelConfig {
-    #[serde(rename = "access_token", skip_serializing_if = "Option::is_none")]
-    pub access_token: Option<String>,
+    #[serde(rename = "model_name")]
+    pub model_name: String,
     #[serde(rename = "api_key", skip_serializing_if = "Option::is_none")]
     pub api_key: Option<String>,
+    #[serde(rename = "url", skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
+    #[serde(rename = "access_token", skip_serializing_if = "Option::is_none")]
+    pub access_token: Option<String>,
+    #[serde(rename = "refresh_token", skip_serializing_if = "Option::is_none")]
+    pub refresh_token: Option<String>,
     #[serde(rename = "client_id", skip_serializing_if = "Option::is_none")]
     pub client_id: Option<String>,
     #[serde(rename = "client_secret", skip_serializing_if = "Option::is_none")]
     pub client_secret: Option<String>,
-    #[serde(rename = "indexing_prefix", skip_serializing_if = "Option::is_none")]
-    pub indexing_prefix: Option<String>,
-    #[serde(rename = "model_name")]
-    pub model_name: String,
     #[serde(rename = "project_id", skip_serializing_if = "Option::is_none")]
     pub project_id: Option<String>,
+    #[serde(rename = "indexing_prefix", skip_serializing_if = "Option::is_none")]
+    pub indexing_prefix: Option<String>,
     #[serde(rename = "query_prefix", skip_serializing_if = "Option::is_none")]
     pub query_prefix: Option<String>,
-    #[serde(rename = "refresh_token", skip_serializing_if = "Option::is_none")]
-    pub refresh_token: Option<String>,
-    #[serde(rename = "url", skip_serializing_if = "Option::is_none")]
-    pub url: Option<String>,
 }
 
 impl FieldEmbedModelConfig {
     pub fn new(model_name: String) -> FieldEmbedModelConfig {
         FieldEmbedModelConfig {
-            access_token: None,
+            model_name,
             api_key: None,
+            url: None,
+            access_token: None,
+            refresh_token: None,
             client_id: None,
             client_secret: None,
-            indexing_prefix: None,
-            model_name,
             project_id: None,
+            indexing_prefix: None,
             query_prefix: None,
-            refresh_token: None,
-            url: None,
         }
     }
 }

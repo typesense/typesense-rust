@@ -13,76 +13,76 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Field {
-    #[serde(rename = "drop", skip_serializing_if = "Option::is_none")]
-    pub drop: Option<bool>,
-    #[serde(rename = "embed", skip_serializing_if = "Option::is_none")]
-    pub embed: Option<Box<models::FieldEmbed>>,
+    #[serde(rename = "name")]
+    pub name: String,
+    #[serde(rename = "type")]
+    pub r#type: String,
+    #[serde(rename = "optional", skip_serializing_if = "Option::is_none")]
+    pub optional: Option<bool>,
     #[serde(rename = "facet", skip_serializing_if = "Option::is_none")]
     pub facet: Option<bool>,
     #[serde(rename = "index", skip_serializing_if = "Option::is_none")]
     pub index: Option<bool>,
-    #[serde(rename = "infix", skip_serializing_if = "Option::is_none")]
-    pub infix: Option<bool>,
     #[serde(rename = "locale", skip_serializing_if = "Option::is_none")]
     pub locale: Option<String>,
-    #[serde(rename = "name")]
-    pub name: String,
-    #[serde(rename = "num_dim", skip_serializing_if = "Option::is_none")]
-    pub num_dim: Option<i32>,
-    #[serde(rename = "optional", skip_serializing_if = "Option::is_none")]
-    pub optional: Option<bool>,
-    /// Enables an index optimized for range filtering on numerical fields (e.g. rating:>3.5). Default: false. 
-    #[serde(rename = "range_index", skip_serializing_if = "Option::is_none")]
-    pub range_index: Option<bool>,
+    #[serde(rename = "sort", skip_serializing_if = "Option::is_none")]
+    pub sort: Option<bool>,
+    #[serde(rename = "infix", skip_serializing_if = "Option::is_none")]
+    pub infix: Option<bool>,
     /// Name of a field in another collection that should be linked to this collection so that it can be joined during query. 
     #[serde(rename = "reference", skip_serializing_if = "Option::is_none")]
     pub reference: Option<String>,
-    #[serde(rename = "sort", skip_serializing_if = "Option::is_none")]
-    pub sort: Option<bool>,
+    #[serde(rename = "num_dim", skip_serializing_if = "Option::is_none")]
+    pub num_dim: Option<i32>,
+    #[serde(rename = "drop", skip_serializing_if = "Option::is_none")]
+    pub drop: Option<bool>,
+    /// When set to false, the field value will not be stored on disk. Default: true. 
+    #[serde(rename = "store", skip_serializing_if = "Option::is_none")]
+    pub store: Option<bool>,
+    /// The distance metric to be used for vector search. Default: `cosine`. You can also use `ip` for inner product. 
+    #[serde(rename = "vec_dist", skip_serializing_if = "Option::is_none")]
+    pub vec_dist: Option<String>,
+    /// Enables an index optimized for range filtering on numerical fields (e.g. rating:>3.5). Default: false. 
+    #[serde(rename = "range_index", skip_serializing_if = "Option::is_none")]
+    pub range_index: Option<bool>,
     /// Values are stemmed before indexing in-memory. Default: false. 
     #[serde(rename = "stem", skip_serializing_if = "Option::is_none")]
     pub stem: Option<bool>,
     /// Name of the stemming dictionary to use for this field
     #[serde(rename = "stem_dictionary", skip_serializing_if = "Option::is_none")]
     pub stem_dictionary: Option<String>,
-    /// When set to false, the field value will not be stored on disk. Default: true. 
-    #[serde(rename = "store", skip_serializing_if = "Option::is_none")]
-    pub store: Option<bool>,
-    /// List of symbols or special characters to be indexed. 
-    #[serde(rename = "symbols_to_index", skip_serializing_if = "Option::is_none")]
-    pub symbols_to_index: Option<Vec<String>>,
     /// List of symbols or special characters to be used for splitting the text into individual words in addition to space and new-line characters. 
     #[serde(rename = "token_separators", skip_serializing_if = "Option::is_none")]
     pub token_separators: Option<Vec<String>>,
-    #[serde(rename = "type")]
-    pub r#type: String,
-    /// The distance metric to be used for vector search. Default: `cosine`. You can also use `ip` for inner product. 
-    #[serde(rename = "vec_dist", skip_serializing_if = "Option::is_none")]
-    pub vec_dist: Option<String>,
+    /// List of symbols or special characters to be indexed. 
+    #[serde(rename = "symbols_to_index", skip_serializing_if = "Option::is_none")]
+    pub symbols_to_index: Option<Vec<String>>,
+    #[serde(rename = "embed", skip_serializing_if = "Option::is_none")]
+    pub embed: Option<Box<models::FieldEmbed>>,
 }
 
 impl Field {
     pub fn new(name: String, r#type: String) -> Field {
         Field {
-            drop: None,
-            embed: None,
+            name,
+            r#type,
+            optional: None,
             facet: None,
             index: None,
-            infix: None,
             locale: None,
-            name,
-            num_dim: None,
-            optional: None,
-            range_index: None,
-            reference: None,
             sort: None,
+            infix: None,
+            reference: None,
+            num_dim: None,
+            drop: None,
+            store: None,
+            vec_dist: None,
+            range_index: None,
             stem: None,
             stem_dictionary: None,
-            store: None,
-            symbols_to_index: None,
             token_separators: None,
-            r#type,
-            vec_dist: None,
+            symbols_to_index: None,
+            embed: None,
         }
     }
 }

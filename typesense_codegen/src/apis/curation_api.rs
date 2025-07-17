@@ -14,6 +14,33 @@ use serde::{Deserialize, Serialize, de::Error as _};
 use crate::{apis::ResponseContent, models};
 use super::{Error, configuration, ContentType};
 
+/// struct for passing parameters to the method [`delete_search_override`]
+#[derive(Clone, Debug)]
+pub struct DeleteSearchOverrideParams {
+    /// The name of the collection
+    pub collection_name: String,
+    /// The ID of the search override to delete
+    pub override_id: String
+}
+
+/// struct for passing parameters to the method [`get_search_overrides`]
+#[derive(Clone, Debug)]
+pub struct GetSearchOverridesParams {
+    /// The name of the collection
+    pub collection_name: String
+}
+
+/// struct for passing parameters to the method [`upsert_search_override`]
+#[derive(Clone, Debug)]
+pub struct UpsertSearchOverrideParams {
+    /// The name of the collection
+    pub collection_name: String,
+    /// The ID of the search override to create/update
+    pub override_id: String,
+    /// The search override object to be created/updated
+    pub search_override_schema: models::SearchOverrideSchema
+}
+
 
 /// struct for typed errors of method [`delete_search_override`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -39,12 +66,9 @@ pub enum UpsertSearchOverrideError {
 }
 
 
-pub async fn delete_search_override(configuration: &configuration::Configuration, collection_name: &str, override_id: &str) -> Result<models::SearchOverrideDeleteResponse, Error<DeleteSearchOverrideError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_name = collection_name;
-    let p_override_id = override_id;
+pub async fn delete_search_override(configuration: &configuration::Configuration, params: DeleteSearchOverrideParams) -> Result<models::SearchOverrideDeleteResponse, Error<DeleteSearchOverrideError>> {
 
-    let uri_str = format!("{}/collections/{collectionName}/overrides/{overrideId}", configuration.base_path, collectionName=crate::apis::urlencode(p_collection_name), overrideId=crate::apis::urlencode(p_override_id));
+    let uri_str = format!("{}/collections/{collectionName}/overrides/{overrideId}", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name), overrideId=crate::apis::urlencode(params.override_id));
     let mut req_builder = configuration.client.request(reqwest::Method::DELETE, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -84,11 +108,9 @@ pub async fn delete_search_override(configuration: &configuration::Configuration
     }
 }
 
-pub async fn get_search_overrides(configuration: &configuration::Configuration, collection_name: &str) -> Result<models::SearchOverridesResponse, Error<GetSearchOverridesError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_name = collection_name;
+pub async fn get_search_overrides(configuration: &configuration::Configuration, params: GetSearchOverridesParams) -> Result<models::SearchOverridesResponse, Error<GetSearchOverridesError>> {
 
-    let uri_str = format!("{}/collections/{collectionName}/overrides", configuration.base_path, collectionName=crate::apis::urlencode(p_collection_name));
+    let uri_str = format!("{}/collections/{collectionName}/overrides", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name));
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -129,13 +151,9 @@ pub async fn get_search_overrides(configuration: &configuration::Configuration, 
 }
 
 /// Create or update an override to promote certain documents over others. Using overrides, you can include or exclude specific documents for a given query.
-pub async fn upsert_search_override(configuration: &configuration::Configuration, collection_name: &str, override_id: &str, search_override_schema: models::SearchOverrideSchema) -> Result<models::SearchOverride, Error<UpsertSearchOverrideError>> {
-    // add a prefix to parameters to efficiently prevent name collisions
-    let p_collection_name = collection_name;
-    let p_override_id = override_id;
-    let p_search_override_schema = search_override_schema;
+pub async fn upsert_search_override(configuration: &configuration::Configuration, params: UpsertSearchOverrideParams) -> Result<models::SearchOverride, Error<UpsertSearchOverrideError>> {
 
-    let uri_str = format!("{}/collections/{collectionName}/overrides/{overrideId}", configuration.base_path, collectionName=crate::apis::urlencode(p_collection_name), overrideId=crate::apis::urlencode(p_override_id));
+    let uri_str = format!("{}/collections/{collectionName}/overrides/{overrideId}", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name), overrideId=crate::apis::urlencode(params.override_id));
     let mut req_builder = configuration.client.request(reqwest::Method::PUT, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -149,7 +167,7 @@ pub async fn upsert_search_override(configuration: &configuration::Configuration
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&p_search_override_schema);
+    req_builder = req_builder.json(&params.search_override_schema);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;

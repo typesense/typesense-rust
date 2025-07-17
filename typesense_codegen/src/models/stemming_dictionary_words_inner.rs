@@ -13,19 +13,19 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct StemmingDictionaryWordsInner {
-    /// The root form of the word
-    #[serde(rename = "root")]
-    pub root: String,
     /// The word form to be stemmed
     #[serde(rename = "word")]
     pub word: String,
+    /// The root form of the word
+    #[serde(rename = "root")]
+    pub root: String,
 }
 
 impl StemmingDictionaryWordsInner {
-    pub fn new(root: String, word: String) -> StemmingDictionaryWordsInner {
+    pub fn new(word: String, root: String) -> StemmingDictionaryWordsInner {
         StemmingDictionaryWordsInner {
-            root,
             word,
+            root,
         }
     }
 }

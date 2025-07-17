@@ -13,19 +13,19 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct AnalyticsRuleSchema {
-    #[serde(rename = "params")]
-    pub params: Box<models::AnalyticsRuleParameters>,
     #[serde(rename = "type")]
     pub r#type: Type,
+    #[serde(rename = "params")]
+    pub params: Box<models::AnalyticsRuleParameters>,
     #[serde(rename = "name")]
     pub name: String,
 }
 
 impl AnalyticsRuleSchema {
-    pub fn new(params: models::AnalyticsRuleParameters, r#type: Type, name: String) -> AnalyticsRuleSchema {
+    pub fn new(r#type: Type, params: models::AnalyticsRuleParameters, name: String) -> AnalyticsRuleSchema {
         AnalyticsRuleSchema {
-            params: Box::new(params),
             r#type,
+            params: Box::new(params),
             name,
         }
     }

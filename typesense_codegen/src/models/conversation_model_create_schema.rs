@@ -13,46 +13,46 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ConversationModelCreateSchema {
-    /// LLM service's account ID (only applicable for Cloudflare)
-    #[serde(rename = "account_id", skip_serializing_if = "Option::is_none")]
-    pub account_id: Option<String>,
+    /// An explicit id for the model, otherwise the API will return a response with an auto-generated conversation model id.
+    #[serde(rename = "id", skip_serializing_if = "Option::is_none")]
+    pub id: Option<String>,
+    /// Name of the LLM model offered by OpenAI, Cloudflare or vLLM
+    #[serde(rename = "model_name")]
+    pub model_name: String,
     /// The LLM service's API Key
     #[serde(rename = "api_key", skip_serializing_if = "Option::is_none")]
     pub api_key: Option<String>,
     /// Typesense collection that stores the historical conversations
     #[serde(rename = "history_collection")]
     pub history_collection: String,
-    /// An explicit id for the model, otherwise the API will return a response with an auto-generated conversation model id.
-    #[serde(rename = "id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<String>,
-    /// The maximum number of bytes to send to the LLM in every API call. Consult the LLM's documentation on the number of bytes supported in the context window. 
-    #[serde(rename = "max_bytes")]
-    pub max_bytes: i32,
-    /// Name of the LLM model offered by OpenAI, Cloudflare or vLLM
-    #[serde(rename = "model_name")]
-    pub model_name: String,
+    /// LLM service's account ID (only applicable for Cloudflare)
+    #[serde(rename = "account_id", skip_serializing_if = "Option::is_none")]
+    pub account_id: Option<String>,
     /// The system prompt that contains special instructions to the LLM
     #[serde(rename = "system_prompt", skip_serializing_if = "Option::is_none")]
     pub system_prompt: Option<String>,
     /// Time interval in seconds after which the messages would be deleted. Default: 86400 (24 hours) 
     #[serde(rename = "ttl", skip_serializing_if = "Option::is_none")]
     pub ttl: Option<i32>,
+    /// The maximum number of bytes to send to the LLM in every API call. Consult the LLM's documentation on the number of bytes supported in the context window. 
+    #[serde(rename = "max_bytes")]
+    pub max_bytes: i32,
     /// URL of vLLM service
     #[serde(rename = "vllm_url", skip_serializing_if = "Option::is_none")]
     pub vllm_url: Option<String>,
 }
 
 impl ConversationModelCreateSchema {
-    pub fn new(history_collection: String, max_bytes: i32, model_name: String) -> ConversationModelCreateSchema {
+    pub fn new(model_name: String, history_collection: String, max_bytes: i32) -> ConversationModelCreateSchema {
         ConversationModelCreateSchema {
-            account_id: None,
+            id: None,
+            model_name,
             api_key: None,
             history_collection,
-            id: None,
-            max_bytes,
-            model_name,
+            account_id: None,
             system_prompt: None,
             ttl: None,
+            max_bytes,
             vllm_url: None,
         }
     }

@@ -69,6 +69,11 @@ Class | Method | HTTP request | Description
 *KeysApi* | [**delete_key**](docs/KeysApi.md#delete_key) | **DELETE** /keys/{keyId} | Delete an API key given its ID.
 *KeysApi* | [**get_key**](docs/KeysApi.md#get_key) | **GET** /keys/{keyId} | Retrieve (metadata about) a key
 *KeysApi* | [**get_keys**](docs/KeysApi.md#get_keys) | **GET** /keys | Retrieve (metadata about) all keys.
+*NlSearchModelsApi* | [**create_nl_search_model**](docs/NlSearchModelsApi.md#create_nl_search_model) | **POST** /nl_search_models | Create a NL search model
+*NlSearchModelsApi* | [**delete_nl_search_model**](docs/NlSearchModelsApi.md#delete_nl_search_model) | **DELETE** /nl_search_models/{modelId} | Delete a NL search model
+*NlSearchModelsApi* | [**retrieve_all_nl_search_models**](docs/NlSearchModelsApi.md#retrieve_all_nl_search_models) | **GET** /nl_search_models | List all NL search models
+*NlSearchModelsApi* | [**retrieve_nl_search_model**](docs/NlSearchModelsApi.md#retrieve_nl_search_model) | **GET** /nl_search_models/{modelId} | Retrieve a NL search model
+*NlSearchModelsApi* | [**update_nl_search_model**](docs/NlSearchModelsApi.md#update_nl_search_model) | **PUT** /nl_search_models/{modelId} | Update a NL search model
 *OperationsApi* | [**get_schema_changes**](docs/OperationsApi.md#get_schema_changes) | **GET** /operations/schema_changes | Get the status of in-progress schema change operations
 *OperationsApi* | [**retrieve_api_stats**](docs/OperationsApi.md#retrieve_api_stats) | **GET** /stats.json | Get stats about API endpoints.
 *OperationsApi* | [**retrieve_metrics**](docs/OperationsApi.md#retrieve_metrics) | **GET** /metrics.json | Get current RAM, CPU, Disk & Network usage metrics.
@@ -121,11 +126,13 @@ Class | Method | HTTP request | Description
  - [ConversationModelUpdateSchema](docs/ConversationModelUpdateSchema.md)
  - [Debug200Response](docs/Debug200Response.md)
  - [DeleteDocuments200Response](docs/DeleteDocuments200Response.md)
+ - [DeleteDocumentsParameters](docs/DeleteDocumentsParameters.md)
  - [DeleteStopwordsSet200Response](docs/DeleteStopwordsSet200Response.md)
  - [DirtyValues](docs/DirtyValues.md)
  - [DocumentIndexParameters](docs/DocumentIndexParameters.md)
  - [DropTokensMode](docs/DropTokensMode.md)
  - [ErrorResponse](docs/ErrorResponse.md)
+ - [ExportDocumentsParameters](docs/ExportDocumentsParameters.md)
  - [FacetCounts](docs/FacetCounts.md)
  - [FacetCountsCountsInner](docs/FacetCountsCountsInner.md)
  - [FacetCountsStats](docs/FacetCountsStats.md)
@@ -133,6 +140,7 @@ Class | Method | HTTP request | Description
  - [FieldEmbed](docs/FieldEmbed.md)
  - [FieldEmbedModelConfig](docs/FieldEmbedModelConfig.md)
  - [HealthStatus](docs/HealthStatus.md)
+ - [ImportDocumentsParameters](docs/ImportDocumentsParameters.md)
  - [IndexAction](docs/IndexAction.md)
  - [ListStemmingDictionaries200Response](docs/ListStemmingDictionaries200Response.md)
  - [MultiSearchCollectionParameters](docs/MultiSearchCollectionParameters.md)
@@ -140,6 +148,10 @@ Class | Method | HTTP request | Description
  - [MultiSearchResult](docs/MultiSearchResult.md)
  - [MultiSearchResultItem](docs/MultiSearchResultItem.md)
  - [MultiSearchSearchesParameter](docs/MultiSearchSearchesParameter.md)
+ - [NlSearchModelBase](docs/NlSearchModelBase.md)
+ - [NlSearchModelCreateSchema](docs/NlSearchModelCreateSchema.md)
+ - [NlSearchModelDeleteSchema](docs/NlSearchModelDeleteSchema.md)
+ - [NlSearchModelSchema](docs/NlSearchModelSchema.md)
  - [PresetDeleteSchema](docs/PresetDeleteSchema.md)
  - [PresetSchema](docs/PresetSchema.md)
  - [PresetUpsertSchema](docs/PresetUpsertSchema.md)
@@ -176,6 +188,7 @@ Class | Method | HTTP request | Description
  - [StopwordsSetsRetrieveAllSchema](docs/StopwordsSetsRetrieveAllSchema.md)
  - [SuccessStatus](docs/SuccessStatus.md)
  - [UpdateDocuments200Response](docs/UpdateDocuments200Response.md)
+ - [UpdateDocumentsParameters](docs/UpdateDocumentsParameters.md)
  - [VoiceQueryModelCollectionConfig](docs/VoiceQueryModelCollectionConfig.md)
 
 

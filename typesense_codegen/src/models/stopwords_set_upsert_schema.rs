@@ -13,17 +13,17 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct StopwordsSetUpsertSchema {
-    #[serde(rename = "locale", skip_serializing_if = "Option::is_none")]
-    pub locale: Option<String>,
     #[serde(rename = "stopwords")]
     pub stopwords: Vec<String>,
+    #[serde(rename = "locale", skip_serializing_if = "Option::is_none")]
+    pub locale: Option<String>,
 }
 
 impl StopwordsSetUpsertSchema {
     pub fn new(stopwords: Vec<String>) -> StopwordsSetUpsertSchema {
         StopwordsSetUpsertSchema {
-            locale: None,
             stopwords,
+            locale: None,
         }
     }
 }

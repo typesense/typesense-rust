@@ -13,19 +13,19 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct CollectionAlias {
-    /// Name of the collection the alias mapped to
-    #[serde(rename = "collection_name")]
-    pub collection_name: String,
     /// Name of the collection alias
     #[serde(rename = "name")]
     pub name: String,
+    /// Name of the collection the alias mapped to
+    #[serde(rename = "collection_name")]
+    pub collection_name: String,
 }
 
 impl CollectionAlias {
-    pub fn new(collection_name: String, name: String) -> CollectionAlias {
+    pub fn new(name: String, collection_name: String) -> CollectionAlias {
         CollectionAlias {
-            collection_name,
             name,
+            collection_name,
         }
     }
 }

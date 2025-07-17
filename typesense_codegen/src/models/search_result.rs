@@ -13,8 +13,6 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SearchResult {
-    #[serde(rename = "conversation", skip_serializing_if = "Option::is_none")]
-    pub conversation: Option<Box<models::SearchResultConversation>>,
     #[serde(rename = "facet_counts", skip_serializing_if = "Option::is_none")]
     pub facet_counts: Option<Vec<models::FacetCounts>>,
     /// The number of documents found
@@ -22,41 +20,43 @@ pub struct SearchResult {
     pub found: Option<i32>,
     #[serde(rename = "found_docs", skip_serializing_if = "Option::is_none")]
     pub found_docs: Option<i32>,
+    /// The number of milliseconds the search took
+    #[serde(rename = "search_time_ms", skip_serializing_if = "Option::is_none")]
+    pub search_time_ms: Option<i32>,
+    /// The total number of documents in the collection
+    #[serde(rename = "out_of", skip_serializing_if = "Option::is_none")]
+    pub out_of: Option<i32>,
+    /// Whether the search was cut off
+    #[serde(rename = "search_cutoff", skip_serializing_if = "Option::is_none")]
+    pub search_cutoff: Option<bool>,
+    /// The search result page number
+    #[serde(rename = "page", skip_serializing_if = "Option::is_none")]
+    pub page: Option<i32>,
     #[serde(rename = "grouped_hits", skip_serializing_if = "Option::is_none")]
     pub grouped_hits: Option<Vec<models::SearchGroupedHit>>,
     /// The documents that matched the search query
     #[serde(rename = "hits", skip_serializing_if = "Option::is_none")]
     pub hits: Option<Vec<models::SearchResultHit>>,
-    /// The total number of documents in the collection
-    #[serde(rename = "out_of", skip_serializing_if = "Option::is_none")]
-    pub out_of: Option<i32>,
-    /// The search result page number
-    #[serde(rename = "page", skip_serializing_if = "Option::is_none")]
-    pub page: Option<i32>,
     #[serde(rename = "request_params", skip_serializing_if = "Option::is_none")]
     pub request_params: Option<Box<models::SearchResultRequestParams>>,
-    /// Whether the search was cut off
-    #[serde(rename = "search_cutoff", skip_serializing_if = "Option::is_none")]
-    pub search_cutoff: Option<bool>,
-    /// The number of milliseconds the search took
-    #[serde(rename = "search_time_ms", skip_serializing_if = "Option::is_none")]
-    pub search_time_ms: Option<i32>,
+    #[serde(rename = "conversation", skip_serializing_if = "Option::is_none")]
+    pub conversation: Option<Box<models::SearchResultConversation>>,
 }
 
 impl SearchResult {
     pub fn new() -> SearchResult {
         SearchResult {
-            conversation: None,
             facet_counts: None,
             found: None,
             found_docs: None,
+            search_time_ms: None,
+            out_of: None,
+            search_cutoff: None,
+            page: None,
             grouped_hits: None,
             hits: None,
-            out_of: None,
-            page: None,
             request_params: None,
-            search_cutoff: None,
-            search_time_ms: None,
+            conversation: None,
         }
     }
 }

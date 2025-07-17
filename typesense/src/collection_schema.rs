@@ -82,6 +82,7 @@ impl CollectionSchemaBuilder {
             token_separators: self.token_separators,
             enable_nested_fields: self.enable_nested_fields,
             symbols_to_index: self.symbols_to_index,
+            ..Default::default()
         }
     }
 }
