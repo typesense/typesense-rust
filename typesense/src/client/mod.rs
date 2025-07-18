@@ -50,6 +50,8 @@
 //! }
 //! ```
 
+pub mod alias;
+pub mod aliases;
 pub mod analytics;
 pub mod collection;
 pub mod collections;
@@ -64,6 +66,8 @@ pub mod stemming;
 pub mod stopword;
 pub mod stopwords;
 
+pub use alias::Alias;
+pub use aliases::Aliases;
 pub use analytics::Analytics;
 pub use collection::Collection;
 pub use collections::Collections;
@@ -311,6 +315,15 @@ impl Client {
         ))))
     }
 
+    /// Provides access to the collection aliases-related API endpoints.
+    pub fn aliases(&self) -> Aliases<'_> {
+        Aliases::new(self)
+    }
+
+    /// Provides access to a specific collection alias's-related API endpoints.
+    pub fn alias<'a>(&'a self, name: &'a str) -> Alias<'a> {
+        Alias::new(self, name)
+    }
     /// Provides access to API endpoints for managing collections like `create()` and `retrieve()`.
     pub fn collections(&self) -> collections::Collections<'_> {
         collections::Collections::new(self)
