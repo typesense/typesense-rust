@@ -10,7 +10,7 @@ use typesense_codegen::apis::{configuration, documents_api};
 
 /// Provides methods for interacting with a single document within a specific Typesense collection.
 ///
-/// This struct is created by calling a method like `collection.document("document_id")`.
+/// This struct is created by calling a method like `client.collection("collection_name").document("document_id")`.
 pub struct Document<'a> {
     pub(super) client: &'a Client,
     pub(super) collection_name: &'a str,
@@ -29,7 +29,9 @@ impl<'a> Document<'a> {
     }
 
     /// Fetches this individual document from the collection.
-    pub async fn get(&self) -> Result<serde_json::Value, Error<documents_api::GetDocumentError>> {
+    pub async fn retrieve(
+        &self,
+    ) -> Result<serde_json::Value, Error<documents_api::GetDocumentError>> {
         let params = documents_api::GetDocumentParams {
             collection_name: self.collection_name.to_string(),
             document_id: self.document_id.to_string(),

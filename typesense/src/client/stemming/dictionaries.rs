@@ -47,7 +47,7 @@ impl<'a> Dictionaries<'a> {
     }
 
     /// Retrieves a list of all available stemming dictionaries.
-    pub async fn list(
+    pub async fn retrieve(
         &self,
     ) -> Result<
         models::ListStemmingDictionaries200Response,

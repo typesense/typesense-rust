@@ -20,6 +20,11 @@ pub struct MultiSearch<'a> {
 }
 
 impl<'a> MultiSearch<'a> {
+    /// Creates a new `MultiSearch` instance.
+    pub(super) fn new(client: &'a Client) -> Self {
+        Self { client }
+    }
+
     /// Make multiple search requests in a single HTTP request to avoid round-trip network latencies.
     ///
     /// You can use it in two different modes:

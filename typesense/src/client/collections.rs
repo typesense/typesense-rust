@@ -50,7 +50,7 @@ impl<'a> Collections<'a> {
     ///
     /// The collections are returned sorted by creation date, with the most
     /// recent collections appearing first.
-    pub async fn list_all(
+    pub async fn retrieve(
         &self,
     ) -> Result<Vec<models::CollectionResponse>, Error<collections_api::GetCollectionsError>> {
         self.client

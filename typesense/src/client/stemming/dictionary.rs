@@ -27,7 +27,7 @@ impl<'a> Dictionary<'a> {
     }
 
     /// Retrieves the details of this specific stemming dictionary.
-    pub async fn get(
+    pub async fn retrieve(
         &self,
     ) -> Result<models::StemmingDictionary, Error<stemming_api::GetStemmingDictionaryError>> {
         let params = stemming_api::GetStemmingDictionaryParams {
@@ -40,20 +40,4 @@ impl<'a> Dictionary<'a> {
             })
             .await
     }
-
-    // Deletes this specific stemming dictionary.
-    // pub async fn delete(
-    //     &self,
-    // ) -> Result<models::StemmingDictionary, Error<stemming_api::DeleteStemmingDictionaryError>>
-    // {
-    //     let params = stemming_api::DeleteStemmingDictionaryParams {
-    //         dictionary_id: self.dictionary_id.to_string(),
-    //     };
-    //     self.client
-    //         .execute(|config: Arc<configuration::Configuration>| {
-    //             let params_for_move = params.clone();
-    //             async move { stemming_api::delete_stemming_dictionary(&config, params_for_move).await }
-    //         })
-    //         .await
-    // }
 }

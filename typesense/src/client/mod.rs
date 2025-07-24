@@ -14,7 +14,7 @@
 //! ## Example Usage
 //!
 //! ```no_run
-//! use typesense_client::client::{Client, MultiNodeConfiguration};
+//! use typesense::client::{Client, MultiNodeConfiguration};
 //! use typesense_codegen::models;
 //! use reqwest::Url;
 //! use reqwest_retry::policies::ExponentialBackoff;
@@ -34,16 +34,16 @@
 //!     let client = Client::new(config)?;
 //!
 //!     // Retrieve details for a collection
-//!     let collection = client.collections().get("products").await?;
+//!     let collection = client.collection("products").retrieve().await?;
 //!     println!("Collection Name: {}", collection.name);
 //!
 //!     // Search for a document
-//!     let search_params = models::SearchCollectionParams {
-//!         q: "phone".to_string(),
-//!         query_by: "name".to_string(),
+//!     let search_params = models::SearchParameters {
+//!         q: Some("phone".to_string()),
+//!         query_by: Some("name".to_string()),
 //!         ..Default::default()
 //!     };
-//!     let search_results = client.documents("products").search(search_params).await?;
+//!     let search_results = client.collection("products").documents().search(search_params).await?;
 //!     println!("Found {} hits.", search_results.found.unwrap_or(0));
 //!
 //!     Ok(())
@@ -93,6 +93,8 @@ use std::time::{Duration, Instant};
 use thiserror::Error;
 use typesense_codegen::apis::{self, configuration};
 
+use crate::client::multi_search::MultiSearch;
+
 // --- Internal Node Health Struct ---
 // This is an internal detail to track the state of each node.
 #[derive(Debug)]
@@ -118,25 +120,46 @@ pub struct MultiNodeConfiguration {
     /// The timeout for each individual network request.
     pub connection_timeout: Duration,
 }
+impl Default for MultiNodeConfiguration {
+    /// Provides a default configuration suitable for local development.
+    ///
+    /// - **nodes**: Empty.
+    /// - **nearest_node**: None.
+    /// - **api_key**: "xyz" (a common placeholder).
+    /// - **healthcheck_interval**: 60 seconds.
+    /// - **retry_policy**: Exponential backoff with a maximum of 3 retries.
+    /// - **connection_timeout**: 5 seconds.
+    fn default() -> Self {
+        Self {
+            nodes: vec![],
+            nearest_node: None,
+            api_key: "xyz".to_string(),
+            healthcheck_interval: Duration::from_secs(60),
+            retry_policy: ExponentialBackoff::builder().build_with_max_retries(3),
+            connection_timeout: Duration::from_secs(5),
+        }
+    }
+}
 
 /// The primary error type for the Typesense client.
 #[derive(Debug, Error)]
 pub enum Error<E>
 where
-    E: std::fmt::Debug,
-    apis::Error<E>: std::fmt::Display + std::fmt::Debug,
+    E: std::fmt::Debug + 'static,
+    apis::Error<E>: std::error::Error + 'static,
 {
     /// Indicates that all configured nodes failed to process a request.
-    /// The source contains the last error received.
-    #[error("All API nodes failed to respond.")]
-    AllNodesFailed(#[source] Box<Error<E>>),
+    #[error("All API nodes failed to respond. Last error: {source}")]
+    AllNodesFailed {
+        /// The last underlying API or network error received from a node before giving up.
+        #[source]
+        source: apis::Error<E>,
+    },
 
-    /// A network-level error occurred within the `reqwest` middleware stack (e.g., a connection timeout).
-    #[error("A single node failed with a middleware error")]
-    Middleware(#[from] reqwest_middleware::Error),
-
-    /// An API-level error returned by the Typesense server (e.g., 404 Not Found, 400 Bad Request).
-    #[error("A single node failed with an API error")]
+    // Any middleware error will be wrapped in the Api variant below.
+    /// An API-level error returned by the Typesense server (e.g., 503 Service Unavailable)
+    /// or a network-level error from the underlying HTTP client (e.g. connection refused).
+    #[error("A single node failed with an API or network error")]
     Api(#[from] apis::Error<E>),
 }
 
@@ -248,10 +271,10 @@ impl Client {
     where
         F: Fn(Arc<configuration::Configuration>) -> Fut,
         Fut: Future<Output = Result<T, apis::Error<E>>>,
-        E: std::fmt::Debug,
-        apis::Error<E>: std::fmt::Display + std::fmt::Debug,
+        E: std::fmt::Debug + 'static,
+        apis::Error<E>: std::error::Error + 'static,
     {
-        let mut last_error: Option<Error<E>> = None;
+        let mut last_api_error: Option<apis::Error<E>> = None;
         let num_nodes_to_try = self.nodes.len() + self.nearest_node.is_some() as usize;
 
         // Loop up to the total number of available nodes.
@@ -296,62 +319,228 @@ impl Client {
                     return Ok(response);
                 }
                 Err(e) => {
-                    let wrapped_error: Error<E> = e.into();
-                    if is_retriable(&wrapped_error) {
+                    if is_retriable(&e) {
                         self.set_node_health(&node_arc, false); // Mark as unhealthy on retriable error.
-                        last_error = Some(wrapped_error);
+                        last_api_error = Some(e);
                         // Continue loop to try the next node.
                     } else {
                         // Non-retriable error (e.g., 404 Not Found), fail fast.
-                        return Err(wrapped_error);
+                        return Err(e.into());
                     }
                 }
             }
         }
 
         // If the loop finishes, all nodes have failed.
-        Err(Error::AllNodesFailed(Box::new(last_error.expect(
-            "No nodes were available to try, or all errors were non-retriable.",
-        ))))
+        Err(Error::AllNodesFailed {
+            source: last_api_error
+                .expect("No nodes were available to try, or all errors were non-retriable."),
+        })
     }
-
     /// Provides access to the collection aliases-related API endpoints.
+    ///
+    /// # Example
+    /// ```ignore
+    /// # use typesense::client::{Client, MultiNodeConfiguration};
+    /// # use typesense_codegen::models;
+    /// # use reqwest::Url;
+    /// # use reqwest_retry::policies::ExponentialBackoff;
+    /// # use std::time::Duration;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let config = MultiNodeConfiguration {
+    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
+    /// #     api_key: "xyz".to_string(),
+    /// #     ..Default::default()
+    /// # };
+    /// # let client = Client::new(config)?;
+    /// let all_aliases = client.aliases().retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// ```
     pub fn aliases(&self) -> Aliases<'_> {
         Aliases::new(self)
     }
 
     /// Provides access to a specific collection alias's-related API endpoints.
+    /// # Example
+    /// ```ignore
+    /// # use typesense::client::{Client, MultiNodeConfiguration};
+    /// # use typesense_codegen::models;
+    /// # use reqwest::Url;
+    /// # use reqwest_retry::policies::ExponentialBackoff;
+    /// # use std::time::Duration;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let config = MultiNodeConfiguration {
+    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
+    /// #     api_key: "xyz".to_string(),
+    /// #     ..Default::default()
+    /// # };
+    /// # let client = Client::new(config)?;
+    /// let specific_alias = client.alias("books_alias").retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// ```
     pub fn alias<'a>(&'a self, name: &'a str) -> Alias<'a> {
         Alias::new(self, name)
     }
+
     /// Provides access to API endpoints for managing collections like `create()` and `retrieve()`.
+    /// # Example
+    /// ```ignore
+    /// # use typesense::client::{Client, MultiNodeConfiguration};
+    /// # use typesense_codegen::models;
+    /// # use reqwest::Url;
+    /// # use reqwest_retry::policies::ExponentialBackoff;
+    /// # use std::time::Duration;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let config = MultiNodeConfiguration {
+    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
+    /// #     api_key: "xyz".to_string(),
+    /// #     ..Default::default()
+    /// # };
+    /// # let client = Client::new(config)?;
+    /// let all_collections = client.collections().retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// ```
     pub fn collections(&self) -> collections::Collections<'_> {
         collections::Collections::new(self)
     }
 
     /// Provides access to API endpoints of a specific collection.
+    /// # Example
+    /// ```ignore
+    /// # use typesense::client::{Client, MultiNodeConfiguration};
+    /// # use typesense_codegen::models;
+    /// # use reqwest::Url;
+    /// # use reqwest_retry::policies::ExponentialBackoff;
+    /// # use std::time::Duration;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let config = MultiNodeConfiguration {
+    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
+    /// #     api_key: "xyz".to_string(),
+    /// #     ..Default::default()
+    /// # };
+    /// # let client = Client::new(config)?;
+    /// let my_collection = client.collection("products").retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// ```
     pub fn collection<'a>(&'a self, collection_name: &'a str) -> Collection<'a> {
         Collection::new(self, collection_name)
     }
 
     /// Provides access to the analytics-related API endpoints.
+    /// # Example
+    /// ```ignore
+    /// # use typesense::client::{Client, MultiNodeConfiguration};
+    /// # use typesense_codegen::models;
+    /// # use reqwest::Url;
+    /// # use reqwest_retry::policies::ExponentialBackoff;
+    /// # use std::time::Duration;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let config = MultiNodeConfiguration {
+    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
+    /// #     api_key: "xyz".to_string(),
+    /// #     ..Default::default()
+    /// # };
+    /// # let client = Client::new(config)?;
+    /// let analytics_rules = client.analytics().rules().retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// ```
     pub fn analytics(&self) -> Analytics<'_> {
         Analytics::new(self)
     }
 
     /// Returns a `Conversations` instance for managing conversation models.
+    /// # Example
+    /// ```ignore
+    /// # use typesense::client::{Client, MultiNodeConfiguration};
+    /// # use typesense_codegen::models;
+    /// # use reqwest::Url;
+    /// # use reqwest_retry::policies::ExponentialBackoff;
+    /// # use std::time::Duration;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let config = MultiNodeConfiguration {
+    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
+    /// #     api_key: "xyz".to_string(),
+    /// #     ..Default::default()
+    /// # };
+    /// # let client = Client::new(config)?;
+    /// let conversation = client.conversations().models().retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// ```
     pub fn conversations(&self) -> Conversations {
         Conversations::new(self)
     }
 
     /// Provides access to top-level, non-namespaced API endpoints like `health` and `debug`.
+    /// # Example
+    /// ```ignore
+    /// # use typesense::client::{Client, MultiNodeConfiguration};
+    /// # use typesense_codegen::models;
+    /// # use reqwest::Url;
+    /// # use reqwest_retry::policies::ExponentialBackoff;
+    /// # use std::time::Duration;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let config = MultiNodeConfiguration {
+    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
+    /// #     api_key: "xyz".to_string(),
+    /// #     ..Default::default()
+    /// # };
+    /// # let client = Client::new(config)?;
+    /// let health = client.operations().health().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// ```
     pub fn operations(&self) -> Operations<'_> {
         Operations::new(self)
     }
 
     /// Provides access to endpoints for managing the collection of API keys.
     ///
-    /// Example: `client.keys().create(schema).await`
+    /// # Example
+    /// ```ignore
+    /// # use typesense::client::{Client, MultiNodeConfiguration};
+    /// # use typesense_codegen::models;
+    /// # use reqwest::Url;
+    /// # use reqwest_retry::policies::ExponentialBackoff;
+    /// # use std::time::Duration;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let config = MultiNodeConfiguration {
+    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
+    /// #     api_key: "xyz".to_string(),
+    /// #     ..Default::default()
+    /// # };
+    /// # let client = Client::new(config)?;
+    /// # let schema = models::ApiKeySchema {
+    /// #     description: "Search-only key.".to_string(),
+    /// #     actions: vec!["documents:search".to_string()],
+    /// #     collections: vec!["*".to_string()],
+    /// #     ..Default::default()
+    /// # };
+    /// let new_key = client.keys().create(schema).await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// ```
     pub fn keys(&self) -> Keys<'_> {
         Keys::new(self)
     }
@@ -361,7 +550,26 @@ impl Client {
     /// # Arguments
     /// * `key_id` - The ID of the key to manage.
     ///
-    /// Example: `client.key(123).delete().await`
+    /// # Example
+    /// ```ignore
+    /// # use typesense::client::{Client, MultiNodeConfiguration};
+    /// # use typesense_codegen::models;
+    /// # use reqwest::Url;
+    /// # use reqwest_retry::policies::ExponentialBackoff;
+    /// # use std::time::Duration;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let config = MultiNodeConfiguration {
+    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
+    /// #     api_key: "xyz".to_string(),
+    /// #     ..Default::default()
+    /// # };
+    /// # let client = Client::new(config)?;
+    /// let deleted_key = client.key(123).delete().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// ```
     pub fn key(&self, key_id: i64) -> Key<'_> {
         Key::new(self, key_id)
     }
@@ -369,8 +577,24 @@ impl Client {
     /// Provides access to endpoints for managing all of your presets.
     ///
     /// # Example
-    /// ```
-    /// client.presets().list().await?;
+    /// ```ignore
+    /// # use typesense::client::{Client, MultiNodeConfiguration};
+    /// # use typesense_codegen::models;
+    /// # use reqwest::Url;
+    /// # use reqwest_retry::policies::ExponentialBackoff;
+    /// # use std::time::Duration;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let config = MultiNodeConfiguration {
+    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
+    /// #     api_key: "xyz".to_string(),
+    /// #     ..Default::default()
+    /// # };
+    /// # let client = Client::new(config)?;
+    /// let list_of_presets = client.presets().retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
     /// ```
     pub fn presets(&self) -> Presets {
         Presets::new(self)
@@ -382,8 +606,24 @@ impl Client {
     /// * `preset_id` - The ID of the preset to manage.
     ///
     /// # Example
-    /// ```
-    /// client.preset("my-preset").retrieve().await?;
+    /// ```ignore
+    /// # use typesense::client::{Client, MultiNodeConfiguration};
+    /// # use typesense_codegen::models;
+    /// # use reqwest::Url;
+    /// # use reqwest_retry::policies::ExponentialBackoff;
+    /// # use std::time::Duration;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let config = MultiNodeConfiguration {
+    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
+    /// #     api_key: "xyz".to_string(),
+    /// #     ..Default::default()
+    /// # };
+    /// # let client = Client::new(config)?;
+    /// let preset = client.preset("my-preset").retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
     /// ```
     pub fn preset<'a>(&'a self, preset_id: &'a str) -> Preset<'a> {
         Preset::new(self, preset_id)
@@ -393,18 +633,51 @@ impl Client {
     ///
     /// # Example
     ///
-    /// ```no_run
-    /// client.stemming().dictionaries().retrieve().await?;
+    /// ```
+    /// # use typesense::client::{Client, MultiNodeConfiguration};
+    /// # use reqwest::Url;
+    /// # use reqwest_retry::policies::ExponentialBackoff;
+    /// # use std::time::Duration;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let config = MultiNodeConfiguration {
+    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
+    /// #     api_key: "xyz".to_string(),
+    /// #     ..Default::default()
+    /// # };
+    /// #
+    /// # let client = Client::new(config)?;
+    /// let response = client.stemming().dictionaries().retrieve().await.unwrap();
+    /// # println!("{:#?}", response);
+    /// # Ok(())
+    /// # }
     /// ```
     pub fn stemming(&self) -> Stemming {
         Stemming::new(self)
     }
 
-    // --- Stopwords Accessors ---
-
     /// Provides access to endpoints for managing the collection of stopwords sets.
     ///
-    /// Example: `client.stopwords().retrieve().await`
+    /// # Example
+    /// ```ignore
+    /// # use typesense::client::{Client, MultiNodeConfiguration};
+    /// # use reqwest::Url;
+    /// # use reqwest_retry::policies::ExponentialBackoff;
+    /// # use std::time::Duration;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let config = MultiNodeConfiguration {
+    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
+    /// #     api_key: "xyz".to_string(),
+    /// #     ..Default::default()
+    /// # };
+    /// # let client = Client::new(config)?;
+    /// let all_stopwords = client.stopwords().retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// ```
     pub fn stopwords(&self) -> Stopwords<'_> {
         Stopwords::new(self)
     }
@@ -414,29 +687,79 @@ impl Client {
     /// # Arguments
     /// * `set_id` - The ID of the stopwords set to manage.
     ///
-    /// Example: `client.stopword("common_words").retrieve().await`
+    /// # Example
+    /// ```ignore
+    /// # use typesense::client::{Client, MultiNodeConfiguration};
+    /// # use reqwest::Url;
+    /// # use reqwest_retry::policies::ExponentialBackoff;
+    /// # use std::time::Duration;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let config = MultiNodeConfiguration {
+    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
+    /// #     api_key: "xyz".to_string(),
+    /// #     ..Default::default()
+    /// # };
+    /// # let client = Client::new(config)?;
+    /// let my_stopword_set = client.stopword("common_words").retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// ```
     pub fn stopword<'a>(&'a self, set_id: &'a str) -> Stopword<'a> {
         Stopword::new(self, set_id)
+    }
+
+    /// Provides access to the multi search endpoint.
+    ///
+    /// # Example
+    /// ```ignore
+    /// # use typesense::client::{Client, MultiNodeConfiguration};
+    /// # use typesense_codegen::models;
+    /// # use reqwest::Url;
+    /// # use reqwest_retry::policies::ExponentialBackoff;
+    /// # use std::time::Duration;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let config = MultiNodeConfiguration {
+    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
+    /// #     api_key: "xyz".to_string(),
+    /// #     ..Default::default()
+    /// # };
+    /// # let client = Client::new(config)?;
+    /// # let search_requests = models::MultiSearchSearchesParameter {
+    /// #     searches: vec![models::MultiSearchCollectionParameters {
+    /// #         collection: Some("products".to_string()),
+    /// #         q: Some("phone".to_string()),
+    /// #         query_by: Some("name".to_string()),
+    /// #         ..Default::default()
+    /// #     }],
+    /// #     ..Default::default()
+    /// # };
+    /// # let common_params = models::MultiSearchParameters::default();
+    /// let results = client.multi_search().perform(search_requests, common_params).await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub fn multi_search(&self) -> MultiSearch<'_> {
+        MultiSearch::new(self)
     }
 }
 
 /// A helper function to determine if an error is worth retrying on another node.
-fn is_retriable<E>(error: &Error<E>) -> bool
+fn is_retriable<E>(error: &apis::Error<E>) -> bool
 where
-    E: std::fmt::Debug,
-    apis::Error<E>: std::fmt::Display + std::fmt::Debug,
+    E: std::fmt::Debug + 'static,
+    apis::Error<E>: std::error::Error + 'static,
 {
     match error {
+        // Server-side errors (5xx) indicate a problem with the node, so we should try another.
+        apis::Error::ResponseError(content) => content.status.is_server_error(),
+        // Underlying reqwest errors (e.g. connection refused) are retriable.
         // Network-level errors from middleware are always retriable.
-        Error::Middleware(_) => true,
-        Error::Api(api_err) => match api_err {
-            // Server-side errors (5xx) indicate a problem with the node, so we should try another.
-            apis::Error::ResponseError(content) => content.status.is_server_error(),
-            // Underlying reqwest errors (e.g. connection refused) are retriable.
-            apis::Error::Reqwest(_) => true,
-            // Client-side (4xx) or parsing errors are not retriable as the request is likely invalid.
-            _ => false,
-        },
-        Error::AllNodesFailed(_) => false,
+        apis::Error::Reqwest(_) | apis::Error::ReqwestMiddleware(_) => true,
+        // Client-side (4xx) or parsing errors are not retriable as the request is likely invalid.
+        _ => false,
     }
 }

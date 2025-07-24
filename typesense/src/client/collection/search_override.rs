@@ -11,7 +11,7 @@ use typesense_codegen::{
 
 /// Provides methods for interacting with a specific search override.
 ///
-/// This struct is created by calling `documents.search_override("override_id")`.
+/// This struct is created by calling `client.collection("colelction_name").search_override("override_id")`.
 pub struct SearchOverride<'a> {
     pub(super) client: &'a Client,
     pub(super) collection_name: &'a str,

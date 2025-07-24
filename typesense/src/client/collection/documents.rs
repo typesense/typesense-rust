@@ -7,7 +7,10 @@ use super::{Client, Error};
 use std::sync::Arc;
 use typesense_codegen::{
     apis::{configuration, documents_api},
-    models,
+    models::{
+        self, DeleteDocumentsParameters, ExportDocumentsParameters, ImportDocumentsParameters,
+        UpdateDocumentsParameters,
+    },
 };
 
 /// Provides methods for interacting with documents within a specific Typesense collection.
@@ -82,27 +85,6 @@ impl<'a> Documents<'a> {
         self.index(document, "upsert").await
     }
 
-    /// Fetches an individual document from the collection by its ID.
-    ///
-    /// # Arguments
-    /// * `document_id` - The ID of the document to retrieve.
-    pub async fn retrieve(
-        &self,
-        document_id: &str,
-    ) -> Result<serde_json::Value, Error<documents_api::GetDocumentError>> {
-        let params = documents_api::GetDocumentParams {
-            collection_name: self.collection_name.to_string(),
-            document_id: document_id.to_string(),
-        };
-
-        self.client
-            .execute(|config: Arc<configuration::Configuration>| {
-                let params_for_move = params.clone();
-                async move { documents_api::get_document(&config, params_for_move).await }
-            })
-            .await
-    }
-
     // --- Bulk Operation Methods ---
 
     /// Imports a batch of documents in JSONL format.
@@ -111,15 +93,23 @@ impl<'a> Documents<'a> {
     ///
     /// # Arguments
     /// * `documents_jsonl` - A string containing the documents in JSONL format.
-    /// * `params` - An `ImportDocumentsParams` struct containing options like `action` and `batch_size`.
-    ///              The `collection_name` field will be overwritten.
+    /// * `params` - An `ImportDocumentsParameters` struct containing options like `action` and `batch_size`.
     pub async fn import(
         &self,
         documents_jsonl: String,
-        mut params: documents_api::ImportDocumentsParams,
+        params: ImportDocumentsParameters,
     ) -> Result<String, Error<documents_api::ImportDocumentsError>> {
-        params.collection_name = self.collection_name.to_string();
-        params.body = documents_jsonl;
+        let params = documents_api::ImportDocumentsParams {
+            body: documents_jsonl,
+            collection_name: self.collection_name.to_string(),
+
+            action: params.action,
+            batch_size: params.batch_size,
+            dirty_values: params.dirty_values,
+            remote_embedding_batch_size: params.remote_embedding_batch_size,
+            return_doc: params.return_doc,
+            return_id: params.return_id,
+        };
 
         self.client
             .execute(|config: Arc<configuration::Configuration>| {
@@ -132,13 +122,17 @@ impl<'a> Documents<'a> {
     /// Exports all documents in a collection in JSONL format.
     ///
     /// # Arguments
-    /// * `params` - An `ExportDocumentsParams` struct containing options like `filter_by` and `include_fields`.
-    ///              The `collection_name` field will be overwritten.
+    /// * `params` - An `ExportDocumentsParameters` struct containing options like `filter_by` and `include_fields`.
     pub async fn export(
         &self,
-        mut params: documents_api::ExportDocumentsParams,
+        params: ExportDocumentsParameters,
     ) -> Result<String, Error<documents_api::ExportDocumentsError>> {
-        params.collection_name = self.collection_name.to_string();
+        let params = documents_api::ExportDocumentsParams {
+            collection_name: self.collection_name.to_string(),
+            exclude_fields: params.exclude_fields,
+            filter_by: params.filter_by,
+            include_fields: params.include_fields,
+        };
 
         self.client
             .execute(|config: Arc<configuration::Configuration>| {
@@ -151,20 +145,18 @@ impl<'a> Documents<'a> {
     /// Deletes a batch of documents matching a specific filter condition.
     ///
     /// # Arguments
-    /// * `filter_by` - The filter condition for deleting documents.
-    /// * `batch_size` - The number of documents to delete at a time.
-    pub async fn delete_by_filter(
+    /// * `params` - A `DeleteDocumentsParameters` describing the conditions for deleting documents.
+    pub async fn delete(
         &self,
-        filter_by: &str,
-        batch_size: Option<i32>,
+        params: DeleteDocumentsParameters,
     ) -> Result<models::DeleteDocuments200Response, Error<documents_api::DeleteDocumentsError>>
     {
         let params = documents_api::DeleteDocumentsParams {
             collection_name: self.collection_name.to_string(),
-            filter_by: Some(filter_by.to_string()),
-            batch_size,
-            ignore_not_found: None,
-            truncate: None,
+            filter_by: Some(params.filter_by),
+            batch_size: params.batch_size,
+            ignore_not_found: params.ignore_not_found,
+            truncate: params.truncate,
         };
         self.client
             .execute(|config: Arc<configuration::Configuration>| {
@@ -177,17 +169,17 @@ impl<'a> Documents<'a> {
     /// Updates a batch of documents matching a specific filter condition.
     ///
     /// # Arguments
-    /// * `filter_by` - The filter condition for updating documents.
     /// * `document` - A `serde_json::Value` containing the fields to update.
-    pub async fn update_by_filter(
+    /// * `params` - A `UpdateDocumentsParameters` describing the conditions for updating documents.
+    pub async fn update(
         &self,
-        filter_by: &str,
         document: serde_json::Value,
+        params: UpdateDocumentsParameters,
     ) -> Result<models::UpdateDocuments200Response, Error<documents_api::UpdateDocumentsError>>
     {
         let params = documents_api::UpdateDocumentsParams {
             collection_name: self.collection_name.to_string(),
-            filter_by: Some(filter_by.to_string()),
+            filter_by: params.filter_by,
             body: document,
         };
         self.client

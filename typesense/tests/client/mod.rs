@@ -1,289 +1,50 @@
+pub mod aliases_test;
+pub mod analytics_test;
+pub mod client_test;
+pub mod collections_test;
+pub mod conversation_models_test;
+pub mod documents_test;
+pub mod keys_test;
+pub mod multi_search_test;
+pub mod presets_test;
+pub mod search_overrides_test;
+pub mod stemming_dictionaries_test;
+pub mod stopwords_test;
+pub mod synonyms_test;
+
 use reqwest::Url;
 use reqwest_retry::policies::ExponentialBackoff;
 use std::time::Duration;
-use typesense::client::*;
-use typesense::models::CollectionResponse;
-use wiremock::matchers::{header, method, path};
-use wiremock::{Mock, MockServer, ResponseTemplate};
+use std::time::{SystemTime, UNIX_EPOCH};
+use typesense::client::{Client, MultiNodeConfiguration};
 
-// Helper to create a mock Typesense server for a successful collection retrieval.
-async fn setup_mock_server_ok(server: &MockServer, collection_name: &str) {
-    let response_body = CollectionResponse {
-        name: collection_name.to_string(),
-        ..Default::default()
-    };
-
-    Mock::given(method("GET"))
-        .and(path(format!("/collections/{}", collection_name)))
-        .and(header("X-TYPESENSE-API-KEY", "test-key"))
-        .respond_with(ResponseTemplate::new(200).set_body_json(response_body))
-        .mount(server)
-        .await;
-}
-
-// Helper to create a mock Typesense server that returns a server error.
-async fn setup_mock_server_503(server: &MockServer, collection_name: &str) {
-    Mock::given(method("GET"))
-        .and(path(format!("/collections/{}", collection_name)))
-        .respond_with(ResponseTemplate::new(503))
-        .mount(server)
-        .await;
-}
-
-// Helper to create a mock Typesense server that returns a 404 Not Found error.
-async fn setup_mock_server_404(server: &MockServer, collection_name: &str) {
-    Mock::given(method("GET"))
-        .and(path(format!("/collections/{}", collection_name)))
-        .respond_with(ResponseTemplate::new(404))
-        .mount(server)
-        .await;
-}
-
-// Helper function to create a client configuration for tests.
-fn get_test_config(nodes: Vec<Url>, nearest_node: Option<Url>) -> MultiNodeConfiguration {
-    MultiNodeConfiguration {
-        nodes,
-        nearest_node,
-        api_key: "test-key".to_string(),
+/// Helper function to create a new client for all tests in this suite.
+pub fn get_client() -> Client {
+    let config = MultiNodeConfiguration {
+        nodes: vec![Url::parse("http://localhost:8108").unwrap()],
+        nearest_node: None,
+        api_key: "xyz".to_string(),
         healthcheck_interval: Duration::from_secs(60),
-        retry_policy: ExponentialBackoff::builder().build_with_max_retries(0),
-        connection_timeout: Duration::from_secs(1),
-    }
+        retry_policy: ExponentialBackoff::builder().build_with_max_retries(3),
+        connection_timeout: Duration::from_secs(10),
+    };
+    Client::new(config).unwrap()
 }
 
-#[tokio::test]
-async fn test_success_on_first_node() {
-    let server1 = MockServer::start().await;
-    setup_mock_server_ok(&server1, "products").await;
+/// Generates a unique name for a test resource by combining a prefix,
+/// a nanoid, and an optional suffix.
+/// e.g., "test_collection_aB1cD2eF_create"
+pub fn new_id(suffix: &str) -> String {
+    // Using nanoid for a short, URL-friendly, and collision-resistant random ID.
+    // The default length of 21 is more than enough. We use 8 for conciseness.
+    let random_part = nanoid::nanoid!(8); // e.g., "fX3a-b_1"
 
-    let config = get_test_config(vec![Url::parse(&server1.uri()).unwrap()], None);
-    let client = Client::new(config).unwrap();
+    // The timestamp helps ensure IDs are unique even across test runs that happen close together,
+    // although nanoid is likely sufficient on its own.
+    let timestamp = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_millis();
 
-    let result = client.collection("products").retrieve().await;
-
-    assert!(result.is_ok());
-    assert_eq!(result.unwrap().name, "products");
-    // Check that the server received exactly one request.
-    assert_eq!(server1.received_requests().await.unwrap().len(), 1);
-}
-
-#[tokio::test]
-async fn test_failover_to_second_node() {
-    let server1 = MockServer::start().await;
-    let server2 = MockServer::start().await;
-    setup_mock_server_503(&server1, "products").await;
-    setup_mock_server_ok(&server2, "products").await;
-
-    let config = get_test_config(
-        vec![
-            Url::parse(&server1.uri()).unwrap(),
-            Url::parse(&server2.uri()).unwrap(),
-        ],
-        None,
-    );
-    let client = Client::new(config).unwrap();
-
-    let result = client.collection("products").retrieve().await;
-    assert!(result.is_ok());
-
-    // The first server should have been tried and failed.
-    assert_eq!(server1.received_requests().await.unwrap().len(), 1);
-    // The second server should have been tried and succeeded.
-    assert_eq!(server2.received_requests().await.unwrap().len(), 1);
-}
-
-#[tokio::test]
-async fn test_nearest_node_is_prioritized() {
-    let nearest_server = MockServer::start().await;
-    let regular_server = MockServer::start().await;
-    setup_mock_server_ok(&nearest_server, "products").await;
-    setup_mock_server_ok(&regular_server, "products").await;
-
-    let config = get_test_config(
-        vec![Url::parse(&regular_server.uri()).unwrap()],
-        Some(Url::parse(&nearest_server.uri()).unwrap()),
-    );
-    let client = Client::new(config).unwrap();
-
-    let result = client.collection("products").retrieve().await;
-    assert!(result.is_ok());
-
-    // Only the nearest node should have received a request.
-    assert_eq!(nearest_server.received_requests().await.unwrap().len(), 1);
-    assert_eq!(regular_server.received_requests().await.unwrap().len(), 0);
-}
-
-#[tokio::test]
-async fn test_failover_from_nearest_to_regular_node() {
-    let nearest_server = MockServer::start().await;
-    let regular_server = MockServer::start().await;
-    setup_mock_server_503(&nearest_server, "products").await;
-    setup_mock_server_ok(&regular_server, "products").await;
-
-    let config = get_test_config(
-        vec![Url::parse(&regular_server.uri()).unwrap()],
-        Some(Url::parse(&nearest_server.uri()).unwrap()),
-    );
-    let client = Client::new(config).unwrap();
-
-    let result = client.collection("products").retrieve().await;
-    assert!(result.is_ok());
-
-    // Nearest node should have failed.
-    assert_eq!(nearest_server.received_requests().await.unwrap().len(), 1);
-    // Regular node should have succeeded.
-    assert_eq!(regular_server.received_requests().await.unwrap().len(), 1);
-}
-
-#[tokio::test]
-async fn test_round_robin_failover() {
-    let server1 = MockServer::start().await;
-    let server2 = MockServer::start().await;
-    let server3 = MockServer::start().await;
-    setup_mock_server_503(&server1, "products").await;
-    setup_mock_server_503(&server2, "products").await;
-    setup_mock_server_ok(&server3, "products").await;
-
-    let config = get_test_config(
-        vec![
-            Url::parse(&server1.uri()).unwrap(),
-            Url::parse(&server2.uri()).unwrap(),
-            Url::parse(&server3.uri()).unwrap(),
-        ],
-        None,
-    );
-    let client = Client::new(config).unwrap();
-
-    // First request should fail over to the third node
-    let result = client.collection("products").retrieve().await;
-    assert!(result.is_ok());
-    assert_eq!(server1.received_requests().await.unwrap().len(), 1);
-    assert_eq!(server2.received_requests().await.unwrap().len(), 1);
-    assert_eq!(server3.received_requests().await.unwrap().len(), 1);
-
-    // The next request should start from the now-healthy 3rd node, but round-robin
-    // logic will have advanced the internal counter. Let's see it wrap around.
-    // We expect the next attempt to be on server 3 again, then 1 (if 3 fails).
-
-    // Reset server 3 to also fail
-    server3.reset().await;
-    setup_mock_server_503(&server3, "products").await;
-    // Make server 1 healthy again
-    server1.reset().await;
-    setup_mock_server_ok(&server1, "products").await;
-
-    let result2 = client.collection("products").retrieve().await;
-    assert!(result2.is_ok());
-
-    // Server 3 was tried first and failed.
-    assert_eq!(server3.received_requests().await.unwrap().len(), 1);
-    // Server 1 was tried next and succeeded.
-    assert_eq!(server1.received_requests().await.unwrap().len(), 1);
-    // Server 2 was not touched this time.
-    assert_eq!(server2.received_requests().await.unwrap().len(), 1); // Remains 1 from first call
-}
-
-#[tokio::test]
-async fn test_health_check_and_node_recovery() {
-    let server1 = MockServer::start().await;
-    let server2 = MockServer::start().await;
-
-    setup_mock_server_503(&server1, "products").await;
-    setup_mock_server_ok(&server2, "products").await;
-
-    let mut config = get_test_config(
-        vec![
-            Url::parse(&server1.uri()).unwrap(),
-            Url::parse(&server2.uri()).unwrap(),
-        ],
-        None,
-    );
-    // Use a very short healthcheck interval for the test
-    config.healthcheck_interval = Duration::from_millis(500);
-    let client = Client::new(config).unwrap();
-
-    // 1. First request fails over to server2, marking server1 as unhealthy.
-    assert!(client.collection("products").retrieve().await.is_ok());
-    assert_eq!(server1.received_requests().await.unwrap().len(), 1);
-    assert_eq!(server2.received_requests().await.unwrap().len(), 1);
-
-    // 2. Immediate second request should go directly to server2.
-    assert!(client.collection("products").retrieve().await.is_ok());
-    assert_eq!(server1.received_requests().await.unwrap().len(), 1); // No new request
-    assert_eq!(server2.received_requests().await.unwrap().len(), 2); // Got another request
-
-    // 3. Wait for the healthcheck interval to pass.
-    tokio::time::sleep(Duration::from_millis(600)).await;
-
-    // 4. Make server1 healthy again.
-    server1.reset().await;
-    setup_mock_server_ok(&server1, "products").await;
-
-    // 5. The next request should try server1 again (due to healthcheck expiry) and succeed.
-    assert!(client.collection("products").retrieve().await.is_ok());
-    assert_eq!(server1.received_requests().await.unwrap().len(), 1); // Server 1 received its first successful req
-    assert_eq!(server2.received_requests().await.unwrap().len(), 2); // No new request for server 2
-}
-
-#[tokio::test]
-async fn test_all_nodes_fail() {
-    let server1 = MockServer::start().await;
-    let server2 = MockServer::start().await;
-    setup_mock_server_503(&server1, "products").await;
-    setup_mock_server_503(&server2, "products").await;
-
-    let config = get_test_config(
-        vec![
-            Url::parse(&server1.uri()).unwrap(),
-            Url::parse(&server2.uri()).unwrap(),
-        ],
-        None,
-    );
-    let client = Client::new(config).unwrap();
-
-    let result = client.collection("products").retrieve().await;
-    assert!(result.is_err());
-
-    match result.err().unwrap() {
-        Error::AllNodesFailed(_) => { /* This is the expected outcome */ }
-        _ => panic!("Expected AllNodesFailed error"),
-    }
-
-    // Both servers should have been tried.
-    assert_eq!(server1.received_requests().await.unwrap().len(), 1);
-    assert_eq!(server2.received_requests().await.unwrap().len(), 1);
-}
-
-#[tokio::test]
-async fn test_fail_fast_on_non_retriable_error() {
-    let server1 = MockServer::start().await;
-    let server2 = MockServer::start().await;
-
-    setup_mock_server_404(&server1, "products").await;
-    setup_mock_server_ok(&server2, "products").await;
-
-    let config = get_test_config(
-        vec![
-            Url::parse(&server1.uri()).unwrap(),
-            Url::parse(&server2.uri()).unwrap(),
-        ],
-        None,
-    );
-    let client = Client::new(config).unwrap();
-
-    let result = client.collection("products").retrieve().await;
-    assert!(result.is_err());
-
-    // Check that the error is the non-retriable API error.
-    match result.err().unwrap() {
-        Error::Api(typesense_codegen::apis::Error::ResponseError(content)) => {
-            assert_eq!(content.status, reqwest::StatusCode::NOT_FOUND);
-        }
-        e => panic!("Expected an API error, but got {:?}", e),
-    }
-
-    // The first server should have been tried.
-    assert_eq!(server1.received_requests().await.unwrap().len(), 1);
-    // The second server should NOT have been tried.
-    assert_eq!(server2.received_requests().await.unwrap().len(), 0);
+    format!("test_{}_{}_{}", suffix, timestamp, random_part)
 }
