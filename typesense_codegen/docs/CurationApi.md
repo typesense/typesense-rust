@@ -1,18 +1,18 @@
-# \PromoteApi
+# \CurationApi
 
 All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**delete_search_override**](PromoteApi.md#delete_search_override) | **DELETE** /collections/{collectionName}/overrides/{overrideId} | Delete an override associated with a collection
-[**get_search_overrides**](PromoteApi.md#get_search_overrides) | **GET** /collections/{collectionName}/overrides | List all collection overrides
-[**upsert_search_override**](PromoteApi.md#upsert_search_override) | **PUT** /collections/{collectionName}/overrides/{overrideId} | Create or update an override to promote certain documents over others
+[**delete_search_override**](CurationApi.md#delete_search_override) | **DELETE** /collections/{collectionName}/overrides/{overrideId} | Delete an override associated with a collection
+[**get_search_overrides**](CurationApi.md#get_search_overrides) | **GET** /collections/{collectionName}/overrides | List all collection overrides
+[**upsert_search_override**](CurationApi.md#upsert_search_override) | **PUT** /collections/{collectionName}/overrides/{overrideId} | Create or update an override to promote certain documents over others
 
 
 
 ## delete_search_override
 
-> crate::models::SearchOverride delete_search_override(collection_name, override_id)
+> models::SearchOverrideDeleteResponse delete_search_override(collection_name, override_id)
 Delete an override associated with a collection
 
 ### Parameters
@@ -25,7 +25,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::SearchOverride**](SearchOverride.md)
+[**models::SearchOverrideDeleteResponse**](SearchOverrideDeleteResponse.md)
 
 ### Authorization
 
@@ -41,7 +41,7 @@ Name | Type | Description  | Required | Notes
 
 ## get_search_overrides
 
-> crate::models::SearchOverridesResponse get_search_overrides(collection_name)
+> models::SearchOverridesResponse get_search_overrides(collection_name)
 List all collection overrides
 
 ### Parameters
@@ -53,7 +53,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::SearchOverridesResponse**](SearchOverridesResponse.md)
+[**models::SearchOverridesResponse**](SearchOverridesResponse.md)
 
 ### Authorization
 
@@ -69,7 +69,7 @@ Name | Type | Description  | Required | Notes
 
 ## upsert_search_override
 
-> crate::models::SearchOverride upsert_search_override(collection_name, override_id, search_override_schema)
+> models::SearchOverride upsert_search_override(collection_name, override_id, search_override_schema)
 Create or update an override to promote certain documents over others
 
 Create or update an override to promote certain documents over others. Using overrides, you can include or exclude specific documents for a given query.
@@ -85,7 +85,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::SearchOverride**](SearchOverride.md)
+[**models::SearchOverride**](SearchOverride.md)
 
 ### Authorization
 

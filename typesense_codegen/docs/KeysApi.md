@@ -13,7 +13,7 @@ Method | HTTP request | Description
 
 ## create_key
 
-> crate::models::ApiKey create_key(api_key_schema)
+> models::ApiKey create_key(api_key_schema)
 Create an API Key
 
 Create an API Key with fine-grain access control. You can restrict access on both a per-collection and per-action level. The generated key is returned only during creation. You want to store this key carefully in a secure place.
@@ -27,7 +27,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::ApiKey**](ApiKey.md)
+[**models::ApiKey**](ApiKey.md)
 
 ### Authorization
 
@@ -43,7 +43,7 @@ Name | Type | Description  | Required | Notes
 
 ## delete_key
 
-> crate::models::ApiKey delete_key(key_id)
+> models::ApiKeyDeleteResponse delete_key(key_id)
 Delete an API key given its ID.
 
 ### Parameters
@@ -55,7 +55,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::ApiKey**](ApiKey.md)
+[**models::ApiKeyDeleteResponse**](ApiKeyDeleteResponse.md)
 
 ### Authorization
 
@@ -71,7 +71,7 @@ Name | Type | Description  | Required | Notes
 
 ## get_key
 
-> crate::models::ApiKey get_key(key_id)
+> models::ApiKey get_key(key_id)
 Retrieve (metadata about) a key
 
 Retrieve (metadata about) a key. Only the key prefix is returned when you retrieve a key. Due to security reasons, only the create endpoint returns the full API key.
@@ -85,7 +85,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::ApiKey**](ApiKey.md)
+[**models::ApiKey**](ApiKey.md)
 
 ### Authorization
 
@@ -101,7 +101,7 @@ Name | Type | Description  | Required | Notes
 
 ## get_keys
 
-> crate::models::ApiKeysResponse get_keys()
+> models::ApiKeysResponse get_keys()
 Retrieve (metadata about) all keys.
 
 ### Parameters
@@ -110,7 +110,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**crate::models::ApiKeysResponse**](ApiKeysResponse.md)
+[**models::ApiKeysResponse**](ApiKeysResponse.md)
 
 ### Authorization
 

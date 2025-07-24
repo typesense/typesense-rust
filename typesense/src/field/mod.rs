@@ -105,6 +105,7 @@ impl FieldBuilder {
             num_dim: self.num_dim,
             drop: self.drop,
             embed: self.embed,
+            ..Default::default()
         }
     }
 }
