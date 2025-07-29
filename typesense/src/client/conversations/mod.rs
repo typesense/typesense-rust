@@ -3,11 +3,11 @@
 //! An `Conversations` instance is created via the main `Client::conversations()` method.
 
 use super::Client;
-pub use model::Model;
-pub use models::Models;
+use model::Model;
+use models::Models;
 
-pub mod model;
-pub mod models;
+mod model;
+mod models;
 
 /// Provides methods for managing Typesense conversation models.
 ///

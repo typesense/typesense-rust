@@ -16,7 +16,7 @@ use reqwest::Url;
 use reqwest_retry::policies::ExponentialBackoff;
 use std::time::Duration;
 use std::time::{SystemTime, UNIX_EPOCH};
-use typesense::client::{Client, MultiNodeConfiguration};
+use typesense::{Client, MultiNodeConfiguration};
 
 /// Helper function to create a new client for all tests in this suite.
 pub fn get_client() -> Client {

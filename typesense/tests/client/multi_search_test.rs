@@ -1,4 +1,4 @@
-use typesense_codegen::models::{
+use typesense::models::{
     CollectionSchema, Field, ImportDocumentsParameters, MultiSearchCollectionParameters,
     MultiSearchParameters, MultiSearchSearchesParameter,
 };
@@ -6,7 +6,7 @@ use typesense_codegen::models::{
 use super::{get_client, new_id};
 
 async fn setup_multi_search_tests(
-    client: &typesense::client::Client,
+    client: &typesense::Client,
     products_collection_name: &str,
     brands_collection_name: &str,
 ) {

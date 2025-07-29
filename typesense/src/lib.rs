@@ -43,13 +43,17 @@
 //! }
 //! ```
 
-pub mod client;
+mod client;
+mod error;
+
 pub mod collection_schema;
 pub mod document;
 pub mod field;
-pub mod keys;
+// pub mod keys;
+pub mod models;
 
-pub use typesense_codegen::*;
+pub use client::{Client, MultiNodeConfiguration};
+pub use error::{ApiError, Error};
 
 #[cfg(feature = "typesense_derive")]
 #[doc(hidden)]

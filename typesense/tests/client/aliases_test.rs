@@ -1,4 +1,4 @@
-use typesense_codegen::models::{CollectionAliasSchema, CollectionSchema, Field};
+use typesense::models::{CollectionAliasSchema, CollectionSchema, Field};
 
 use super::{get_client, new_id};
 

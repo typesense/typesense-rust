@@ -2,7 +2,7 @@
 //!
 //! An instance of `SearchOverride` is created via the `Client::collection("collection_name").search_override("search_override_id")` method.
 
-use super::{Client, Error};
+use crate::{Client, Error};
 use std::sync::Arc;
 use typesense_codegen::{
     apis::{configuration, documents_api},

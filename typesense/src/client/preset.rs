@@ -2,7 +2,7 @@
 //!
 //! A `Preset` instance is created via the main `Client::preset(id)` method.
 
-use super::{Client, Error};
+use crate::{Client, Error};
 use std::sync::Arc;
 use typesense_codegen::{
     apis::{configuration, presets_api},

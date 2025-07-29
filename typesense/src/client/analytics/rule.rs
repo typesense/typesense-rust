@@ -2,7 +2,7 @@
 //!
 //! An `Rule` instance is created via the `Client::analytics().rule("rule_name")` method.
 
-use super::{Client, Error};
+use crate::{Client, Error};
 use std::sync::Arc;
 use typesense_codegen::{
     apis::{analytics_api, configuration},

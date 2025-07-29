@@ -2,20 +2,20 @@
 //!
 //! A `Collections` instance is created via the main `Client::collections()` method.
 
-pub mod document;
-pub mod documents;
-pub mod search_override;
-pub mod search_overrides;
-pub mod synonym;
-pub mod synonyms;
-use super::{Client, Error};
-pub use document::Document;
-pub use documents::Documents;
-pub use search_override::SearchOverride;
-pub use search_overrides::SearchOverrides;
+mod document;
+mod documents;
+mod search_override;
+mod search_overrides;
+mod synonym;
+mod synonyms;
+use crate::{Client, Error};
+
+use search_override::SearchOverride;
+use search_overrides::SearchOverrides;
+use serde::{de::DeserializeOwned, Serialize};
 use std::sync::Arc;
-pub use synonym::Synonym;
-pub use synonyms::Synonyms;
+use synonym::Synonym;
+use synonyms::Synonyms;
 use typesense_codegen::{
     apis::{collections_api, configuration},
     models,
@@ -24,28 +24,36 @@ use typesense_codegen::{
 /// Provides methods for interacting with a Typesense collection.
 ///
 /// This struct is created by calling `client.collection("collection_name")`.
-pub struct Collection<'a> {
+pub struct Collection<'a, T = serde_json::Value>
+where
+    T: DeserializeOwned + Serialize + Send + Sync,
+{
     pub(super) client: &'a Client,
     pub(super) collection_name: &'a str,
+    pub(super) _phantom: std::marker::PhantomData<T>,
 }
 
-impl<'a> Collection<'a> {
+impl<'a, T> Collection<'a, T>
+where
+    T: DeserializeOwned + Serialize + Send + Sync,
+{
     /// Creates a new `Collection` instance.
     pub(super) fn new(client: &'a Client, collection_name: &'a str) -> Self {
         Self {
             client,
             collection_name,
+            _phantom: std::marker::PhantomData,
         }
     }
     // --- Documents Accessors ---
 
     /// Provides access to the document-related API endpoints for a specific collection.
-    pub fn documents(&'a self) -> documents::Documents<'a> {
+    pub fn documents(&'a self) -> documents::Documents<'a, T> {
         documents::Documents::new(self.client, self.collection_name)
     }
 
     /// Provides access to the API endpoints for a single document within a Typesense collection.
-    pub fn document(&'a self, document_id: &'a str) -> document::Document<'a> {
+    pub fn document(&'a self, document_id: &'a str) -> document::Document<'a, T> {
         document::Document::new(self.client, self.collection_name, document_id)
     }
 

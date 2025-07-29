@@ -4,7 +4,7 @@
 pub mod events;
 pub mod rule;
 pub mod rules;
-use super::{Client, Error};
+use crate::Client;
 pub use events::Events;
 pub use rule::Rule;
 pub use rules::Rules;

@@ -1,4 +1,4 @@
-use typesense_codegen::models::{CollectionSchema, Field, SearchSynonymSchema};
+use typesense::models::{CollectionSchema, Field, SearchSynonymSchema};
 
 use super::{get_client, new_id};
 

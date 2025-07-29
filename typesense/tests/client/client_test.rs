@@ -1,8 +1,8 @@
 use reqwest::Url;
 use reqwest_retry::policies::ExponentialBackoff;
 use std::time::Duration;
-use typesense::client::*;
 use typesense::models::CollectionResponse;
+use typesense::*;
 use wiremock::matchers::{header, method, path};
 use wiremock::{Mock, MockServer, ResponseTemplate};
 

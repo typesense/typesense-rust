@@ -1,4 +1,4 @@
-use typesense_codegen::models::StopwordsSetUpsertSchema;
+use typesense::models::StopwordsSetUpsertSchema;
 
 use super::{get_client, new_id};
 

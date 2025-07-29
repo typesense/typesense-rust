@@ -1,11 +1,10 @@
 use super::{get_client, new_id};
 use serde_json::json;
-use typesense::models::analytics_rule_schema::Type::Counter;
 use typesense::models::{
     self, AnalyticsEventCreateSchema, AnalyticsRuleParametersDestination,
     AnalyticsRuleParametersSource, AnalyticsRuleParametersSourceEventsInner, AnalyticsRuleSchema,
+    AnalyticsRulesType::Counter, CollectionSchema, Field,
 };
-use typesense_codegen::models::{CollectionSchema, Field};
 
 #[tokio::test]
 async fn test_analytics_rules_and_events_lifecycle() {

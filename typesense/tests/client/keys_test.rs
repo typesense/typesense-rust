@@ -1,5 +1,5 @@
 use super::get_client;
-use typesense_codegen::models::ApiKeySchema;
+use typesense::models::ApiKeySchema;
 
 #[tokio::test]
 async fn test_keys_lifecycle() {

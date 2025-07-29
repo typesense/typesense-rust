@@ -1,4 +1,4 @@
-use typesense_codegen::models::{
+use typesense::models::{
     PresetSchema, PresetUpsertSchema, PresetUpsertSchemaValue, SearchParameters,
 };
 

@@ -2,10 +2,11 @@ use std::time::Duration;
 
 use reqwest_retry::policies::ExponentialBackoff;
 use typesense::{
-    client::{Error as TypesenseError, MultiNodeConfiguration},
-    models::ConversationModelUpdateSchema,
+    models::{
+        CollectionSchema, ConversationModelCreateSchema, ConversationModelUpdateSchema, Field,
+    },
+    Error as TypesenseError, MultiNodeConfiguration,
 };
-use typesense_codegen::models::{CollectionSchema, ConversationModelCreateSchema, Field};
 
 use super::{get_client, new_id};
 
@@ -73,7 +74,7 @@ async fn test_create_model_with_invalid_key_fails_as_expected() {
     );
     match create_result.err() {
         Some(TypesenseError::Api(response_content)) => match response_content {
-            typesense::apis::Error::ResponseError(api_error) => {
+            typesense::ApiError::ResponseError(api_error) => {
                 assert_eq!(
                     api_error.status.as_u16(),
                     400,
@@ -108,7 +109,7 @@ async fn test_create_model_with_invalid_key_fails_as_expected() {
     );
 }
 
-use typesense::client::Client;
+use typesense::Client;
 use wiremock::{
     matchers::{body_json, method, path},
     Mock, MockServer, ResponseTemplate,

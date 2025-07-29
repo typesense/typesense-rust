@@ -2,7 +2,7 @@
 //!
 //! An `Events` instance is created via the `Client::analytics().events()` method.
 
-use super::{Client, Error};
+use crate::{Client, Error};
 use std::sync::Arc;
 use typesense_codegen::{
     apis::{analytics_api, configuration},

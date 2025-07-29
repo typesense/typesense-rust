@@ -2,7 +2,7 @@
 //!
 //! An instance of `Synonyms` is created via the `client.collection("collection_name").synonyms()` method.
 
-use super::{Client, Error};
+use crate::{Client, Error};
 use std::sync::Arc;
 use typesense_codegen::{
     apis::{configuration, synonyms_api},

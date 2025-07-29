@@ -2,7 +2,7 @@
 //!
 //! An instance of `Model` is created via the `Conversations::model()` method.
 
-use crate::client::{Client, Error};
+use crate::{Client, Error};
 use std::sync::Arc;
 use typesense_codegen::{
     apis::{configuration, conversations_api},

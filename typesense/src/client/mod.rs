@@ -14,8 +14,7 @@
 //! ## Example Usage
 //!
 //! ```no_run
-//! use typesense::client::{Client, MultiNodeConfiguration};
-//! use typesense_codegen::models;
+//! use typesense::{Client, MultiNodeConfiguration, models};
 //! use reqwest::Url;
 //! use reqwest_retry::policies::ExponentialBackoff;
 //! use std::time::Duration;
@@ -50,37 +49,40 @@
 //! }
 //! ```
 
-pub mod alias;
-pub mod aliases;
-pub mod analytics;
-pub mod collection;
-pub mod collections;
-pub mod conversations;
-pub mod key;
-pub mod keys;
-pub mod multi_search;
-pub mod operations;
-pub mod preset;
-pub mod presets;
-pub mod stemming;
-pub mod stopword;
-pub mod stopwords;
+mod alias;
+mod aliases;
+mod analytics;
+mod collection;
+mod collections;
+mod conversations;
+mod key;
+mod keys;
+mod multi_search;
+mod operations;
+mod preset;
+mod presets;
+mod stemming;
+mod stopword;
+mod stopwords;
 
-pub use alias::Alias;
-pub use aliases::Aliases;
-pub use analytics::Analytics;
-pub use collection::Collection;
-pub use collections::Collections;
-pub use conversations::Conversations;
-pub use key::Key;
-pub use keys::Keys;
-pub use operations::Operations;
-pub use preset::Preset;
-pub use presets::Presets;
-pub use stemming::Stemming;
-pub use stopword::Stopword;
-pub use stopwords::Stopwords;
+use alias::Alias;
+use aliases::Aliases;
+use analytics::Analytics;
+use collection::Collection;
+use collections::Collections;
+use conversations::Conversations;
+use key::Key;
+use keys::Keys;
+use operations::Operations;
+use preset::Preset;
+use presets::Presets;
+use serde::de::DeserializeOwned;
+use serde::Serialize;
+use stemming::Stemming;
+use stopword::Stopword;
+use stopwords::Stopwords;
 
+use crate::Error;
 use reqwest::Url;
 use reqwest_middleware::ClientBuilder;
 use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
@@ -90,7 +92,6 @@ use std::sync::{
     Arc, Mutex,
 };
 use std::time::{Duration, Instant};
-use thiserror::Error;
 use typesense_codegen::apis::{self, configuration};
 
 use crate::client::multi_search::MultiSearch;
@@ -139,28 +140,6 @@ impl Default for MultiNodeConfiguration {
             connection_timeout: Duration::from_secs(5),
         }
     }
-}
-
-/// The primary error type for the Typesense client.
-#[derive(Debug, Error)]
-pub enum Error<E>
-where
-    E: std::fmt::Debug + 'static,
-    apis::Error<E>: std::error::Error + 'static,
-{
-    /// Indicates that all configured nodes failed to process a request.
-    #[error("All API nodes failed to respond. Last error: {source}")]
-    AllNodesFailed {
-        /// The last underlying API or network error received from a node before giving up.
-        #[source]
-        source: apis::Error<E>,
-    },
-
-    // Any middleware error will be wrapped in the Api variant below.
-    /// An API-level error returned by the Typesense server (e.g., 503 Service Unavailable)
-    /// or a network-level error from the underlying HTTP client (e.g. connection refused).
-    #[error("A single node failed with an API or network error")]
-    Api(#[from] apis::Error<E>),
 }
 
 /// The main entry point for all interactions with the Typesense API.
@@ -332,7 +311,7 @@ impl Client {
         }
 
         // If the loop finishes, all nodes have failed.
-        Err(Error::AllNodesFailed {
+        Err(crate::Error::AllNodesFailed {
             source: last_api_error
                 .expect("No nodes were available to try, or all errors were non-retriable."),
         })
@@ -340,12 +319,9 @@ impl Client {
     /// Provides access to the collection aliases-related API endpoints.
     ///
     /// # Example
-    /// ```ignore
-    /// # use typesense::client::{Client, MultiNodeConfiguration};
-    /// # use typesense_codegen::models;
+    /// ```no_run
+    /// # use typesense::{Client, MultiNodeConfiguration};
     /// # use reqwest::Url;
-    /// # use reqwest_retry::policies::ExponentialBackoff;
-    /// # use std::time::Duration;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -365,12 +341,9 @@ impl Client {
 
     /// Provides access to a specific collection alias's-related API endpoints.
     /// # Example
-    /// ```ignore
-    /// # use typesense::client::{Client, MultiNodeConfiguration};
-    /// # use typesense_codegen::models;
+    /// ```no_run
+    /// # use typesense::{Client, MultiNodeConfiguration};
     /// # use reqwest::Url;
-    /// # use reqwest_retry::policies::ExponentialBackoff;
-    /// # use std::time::Duration;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -390,12 +363,9 @@ impl Client {
 
     /// Provides access to API endpoints for managing collections like `create()` and `retrieve()`.
     /// # Example
-    /// ```ignore
-    /// # use typesense::client::{Client, MultiNodeConfiguration};
-    /// # use typesense_codegen::models;
+    /// ```no_run
+    /// # use typesense::{Client, MultiNodeConfiguration};
     /// # use reqwest::Url;
-    /// # use reqwest_retry::policies::ExponentialBackoff;
-    /// # use std::time::Duration;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -409,43 +379,95 @@ impl Client {
     /// # Ok(())
     /// # }
     /// ```
-    pub fn collections(&self) -> collections::Collections<'_> {
-        collections::Collections::new(self)
+    pub fn collections(&self) -> Collections<'_> {
+        Collections::new(self)
     }
 
-    /// Provides access to API endpoints of a specific collection.
-    /// # Example
-    /// ```ignore
-    /// # use typesense::client::{Client, MultiNodeConfiguration};
-    /// # use typesense_codegen::models;
+    /// Provides access to API endpoints for a specific collection.
+    ///
+    /// This method returns a `Collection` handle, which is generic over the type of document
+    /// stored in that collection.
+    ///
+    /// # Type Parameters
+    /// * `T` - The type of the documents in the collection. It must be serializable and deserializable.
+    ///         **This defaults to `serde_json::Value`**, allowing you to perform collection-level
+    ///         operations (like delete, update, retrieve schema) without specifying a type,
+    ///         or to work with schemaless documents.
+    ///
+    /// # Arguments
+    /// * `collection_name` - The name of the collection to interact with.
+    ///
+    /// # Example: Working with a strongly-typed collection
+    ///
+    /// When you want to retrieve or search for documents and have them automatically
+    /// deserialized into your own structs.
+    /// ```no_run
+    /// # use typesense::{Client, MultiNodeConfiguration};
+    /// # use serde::{Serialize, Deserialize};
     /// # use reqwest::Url;
-    /// # use reqwest_retry::policies::ExponentialBackoff;
-    /// # use std::time::Duration;
     /// #
-    /// # #[tokio::main]
-    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # #[derive(Serialize, Deserialize, Debug)]
+    /// # struct Book { id: String, title: String }
+    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
     /// # let config = MultiNodeConfiguration {
     /// #     nodes: vec![Url::parse("http://localhost:8108")?],
     /// #     api_key: "xyz".to_string(),
     /// #     ..Default::default()
     /// # };
     /// # let client = Client::new(config)?;
-    /// let my_collection = client.collection("products").retrieve().await.unwrap();
+    /// // Get a typed handle to the "books" collection
+    /// let books_collection = client.collection_of::<Book>("books");
+    ///
+    /// // Retrieve a single book, it returns `Result<Book, ...>`
+    /// let book = books_collection.document("123").retrieve().await?;
+    /// println!("Retrieved book: {:?}", book);
+    /// #
     /// # Ok(())
     /// # }
     /// ```
-    pub fn collection<'a>(&'a self, collection_name: &'a str) -> Collection<'a> {
+    pub fn collection_of<'a, T>(&'a self, collection_name: &'a str) -> Collection<'a, T>
+    where
+        T: DeserializeOwned + Serialize + Send + Sync,
+    {
+        Collection::new(self, collection_name)
+    }
+
+    /// Provides access to API endpoints for a specific collection using schemaless `serde_json::Value` documents.
+    ///
+    /// This is the simplest way to interact with a collection when you do not need strong typing.
+    /// It is a convenient shorthand for `client.collection_of::<serde_json::Value>("...")`.
+    ///
+    /// The returned handle can be used for both document operations (which will return `serde_json::Value`)
+    /// and collection-level operations (like `.delete()` or `.retrieve()`).
+    ///
+    /// # Arguments
+    /// * `collection_name` - The name of the collection to interact with.
+    ///
+    /// # Example
+    /// ```no_run
+    /// # use typesense::{Client, MultiNodeConfiguration};
+    /// # use reqwest::Url;
+    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let config = MultiNodeConfiguration {
+    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
+    /// #     api_key: "xyz".to_string(),
+    /// #     ..Default::default()
+    /// # };
+    /// # let client = Client::new(config)?;
+    /// let products_collection = client.collection("products");
+    /// #
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub fn collection<'a>(&'a self, collection_name: &'a str) -> Collection<'a, serde_json::Value> {
         Collection::new(self, collection_name)
     }
 
     /// Provides access to the analytics-related API endpoints.
     /// # Example
-    /// ```ignore
-    /// # use typesense::client::{Client, MultiNodeConfiguration};
-    /// # use typesense_codegen::models;
+    /// ```no_run
+    /// # use typesense::{Client, MultiNodeConfiguration};
     /// # use reqwest::Url;
-    /// # use reqwest_retry::policies::ExponentialBackoff;
-    /// # use std::time::Duration;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -465,12 +487,9 @@ impl Client {
 
     /// Returns a `Conversations` instance for managing conversation models.
     /// # Example
-    /// ```ignore
-    /// # use typesense::client::{Client, MultiNodeConfiguration};
-    /// # use typesense_codegen::models;
+    /// ```no_run
+    /// # use typesense::{Client, MultiNodeConfiguration};
     /// # use reqwest::Url;
-    /// # use reqwest_retry::policies::ExponentialBackoff;
-    /// # use std::time::Duration;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -490,12 +509,9 @@ impl Client {
 
     /// Provides access to top-level, non-namespaced API endpoints like `health` and `debug`.
     /// # Example
-    /// ```ignore
-    /// # use typesense::client::{Client, MultiNodeConfiguration};
-    /// # use typesense_codegen::models;
+    /// ```no_run
+    /// # use typesense::{Client, MultiNodeConfiguration};
     /// # use reqwest::Url;
-    /// # use reqwest_retry::policies::ExponentialBackoff;
-    /// # use std::time::Duration;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -516,12 +532,9 @@ impl Client {
     /// Provides access to endpoints for managing the collection of API keys.
     ///
     /// # Example
-    /// ```ignore
-    /// # use typesense::client::{Client, MultiNodeConfiguration};
-    /// # use typesense_codegen::models;
+    /// ```no_run
+    /// # use typesense::{Client, MultiNodeConfiguration, models};
     /// # use reqwest::Url;
-    /// # use reqwest_retry::policies::ExponentialBackoff;
-    /// # use std::time::Duration;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -551,12 +564,9 @@ impl Client {
     /// * `key_id` - The ID of the key to manage.
     ///
     /// # Example
-    /// ```ignore
-    /// # use typesense::client::{Client, MultiNodeConfiguration};
-    /// # use typesense_codegen::models;
+    /// ```no_run
+    /// # use typesense::{Client, MultiNodeConfiguration};
     /// # use reqwest::Url;
-    /// # use reqwest_retry::policies::ExponentialBackoff;
-    /// # use std::time::Duration;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -577,12 +587,9 @@ impl Client {
     /// Provides access to endpoints for managing all of your presets.
     ///
     /// # Example
-    /// ```ignore
-    /// # use typesense::client::{Client, MultiNodeConfiguration};
-    /// # use typesense_codegen::models;
+    /// ```no_run
+    /// # use typesense::{Client, MultiNodeConfiguration};
     /// # use reqwest::Url;
-    /// # use reqwest_retry::policies::ExponentialBackoff;
-    /// # use std::time::Duration;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -606,12 +613,9 @@ impl Client {
     /// * `preset_id` - The ID of the preset to manage.
     ///
     /// # Example
-    /// ```ignore
-    /// # use typesense::client::{Client, MultiNodeConfiguration};
-    /// # use typesense_codegen::models;
+    /// ```no_run
+    /// # use typesense::{Client, MultiNodeConfiguration};
     /// # use reqwest::Url;
-    /// # use reqwest_retry::policies::ExponentialBackoff;
-    /// # use std::time::Duration;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -634,10 +638,8 @@ impl Client {
     /// # Example
     ///
     /// ```
-    /// # use typesense::client::{Client, MultiNodeConfiguration};
+    /// # use typesense::{Client, MultiNodeConfiguration, models};
     /// # use reqwest::Url;
-    /// # use reqwest_retry::policies::ExponentialBackoff;
-    /// # use std::time::Duration;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -660,11 +662,9 @@ impl Client {
     /// Provides access to endpoints for managing the collection of stopwords sets.
     ///
     /// # Example
-    /// ```ignore
-    /// # use typesense::client::{Client, MultiNodeConfiguration};
+    /// ```no_run
+    /// # use typesense::{Client, MultiNodeConfiguration, models};
     /// # use reqwest::Url;
-    /// # use reqwest_retry::policies::ExponentialBackoff;
-    /// # use std::time::Duration;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -688,11 +688,9 @@ impl Client {
     /// * `set_id` - The ID of the stopwords set to manage.
     ///
     /// # Example
-    /// ```ignore
-    /// # use typesense::client::{Client, MultiNodeConfiguration};
+    /// ```no_run
+    /// # use typesense::{Client, MultiNodeConfiguration, models};
     /// # use reqwest::Url;
-    /// # use reqwest_retry::policies::ExponentialBackoff;
-    /// # use std::time::Duration;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -713,12 +711,9 @@ impl Client {
     /// Provides access to the multi search endpoint.
     ///
     /// # Example
-    /// ```ignore
-    /// # use typesense::client::{Client, MultiNodeConfiguration};
-    /// # use typesense_codegen::models;
+    /// ```no_run
+    /// # use typesense::{Client, MultiNodeConfiguration, models};
     /// # use reqwest::Url;
-    /// # use reqwest_retry::policies::ExponentialBackoff;
-    /// # use std::time::Duration;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {

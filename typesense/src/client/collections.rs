@@ -2,7 +2,7 @@
 //!
 //! A `Collections` instance is created via the main `client.collections()` method.
 
-use super::{Client, Error};
+use crate::{Client, Error};
 use std::sync::Arc;
 use typesense_codegen::{
     apis::{collections_api, configuration},

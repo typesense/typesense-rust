@@ -2,7 +2,7 @@
 //!
 //! An instance of `Stopword` is created via the `Client::stopword()` method.
 
-use super::{Client, Error};
+use crate::{Client, Error};
 use std::sync::Arc;
 use typesense_codegen::{
     apis::{configuration, stopwords_api},

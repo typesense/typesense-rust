@@ -2,7 +2,7 @@
 //!
 //! A `Key` instance is created via the `Client::key(key_id)` method.
 
-use super::{Client, Error};
+use crate::{Client, Error};
 use std::sync::Arc;
 use typesense_codegen::{
     apis::{configuration, keys_api},

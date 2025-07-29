@@ -2,7 +2,7 @@
 //!
 //! An `Operations` instance is created via the main `Client::operations()` method.
 
-use super::{Client, Error};
+use crate::{Client, Error};
 use std::sync::Arc;
 use typesense_codegen::{
     apis::{

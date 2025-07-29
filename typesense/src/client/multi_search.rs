@@ -2,7 +2,7 @@
 //!
 //! A `MultiSearch` instance is created via the main `Client::multi_search()` method.
 
-use super::{Client, Error};
+use crate::{Client, Error};
 use std::sync::Arc;
 use typesense_codegen::{
     apis::{

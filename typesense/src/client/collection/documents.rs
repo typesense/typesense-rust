@@ -1,27 +1,38 @@
 //! Provides access to the document, search, and override-related API endpoints.
 //!
 //! An instance of `Documents` is scoped to a specific collection and is created
-//! via the main `client.collection("collection_name").documents()` method.
+//! via the main `client.collection("collection_name").documents()` method or
+//! `client.collection_of::<T>("...").documents()`.
 
-use super::{Client, Error};
+use crate::models::SearchResult;
+use crate::{Client, Error};
+use serde::{de::DeserializeOwned, Serialize};
 use std::sync::Arc;
 use typesense_codegen::{
     apis::{configuration, documents_api},
     models::{
-        self, DeleteDocumentsParameters, ExportDocumentsParameters, ImportDocumentsParameters,
-        UpdateDocumentsParameters,
+        self as raw_models, DeleteDocumentsParameters, DocumentIndexParameters,
+        ExportDocumentsParameters, ImportDocumentsParameters, UpdateDocumentsParameters,
     },
 };
-
 /// Provides methods for interacting with documents within a specific Typesense collection.
 ///
-/// This struct is created by calling `client.collection("collection_name").documents("collection_name")`.
-pub struct Documents<'a> {
+/// This struct is generic over the document type `T`. If created via `client.collection(...)`,
+/// `T` defaults to `serde_json::Value`. If created via `client.collection_of::<MyType>(...)`,
+/// `T` will be `MyType`.
+pub struct Documents<'a, T = serde_json::Value>
+where
+    T: DeserializeOwned + Serialize + Send + Sync,
+{
     pub(super) client: &'a Client,
     pub(super) collection_name: &'a str,
+    pub(super) _phantom: std::marker::PhantomData<T>,
 }
 
-impl<'a> Documents<'a> {
+impl<'a, T> Documents<'a, T>
+where
+    T: DeserializeOwned + Serialize + Send + Sync,
+{
     /// Creates a new `Documents` instance.
     ///
     /// This is typically called by `Client::documents()`.
@@ -29,6 +40,7 @@ impl<'a> Documents<'a> {
         Self {
             client,
             collection_name,
+            _phantom: std::marker::PhantomData,
         }
     }
 
@@ -43,12 +55,13 @@ impl<'a> Documents<'a> {
         &self,
         document: serde_json::Value,
         action: &str,
+        params: Option<DocumentIndexParameters>,
     ) -> Result<serde_json::Value, Error<documents_api::IndexDocumentError>> {
         let params = documents_api::IndexDocumentParams {
             collection_name: self.collection_name.to_string(),
             body: document,
             action: Some(action.to_string()),
-            dirty_values: None, // Or expose this as an argument if needed
+            dirty_values: params.unwrap_or_default().dirty_values, // Or expose this as an argument if needed
         };
         self.client
             .execute(|config: Arc<configuration::Configuration>| {
@@ -59,30 +72,40 @@ impl<'a> Documents<'a> {
     }
 
     /// Creates a new document in the collection.
-    /// Fails if a document with the same id already exists
     ///
-    /// If the document has an `id` field of type `string`, it will be used as the document's ID.
-    /// Otherwise, Typesense will auto-generate an ID.
+    /// Fails if a document with the same ID already exists. If the document has an `id` field
+    /// of type `string`, it will be used as the document's ID. Otherwise, Typesense will
+    /// auto-generate an ID. The newly indexed document is returned.
     ///
     /// # Arguments
-    /// * `document` - A `serde_json::Value` representing the document to create.
+    /// * `document` - A reference to the document to create.
+    /// * `params` - Optional parameters like `dirty_values`.
     pub async fn create(
         &self,
-        document: serde_json::Value,
-    ) -> Result<serde_json::Value, Error<documents_api::IndexDocumentError>> {
-        self.index(document, "create").await
+        document: &T,
+        params: Option<DocumentIndexParameters>,
+    ) -> Result<T, Error<documents_api::IndexDocumentError>> {
+        let doc_value = serde_json::to_value(document)?;
+        let result_value = self.index(doc_value, "create", params).await?;
+        serde_json::from_value(result_value).map_err(Error::from)
     }
 
-    /// Creates a new document or updates an existing document if a document with the same id already exists.
-    /// Requires the whole document to be sent. For partial updates, use the `update()` action.
+    /// Creates a new document or updates an existing one if an ID match is found.
+    ///
+    /// This method requires the full document to be sent. For partial updates, use
+    /// `collection.document("...").update()`. The indexed document is returned.
     ///
     /// # Arguments
-    /// * `document` - A `serde_json::Value` representing the document to upsert.
+    /// * `document` - A reference to the document to upsert.
+    /// * `params` - Optional parameters like `dirty_values`.
     pub async fn upsert(
         &self,
-        document: serde_json::Value,
-    ) -> Result<serde_json::Value, Error<documents_api::IndexDocumentError>> {
-        self.index(document, "upsert").await
+        document: &T,
+        params: Option<DocumentIndexParameters>,
+    ) -> Result<T, Error<documents_api::IndexDocumentError>> {
+        let doc_value = serde_json::to_value(document)?;
+        let result_value = self.index(doc_value, "upsert", params).await?;
+        serde_json::from_value(result_value).map_err(Error::from)
     }
 
     // --- Bulk Operation Methods ---
@@ -149,7 +172,7 @@ impl<'a> Documents<'a> {
     pub async fn delete(
         &self,
         params: DeleteDocumentsParameters,
-    ) -> Result<models::DeleteDocuments200Response, Error<documents_api::DeleteDocumentsError>>
+    ) -> Result<raw_models::DeleteDocuments200Response, Error<documents_api::DeleteDocumentsError>>
     {
         let params = documents_api::DeleteDocumentsParams {
             collection_name: self.collection_name.to_string(),
@@ -175,7 +198,7 @@ impl<'a> Documents<'a> {
         &self,
         document: serde_json::Value,
         params: UpdateDocumentsParameters,
-    ) -> Result<models::UpdateDocuments200Response, Error<documents_api::UpdateDocumentsError>>
+    ) -> Result<raw_models::UpdateDocuments200Response, Error<documents_api::UpdateDocumentsError>>
     {
         let params = documents_api::UpdateDocumentsParams {
             collection_name: self.collection_name.to_string(),
@@ -191,15 +214,14 @@ impl<'a> Documents<'a> {
     }
 
     /// Searches for documents in the collection that match the given criteria.
+    /// The search results will have their `document` field deserialized into type `T`.
     ///
     /// # Arguments
     /// * `params` - A `SearchParameters` struct containing all search parameters.
-    ///              you can construct it like this:
-    ///              `SearchParameters { q: Some("...".into()), query_by: Some("...".into()), ..Default::default() }`
     pub async fn search(
         &self,
-        params: models::SearchParameters,
-    ) -> Result<models::SearchResult, Error<documents_api::SearchCollectionError>> {
+        params: raw_models::SearchParameters,
+    ) -> Result<SearchResult<T>, Error<documents_api::SearchCollectionError>> {
         let search_params = documents_api::SearchCollectionParams {
             collection_name: self.collection_name.to_string(),
 
@@ -275,11 +297,15 @@ impl<'a> Documents<'a> {
             nl_query: params.nl_query,
         };
 
-        self.client
+        let raw_result = self
+            .client
             .execute(|config: Arc<configuration::Configuration>| {
                 let params_for_move = search_params.clone();
                 async move { documents_api::search_collection(&config, params_for_move).await }
             })
-            .await
+            .await?;
+
+        // Transform the raw API result into our generic, typed SearchResult<T>.
+        SearchResult::from_raw(raw_result).map_err(Error::from)
     }
 }
