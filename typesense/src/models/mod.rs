@@ -1,6 +1,6 @@
 //! # Typesense generic models
-pub mod search;
-pub use search::*;
+pub mod search_result;
+pub use search_result::*;
 pub use typesense_codegen::models::{
     AnalyticsEventCreateResponse, AnalyticsEventCreateSchema, AnalyticsRuleDeleteResponse,
     AnalyticsRuleParameters, AnalyticsRuleParametersDestination, AnalyticsRuleParametersSource,
