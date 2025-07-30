@@ -1,6 +1,10 @@
 //! # Typesense generic models
-pub mod search_result;
+mod scoped_key_parameters;
+mod search_result;
+
+pub use scoped_key_parameters::*;
 pub use search_result::*;
+
 pub use typesense_codegen::models::{
     AnalyticsEventCreateResponse, AnalyticsEventCreateSchema, AnalyticsRuleDeleteResponse,
     AnalyticsRuleParameters, AnalyticsRuleParametersDestination, AnalyticsRuleParametersSource,
@@ -18,7 +22,7 @@ pub use typesense_codegen::models::{
     MultiSearchResultItem, MultiSearchSearchesParameter, NlSearchModelBase,
     NlSearchModelCreateSchema, NlSearchModelDeleteSchema, NlSearchModelSchema, PresetDeleteSchema,
     PresetSchema, PresetUpsertSchema, PresetUpsertSchemaValue, PresetsRetrieveSchema,
-    SchemaChangeStatus, ScopedKeyParameters, SearchGroupedHit, SearchHighlight, SearchOverride,
+    SchemaChangeStatus, SearchGroupedHit, SearchHighlight, SearchOverride,
     SearchOverrideDeleteResponse, SearchOverrideExclude, SearchOverrideInclude, SearchOverrideRule,
     SearchOverrideSchema, SearchOverridesResponse, SearchParameters, SearchResultConversation,
     SearchResultHitTextMatchInfo, SearchResultRequestParams, SearchResultRequestParamsVoiceQuery,
@@ -79,7 +83,6 @@ pub use typesense_codegen::models::{
     preset_upsert_schema_value,
     presets_retrieve_schema,
     schema_change_status,
-    scoped_key_parameters,
     search_grouped_hit,
     search_highlight,
     search_override,

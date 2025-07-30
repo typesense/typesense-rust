@@ -1,5 +1,5 @@
 use super::get_client;
-use typesense::models::ApiKeySchema;
+use typesense::models::{ApiKeySchema, ScopedKeyParameters, SearchParameters};
 
 #[tokio::test]
 async fn test_keys_lifecycle() {
@@ -78,5 +78,44 @@ async fn test_keys_lifecycle() {
     assert!(
         get_after_delete_result.is_err(),
         "API key should not exist after deletion."
+    );
+}
+
+#[test]
+fn test_generate_scoped_search_key_with_example_values() {
+    // The parent key with `documents:search` permissions.
+    let search_only_api_key = "RN23GFr1s6jQ9kgSNg2O7fYcAUXU7127";
+
+    // The parameters to be embedded in the new scoped key.
+    let params = ScopedKeyParameters {
+        search_params: Some(SearchParameters {
+            filter_by: Some("company_id:124".to_string()),
+            ..Default::default()
+        }),
+        expires_at: Some(1906054106),
+        ..Default::default()
+    };
+
+    // The known correct output from the Typesense documentation.
+    let expected_scoped_key = "OW9DYWZGS1Q1RGdSbmo0S1QrOWxhbk9PL2kxbTU1eXA3bCthdmE5eXJKRT1STjIzeyJmaWx0ZXJfYnkiOiJjb21wYW55X2lkOjEyNCIsImV4cGlyZXNfYXQiOjE5MDYwNTQxMDZ9";
+
+    let client = get_client();
+
+    let generated_key_result = client
+        .keys()
+        .generate_scoped_search_key(search_only_api_key, &params);
+
+    // First, ensure the function returned an Ok result.
+    assert!(
+        generated_key_result.is_ok(),
+        "Function returned an error: {:?}",
+        generated_key_result.err()
+    );
+
+    // Unwrap the result and compare it with the expected output.
+    let generated_key = generated_key_result.unwrap();
+    assert_eq!(
+        generated_key, expected_scoped_key,
+        "The generated key does not match the expected key."
     );
 }
