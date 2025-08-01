@@ -2,8 +2,8 @@
 
 use super::Config;
 use serde::{Deserialize, Serialize};
-use typesense::document::Document;
 use typesense::Typesense;
+use typesense::document::Document;
 use typesense_codegen::apis::collections_api;
 use typesense_codegen::models::{CollectionResponse, CollectionSchema};
 

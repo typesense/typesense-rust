@@ -2,7 +2,7 @@
 //!
 //! More info [here](https://typesense.org/docs/0.20.0/api/api-keys.html).
 
-use base64::{engine::general_purpose::STANDARD as Base64Engine, Engine};
+use base64::{Engine, engine::general_purpose::STANDARD as Base64Engine};
 use core::fmt;
 use hmac::{Hmac, Mac};
 use serde::{Deserialize, Serialize};
@@ -29,7 +29,7 @@ pub async fn generate_scoped_search_key(
     let digest = Base64Engine.encode(result.into_bytes());
 
     let key_prefix = &key.as_ref()[0..4];
-    let raw_scoped_key = format!("{}{}{}", digest, key_prefix, params);
+    let raw_scoped_key = format!("{digest}{key_prefix}{params}");
 
     Ok(Base64Engine.encode(raw_scoped_key.as_bytes()))
 }

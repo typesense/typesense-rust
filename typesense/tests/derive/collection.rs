@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
-use typesense::document::Document;
 use typesense::Typesense;
+use typesense::document::Document;
 
 #[test]
 fn derived_document_generates_schema() {
