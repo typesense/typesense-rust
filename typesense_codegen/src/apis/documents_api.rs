@@ -182,7 +182,7 @@ pub async fn delete_document(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -239,7 +239,7 @@ pub async fn delete_documents(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -291,7 +291,7 @@ pub async fn delete_search_override(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -343,7 +343,7 @@ pub async fn delete_search_synonym(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -400,7 +400,7 @@ pub async fn export_documents(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -453,7 +453,7 @@ pub async fn get_document(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -506,7 +506,7 @@ pub async fn get_search_override(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -556,7 +556,7 @@ pub async fn get_search_overrides(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -609,7 +609,7 @@ pub async fn get_search_synonym(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -659,7 +659,7 @@ pub async fn get_search_synonyms(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -717,7 +717,7 @@ pub async fn import_documents(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -777,7 +777,7 @@ pub async fn index_document(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -827,7 +827,7 @@ pub async fn multi_search<D: for<'d> serde::Deserialize<'d>>(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -881,7 +881,7 @@ pub async fn search_collection<D: for<'d> serde::Deserialize<'d>>(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -935,7 +935,7 @@ pub async fn update_document(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -994,7 +994,7 @@ pub async fn update_documents(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -1049,7 +1049,7 @@ pub async fn upsert_search_override(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -1104,7 +1104,7 @@ pub async fn upsert_search_synonym(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =

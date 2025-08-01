@@ -51,8 +51,7 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
             return Err(syn::Error::new_spanned(
                 item_ts,
                 format!(
-                    "defined default_sorting_field = \"{}\" does not match with any field.",
-                    sorting_field
+                    "defined default_sorting_field = \"{sorting_field}\" does not match with any field."
                 ),
             ));
         }
@@ -139,7 +138,7 @@ fn skip_eq(i: Ident, tt_iter: &mut impl Iterator<Item = TokenTree>) -> syn::Resu
         Some(TokenTree::Punct(p)) if p.as_char() == '=' => Ok(()),
         Some(tt) => Err(syn::Error::new_spanned(
             &tt,
-            format!("Unexpected \"{}\", expected equal sign \"=\"", tt),
+            format!("Unexpected \"{tt}\", expected equal sign \"=\""),
         )),
         None => Err(syn::Error::new_spanned(i, "expected: equal sign \"=\"")),
     }
@@ -160,7 +159,7 @@ fn string_literal(tt_iter: &mut impl Iterator<Item = TokenTree>) -> syn::Result<
         }
         Some(TokenTree::Ident(i)) => Err(syn::Error::new(
             i.span(),
-            format!("Expected string literal, did you mean \"{}\"?", i),
+            format!("Expected string literal, did you mean \"{i}\"?"),
         )),
         tt => Err(syn::Error::new(tt.span(), "Expected string literal")),
     }
@@ -204,7 +203,7 @@ fn extract_attrs(attrs: Vec<Attribute>) -> syn::Result<Attrs> {
                         res.enable_nested_fields = Some(val);
                     }
                     v => {
-                        return Err(syn::Error::new(i.span(), format!("Unexpected \"{}\"", v)));
+                        return Err(syn::Error::new(i.span(), format!("Unexpected \"{v}\"")));
                     }
                 }
             };
@@ -213,7 +212,7 @@ fn extract_attrs(attrs: Vec<Attribute>) -> syn::Result<Attrs> {
                 if ch != ',' {
                     return Err(syn::Error::new(
                         p.span(),
-                        format!("Unexpected \"{}\", expected comma \",\"", ch),
+                        format!("Unexpected \"{ch}\", expected comma \",\""),
                     ));
                 }
             }
@@ -242,14 +241,14 @@ fn to_typesense_field_type(field: &Field) -> syn::Result<proc_macro2::TokenStrea
                                 if i != "facet" {
                                     return Some(Err(syn::Error::new_spanned(
                                         i,
-                                        format!("Unexpected token {}. Did you mean `facet`?", i),
+                                        format!("Unexpected token {i}. Did you mean `facet`?"),
                                     )));
                                 }
                             }
                             Some(ref tt) => {
                                 return Some(Err(syn::Error::new_spanned(
                                     tt,
-                                    format!("Unexpected token {}. Did you mean `facet`?", tt),
+                                    format!("Unexpected token {tt}. Did you mean `facet`?"),
                                 )));
                             }
                             None => {

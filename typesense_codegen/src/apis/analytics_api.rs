@@ -62,7 +62,7 @@ pub async fn create_analytics_rule(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -114,7 +114,7 @@ pub async fn delete_analytics_rule(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -165,7 +165,7 @@ pub async fn retrieve_analytics_rule(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -211,7 +211,7 @@ pub async fn retrieve_analytics_rules(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =

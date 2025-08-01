@@ -29,7 +29,7 @@ pub async fn generate_scoped_search_key(
     let digest = Base64Engine.encode(result.into_bytes());
 
     let key_prefix = &key.as_ref()[0..4];
-    let raw_scoped_key = format!("{}{}{}", digest, key_prefix, params);
+    let raw_scoped_key = format!("{digest}{key_prefix}{params}");
 
     Ok(Base64Engine.encode(raw_scoped_key.as_bytes()))
 }

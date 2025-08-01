@@ -104,7 +104,7 @@ pub async fn create_collection(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -155,7 +155,7 @@ pub async fn delete_alias(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -206,7 +206,7 @@ pub async fn delete_collection(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -257,7 +257,7 @@ pub async fn get_alias(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -302,7 +302,7 @@ pub async fn get_aliases(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -353,7 +353,7 @@ pub async fn get_collection(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -399,7 +399,7 @@ pub async fn get_collections(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -451,7 +451,7 @@ pub async fn update_collection(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
@@ -504,7 +504,7 @@ pub async fn upsert_alias(
     if let Some(ref local_var_apikey) = local_var_configuration.api_key {
         let local_var_key = &local_var_apikey.key;
         let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
+            Some(ref local_var_prefix) => format!("{local_var_prefix} {local_var_key}"),
             None => local_var_key.clone(),
         };
         local_var_req_builder =
