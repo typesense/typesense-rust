@@ -1,0 +1,25 @@
+name: Publish to crates.io
+on:
+  push:
+    tags: ['v*']  # Triggers when pushing tags starting with 'v'
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write     # Required for OIDC token exchange
+    steps:
+    - uses: actions/checkout@v4
+    - uses: rust-lang/crates-io-auth-action@v1
+      id: auth
+
+    - name: Publish typesense_derive
+      run: cargo publish 
+      working-directory: typesense_derive
+    
+    - name: Publish typesense_codegen
+      run: cargo publish 
+      working-directory: typesense_codegen
+    
+    - name: Publish typesense
+      run: cargo publish
+      working-directory: typesense

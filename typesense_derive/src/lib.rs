@@ -1,7 +1,7 @@
 use proc_macro::TokenStream;
 use proc_macro2::{Ident, TokenTree};
-use quote::{quote, ToTokens};
-use syn::{spanned::Spanned, Attribute, Field, ItemStruct};
+use quote::{ToTokens, quote};
+use syn::{Attribute, Field, ItemStruct, spanned::Spanned};
 
 #[proc_macro_derive(Typesense, attributes(typesense))]
 pub fn typesense_collection_derive(input: TokenStream) -> TokenStream {
@@ -79,7 +79,7 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
         proc_macro2::TokenStream::new()
     };
 
-    let gen = quote! {
+    let g = quote! {
         impl #impl_generics typesense::document::Document for #ident #ty_generics #where_clause {
             fn collection_schema() -> typesense::collection_schema::CollectionSchema {
                 let name = #collection_name.to_owned();
@@ -94,18 +94,18 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
             }
         }
     };
-    Ok(gen.into())
+    Ok(g.into())
 }
 
-// Get the inner type for a given wrappper
+// Get the inner type for a given wrapper
 fn ty_inner_type<'a>(ty: &'a syn::Type, wrapper: &'static str) -> Option<&'a syn::Type> {
-    if let syn::Type::Path(ref p) = ty {
+    if let syn::Type::Path(p) = ty {
         if p.path.segments.len() == 1 && p.path.segments[0].ident == wrapper {
             if let syn::PathArguments::AngleBracketed(ref inner_ty) = p.path.segments[0].arguments {
                 if inner_ty.args.len() == 1 {
                     // len is 1 so this should not fail
                     let inner_ty = inner_ty.args.first().unwrap();
-                    if let syn::GenericArgument::Type(ref t) = inner_ty {
+                    if let syn::GenericArgument::Type(t) = inner_ty {
                         return Some(t);
                     }
                 }
@@ -198,7 +198,7 @@ fn extract_attrs(attrs: Vec<Attribute>) -> syn::Result<Attrs> {
                                 return Err(syn::Error::new(
                                     tt.span(),
                                     "Expected boolean, without quotation marks (\"\")",
-                                ))
+                                ));
                             }
                         };
                         res.enable_nested_fields = Some(val);
@@ -250,10 +250,13 @@ fn to_typesense_field_type(field: &Field) -> syn::Result<proc_macro2::TokenStrea
                                 return Some(Err(syn::Error::new_spanned(
                                     tt,
                                     format!("Unexpected token {}. Did you mean `facet`?", tt),
-                                )))
+                                )));
                             }
                             None => {
-                                return Some(Err(syn::Error::new_spanned(attr, "expected `facet`")))
+                                return Some(Err(syn::Error::new_spanned(
+                                    attr,
+                                    "expected `facet`",
+                                )));
                             }
                         }
 
