@@ -2,9 +2,9 @@
 
 use super::Config;
 use serde::{Deserialize, Serialize};
+use typesense::Typesense;
 use typesense::document::Document;
 use typesense::models::SearchParameters;
-use typesense::Typesense;
 use typesense_codegen::apis::documents_api;
 
 #[derive(Typesense, Serialize, Deserialize)]

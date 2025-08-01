@@ -2,7 +2,7 @@
 //!
 //! More info [here](https://typesense.org/docs/0.20.0/api/api-keys.html).
 
-use base64::{engine::general_purpose::STANDARD as Base64Engine, Engine};
+use base64::{Engine, engine::general_purpose::STANDARD as Base64Engine};
 use core::fmt;
 use hmac::{Hmac, Mac};
 use serde::{Deserialize, Serialize};

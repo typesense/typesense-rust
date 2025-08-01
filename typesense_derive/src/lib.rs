@@ -79,7 +79,7 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
         proc_macro2::TokenStream::new()
     };
 
-    let g = quote! {
+    let generated_code = quote! {
         impl #impl_generics typesense::document::Document for #ident #ty_generics #where_clause {
             fn collection_schema() -> typesense::collection_schema::CollectionSchema {
                 let name = #collection_name.to_owned();
@@ -94,7 +94,7 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
             }
         }
     };
-    Ok(g.into())
+    Ok(generated_code.into())
 }
 
 // Get the inner type for a given wrapper
