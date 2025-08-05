@@ -733,7 +733,7 @@ impl Client {
     /// #     ..Default::default()
     /// # };
     /// # let common_params = models::MultiSearchParameters::default();
-    /// let results = client.multi_search().perform(search_requests, common_params).await.unwrap();
+    /// let results = client.multi_search().perform(&search_requests, &common_params).await.unwrap();
     /// # Ok(())
     /// # }
     /// ```

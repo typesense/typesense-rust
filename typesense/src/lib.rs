@@ -49,11 +49,14 @@ mod error;
 pub mod collection_schema;
 pub mod document;
 pub mod field;
+pub mod prelude;
 // pub mod keys;
 pub mod models;
 
 pub use client::{Client, MultiNodeConfiguration};
-pub use error::{ApiError, Error};
+pub use error::*;
+pub use models::*;
+pub use prelude::*;
 
 #[cfg(feature = "typesense_derive")]
 #[doc(hidden)]

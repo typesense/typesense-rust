@@ -947,7 +947,8 @@ pub async fn index_document(
 pub async fn multi_search(
     configuration: &configuration::Configuration,
     params: MultiSearchParams,
-) -> Result<models::MultiSearchResult, Error<MultiSearchError>> {
+    // was modified by hand
+) -> Result<serde_json::Value, Error<MultiSearchError>> {
     let uri_str = format!("{}/multi_search", configuration.base_path);
     let mut req_builder = configuration
         .client

@@ -52,3 +52,56 @@ where
     #[error("Failed to deserialize the API response into the target struct: {0}")]
     Deserialization(#[from] serde_json::Error),
 }
+
+/// Represents the possible errors that can occur when parsing a `multi_search` response.
+///
+/// This error enum is returned by the `MultiSearchResultExt::parse_at` method when it
+/// fails to convert a raw search result into a strongly-typed `SearchResult<T>`.
+#[derive(Debug, Error)]
+pub enum MultiSearchParseError {
+    /// Indicates that the requested index was outside the bounds of the results vector.
+    ///
+    /// For a `multi_search` request with `n` search queries, the valid indices for the
+    /// results are `0` through `n-1`. This error occurs if the provided index is `n` or greater.
+    ///
+    /// # Fields
+    /// * `0` - The invalid index that was requested.
+    #[error("Search result index {0} is out of bounds.")]
+    IndexOutOfBounds(usize),
+
+    /// Indicates that the Typesense server returned an error for the specific search query at this index.
+    ///
+    // It's possible for a `multi_search` request to succeed overall, but for one or more
+    // individual searches within it to fail (e.g., due to a typo in a collection name).
+    ///
+    /// # Fields
+    /// * `index` - The index of the search query that failed.
+    /// * `message` - The error message returned by the Typesense API for this specific search.
+    #[error("The search at index {index} failed with an API error: {message}")]
+    ApiError {
+        /// The index of the search query that failed.
+        index: usize,
+        /// The error message returned by the Typesense API for this specific search.
+        message: String,
+    },
+
+    /// Indicates a failure to deserialize a document's JSON into the target struct `T`.
+    ///
+    /// This typically happens when the fields in the document stored in Typesense do not
+    /// match the fields defined in the target Rust struct `T`. Check for mismatches in
+    /// field names or data types.
+    ///
+    /// # Fields
+    /// * `index` - The index of the search query where the deserialization error occurred.
+    /// * `source` - The underlying `serde_json::Error` that provides detailed information
+    ///   about the deserialization failure.
+    #[error("Failed to deserialize a document at index {index}: {source}")]
+    Deserialization {
+        /// The index of the search query where the deserialization error occurred.
+        index: usize,
+        /// The underlying `serde_json::Error` that provides detailed information
+        /// about the deserialization failure.
+        #[source]
+        source: serde_json::Error,
+    },
+}

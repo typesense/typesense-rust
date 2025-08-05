@@ -1,7 +1,8 @@
 //! # Typesense generic models
+mod multi_search;
 mod scoped_key_parameters;
 mod search_result;
-
+pub use multi_search::*;
 pub use scoped_key_parameters::*;
 pub use search_result::*;
 
@@ -19,18 +20,17 @@ pub use typesense_codegen::models::{
     FacetCountsStats, Field, FieldEmbed, FieldEmbedModelConfig, HealthStatus,
     ImportDocumentsParameters, IndexAction, ListStemmingDictionaries200Response,
     MultiSearchCollectionParameters, MultiSearchParameters, MultiSearchResult,
-    MultiSearchResultItem, MultiSearchSearchesParameter, NlSearchModelBase,
-    NlSearchModelCreateSchema, NlSearchModelDeleteSchema, NlSearchModelSchema, PresetDeleteSchema,
-    PresetSchema, PresetUpsertSchema, PresetUpsertSchemaValue, PresetsRetrieveSchema,
-    SchemaChangeStatus, SearchGroupedHit, SearchHighlight, SearchOverride,
-    SearchOverrideDeleteResponse, SearchOverrideExclude, SearchOverrideInclude, SearchOverrideRule,
-    SearchOverrideSchema, SearchOverridesResponse, SearchParameters, SearchResultConversation,
-    SearchResultHitTextMatchInfo, SearchResultRequestParams, SearchResultRequestParamsVoiceQuery,
-    SearchSynonym, SearchSynonymDeleteResponse, SearchSynonymSchema, SearchSynonymsResponse,
-    SnapshotParameters, StemmingDictionary, StemmingDictionaryWordsInner,
-    StopwordsSetRetrieveSchema, StopwordsSetSchema, StopwordsSetUpsertSchema,
-    StopwordsSetsRetrieveAllSchema, SuccessStatus, UpdateDocuments200Response,
-    UpdateDocumentsParameters, VoiceQueryModelCollectionConfig,
+    MultiSearchResultItem, NlSearchModelBase, NlSearchModelCreateSchema, NlSearchModelDeleteSchema,
+    NlSearchModelSchema, PresetDeleteSchema, PresetSchema, PresetUpsertSchema,
+    PresetUpsertSchemaValue, PresetsRetrieveSchema, SchemaChangeStatus, SearchGroupedHit,
+    SearchHighlight, SearchOverride, SearchOverrideDeleteResponse, SearchOverrideExclude,
+    SearchOverrideInclude, SearchOverrideRule, SearchOverrideSchema, SearchOverridesResponse,
+    SearchParameters, SearchResultConversation, SearchResultHitTextMatchInfo,
+    SearchResultRequestParams, SearchResultRequestParamsVoiceQuery, SearchSynonym,
+    SearchSynonymDeleteResponse, SearchSynonymSchema, SearchSynonymsResponse, SnapshotParameters,
+    StemmingDictionary, StemmingDictionaryWordsInner, StopwordsSetRetrieveSchema,
+    StopwordsSetSchema, StopwordsSetUpsertSchema, StopwordsSetsRetrieveAllSchema, SuccessStatus,
+    UpdateDocuments200Response, UpdateDocumentsParameters, VoiceQueryModelCollectionConfig,
 };
 // Only re-export the sub modules that have enums inside them.
 pub use typesense_codegen::models::{
