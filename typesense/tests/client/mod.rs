@@ -1,16 +1,17 @@
-pub mod aliases_test;
-pub mod analytics_test;
-pub mod client_test;
-pub mod collections_test;
-pub mod conversation_models_test;
-pub mod documents_test;
-pub mod keys_test;
-pub mod multi_search_test;
-pub mod presets_test;
-pub mod search_overrides_test;
-pub mod stemming_dictionaries_test;
-pub mod stopwords_test;
-pub mod synonyms_test;
+mod aliases_test;
+mod analytics_test;
+mod client_test;
+mod collections_test;
+mod conversation_models_test;
+mod derive_integration_test;
+mod documents_test;
+mod keys_test;
+mod multi_search_test;
+mod presets_test;
+mod search_overrides_test;
+mod stemming_dictionaries_test;
+mod stopwords_test;
+mod synonyms_test;
 
 use reqwest::Url;
 use reqwest_retry::policies::ExponentialBackoff;
@@ -24,9 +25,9 @@ pub fn get_client() -> Client {
         nodes: vec![Url::parse("http://localhost:8108").unwrap()],
         nearest_node: None,
         api_key: "xyz".to_string(),
-        healthcheck_interval: Duration::from_secs(60),
-        retry_policy: ExponentialBackoff::builder().build_with_max_retries(3),
-        connection_timeout: Duration::from_secs(10),
+        healthcheck_interval: Duration::from_secs(5),
+        retry_policy: ExponentialBackoff::builder().build_with_max_retries(1),
+        connection_timeout: Duration::from_secs(3),
     };
     Client::new(config).unwrap()
 }

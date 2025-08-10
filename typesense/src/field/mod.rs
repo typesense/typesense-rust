@@ -20,6 +20,10 @@ pub struct FieldBuilder {
     num_dim: Option<i32>,
     drop: Option<bool>,
     embed: Option<Box<FieldEmbed>>,
+    store: Option<bool>,
+    stem: Option<bool>,
+    range_index: Option<bool>,
+    vec_dist: Option<String>,
 }
 
 impl FieldBuilder {
@@ -89,6 +93,34 @@ impl FieldBuilder {
         self
     }
 
+    /// Set store attribute for field
+    #[inline]
+    pub fn store(mut self, store: Option<bool>) -> Self {
+        self.store = store;
+        self
+    }
+
+    /// Set stem attribute for field
+    #[inline]
+    pub fn stem(mut self, stem: Option<bool>) -> Self {
+        self.stem = stem;
+        self
+    }
+
+    /// Set range_index attribute for field
+    #[inline]
+    pub fn range_index(mut self, range_index: Option<bool>) -> Self {
+        self.range_index = range_index;
+        self
+    }
+
+    /// Set vec_dist attribute for field
+    #[inline]
+    pub fn vec_dist(mut self, vec_dist: Option<String>) -> Self {
+        self.vec_dist = vec_dist;
+        self
+    }
+
     /// Create a `Field` with the current values of the builder,
     /// It can fail if the name or the typesense_type are not defined.
     #[inline]
@@ -105,6 +137,10 @@ impl FieldBuilder {
             num_dim: self.num_dim,
             drop: self.drop,
             embed: self.embed,
+            store: self.store,
+            stem: self.stem,
+            range_index: self.range_index,
+            vec_dist: self.vec_dist,
             ..Default::default()
         }
     }

@@ -2,4 +2,4 @@
 mod compile;
 
 #[cfg(feature = "typesense_derive")]
-mod collection;
+mod derive_collection_schema_test;

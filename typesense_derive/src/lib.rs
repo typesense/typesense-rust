@@ -1,7 +1,9 @@
 use proc_macro::TokenStream;
 use proc_macro2::{Ident, TokenTree};
 use quote::{quote, ToTokens};
-use syn::{spanned::Spanned, Attribute, Field, ItemStruct};
+use syn::{spanned::Spanned, Attribute, ItemStruct};
+mod field_attrs;
+use field_attrs::process_field;
 
 #[proc_macro_derive(Typesense, attributes(typesense))]
 pub fn typesense_collection_derive(input: TokenStream) -> TokenStream {
@@ -40,6 +42,8 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
         collection_name,
         default_sorting_field,
         enable_nested_fields,
+        symbols_to_index,
+        token_separators,
     } = extract_attrs(attrs)?;
     let collection_name = collection_name.unwrap_or_else(|| ident.to_string().to_lowercase());
 
@@ -58,9 +62,10 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
         }
     }
 
+    //  Use flat_map to handle fields that expand into multiple schema fields
     let typesense_fields = fields
         .iter()
-        .map(to_typesense_field_type)
+        .map(|field| process_field(field)) // process_field returns a Result<TokenStream>
         .collect::<syn::Result<Vec<_>>>()?;
 
     let default_sorting_field = if let Some(v) = default_sorting_field {
@@ -79,40 +84,44 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
         proc_macro2::TokenStream::new()
     };
 
+    let symbols_to_index = if let Some(v) = symbols_to_index {
+        quote! {
+            builder = builder.symbols_to_index(vec![#(#v.to_string()),*]);
+        }
+    } else {
+        proc_macro2::TokenStream::new()
+    };
+
+    let token_separators = if let Some(v) = token_separators {
+        quote! {
+            builder = builder.token_separators(vec![#(#v.to_string()),*]);
+        }
+    } else {
+        proc_macro2::TokenStream::new()
+    };
+
     let gen = quote! {
         impl #impl_generics typesense::document::Document for #ident #ty_generics #where_clause {
             fn collection_schema() -> typesense::collection_schema::CollectionSchema {
                 let name = #collection_name.to_owned();
-                let fields = vec![#(#typesense_fields,)*];
+
+                // Collect fields from all sources
+                let fields: Vec<typesense::field::Field> = vec![
+                    #(#typesense_fields,)*
+                ].into_iter().flatten().collect();
 
                 let mut builder = typesense::collection_schema::CollectionSchemaBuilder::new(name, fields);
 
                 #default_sorting_field
                 #enable_nested_fields
+                #token_separators
+                #symbols_to_index
 
                 builder.build()
             }
         }
     };
     Ok(gen.into())
-}
-
-// Get the inner type for a given wrappper
-fn ty_inner_type<'a>(ty: &'a syn::Type, wrapper: &'static str) -> Option<&'a syn::Type> {
-    if let syn::Type::Path(ref p) = ty {
-        if p.path.segments.len() == 1 && p.path.segments[0].ident == wrapper {
-            if let syn::PathArguments::AngleBracketed(ref inner_ty) = p.path.segments[0].arguments {
-                if inner_ty.args.len() == 1 {
-                    // len is 1 so this should not fail
-                    let inner_ty = inner_ty.args.first().unwrap();
-                    if let syn::GenericArgument::Type(ref t) = inner_ty {
-                        return Some(t);
-                    }
-                }
-            }
-        }
-    }
-    None
 }
 
 // Add a bound `T: ToTypesenseField` to every type parameter T.
@@ -131,10 +140,12 @@ fn add_trait_bounds(mut generics: syn::Generics) -> syn::Generics {
 struct Attrs {
     collection_name: Option<String>,
     default_sorting_field: Option<String>,
+    symbols_to_index: Option<Vec<String>>,
     enable_nested_fields: Option<bool>,
+    token_separators: Option<Vec<String>>,
 }
 
-fn skip_eq(i: Ident, tt_iter: &mut impl Iterator<Item = TokenTree>) -> syn::Result<()> {
+fn skip_eq(i: &Ident, tt_iter: &mut impl Iterator<Item = TokenTree>) -> syn::Result<()> {
     match tt_iter.next() {
         Some(TokenTree::Punct(p)) if p.as_char() == '=' => Ok(()),
         Some(tt) => Err(syn::Error::new_spanned(
@@ -183,15 +194,15 @@ fn extract_attrs(attrs: Vec<Attribute>) -> syn::Result<Attrs> {
             if let TokenTree::Ident(i) = tt {
                 match &i.to_string() as &str {
                     "collection_name" => {
-                        skip_eq(i, &mut tt_iter)?;
+                        skip_eq(&i, &mut tt_iter)?;
                         res.collection_name = Some(string_literal(&mut tt_iter)?);
                     }
                     "default_sorting_field" => {
-                        skip_eq(i, &mut tt_iter)?;
+                        skip_eq(&i, &mut tt_iter)?;
                         res.default_sorting_field = Some(string_literal(&mut tt_iter)?);
                     }
                     "enable_nested_fields" => {
-                        skip_eq(i, &mut tt_iter)?;
+                        skip_eq(&i, &mut tt_iter)?;
                         let val = match tt_iter.next() {
                             Some(TokenTree::Ident(i)) => &i.to_string() == "true",
                             tt => {
@@ -202,6 +213,14 @@ fn extract_attrs(attrs: Vec<Attribute>) -> syn::Result<Attrs> {
                             }
                         };
                         res.enable_nested_fields = Some(val);
+                    }
+                    "symbols_to_index" => {
+                        skip_eq(&i, &mut tt_iter)?;
+                        res.symbols_to_index = Some(string_list(&mut tt_iter)?);
+                    }
+                    "token_separators" => {
+                        skip_eq(&i, &mut tt_iter)?;
+                        res.token_separators = Some(string_list(&mut tt_iter)?);
                     }
                     v => {
                         return Err(syn::Error::new(i.span(), format!("Unexpected \"{}\"", v)));
@@ -223,78 +242,46 @@ fn extract_attrs(attrs: Vec<Attribute>) -> syn::Result<Attrs> {
     Ok(res)
 }
 
-/// Convert a given field in a typesense field type.
-fn to_typesense_field_type(field: &Field) -> syn::Result<proc_macro2::TokenStream> {
-    let name = &field.ident;
-
-    let facet = {
-        let facet_vec = field
-            .attrs
-            .iter()
-            .filter_map(|attr| {
-                if attr.path.segments.len() == 1 && attr.path.segments[0].ident == "typesense" {
-                    if let Some(proc_macro2::TokenTree::Group(g)) =
-                        attr.tokens.clone().into_iter().next()
-                    {
-                        let mut tokens = g.stream().into_iter();
-                        match tokens.next() {
-                            Some(proc_macro2::TokenTree::Ident(ref i)) => {
-                                if i != "facet" {
-                                    return Some(Err(syn::Error::new_spanned(
-                                        i,
-                                        format!("Unexpected token {}. Did you mean `facet`?", i),
-                                    )));
-                                }
-                            }
-                            Some(ref tt) => {
-                                return Some(Err(syn::Error::new_spanned(
-                                    tt,
-                                    format!("Unexpected token {}. Did you mean `facet`?", tt),
-                                )))
-                            }
-                            None => {
-                                return Some(Err(syn::Error::new_spanned(attr, "expected `facet`")))
-                            }
-                        }
-
-                        if let Some(ref tt) = tokens.next() {
-                            return Some(Err(syn::Error::new_spanned(
-                                tt,
-                                "Unexpected token. Expected )",
-                            )));
-                        }
-                        return Some(Ok(()));
-                    }
-                }
-                None
-            })
-            .collect::<syn::Result<Vec<_>>>()?;
-        let facet_count = facet_vec.len();
-        if facet_count == 1 {
-            quote!(Some(true))
-        } else if facet_count == 0 {
-            quote!(None)
-        } else {
+// Helper function to parse a bracketed list of string literals
+fn string_list(tt_iter: &mut impl Iterator<Item = TokenTree>) -> syn::Result<Vec<String>> {
+    let group = match tt_iter.next() {
+        Some(TokenTree::Group(g)) if g.delimiter() == proc_macro2::Delimiter::Bracket => g,
+        Some(tt) => {
             return Err(syn::Error::new_spanned(
-                field,
-                "#[typesense(facet)] repeated more than one time.",
-            ));
+                tt,
+                "Expected a list in brackets `[]`",
+            ))
+        }
+        None => {
+            return Err(syn::Error::new(
+                proc_macro2::Span::call_site(),
+                "Expected a list in brackets `[]`",
+            ))
         }
     };
 
-    let (ty, optional) = if let Some(inner_ty) = ty_inner_type(&field.ty, "Option") {
-        (inner_ty, quote!(Some(true)))
-    } else {
-        (&field.ty, quote!(None))
-    };
-    let typesense_field_type = quote!(
-        <#ty as typesense::field::ToTypesenseField>::to_typesense_type().to_owned()
-    );
+    let mut result = Vec::new();
+    let mut inner_iter = group.stream().into_iter().peekable();
 
-    Ok(quote! {
-        typesense::field::FieldBuilder::new(std::string::String::from(stringify!(#name)), #typesense_field_type)
-            .optional(#optional)
-            .facet(#facet)
-            .build()
-    })
+    while let Some(tt) = inner_iter.next() {
+        if let TokenTree::Literal(l) = tt {
+            let lit = syn::Lit::new(l);
+            if let syn::Lit::Str(s) = lit {
+                result.push(s.value());
+            } else {
+                return Err(syn::Error::new_spanned(lit, "Expected a string literal"));
+            }
+        } else {
+            return Err(syn::Error::new_spanned(tt, "Expected a string literal"));
+        }
+
+        // Check for a trailing comma
+        if let Some(TokenTree::Punct(p)) = inner_iter.peek() {
+            if p.as_char() == ',' {
+                inner_iter.next(); // Consume the comma
+            }
+        }
+    }
+
+    Ok(result)
 }
