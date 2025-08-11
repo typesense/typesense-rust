@@ -22,7 +22,7 @@ jobs:
       URL: "http://localhost:5000"
       API_KEY: "VerySecretKey"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Cache .cargo and target
         uses: actions/cache@v4
         with:
