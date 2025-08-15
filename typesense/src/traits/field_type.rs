@@ -1,4 +1,4 @@
-use crate::document::Document;
+use crate::traits::Document;
 use std::collections::{BTreeMap, HashMap};
 /// Type for a field. Currently it is a wrapping to a `String` but it could be extended to a enum
 pub type FieldType = String;
@@ -27,7 +27,7 @@ impl<T: Document> ToTypesenseField for Vec<T> {
 #[macro_export]
 macro_rules! impl_to_typesense_field (
     ($for:ty, $typesense_variant:expr) => {
-        impl $crate::field::ToTypesenseField for $for {
+        impl $crate::prelude::ToTypesenseField for $for {
             #[inline(always)]
             fn to_typesense_type() -> &'static str {
                 $typesense_variant
@@ -35,7 +35,7 @@ macro_rules! impl_to_typesense_field (
         }
     };
     ($for:ty, $typesense_variant:expr, $any:ident) => {
-        impl<$any> $crate::field::ToTypesenseField for $for {
+        impl<$any> $crate::prelude::ToTypesenseField for $for {
             #[inline(always)]
             fn to_typesense_type() -> &'static str {
                 $typesense_variant

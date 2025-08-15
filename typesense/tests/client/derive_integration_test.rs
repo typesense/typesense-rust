@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 use typesense::models::SearchParameters;
+use typesense::prelude::*;
+use typesense::Field;
 use typesense::Typesense;
-use typesense::{document::Document, Field};
 
 use crate::{get_client, new_id};
 

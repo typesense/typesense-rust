@@ -2,12 +2,12 @@ use std::collections::BTreeMap;
 
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use typesense::document::Document;
+use typesense::prelude::*;
 use typesense::Typesense;
 
 // Helper to convert schema to BTreeMap for order-independent comparison
 fn schema_to_map(
-    schema: &typesense::collection_schema::CollectionSchema,
+    schema: &typesense::models::CollectionSchema,
 ) -> BTreeMap<String, serde_json::Value> {
     serde_json::from_value(serde_json::to_value(schema).unwrap()).unwrap()
 }

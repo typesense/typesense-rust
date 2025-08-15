@@ -1,3 +1,5 @@
+//! Contains the error types for the Typesense client
+
 use thiserror::Error;
 pub use typesense_codegen::apis::Error as ApiError;
 

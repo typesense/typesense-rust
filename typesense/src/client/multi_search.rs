@@ -3,7 +3,7 @@
 //! A `MultiSearch` instance is created via the main `Client::multi_search()` method.
 
 use crate::{
-    models::SearchResult, Client, Error, MultiSearchParseError, MultiSearchResultExt,
+    models::SearchResult, traits::MultiSearchResultExt, Client, Error, MultiSearchParseError,
     MultiSearchSearchesParameter,
 };
 use serde::de::DeserializeOwned;

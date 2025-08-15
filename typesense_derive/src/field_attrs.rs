@@ -316,7 +316,7 @@ fn get_inner_type(mut ty: &syn::Type) -> &syn::Type {
 }
 
 /// Processes a single struct field.
-/// Returns a TokenStream which evaluates to a `Vec<typesense::field::Field>`.
+/// Returns a TokenStream which evaluates to a `Vec<typesense::Field>`.
 pub fn process_field(field: &Field) -> syn::Result<proc_macro2::TokenStream> {
     let field_attrs = extract_field_attrs(&field.attrs)?;
 
@@ -348,7 +348,7 @@ pub fn process_field(field: &Field) -> syn::Result<proc_macro2::TokenStream> {
 
         Ok(quote! {
             {
-                <#inner_type as typesense::document::Document>::collection_schema().fields
+                <#inner_type as typesense::prelude::Document>::collection_schema().fields
                     .into_iter()
                     .map(|mut f| {
                         // Use the dynamically determined prefix here
@@ -378,33 +378,27 @@ pub fn process_field(field: &Field) -> syn::Result<proc_macro2::TokenStream> {
         let typesense_field_type = if let Some(override_str) = &field_attrs.type_override {
             quote! { #override_str.to_owned() }
         } else {
-            quote! { <#ty as typesense::field::ToTypesenseField>::to_typesense_type().to_owned() }
+            quote! { <#ty as typesense::prelude::ToTypesenseField>::to_typesense_type().to_owned() }
         };
 
         let optional = field_attrs
             .optional
             .or(if is_option_type { Some(true) } else { None })
-            .map(|v| quote!(.optional(Some(#v))));
-        let facet = field_attrs.facet.map(|v| quote!(.facet(Some(#v))));
-        let index = field_attrs.index.map(|v| quote!(.index(Some(#v))));
-        let store = field_attrs.store.map(|v| quote!(.store(Some(#v))));
-        let sort = field_attrs.sort.map(|v| quote!(.sort(Some(#v))));
-        let infix = field_attrs.infix.map(|v| quote!(.infix(Some(#v))));
-        let stem = field_attrs.stem.map(|v| quote!(.stem(Some(#v))));
-        let range_index = field_attrs
-            .range_index
-            .map(|v| quote!(.range_index(Some(#v))));
-        let locale = field_attrs
-            .locale
-            .map(|v| quote!(.locale(Some(#v.to_string()))));
-        let vec_dist = field_attrs
-            .vec_dist
-            .map(|v| quote!(.vec_dist(Some(#v.to_string()))));
-        let num_dim = field_attrs.num_dim.map(|v| quote!(.num_dim(Some(#v))));
+            .map(|v| quote!(.optional(#v)));
+        let facet = field_attrs.facet.map(|v| quote!(.facet(#v)));
+        let index = field_attrs.index.map(|v| quote!(.index(#v)));
+        let store = field_attrs.store.map(|v| quote!(.store(#v)));
+        let sort = field_attrs.sort.map(|v| quote!(.sort(#v)));
+        let infix = field_attrs.infix.map(|v| quote!(.infix(#v)));
+        let stem = field_attrs.stem.map(|v| quote!(.stem(#v)));
+        let range_index = field_attrs.range_index.map(|v| quote!(.range_index(#v)));
+        let locale = field_attrs.locale.map(|v| quote!(.locale(#v)));
+        let vec_dist = field_attrs.vec_dist.map(|v| quote!(.vec_dist(#v)));
+        let num_dim = field_attrs.num_dim.map(|v| quote!(.num_dim(#v)));
 
         Ok(quote! {
             vec![
-                typesense::field::FieldBuilder::new(#field_name, #typesense_field_type)
+                typesense::builders::new_collection_field(#field_name, #typesense_field_type)
                     #optional #facet #index #store #sort #infix #stem #range_index #locale #vec_dist #num_dim
                     .build()
             ]

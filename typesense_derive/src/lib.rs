@@ -70,7 +70,7 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
 
     let default_sorting_field = if let Some(v) = default_sorting_field {
         quote! {
-            builder = builder.default_sorting_field(#v);
+            let builder = builder.default_sorting_field(#v);
         }
     } else {
         proc_macro2::TokenStream::new()
@@ -78,7 +78,7 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
 
     let enable_nested_fields = if let Some(v) = enable_nested_fields {
         quote! {
-            builder = builder.enable_nested_fields(Some(#v));
+            let builder = builder.enable_nested_fields(#v);
         }
     } else {
         proc_macro2::TokenStream::new()
@@ -86,7 +86,7 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
 
     let symbols_to_index = if let Some(v) = symbols_to_index {
         quote! {
-            builder = builder.symbols_to_index(vec![#(#v.to_string()),*]);
+            let builder = builder.symbols_to_index(vec![#(#v.to_string()),*]);
         }
     } else {
         proc_macro2::TokenStream::new()
@@ -94,23 +94,24 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
 
     let token_separators = if let Some(v) = token_separators {
         quote! {
-            builder = builder.token_separators(vec![#(#v.to_string()),*]);
+            let builder = builder.token_separators(vec![#(#v.to_string()),*]);
         }
     } else {
         proc_macro2::TokenStream::new()
     };
 
     let gen = quote! {
-        impl #impl_generics typesense::document::Document for #ident #ty_generics #where_clause {
-            fn collection_schema() -> typesense::collection_schema::CollectionSchema {
+        impl #impl_generics typesense::prelude::Document for #ident #ty_generics #where_clause {
+            fn collection_schema() -> typesense::models::CollectionSchema {
                 let name = #collection_name.to_owned();
 
                 // Collect fields from all sources
-                let fields: Vec<typesense::field::Field> = vec![
+                let fields: Vec<typesense::Field> = vec![
                     #(#typesense_fields,)*
                 ].into_iter().flatten().collect();
 
-                let mut builder = typesense::collection_schema::CollectionSchemaBuilder::new(name, fields);
+                // start the bon builder and set fields
+                let builder = typesense::builders::new_collection_schema(name, fields);
 
                 #default_sorting_field
                 #enable_nested_fields
@@ -130,7 +131,7 @@ fn add_trait_bounds(mut generics: syn::Generics) -> syn::Generics {
         if let syn::GenericParam::Type(ref mut type_param) = *param {
             type_param
                 .bounds
-                .push(syn::parse_quote!(typesense::field::ToTypesenseField));
+                .push(syn::parse_quote!(typesense::prelude::ToTypesenseField));
         }
     }
     generics

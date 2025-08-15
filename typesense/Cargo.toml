@@ -29,6 +29,9 @@ reqwest-retry = "0.7.0"
 reqwest = { version = "0.12", features = ["json"] }
 reqwest-middleware = { version = "0.4.2", features = ["json"] }
 thiserror = "1.0"
+bon = "3.7.0"
+strum = { version = "0.26", features = ["derive"] }
+
 
 [dev-dependencies]
 dotenvy = "0.15"

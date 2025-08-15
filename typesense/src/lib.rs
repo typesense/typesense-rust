@@ -44,20 +44,18 @@
 //! ```
 
 mod client;
-mod error;
+mod traits;
 
-pub mod collection_schema;
-pub mod document;
-pub mod field;
-pub mod prelude;
-// pub mod keys;
+pub mod builders;
+pub mod error;
 pub mod models;
+pub mod prelude;
 
+pub use builders::*;
 pub use client::{Client, MultiNodeConfiguration};
 pub use error::*;
 pub use models::*;
-pub use prelude::*;
 
-#[cfg(feature = "typesense_derive")]
+#[cfg(feature = "derive")]
 #[doc(hidden)]
 pub use typesense_derive::*;
