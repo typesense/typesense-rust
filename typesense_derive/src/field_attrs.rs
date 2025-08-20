@@ -1,7 +1,7 @@
 use crate::{skip_eq, string_literal};
 use proc_macro2::TokenTree;
 use quote::quote;
-use syn::{spanned::Spanned, Attribute, Field};
+use syn::{Attribute, Field, spanned::Spanned};
 
 #[derive(Default)]
 struct FieldAttrs {
@@ -191,7 +191,13 @@ fn extract_field_attrs(attrs: &[Attribute]) -> syn::Result<FieldAttrs> {
                     // --- Flags that are ONLY shorthand ---
                     "flatten" | "skip" => {
                         if !is_shorthand {
-                            return Err(syn::Error::new(i.span(), format!("`{}` is a flag and does not take a value. Use `#[typesense({})]`", ident_str, ident_str)));
+                            return Err(syn::Error::new(
+                                i.span(),
+                                format!(
+                                    "`{}` is a flag and does not take a value. Use `#[typesense({})]`",
+                                    ident_str, ident_str
+                                ),
+                            ));
                         }
                         match ident_str.as_str() {
                             "flatten" => {
@@ -291,13 +297,13 @@ fn extract_field_attrs(attrs: &[Attribute]) -> syn::Result<FieldAttrs> {
 
 // Get the inner type for a given wrappper
 fn ty_inner_type<'a>(ty: &'a syn::Type, wrapper: &'static str) -> Option<&'a syn::Type> {
-    if let syn::Type::Path(ref p) = ty {
+    if let syn::Type::Path(p) = ty {
         if p.path.segments.len() == 1 && p.path.segments[0].ident == wrapper {
             if let syn::PathArguments::AngleBracketed(ref inner_ty) = p.path.segments[0].arguments {
                 if inner_ty.args.len() == 1 {
                     // len is 1 so this should not fail
                     let inner_ty = inner_ty.args.first().unwrap();
-                    if let syn::GenericArgument::Type(ref t) = inner_ty {
+                    if let syn::GenericArgument::Type(t) = inner_ty {
                         return Some(t);
                     }
                 }

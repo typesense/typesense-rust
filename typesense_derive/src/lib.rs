@@ -1,7 +1,7 @@
 use proc_macro::TokenStream;
 use proc_macro2::{Ident, TokenTree};
-use quote::{quote, ToTokens};
-use syn::{spanned::Spanned, Attribute, ItemStruct};
+use quote::{ToTokens, quote};
+use syn::{Attribute, ItemStruct, spanned::Spanned};
 mod field_attrs;
 use field_attrs::process_field;
 
@@ -99,7 +99,7 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
         proc_macro2::TokenStream::new()
     };
 
-    let gen = quote! {
+    let generated_code = quote! {
         impl #impl_generics typesense::prelude::Document for #ident #ty_generics #where_clause {
             fn collection_schema() -> typesense::models::CollectionSchema {
                 let name = #collection_name.to_owned();
@@ -250,13 +250,13 @@ fn string_list(tt_iter: &mut impl Iterator<Item = TokenTree>) -> syn::Result<Vec
             return Err(syn::Error::new_spanned(
                 tt,
                 "Expected a list in brackets `[]`",
-            ))
+            ));
         }
         None => {
             return Err(syn::Error::new(
                 proc_macro2::Span::call_site(),
                 "Expected a list in brackets `[]`",
-            ))
+            ));
         }
     };
 

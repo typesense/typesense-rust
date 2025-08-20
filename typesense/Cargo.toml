@@ -1,10 +1,5 @@
 [package]
 name = "typesense"
-version = "0.1.0"
-authors = ["Typesense  <contact@typesense.org>"]
-edition = "2021"
-license = "Apache-2.0"
-description = "WIP client for typesense"
 version.workspace = true
 authors.workspace = true
 repository.workspace = true
