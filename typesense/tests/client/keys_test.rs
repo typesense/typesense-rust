@@ -1,8 +1,7 @@
 use super::get_client;
 use typesense::models::{ApiKeySchema, ScopedKeyParameters, SearchParameters};
 
-#[tokio::test]
-async fn test_keys_lifecycle() {
+async fn run_test_keys_lifecycle() {
     let client = get_client();
     let key_description = "A test search-only key.";
 
@@ -118,4 +117,28 @@ fn test_generate_scoped_search_key_with_example_values() {
         generated_key, expected_scoped_key,
         "The generated key does not match the expected key."
     );
+}
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod tokio_test {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_keys_lifecycle() {
+        run_test_keys_lifecycle().await;
+    }
+}
+
+#[cfg(all(test, target_arch = "wasm32"))]
+mod wasm_test {
+    use super::*;
+    use wasm_bindgen_test::wasm_bindgen_test;
+
+    wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
+
+    #[wasm_bindgen_test]
+    async fn test_keys_lifecycle() {
+        console_error_panic_hook::set_once();
+        run_test_keys_lifecycle().await;
+    }
 }

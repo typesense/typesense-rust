@@ -6,8 +6,7 @@ use typesense::models::{
     AnalyticsRulesType::Counter, CollectionSchema, Field,
 };
 
-#[tokio::test]
-async fn test_analytics_rules_and_events_lifecycle() {
+async fn logic_test_analytics_rules_and_events_lifecycle() {
     let client = get_client();
     let rule_name_1 = new_id("product_clicks");
     let collection_name = new_id("products");
@@ -119,4 +118,28 @@ async fn test_analytics_rules_and_events_lifecycle() {
         get_after_delete_result.is_err(),
         "Rule should not exist after deletion"
     );
+}
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod tokio_test {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_analytics_rules_and_events_lifecycle() {
+        logic_test_analytics_rules_and_events_lifecycle().await;
+    }
+}
+
+#[cfg(all(test, target_arch = "wasm32"))]
+mod wasm_test {
+    use super::*;
+    use wasm_bindgen_test::wasm_bindgen_test;
+
+    wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
+
+    #[wasm_bindgen_test]
+    async fn test_analytics_rules_and_events_lifecycle() {
+        console_error_panic_hook::set_once();
+        logic_test_analytics_rules_and_events_lifecycle().await;
+    }
 }

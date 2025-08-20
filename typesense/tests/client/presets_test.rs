@@ -4,8 +4,7 @@ use typesense::models::{
 
 use super::{get_client, new_id};
 
-#[tokio::test]
-async fn test_presets_lifecycle() {
+async fn run_test_presets_lifecycle() {
     let client = get_client();
     let preset_id = new_id("search-preset");
 
@@ -83,4 +82,28 @@ async fn test_presets_lifecycle() {
         get_after_delete_result.is_err(),
         "Preset should not exist after deletion."
     );
+}
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod tokio_test {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_presets_lifecycle() {
+        run_test_presets_lifecycle().await;
+    }
+}
+
+#[cfg(all(test, target_arch = "wasm32"))]
+mod wasm_test {
+    use super::*;
+    use wasm_bindgen_test::wasm_bindgen_test;
+
+    wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
+
+    #[wasm_bindgen_test]
+    async fn test_presets_lifecycle() {
+        console_error_panic_hook::set_once();
+        run_test_presets_lifecycle().await;
+    }
 }

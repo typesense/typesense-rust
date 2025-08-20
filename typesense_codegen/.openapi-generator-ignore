@@ -23,3 +23,5 @@
 #!docs/README.md
 
 Cargo.toml
+src/apis/configuration.rs
+src/apis/mod.rs

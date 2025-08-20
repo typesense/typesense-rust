@@ -2,8 +2,7 @@ use typesense::models::{CollectionSchema, Field, SearchSynonymSchema};
 
 use super::{get_client, new_id};
 
-#[tokio::test]
-async fn test_synonyms_lifecycle() {
+async fn run_test_synonyms_lifecycle() {
     let client = get_client();
     let collection_name = new_id("products");
     let synonym_id = new_id("synonym-123");
@@ -109,4 +108,28 @@ async fn test_synonyms_lifecycle() {
         delete_collection_result.is_ok(),
         "Failed to delete collection after synonym test"
     );
+}
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod tokio_test {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_synonyms_lifecycle() {
+        run_test_synonyms_lifecycle().await;
+    }
+}
+
+#[cfg(all(test, target_arch = "wasm32"))]
+mod wasm_test {
+    use super::*;
+    use wasm_bindgen_test::wasm_bindgen_test;
+
+    wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
+
+    #[wasm_bindgen_test]
+    async fn test_synonyms_lifecycle() {
+        console_error_panic_hook::set_once();
+        run_test_synonyms_lifecycle().await;
+    }
 }

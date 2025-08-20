@@ -1,3 +1,5 @@
+#![cfg(not(target_arch = "wasm32"))]
+
 use std::time::Duration;
 
 use reqwest_retry::policies::ExponentialBackoff;
@@ -5,7 +7,7 @@ use typesense::{
     models::{
         CollectionSchema, ConversationModelCreateSchema, ConversationModelUpdateSchema, Field,
     },
-    Error as TypesenseError, MultiNodeConfiguration,
+    Error as TypesenseError,
 };
 
 use super::{get_client, new_id};
@@ -117,16 +119,14 @@ use wiremock::{
 
 // Helper to create a Typesense client configured for a mock server.
 fn get_test_client(uri: &str) -> Client {
-    let config = MultiNodeConfiguration {
-        nodes: vec![uri.parse().unwrap()],
-        nearest_node: None, // Not needed for single-node tests
-        api_key: "TEST_API_KEY".to_string(),
-        // Keep other settings minimal for testing
-        healthcheck_interval: Duration::from_secs(60),
-        retry_policy: ExponentialBackoff::builder().build_with_max_retries(0),
-        connection_timeout: Duration::from_secs(1),
-    };
-    Client::new(config).unwrap()
+    Client::builder()
+        .nodes(vec![uri.parse().unwrap()])
+        .api_key("TEST_API_KEY")
+        .healthcheck_interval(Duration::from_secs(60))
+        .retry_policy(ExponentialBackoff::builder().build_with_max_retries(0))
+        .connection_timeout(Duration::from_secs(1))
+        .build()
+        .expect("Failed to create client")
 }
 
 #[tokio::test]

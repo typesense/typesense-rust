@@ -83,8 +83,7 @@ async fn setup_multi_search_tests(
         .unwrap();
 }
 
-#[tokio::test]
-async fn test_multi_search_federated() {
+async fn run_test_multi_search_federated() {
     let client = get_client();
     let products_collection_name = new_id("products");
     let brands_collection_name = new_id("brands");
@@ -152,8 +151,7 @@ async fn test_multi_search_federated() {
     );
 }
 
-#[tokio::test]
-async fn test_multi_search_with_common_params() {
+async fn run_test_multi_search_with_common_params() {
     let client = get_client();
     let products_collection_name = new_id("products_common");
     let brands_collection_name = new_id("brands_common");
@@ -239,8 +237,7 @@ struct Brand {
     country: String,
 }
 
-#[tokio::test]
-async fn test_multi_search_generic_parsing() {
+async fn run_test_multi_search_generic_parsing() {
     let client = get_client();
     let products_collection_name = new_id("products_generic");
     let brands_collection_name = new_id("brands_generic");
@@ -335,8 +332,7 @@ async fn test_multi_search_generic_parsing() {
     );
 }
 
-#[tokio::test]
-async fn test_multi_search_union_heterogeneous() {
+async fn run_test_multi_search_union_heterogeneous() {
     let client = get_client();
     let products_collection_name = new_id("products_union");
     let brands_collection_name = new_id("brands_union");
@@ -417,8 +413,7 @@ async fn test_multi_search_union_heterogeneous() {
     );
 }
 
-#[tokio::test]
-async fn test_multi_search_union_homogeneous_and_typed_conversion() {
+async fn run_test_multi_search_union_homogeneous_and_typed_conversion() {
     let client = get_client();
     let products_collection_name = new_id("products_union_homo");
     // We only need one collection for this test, but the setup creates two.
@@ -473,4 +468,64 @@ async fn test_multi_search_union_homogeneous_and_typed_conversion() {
     let macbook = &hits[1].document.as_ref().unwrap();
     assert_eq!(macbook.name, "MacBook Pro");
     assert_eq!(macbook.price, 1999);
+}
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod tokio_test {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_multi_search_federated() {
+        run_test_multi_search_federated().await;
+    }
+    #[tokio::test]
+    async fn test_multi_search_with_common_params() {
+        run_test_multi_search_with_common_params().await;
+    }
+    #[tokio::test]
+    async fn test_multi_search_generic_parsing() {
+        run_test_multi_search_generic_parsing().await;
+    }
+    #[tokio::test]
+    async fn test_multi_search_union_heterogeneous() {
+        run_test_multi_search_union_heterogeneous().await;
+    }
+    #[tokio::test]
+    async fn test_multi_search_union_homogeneous_and_typed_conversion() {
+        run_test_multi_search_union_homogeneous_and_typed_conversion().await;
+    }
+}
+
+#[cfg(all(test, target_arch = "wasm32"))]
+mod wasm_test {
+    use super::*;
+    use wasm_bindgen_test::wasm_bindgen_test;
+
+    wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
+
+    #[wasm_bindgen_test]
+    async fn test_multi_search_federated() {
+        console_error_panic_hook::set_once();
+        run_test_multi_search_federated().await;
+    }
+    #[wasm_bindgen_test]
+    async fn test_multi_search_with_common_params() {
+        console_error_panic_hook::set_once();
+        run_test_multi_search_with_common_params().await;
+    }
+    #[wasm_bindgen_test]
+    async fn test_multi_search_generic_parsing() {
+        console_error_panic_hook::set_once();
+        run_test_multi_search_generic_parsing().await;
+    }
+    #[wasm_bindgen_test]
+    async fn test_multi_search_union_heterogeneous() {
+        console_error_panic_hook::set_once();
+        run_test_multi_search_union_heterogeneous().await;
+    }
+    #[wasm_bindgen_test]
+    async fn test_multi_search_union_homogeneous_and_typed_conversion() {
+        console_error_panic_hook::set_once();
+        run_test_multi_search_union_homogeneous_and_typed_conversion().await;
+    }
 }

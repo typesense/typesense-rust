@@ -79,18 +79,17 @@ where
     /// # Example
     /// ```no_run
     /// # use serde::{Serialize, Deserialize};
-    /// # use typesense::{Client, MultiNodeConfiguration, models};
+    /// # use typesense::{Client, models};
     /// # use reqwest::Url;
     /// # #[derive(Serialize, Deserialize)]
     /// # struct Book { id: String, title: String, pages: i32 }
     /// #
     /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
-    /// # let config = MultiNodeConfiguration {
-    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
-    /// #     api_key: "xyz".to_string(),
-    /// #     ..Default::default()
-    /// # };
-    /// # let client = Client::new(config)?;
+    /// # let client = Client::builder()
+    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
     /// let book_update = serde_json::json!({ "pages": 654 });
     ///
     /// // Simple update

@@ -13,24 +13,27 @@
 //!
 //! ## Example Usage
 //!
+//! The following example demonstrates how to use the client in a standard
+//! server-side **Tokio** environment.
+//!
 //! ```no_run
-//! use typesense::{Client, MultiNodeConfiguration, models};
+//! #[cfg(not(target_family = "wasm"))]
+//! {
+//! use typesense::{Client, models};
 //! use reqwest::Url;
 //! use reqwest_retry::policies::ExponentialBackoff;
 //! use std::time::Duration;
 //!
 //! #[tokio::main]
 //! async fn main() -> Result<(), Box<dyn std::error::Error>> {
-//!     let config = MultiNodeConfiguration {
-//!         nodes: vec![Url::parse("http://localhost:8108")?],
-//!         nearest_node: None,
-//!         api_key: "your-api-key".to_string(),
-//!         healthcheck_interval: Duration::from_secs(60),
-//!         retry_policy: ExponentialBackoff::builder().build_with_max_retries(3),
-//!         connection_timeout: Duration::from_secs(10),
-//!     };
-//!
-//!     let client = Client::new(config)?;
+//!     let client = Client::builder()
+//!         .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+//!         .api_key("xyz")
+//!         .healthcheck_interval(Duration::from_secs(60))
+//!         .retry_policy(ExponentialBackoff::builder().build_with_max_retries(3))
+//!         .connection_timeout(Duration::from_secs(5))
+//!         .build()
+//!         .unwrap();
 //!
 //!     // Retrieve details for a collection
 //!     let collection = client.collection("products").retrieve().await?;
@@ -42,13 +45,73 @@
 //!         query_by: Some("name".to_string()),
 //!         ..Default::default()
 //!     };
-//!     let search_results = client.collection("products").documents().search(search_params).await?;
-//!     println!("Found {} hits.", search_results.found.unwrap_or(0));
 //!
+//!     let search_results = client
+//!         .collection("products")
+//!         .documents()
+//!         .search(search_params)
+//!         .await?;
+//!
+//!     println!("Found {} hits.", search_results.found.unwrap_or(0));
 //!     Ok(())
 //! }
+//! }
 //! ```
-
+//! ---
+//!
+//! ### WebAssembly (Wasm) Usage
+//!
+//! When compiling for a WebAssembly target (`wasm32-unknown-unknown`), the
+//! client's underlying HTTP transport and runtime are different.
+//!
+//! - `reqwest` internally uses the browser's **fetch API**.
+//! - Tokio-based features such as middleware, retries, and connection
+//!   timeouts are **not available**.
+//!
+//! Example:
+//!
+//! ```no_run
+//! #[cfg(target_family = "wasm")]
+//! {
+//! use typesense::{Client, models};
+//! use reqwest::Url;
+//! use std::time::Duration;
+//! use wasm_bindgen_futures::spawn_local;
+//!
+//! fn main() {
+//!     spawn_local(async {
+//!         let client = Client::builder()
+//!             .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+//!             .api_key("xyz")
+//!             .healthcheck_interval(Duration::from_secs(60))
+//!             // .retry_policy(...)       <-- not supported in Wasm
+//!             // .connection_timeout(...) <-- not supported in Wasm
+//!             .build()
+//!             .unwrap();
+//!
+//!         // Retrieve details for a collection
+//!         match client.collection("products").retrieve().await {
+//!             Ok(collection) => println!("Collection Name: {}", collection.name),
+//!             Err(e) => eprintln!("Error retrieving collection: {}", e),
+//!         }
+//!
+//!         // Search for a document
+//!         let search_params = models::SearchParameters {
+//!             q: Some("phone".to_string()),
+//!             query_by: Some("name".to_string()),
+//!             ..Default::default()
+//!         };
+//!
+//!         match client.collection("products").documents().search(search_params).await {
+//!             Ok(search_results) => {
+//!                 println!("Found {} hits.", search_results.found.unwrap_or(0));
+//!             }
+//!             Err(e) => eprintln!("Error searching documents: {}", e),
+//!         }
+//!     });
+//! }
+//! }
+//! ```
 mod alias;
 mod aliases;
 mod analytics;
@@ -84,15 +147,19 @@ use stopwords::Stopwords;
 
 use crate::Error;
 use reqwest::Url;
-use reqwest_middleware::ClientBuilder;
-use reqwest_retry::{policies::ExponentialBackoff, RetryTransientMiddleware};
+#[cfg(not(target_arch = "wasm32"))]
+use reqwest_middleware::ClientBuilder as ReqwestMiddlewareClientBuilder;
+use reqwest_retry::policies::ExponentialBackoff;
+#[cfg(not(target_arch = "wasm32"))]
+use reqwest_retry::RetryTransientMiddleware;
+
 use std::future::Future;
 use std::sync::{
     atomic::{AtomicUsize, Ordering},
     Arc, Mutex,
 };
-use std::time::{Duration, Instant};
 use typesense_codegen::apis::{self, configuration};
+use web_time::{Duration, Instant};
 
 use crate::client::multi_search::MultiSearch;
 
@@ -105,42 +172,26 @@ struct Node {
     last_access_timestamp: Instant,
 }
 
-/// Configuration for the multi-node Typesense client.
-#[derive(Clone, Debug)]
-pub struct MultiNodeConfiguration {
-    /// A list of all nodes in the Typesense cluster.
-    pub nodes: Vec<Url>,
-    /// An optional, preferred node to try first for every request. Ideal for reducing latency.
-    pub nearest_node: Option<Url>,
-    /// The Typesense API key used for authentication.
-    pub api_key: String,
-    /// The duration after which an unhealthy node will be retried for requests.
-    pub healthcheck_interval: Duration,
-    /// The retry policy for transient network errors on a *single* node.
-    pub retry_policy: ExponentialBackoff,
-    /// The timeout for each individual network request.
-    pub connection_timeout: Duration,
-}
-impl Default for MultiNodeConfiguration {
-    /// Provides a default configuration suitable for local development.
-    ///
-    /// - **nodes**: Empty.
-    /// - **nearest_node**: None.
-    /// - **api_key**: "xyz" (a common placeholder).
-    /// - **healthcheck_interval**: 60 seconds.
-    /// - **retry_policy**: Exponential backoff with a maximum of 3 retries.
-    /// - **connection_timeout**: 5 seconds.
-    fn default() -> Self {
-        Self {
-            nodes: vec![],
-            nearest_node: None,
-            api_key: "xyz".to_string(),
-            healthcheck_interval: Duration::from_secs(60),
-            retry_policy: ExponentialBackoff::builder().build_with_max_retries(3),
-            connection_timeout: Duration::from_secs(5),
-        }
-    }
-}
+// impl Default for MultiNodeConfiguration {
+//     /// Provides a default configuration suitable for local development.
+//     ///
+//     /// - **nodes**: Empty.
+//     /// - **nearest_node**: None.
+//     /// - **api_key**: "xyz" (a common placeholder).
+//     /// - **healthcheck_interval**: 60 seconds.
+//     /// - **retry_policy**: Exponential backoff with a maximum of 3 retries.
+//     /// - **connection_timeout**: 5 seconds.
+//     fn default() -> Self {
+//         Self {
+//             nodes: vec![],
+//             nearest_node: None,
+//             api_key: "xyz".to_string(),
+//             healthcheck_interval: Duration::from_secs(60),
+//             retry_policy: ExponentialBackoff::builder().build_with_max_retries(3),
+//             connection_timeout: Duration::from_secs(5),
+//         }
+//     }
+// }
 
 /// The main entry point for all interactions with the Typesense API.
 ///
@@ -153,22 +204,43 @@ pub struct Client {
     nearest_node: Option<Arc<Mutex<Node>>>,
     api_key: String,
     healthcheck_interval: Duration,
-    retry_policy: ExponentialBackoff,
-    connection_timeout: Duration,
     current_node_index: AtomicUsize,
+
+    #[cfg(not(target_arch = "wasm32"))]
+    retry_policy: ExponentialBackoff,
+    #[cfg(not(target_arch = "wasm32"))]
+    connection_timeout: Duration,
 }
 
+#[bon::bon]
 impl Client {
     /// Creates a new `Client` with the given configuration.
     ///
     /// Returns an error if the configuration contains no nodes.
-    pub fn new(config: MultiNodeConfiguration) -> Result<Self, &'static str> {
-        if config.nodes.is_empty() && config.nearest_node.is_none() {
+    #[builder]
+    pub fn new(
+        /// The Typesense API key used for authentication.
+        api_key: impl Into<String>,
+        /// A list of all nodes in the Typesense cluster.
+        nodes: Vec<Url>,
+        /// An optional, preferred node to try first for every request. Ideal for reducing latency.
+        #[builder(into)]
+        nearest_node: Option<Url>,
+        #[builder(default = Duration::from_secs(60))]
+        /// The duration after which an unhealthy node will be retried for requests.
+        healthcheck_interval: Duration,
+        #[builder(default = ExponentialBackoff::builder().build_with_max_retries(3))]
+        /// The retry policy for transient network errors on a *single* node.
+        retry_policy: ExponentialBackoff,
+        #[builder(default = Duration::from_secs(10))]
+        /// The timeout for each individual network request.
+        connection_timeout: Duration,
+    ) -> Result<Self, &'static str> {
+        if nodes.is_empty() && nearest_node.is_none() {
             return Err("Configuration must include at least one node or a nearest_node.");
         }
 
-        let nodes = config
-            .nodes
+        let node_list = nodes
             .into_iter()
             .map(|url| {
                 Arc::new(Mutex::new(Node {
@@ -179,7 +251,7 @@ impl Client {
             })
             .collect();
 
-        let nearest_node = config.nearest_node.map(|url| {
+        let nearest_node_arc = nearest_node.map(|url| {
             Arc::new(Mutex::new(Node {
                 url,
                 is_healthy: true,
@@ -188,13 +260,16 @@ impl Client {
         });
 
         Ok(Self {
-            nodes,
-            nearest_node,
-            api_key: config.api_key,
-            healthcheck_interval: config.healthcheck_interval,
-            retry_policy: config.retry_policy,
-            connection_timeout: config.connection_timeout,
+            nodes: node_list,
+            nearest_node: nearest_node_arc,
+            api_key: api_key.into(),
+            healthcheck_interval,
             current_node_index: AtomicUsize::new(0),
+
+            #[cfg(not(target_arch = "wasm32"))]
+            retry_policy,
+            #[cfg(not(target_arch = "wasm32"))]
+            connection_timeout,
         })
     }
 
@@ -265,8 +340,15 @@ impl Client {
                 node.url.clone()
             };
 
+            #[cfg(target_arch = "wasm32")]
+            let http_client = reqwest::Client::builder()
+                // .timeout() is not available on wasm32
+                .build()
+                .expect("Failed to build reqwest client");
+
             // This client handles transient retries (e.g. network blips) on the *current node*.
-            let http_client = ClientBuilder::new(
+            #[cfg(not(target_arch = "wasm32"))]
+            let http_client = ReqwestMiddlewareClientBuilder::new(
                 reqwest::Client::builder()
                     .timeout(self.connection_timeout)
                     .build()
@@ -320,19 +402,21 @@ impl Client {
     ///
     /// # Example
     /// ```no_run
-    /// # use typesense::{Client, MultiNodeConfiguration};
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
     /// # use reqwest::Url;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// # let config = MultiNodeConfiguration {
-    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
-    /// #     api_key: "xyz".to_string(),
-    /// #     ..Default::default()
-    /// # };
-    /// # let client = Client::new(config)?;
+    /// # let client = Client::builder()
+    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
     /// let all_aliases = client.aliases().retrieve().await.unwrap();
     /// # Ok(())
+    /// # }
     /// # }
     /// ```
     pub fn aliases(&self) -> Aliases<'_> {
@@ -342,19 +426,21 @@ impl Client {
     /// Provides access to a specific collection alias's-related API endpoints.
     /// # Example
     /// ```no_run
-    /// # use typesense::{Client, MultiNodeConfiguration};
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
     /// # use reqwest::Url;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// # let config = MultiNodeConfiguration {
-    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
-    /// #     api_key: "xyz".to_string(),
-    /// #     ..Default::default()
-    /// # };
-    /// # let client = Client::new(config)?;
+    /// # let client = Client::builder()
+    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
     /// let specific_alias = client.alias("books_alias").retrieve().await.unwrap();
     /// # Ok(())
+    /// # }
     /// # }
     /// ```
     pub fn alias<'a>(&'a self, name: &'a str) -> Alias<'a> {
@@ -364,19 +450,21 @@ impl Client {
     /// Provides access to API endpoints for managing collections like `create()` and `retrieve()`.
     /// # Example
     /// ```no_run
-    /// # use typesense::{Client, MultiNodeConfiguration};
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
     /// # use reqwest::Url;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// # let config = MultiNodeConfiguration {
-    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
-    /// #     api_key: "xyz".to_string(),
-    /// #     ..Default::default()
-    /// # };
-    /// # let client = Client::new(config)?;
+    /// # let client = Client::builder()
+    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
     /// let all_collections = client.collections().retrieve().await.unwrap();
     /// # Ok(())
+    /// # }
     /// # }
     /// ```
     pub fn collections(&self) -> Collections<'_> {
@@ -402,19 +490,20 @@ impl Client {
     /// When you want to retrieve or search for documents and have them automatically
     /// deserialized into your own structs.
     /// ```no_run
-    /// # use typesense::{Client, MultiNodeConfiguration};
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
     /// # use serde::{Serialize, Deserialize};
     /// # use reqwest::Url;
     /// #
     /// # #[derive(Serialize, Deserialize, Debug)]
     /// # struct Book { id: String, title: String }
     /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
-    /// # let config = MultiNodeConfiguration {
-    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
-    /// #     api_key: "xyz".to_string(),
-    /// #     ..Default::default()
-    /// # };
-    /// # let client = Client::new(config)?;
+    /// # let client = Client::builder()
+    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
     /// // Get a typed handle to the "books" collection
     /// let books_collection = client.collection_of::<Book>("books");
     ///
@@ -423,6 +512,7 @@ impl Client {
     /// println!("Retrieved book: {:?}", book);
     /// #
     /// # Ok(())
+    /// # }
     /// # }
     /// ```
     pub fn collection_of<'a, T>(&'a self, collection_name: &'a str) -> Collection<'a, T>
@@ -445,18 +535,20 @@ impl Client {
     ///
     /// # Example
     /// ```no_run
-    /// # use typesense::{Client, MultiNodeConfiguration};
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
     /// # use reqwest::Url;
     /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
-    /// # let config = MultiNodeConfiguration {
-    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
-    /// #     api_key: "xyz".to_string(),
-    /// #     ..Default::default()
-    /// # };
-    /// # let client = Client::new(config)?;
+    /// # let client = Client::builder()
+    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
     /// let products_collection = client.collection("products");
     /// #
     /// # Ok(())
+    /// # }
     /// # }
     /// ```
     pub fn collection<'a>(&'a self, collection_name: &'a str) -> Collection<'a, serde_json::Value> {
@@ -466,19 +558,21 @@ impl Client {
     /// Provides access to the analytics-related API endpoints.
     /// # Example
     /// ```no_run
-    /// # use typesense::{Client, MultiNodeConfiguration};
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
     /// # use reqwest::Url;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// # let config = MultiNodeConfiguration {
-    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
-    /// #     api_key: "xyz".to_string(),
-    /// #     ..Default::default()
-    /// # };
-    /// # let client = Client::new(config)?;
+    /// # let client = Client::builder()
+    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
     /// let analytics_rules = client.analytics().rules().retrieve().await.unwrap();
     /// # Ok(())
+    /// # }
     /// # }
     /// ```
     pub fn analytics(&self) -> Analytics<'_> {
@@ -488,41 +582,45 @@ impl Client {
     /// Returns a `Conversations` instance for managing conversation models.
     /// # Example
     /// ```no_run
-    /// # use typesense::{Client, MultiNodeConfiguration};
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
     /// # use reqwest::Url;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// # let config = MultiNodeConfiguration {
-    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
-    /// #     api_key: "xyz".to_string(),
-    /// #     ..Default::default()
-    /// # };
-    /// # let client = Client::new(config)?;
+    /// # let client = Client::builder()
+    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
     /// let conversation = client.conversations().models().retrieve().await.unwrap();
     /// # Ok(())
     /// # }
+    /// # }
     /// ```
-    pub fn conversations(&self) -> Conversations {
+    pub fn conversations(&self) -> Conversations<'_> {
         Conversations::new(self)
     }
 
     /// Provides access to top-level, non-namespaced API endpoints like `health` and `debug`.
     /// # Example
     /// ```no_run
-    /// # use typesense::{Client, MultiNodeConfiguration};
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
     /// # use reqwest::Url;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// # let config = MultiNodeConfiguration {
-    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
-    /// #     api_key: "xyz".to_string(),
-    /// #     ..Default::default()
-    /// # };
-    /// # let client = Client::new(config)?;
+    /// # let client = Client::builder()
+    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
     /// let health = client.operations().health().await.unwrap();
     /// # Ok(())
+    /// # }
     /// # }
     /// ```
     pub fn operations(&self) -> Operations<'_> {
@@ -533,17 +631,18 @@ impl Client {
     ///
     /// # Example
     /// ```no_run
-    /// # use typesense::{Client, MultiNodeConfiguration, models};
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::{Client, models};
     /// # use reqwest::Url;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// # let config = MultiNodeConfiguration {
-    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
-    /// #     api_key: "xyz".to_string(),
-    /// #     ..Default::default()
-    /// # };
-    /// # let client = Client::new(config)?;
+    /// # let client = Client::builder()
+    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
     /// # let schema = models::ApiKeySchema {
     /// #     description: "Search-only key.".to_string(),
     /// #     actions: vec!["documents:search".to_string()],
@@ -552,6 +651,7 @@ impl Client {
     /// # };
     /// let new_key = client.keys().create(schema).await.unwrap();
     /// # Ok(())
+    /// # }
     /// # }
     /// ```
     pub fn keys(&self) -> Keys<'_> {
@@ -565,19 +665,21 @@ impl Client {
     ///
     /// # Example
     /// ```no_run
-    /// # use typesense::{Client, MultiNodeConfiguration};
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
     /// # use reqwest::Url;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// # let config = MultiNodeConfiguration {
-    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
-    /// #     api_key: "xyz".to_string(),
-    /// #     ..Default::default()
-    /// # };
-    /// # let client = Client::new(config)?;
+    /// # let client = Client::builder()
+    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
     /// let deleted_key = client.key(123).delete().await.unwrap();
     /// # Ok(())
+    /// # }
     /// # }
     /// ```
     pub fn key(&self, key_id: i64) -> Key<'_> {
@@ -588,22 +690,24 @@ impl Client {
     ///
     /// # Example
     /// ```no_run
-    /// # use typesense::{Client, MultiNodeConfiguration};
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
     /// # use reqwest::Url;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// # let config = MultiNodeConfiguration {
-    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
-    /// #     api_key: "xyz".to_string(),
-    /// #     ..Default::default()
-    /// # };
-    /// # let client = Client::new(config)?;
+    /// # let client = Client::builder()
+    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
     /// let list_of_presets = client.presets().retrieve().await.unwrap();
     /// # Ok(())
     /// # }
+    /// # }
     /// ```
-    pub fn presets(&self) -> Presets {
+    pub fn presets(&self) -> Presets<'_> {
         Presets::new(self)
     }
 
@@ -614,19 +718,21 @@ impl Client {
     ///
     /// # Example
     /// ```no_run
-    /// # use typesense::{Client, MultiNodeConfiguration};
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
     /// # use reqwest::Url;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// # let config = MultiNodeConfiguration {
-    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
-    /// #     api_key: "xyz".to_string(),
-    /// #     ..Default::default()
-    /// # };
-    /// # let client = Client::new(config)?;
+    /// # let client = Client::builder()
+    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
     /// let preset = client.preset("my-preset").retrieve().await.unwrap();
     /// # Ok(())
+    /// # }
     /// # }
     /// ```
     pub fn preset<'a>(&'a self, preset_id: &'a str) -> Preset<'a> {
@@ -637,25 +743,26 @@ impl Client {
     ///
     /// # Example
     ///
-    /// ```
-    /// # use typesense::{Client, MultiNodeConfiguration, models};
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::{Client, models};
     /// # use reqwest::Url;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// # let config = MultiNodeConfiguration {
-    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
-    /// #     api_key: "xyz".to_string(),
-    /// #     ..Default::default()
-    /// # };
-    /// #
-    /// # let client = Client::new(config)?;
+    /// # let client = Client::builder()
+    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
     /// let response = client.stemming().dictionaries().retrieve().await.unwrap();
     /// # println!("{:#?}", response);
     /// # Ok(())
     /// # }
+    /// # }
     /// ```
-    pub fn stemming(&self) -> Stemming {
+    pub fn stemming(&self) -> Stemming<'_> {
         Stemming::new(self)
     }
 
@@ -663,19 +770,21 @@ impl Client {
     ///
     /// # Example
     /// ```no_run
-    /// # use typesense::{Client, MultiNodeConfiguration, models};
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::{Client, models};
     /// # use reqwest::Url;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// # let config = MultiNodeConfiguration {
-    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
-    /// #     api_key: "xyz".to_string(),
-    /// #     ..Default::default()
-    /// # };
-    /// # let client = Client::new(config)?;
+    /// # let client = Client::builder()
+    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
     /// let all_stopwords = client.stopwords().retrieve().await.unwrap();
     /// # Ok(())
+    /// # }
     /// # }
     /// ```
     pub fn stopwords(&self) -> Stopwords<'_> {
@@ -689,19 +798,21 @@ impl Client {
     ///
     /// # Example
     /// ```no_run
-    /// # use typesense::{Client, MultiNodeConfiguration, models};
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::{Client, models};
     /// # use reqwest::Url;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// # let config = MultiNodeConfiguration {
-    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
-    /// #     api_key: "xyz".to_string(),
-    /// #     ..Default::default()
-    /// # };
-    /// # let client = Client::new(config)?;
+    /// # let client = Client::builder()
+    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
     /// let my_stopword_set = client.stopword("common_words").retrieve().await.unwrap();
     /// # Ok(())
+    /// # }
     /// # }
     /// ```
     pub fn stopword<'a>(&'a self, set_id: &'a str) -> Stopword<'a> {
@@ -712,17 +823,18 @@ impl Client {
     ///
     /// # Example
     /// ```no_run
-    /// # use typesense::{Client, MultiNodeConfiguration, models};
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::{Client, models};
     /// # use reqwest::Url;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// # let config = MultiNodeConfiguration {
-    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
-    /// #     api_key: "xyz".to_string(),
-    /// #     ..Default::default()
-    /// # };
-    /// # let client = Client::new(config)?;
+    /// # let client = Client::builder()
+    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
     /// # let search_requests = models::MultiSearchSearchesParameter {
     /// #     searches: vec![models::MultiSearchCollectionParameters {
     /// #         collection: Some("products".to_string()),
@@ -735,6 +847,7 @@ impl Client {
     /// # let common_params = models::MultiSearchParameters::default();
     /// let results = client.multi_search().perform(&search_requests, &common_params).await.unwrap();
     /// # Ok(())
+    /// # }
     /// # }
     /// ```
     pub fn multi_search(&self) -> MultiSearch<'_> {
@@ -751,9 +864,15 @@ where
     match error {
         // Server-side errors (5xx) indicate a problem with the node, so we should try another.
         apis::Error::ResponseError(content) => content.status.is_server_error(),
-        // Underlying reqwest errors (e.g. connection refused) are retriable.
+
+        // Underlying reqwest errors (e.g., connection refused) are retriable on both native and wasm.
+        apis::Error::Reqwest(_) => true,
+
         // Network-level errors from middleware are always retriable.
-        apis::Error::Reqwest(_) | apis::Error::ReqwestMiddleware(_) => true,
+        // This match arm is ONLY included when compiling for non-wasm targets.
+        #[cfg(not(target_arch = "wasm32"))]
+        apis::Error::ReqwestMiddleware(_) => true,
+
         // Client-side (4xx) or parsing errors are not retriable as the request is likely invalid.
         _ => false,
     }

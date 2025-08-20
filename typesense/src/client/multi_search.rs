@@ -92,7 +92,9 @@ impl<'a> MultiSearch<'a> {
     /// This example demonstrates a federated search across two different collections.
     ///
     /// ```no_run
-    /// # use typesense::{Client, MultiNodeConfiguration, SearchResult, models, prelude::*};
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::{Client, SearchResult, models, prelude::*};
     /// # use reqwest::Url;
     /// # use serde::Deserialize;
     /// #
@@ -104,12 +106,11 @@ impl<'a> MultiSearch<'a> {
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// # let config = MultiNodeConfiguration {
-    /// #     nodes: vec![Url::parse("http://localhost:8108")?],
-    /// #     api_key: "xyz".to_string(),
-    /// #     ..Default::default()
-    /// # };
-    /// # let client = Client::new(config)?;
+    /// # let client = Client::builder()
+    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
     /// // Define the individual search queries for different collections.
     /// let search_requests = models::MultiSearchSearchesParameter {
     ///     searches: vec![
@@ -150,6 +151,7 @@ impl<'a> MultiSearch<'a> {
     /// println!("Found {} products.", typed_products.found.unwrap_or(0));
     /// println!("Found {} brands.", typed_brands.found.unwrap_or(0));
     /// # Ok(())
+    /// # }
     /// # }
     /// ```
     /// # Arguments

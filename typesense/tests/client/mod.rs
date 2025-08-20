@@ -16,20 +16,19 @@ mod synonyms_test;
 use reqwest::Url;
 use reqwest_retry::policies::ExponentialBackoff;
 use std::time::Duration;
-use std::time::{SystemTime, UNIX_EPOCH};
-use typesense::{Client, MultiNodeConfiguration};
+use typesense::Client;
+use web_time::{SystemTime, UNIX_EPOCH};
 
 /// Helper function to create a new client for all tests in this suite.
 pub fn get_client() -> Client {
-    let config = MultiNodeConfiguration {
-        nodes: vec![Url::parse("http://localhost:8108").unwrap()],
-        nearest_node: None,
-        api_key: "xyz".to_string(),
-        healthcheck_interval: Duration::from_secs(5),
-        retry_policy: ExponentialBackoff::builder().build_with_max_retries(1),
-        connection_timeout: Duration::from_secs(3),
-    };
-    Client::new(config).unwrap()
+    Client::builder()
+        .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+        .api_key("xyz")
+        .healthcheck_interval(Duration::from_secs(5))
+        .retry_policy(ExponentialBackoff::builder().build_with_max_retries(1))
+        .connection_timeout(Duration::from_secs(3))
+        .build()
+        .expect("Failed to create Typesense client")
 }
 
 /// Generates a unique name for a test resource by combining a prefix,

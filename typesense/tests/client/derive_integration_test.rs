@@ -80,8 +80,7 @@ struct MegaProduct {
     tags: Option<Vec<String>>,
 }
 
-#[tokio::test]
-async fn test_derive_macro_with_generic_client_lifecycle() {
+async fn logic_test_derive_macro_with_generic_client_lifecycle() {
     let client = get_client();
     let collection_name = new_id("mega_products_test");
 
@@ -460,8 +459,7 @@ struct ManualFlattenedProduct {
     details_weight_kg: f32,
 }
 
-#[tokio::test]
-async fn test_manual_flattening_lifecycle() {
+async fn logic_test_manual_flattening_lifecycle() {
     let client = get_client();
     let collection_name = new_id("manual_flat_test");
 
@@ -535,4 +533,39 @@ async fn test_manual_flattening_lifecycle() {
         Some(1),
         "Should find document by indexed flattened field"
     );
+}
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod tokio_test {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_derive_macro_with_generic_client_lifecycle() {
+        logic_test_derive_macro_with_generic_client_lifecycle().await;
+    }
+
+    #[tokio::test]
+    async fn test_manual_flattening_lifecycle() {
+        logic_test_manual_flattening_lifecycle().await;
+    }
+}
+
+#[cfg(all(test, target_arch = "wasm32"))]
+mod wasm_test {
+    use super::*;
+    use wasm_bindgen_test::wasm_bindgen_test;
+
+    wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
+
+    #[wasm_bindgen_test]
+    async fn test_derive_macro_with_generic_client_lifecycle() {
+        console_error_panic_hook::set_once();
+        logic_test_derive_macro_with_generic_client_lifecycle().await;
+    }
+
+    #[wasm_bindgen_test]
+    async fn test_manual_flattening_lifecycle() {
+        console_error_panic_hook::set_once();
+        logic_test_manual_flattening_lifecycle().await;
+    }
 }

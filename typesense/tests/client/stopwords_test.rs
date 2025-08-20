@@ -2,8 +2,7 @@ use typesense::models::StopwordsSetUpsertSchema;
 
 use super::{get_client, new_id};
 
-#[tokio::test]
-async fn test_stopwords_and_stopword_lifecycle() {
+async fn run_test_stopwords_and_stopword_lifecycle() {
     let client = get_client();
     let set_id = new_id("custom_stopwords");
 
@@ -56,4 +55,28 @@ async fn test_stopwords_and_stopword_lifecycle() {
         get_after_delete_result.is_err(),
         "Stopwords set should not exist after deletion"
     );
+}
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod tokio_test {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_stopwords_and_stopword_lifecycle() {
+        run_test_stopwords_and_stopword_lifecycle().await;
+    }
+}
+
+#[cfg(all(test, target_arch = "wasm32"))]
+mod wasm_test {
+    use super::*;
+    use wasm_bindgen_test::wasm_bindgen_test;
+
+    wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
+
+    #[wasm_bindgen_test]
+    async fn test_stopwords_and_stopword_lifecycle() {
+        console_error_panic_hook::set_once();
+        run_test_stopwords_and_stopword_lifecycle().await;
+    }
 }

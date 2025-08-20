@@ -1,3 +1,5 @@
+#![cfg(not(target_family = "wasm"))]
+
 use reqwest::Url;
 use reqwest_retry::policies::ExponentialBackoff;
 use std::time::Duration;
@@ -40,15 +42,16 @@ async fn setup_mock_server_404(server: &MockServer, collection_name: &str) {
 }
 
 // Helper function to create a client configuration for tests.
-fn get_test_config(nodes: Vec<Url>, nearest_node: Option<Url>) -> MultiNodeConfiguration {
-    MultiNodeConfiguration {
-        nodes,
-        nearest_node,
-        api_key: "test-key".to_string(),
-        healthcheck_interval: Duration::from_secs(60),
-        retry_policy: ExponentialBackoff::builder().build_with_max_retries(0),
-        connection_timeout: Duration::from_secs(1),
-    }
+fn get_client(nodes: Vec<Url>, nearest_node: Option<Url>) -> Client {
+    Client::builder()
+        .nodes(nodes)
+        .maybe_nearest_node(nearest_node)
+        .api_key("test-key")
+        .healthcheck_interval(Duration::from_secs(60))
+        .retry_policy(ExponentialBackoff::builder().build_with_max_retries(0))
+        .connection_timeout(Duration::from_secs(1))
+        .build()
+        .expect("Failed to create client")
 }
 
 #[tokio::test]
@@ -56,8 +59,7 @@ async fn test_success_on_first_node() {
     let server1 = MockServer::start().await;
     setup_mock_server_ok(&server1, "products").await;
 
-    let config = get_test_config(vec![Url::parse(&server1.uri()).unwrap()], None);
-    let client = Client::new(config).unwrap();
+    let client = get_client(vec![Url::parse(&server1.uri()).unwrap()], None);
 
     let result = client.collection("products").retrieve().await;
 
@@ -74,14 +76,13 @@ async fn test_failover_to_second_node() {
     setup_mock_server_503(&server1, "products").await;
     setup_mock_server_ok(&server2, "products").await;
 
-    let config = get_test_config(
+    let client = get_client(
         vec![
             Url::parse(&server1.uri()).unwrap(),
             Url::parse(&server2.uri()).unwrap(),
         ],
         None,
     );
-    let client = Client::new(config).unwrap();
 
     let result = client.collection("products").retrieve().await;
     assert!(result.is_ok());
@@ -99,11 +100,10 @@ async fn test_nearest_node_is_prioritized() {
     setup_mock_server_ok(&nearest_server, "products").await;
     setup_mock_server_ok(&regular_server, "products").await;
 
-    let config = get_test_config(
+    let client = get_client(
         vec![Url::parse(&regular_server.uri()).unwrap()],
         Some(Url::parse(&nearest_server.uri()).unwrap()),
     );
-    let client = Client::new(config).unwrap();
 
     let result = client.collection("products").retrieve().await;
     assert!(result.is_ok());
@@ -120,11 +120,10 @@ async fn test_failover_from_nearest_to_regular_node() {
     setup_mock_server_503(&nearest_server, "products").await;
     setup_mock_server_ok(&regular_server, "products").await;
 
-    let config = get_test_config(
+    let client = get_client(
         vec![Url::parse(&regular_server.uri()).unwrap()],
         Some(Url::parse(&nearest_server.uri()).unwrap()),
     );
-    let client = Client::new(config).unwrap();
 
     let result = client.collection("products").retrieve().await;
     assert!(result.is_ok());
@@ -144,7 +143,7 @@ async fn test_round_robin_failover() {
     setup_mock_server_503(&server2, "products").await;
     setup_mock_server_ok(&server3, "products").await;
 
-    let config = get_test_config(
+    let client = get_client(
         vec![
             Url::parse(&server1.uri()).unwrap(),
             Url::parse(&server2.uri()).unwrap(),
@@ -152,7 +151,6 @@ async fn test_round_robin_failover() {
         ],
         None,
     );
-    let client = Client::new(config).unwrap();
 
     // First request should fail over to the third node
     let result = client.collection("products").retrieve().await;
@@ -191,16 +189,17 @@ async fn test_health_check_and_node_recovery() {
     setup_mock_server_503(&server1, "products").await;
     setup_mock_server_ok(&server2, "products").await;
 
-    let mut config = get_test_config(
-        vec![
+    let client = Client::builder()
+        .nodes(vec![
             Url::parse(&server1.uri()).unwrap(),
             Url::parse(&server2.uri()).unwrap(),
-        ],
-        None,
-    );
-    // Use a very short healthcheck interval for the test
-    config.healthcheck_interval = Duration::from_millis(500);
-    let client = Client::new(config).unwrap();
+        ])
+        .api_key("test-key")
+        .healthcheck_interval(Duration::from_millis(500)) // Use a very short healthcheck interval for the test
+        .retry_policy(ExponentialBackoff::builder().build_with_max_retries(0))
+        .connection_timeout(Duration::from_secs(1))
+        .build()
+        .expect("Failed to create client");
 
     // 1. First request fails over to server2, marking server1 as unhealthy.
     assert!(client.collection("products").retrieve().await.is_ok());
@@ -232,14 +231,13 @@ async fn test_all_nodes_fail() {
     setup_mock_server_503(&server1, "products").await;
     setup_mock_server_503(&server2, "products").await;
 
-    let config = get_test_config(
+    let client = get_client(
         vec![
             Url::parse(&server1.uri()).unwrap(),
             Url::parse(&server2.uri()).unwrap(),
         ],
         None,
     );
-    let client = Client::new(config).unwrap();
 
     let result = client.collection("products").retrieve().await;
     assert!(result.is_err());
@@ -262,14 +260,13 @@ async fn test_fail_fast_on_non_retriable_error() {
     setup_mock_server_404(&server1, "products").await;
     setup_mock_server_ok(&server2, "products").await;
 
-    let config = get_test_config(
+    let client = get_client(
         vec![
             Url::parse(&server1.uri()).unwrap(),
             Url::parse(&server2.uri()).unwrap(),
         ],
         None,
     );
-    let client = Client::new(config).unwrap();
 
     let result = client.collection("products").retrieve().await;
     assert!(result.is_err());
@@ -299,7 +296,7 @@ async fn test_load_balancing_with_healthy_nodes() {
     setup_mock_server_ok(&server3, "products").await;
 
     // 2. Setup client with the three nodes
-    let config = get_test_config(
+    let client = get_client(
         vec![
             Url::parse(&server1.uri()).unwrap(),
             Url::parse(&server2.uri()).unwrap(),
@@ -307,7 +304,6 @@ async fn test_load_balancing_with_healthy_nodes() {
         ],
         None,
     );
-    let client = Client::new(config).unwrap();
 
     // 3. Make three consecutive requests
     let result1 = client.collection("products").retrieve().await;

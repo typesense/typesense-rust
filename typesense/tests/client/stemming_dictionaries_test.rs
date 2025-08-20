@@ -1,7 +1,6 @@
 use crate::{get_client, new_id};
 
-#[tokio::test]
-async fn test_stemming_dictionary_import_and_retrieve() {
+async fn run_test_stemming_dictionary_import_and_retrieve() {
     let client = get_client();
     let dictionary_id = new_id("verb_stems_v2");
 
@@ -70,4 +69,28 @@ async fn test_stemming_dictionary_import_and_retrieve() {
         ids_vec.iter().any(|id| id == &dictionary_id),
         "The newly imported dictionary's ID was not found in the master list."
     );
+}
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod tokio_test {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_stemming_dictionary_import_and_retrieve() {
+        run_test_stemming_dictionary_import_and_retrieve().await;
+    }
+}
+
+#[cfg(all(test, target_arch = "wasm32"))]
+mod wasm_test {
+    use super::*;
+    use wasm_bindgen_test::wasm_bindgen_test;
+
+    wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
+
+    #[wasm_bindgen_test]
+    async fn test_stemming_dictionary_import_and_retrieve() {
+        console_error_panic_hook::set_once();
+        run_test_stemming_dictionary_import_and_retrieve().await;
+    }
 }
