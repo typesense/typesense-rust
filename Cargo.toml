@@ -6,3 +6,16 @@ members = [
     "xtask",
 ]
 
+resolver = "3"
+
+[workspace.package]
+version = "0.3.0"
+edition = "2024"
+license = "Apache-2.0"
+repository = "https://github.com/typesense/typesense-rust"
+authors = ["Typesense  <contact@typesense.org>"]
+
+[workspace.dependencies]
+
+typesense_derive = { path = "./typesense_derive", version = "0.3.0" }
+typesense_codegen = { path = "./typesense_codegen", version = "0.25.0" }

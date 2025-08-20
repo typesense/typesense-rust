@@ -1,10 +1,11 @@
 [package]
 name = "typesense_derive"
-version = "0.1.0"
-authors = ["Typesense  <contact@typesense.org>"]
-edition = "2018"
+version.workspace = true
 description = "macros for typesense client"
-license = "Apache-2.0"
+authors.workspace = true
+repository.workspace = true
+edition.workspace = true
+license.workspace = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
