@@ -355,7 +355,7 @@ impl Client {
                     .expect("Failed to build reqwest client"),
             )
             .with(RetryTransientMiddleware::new_with_policy(
-                self.retry_policy.clone(),
+                self.retry_policy,
             ))
             .build();
 

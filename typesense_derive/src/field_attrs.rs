@@ -65,7 +65,7 @@ fn extract_field_attrs(attrs: &[Attribute]) -> syn::Result<FieldAttrs> {
     // Find the single #[typesense] attribute, erroring if there are more than one.
     let all_ts_attrs: Vec<&Attribute> = attrs
         .iter()
-        .filter(|a| a.path.get_ident().map_or(false, |i| i == "typesense"))
+        .filter(|a| a.path.get_ident().is_some_and(|i| i == "typesense"))
         .collect();
 
     //  Check for duplicates and create a rich, multi-span error if found
@@ -284,11 +284,10 @@ fn extract_field_attrs(attrs: &[Attribute]) -> syn::Result<FieldAttrs> {
                 }
             };
 
-            if let Some(TokenTree::Punct(p)) = tt_iter.peek() {
-                if p.as_char() == ',' {
+            if let Some(TokenTree::Punct(p)) = tt_iter.peek()
+                && p.as_char() == ',' {
                     tt_iter.next(); // Consume the comma
                 }
-            }
         }
     }
 
@@ -297,19 +296,16 @@ fn extract_field_attrs(attrs: &[Attribute]) -> syn::Result<FieldAttrs> {
 
 // Get the inner type for a given wrappper
 fn ty_inner_type<'a>(ty: &'a syn::Type, wrapper: &'static str) -> Option<&'a syn::Type> {
-    if let syn::Type::Path(p) = ty {
-        if p.path.segments.len() == 1 && p.path.segments[0].ident == wrapper {
-            if let syn::PathArguments::AngleBracketed(ref inner_ty) = p.path.segments[0].arguments {
-                if inner_ty.args.len() == 1 {
+    if let syn::Type::Path(p) = ty
+        && p.path.segments.len() == 1 && p.path.segments[0].ident == wrapper
+            && let syn::PathArguments::AngleBracketed(ref inner_ty) = p.path.segments[0].arguments
+                && inner_ty.args.len() == 1 {
                     // len is 1 so this should not fail
                     let inner_ty = inner_ty.args.first().unwrap();
                     if let syn::GenericArgument::Type(t) = inner_ty {
                         return Some(t);
                     }
                 }
-            }
-        }
-    }
     None
 }
 
@@ -350,7 +346,7 @@ pub fn process_field(field: &Field) -> syn::Result<proc_macro2::TokenStream> {
         let inner_type = get_inner_type(&field.ty);
         let is_vec = ty_inner_type(&field.ty, "Vec").is_some()
             || ty_inner_type(&field.ty, "Option")
-                .map_or(false, |t| ty_inner_type(t, "Vec").is_some());
+                .is_some_and(|t| ty_inner_type(t, "Vec").is_some());
 
         Ok(quote! {
             {

@@ -47,8 +47,8 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
     } = extract_attrs(attrs)?;
     let collection_name = collection_name.unwrap_or_else(|| ident.to_string().to_lowercase());
 
-    if let Some(ref sorting_field) = default_sorting_field {
-        if !fields.iter().any(|field|
+    if let Some(ref sorting_field) = default_sorting_field
+        && !fields.iter().any(|field|
                 // At this point we are sure that this field is a named field.
                 field.ident.as_ref().unwrap() == sorting_field)
         {
@@ -59,12 +59,11 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
                 ),
             ));
         }
-    }
 
     //  Use flat_map to handle fields that expand into multiple schema fields
     let typesense_fields = fields
         .iter()
-        .map(|field| process_field(field)) // process_field returns a Result<TokenStream>
+        .map(process_field) // process_field returns a Result<TokenStream>
         .collect::<syn::Result<Vec<_>>>()?;
 
     let default_sorting_field = if let Some(v) = default_sorting_field {
@@ -276,11 +275,10 @@ fn string_list(tt_iter: &mut impl Iterator<Item = TokenTree>) -> syn::Result<Vec
         }
 
         // Check for a trailing comma
-        if let Some(TokenTree::Punct(p)) = inner_iter.peek() {
-            if p.as_char() == ',' {
+        if let Some(TokenTree::Punct(p)) = inner_iter.peek()
+            && p.as_char() == ',' {
                 inner_iter.next(); // Consume the comma
             }
-        }
     }
 
     Ok(result)

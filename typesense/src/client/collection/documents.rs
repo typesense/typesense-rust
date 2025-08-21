@@ -6,7 +6,7 @@
 
 use crate::models::SearchResult;
 use crate::{Client, Error};
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Serialize, de::DeserializeOwned};
 use std::sync::Arc;
 use typesense_codegen::{
     apis::{configuration, documents_api},
@@ -45,9 +45,6 @@ where
     }
 
     /// Indexes a document in the collection.
-    ///
-
-    ///
     /// # Arguments
     /// * `document` - A `serde_json::Value` representing the document.
     /// * `action` - The indexing action to perform (e.g., "create", "upsert").

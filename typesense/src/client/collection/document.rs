@@ -5,7 +5,7 @@
 //! `client.collection::<Book>("books").document("123")`
 
 use crate::{Client, Error};
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Serialize, de::DeserializeOwned};
 use std::sync::Arc;
 use typesense_codegen::{
     apis::{configuration, documents_api},
@@ -68,10 +68,8 @@ where
     /// The updated full document is returned.
     ///
     /// # Arguments
-    /// * `partial_document` - A serializable struct or a `serde_json::Value` containing the fields to update.
-    ///                        For example: `serde_json::json!({ "in_stock": false })`.
-    /// * `params` - An optional `DocumentIndexParameters` struct to specify additional
-    ///              parameters, such as `dirty_values` which determines what Typesense should do when the type of a particular field being indexed does not match the previously inferred type for that field, or the one defined in the collection's schema.
+    /// * `partial_document` - A serializable struct or a `serde_json::Value` containing the fields to update. For example: `serde_json::json!({ "in_stock": false })`.
+    /// * `params` - An optional `DocumentIndexParameters` struct to specify additional parameters, such as `dirty_values` which determines what Typesense should do when the type of a particular field being indexed does not match the previously inferred type for that field, or the one defined in the collection's schema.
     ///
     /// # Returns
     /// A `Result` containing the full, updated document deserialized into `T`.
