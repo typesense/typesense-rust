@@ -34,7 +34,7 @@ pub fn get_client() -> Client {
 /// Generates a unique name for a test resource by combining a prefix,
 /// a nanoid, and an optional suffix.
 /// e.g., "test_collection_aB1cD2eF_create"
-pub fn new_id(suffix: &str) -> String {
+pub fn new_id(prefix: &str) -> String {
     // Using nanoid for a short, URL-friendly, and collision-resistant random ID.
     // The default length of 21 is more than enough. We use 8 for conciseness.
     let random_part = nanoid::nanoid!(8); // e.g., "fX3a-b_1"
@@ -46,5 +46,5 @@ pub fn new_id(suffix: &str) -> String {
         .unwrap()
         .as_millis();
 
-    format!("test_{}_{}_{}", suffix, timestamp, random_part)
+    format!("test_{}_{}_{}", prefix, timestamp, random_part)
 }
