@@ -139,8 +139,8 @@ use keys::Keys;
 use operations::Operations;
 use preset::Preset;
 use presets::Presets;
-use serde::de::DeserializeOwned;
 use serde::Serialize;
+use serde::de::DeserializeOwned;
 use stemming::Stemming;
 use stopword::Stopword;
 use stopwords::Stopwords;
@@ -149,14 +149,14 @@ use crate::Error;
 use reqwest::Url;
 #[cfg(not(target_arch = "wasm32"))]
 use reqwest_middleware::ClientBuilder as ReqwestMiddlewareClientBuilder;
-use reqwest_retry::policies::ExponentialBackoff;
 #[cfg(not(target_arch = "wasm32"))]
 use reqwest_retry::RetryTransientMiddleware;
+use reqwest_retry::policies::ExponentialBackoff;
 
 use std::future::Future;
 use std::sync::{
-    atomic::{AtomicUsize, Ordering},
     Arc, Mutex,
+    atomic::{AtomicUsize, Ordering},
 };
 use typesense_codegen::apis::{self, configuration};
 use web_time::{Duration, Instant};
@@ -171,28 +171,6 @@ struct Node {
     is_healthy: bool,
     last_access_timestamp: Instant,
 }
-
-// impl Default for MultiNodeConfiguration {
-//     /// Provides a default configuration suitable for local development.
-//     ///
-//     /// - **nodes**: Empty.
-//     /// - **nearest_node**: None.
-//     /// - **api_key**: "xyz" (a common placeholder).
-//     /// - **healthcheck_interval**: 60 seconds.
-//     /// - **retry_policy**: Exponential backoff with a maximum of 3 retries.
-//     /// - **connection_timeout**: 5 seconds.
-//     fn default() -> Self {
-//         Self {
-//             nodes: vec![],
-//             nearest_node: None,
-//             api_key: "xyz".to_string(),
-//             healthcheck_interval: Duration::from_secs(60),
-//             retry_policy: ExponentialBackoff::builder().build_with_max_retries(3),
-//             connection_timeout: Duration::from_secs(5),
-//         }
-//     }
-// }
-
 /// The main entry point for all interactions with the Typesense API.
 ///
 /// The client manages connections to multiple nodes and provides access to different
@@ -216,7 +194,11 @@ pub struct Client {
 impl Client {
     /// Creates a new `Client` with the given configuration.
     ///
-    /// Returns an error if the configuration contains no nodes.
+    /// Returns an error if the configuration contains no nodes. Default values:
+    /// - **nearest_node**: None.
+    /// - **healthcheck_interval**: 60 seconds.
+    /// - **retry_policy**: Exponential backoff with a maximum of 3 retries. (disabled on WASM)
+    /// - **connection_timeout**: 5 seconds. (disabled on WASM)
     #[builder]
     pub fn new(
         /// The Typesense API key used for authentication.
@@ -232,7 +214,7 @@ impl Client {
         #[builder(default = ExponentialBackoff::builder().build_with_max_retries(3))]
         /// The retry policy for transient network errors on a *single* node.
         retry_policy: ExponentialBackoff,
-        #[builder(default = Duration::from_secs(10))]
+        #[builder(default = Duration::from_secs(5))]
         /// The timeout for each individual network request.
         connection_timeout: Duration,
     ) -> Result<Self, &'static str> {
@@ -354,9 +336,7 @@ impl Client {
                     .build()
                     .expect("Failed to build reqwest client"),
             )
-            .with(RetryTransientMiddleware::new_with_policy(
-                self.retry_policy,
-            ))
+            .with(RetryTransientMiddleware::new_with_policy(self.retry_policy))
             .build();
 
             // Create a temporary, single-node config for the generated API function.

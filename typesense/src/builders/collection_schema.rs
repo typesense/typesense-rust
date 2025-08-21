@@ -67,7 +67,7 @@ impl<S: collection_schema_builder::State> CollectionSchemaBuilder<S> {
     /// Adds a single [`Field`] to the collection schema.
     ///
     /// This is a convenience method for pushing one field at a time.
-    pub fn field(mut self, field: Field) -> Self {
+    pub fn add_field(mut self, field: Field) -> Self {
         self.fields.push(field);
         self
     }
@@ -75,7 +75,7 @@ impl<S: collection_schema_builder::State> CollectionSchemaBuilder<S> {
     /// Adds multiple [`Field`] values to the collection schema.
     ///
     /// This is a convenience method for appending a slice of fields.
-    pub fn fields(mut self, fields: &[Field]) -> Self
+    pub fn add_fields(mut self, fields: &[Field]) -> Self
     where
         Field: Clone,
     {
@@ -109,8 +109,8 @@ mod test {
 
         let collection: CollectionSchema =
             new_collection_schema("companies", fields.clone().to_vec())
-                .fields(&fields)
-                .field(new_collection_field("size", "string".into()).build())
+                .add_fields(&fields)
+                .add_field(new_collection_field("size", "string".into()).build())
                 .default_sorting_field("num_employees")
                 .build();
 
