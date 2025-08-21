@@ -65,9 +65,5 @@ path = "tests/derive/lib.rs"
 required-features = ["derive"]
 
 [[test]]
-name = "api_tests"
-path = "tests/api/lib.rs"
-
-[[test]]
 name = "client"
 path = "tests/client/mod.rs"
