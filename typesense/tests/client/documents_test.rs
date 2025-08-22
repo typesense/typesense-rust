@@ -1,9 +1,12 @@
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use typesense::models::{
-    CollectionSchema, DeleteDocumentsParameters, DirtyValues, DocumentIndexParameters,
-    ExportDocumentsParameters, Field, ImportDocumentsParameters, IndexAction, SearchParameters,
-    UpdateDocumentsParameters,
+use typesense::{
+    models::{
+        CollectionSchema, DeleteDocumentsParameters, DirtyValues, DocumentIndexParameters,
+        ExportDocumentsParameters, Field, ImportDocumentsParameters, IndexAction, SearchParameters,
+        UpdateDocumentsParameters,
+    },
+    new_search_parameters,
 };
 
 use super::{get_client, new_id};
@@ -76,11 +79,7 @@ async fn run_test_document_lifecycle() {
     assert_eq!(retrieve_res.unwrap(), book_1);
 
     // --- 5. Search for documents ---
-    let search_params = SearchParameters {
-        q: Some("the".to_string()),
-        query_by: Some("title".to_string()),
-        ..Default::default()
-    };
+    let search_params = new_search_parameters().q("the").query_by("title").build();
     let search_res = documents_client.search(search_params).await;
     assert!(search_res.is_ok(), "Search failed");
     assert_eq!(search_res.unwrap().found, Some(2));

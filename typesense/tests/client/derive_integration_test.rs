@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
-use typesense::models::SearchParameters;
-use typesense::prelude::*;
 use typesense::Field;
 use typesense::Typesense;
+use typesense::models::SearchParameters;
+use typesense::prelude::*;
 
 use crate::{get_client, new_id};
 
@@ -31,7 +31,7 @@ struct Manufacturer {
     city: String,
 }
 
-/// The main "uber" struct that uses every feature of the derive macro.
+/// The main struct that uses every feature of the derive macro.
 #[derive(Typesense, Serialize, Deserialize, Debug, PartialEq, Clone)]
 #[typesense(
     collection_name = "mega_products",

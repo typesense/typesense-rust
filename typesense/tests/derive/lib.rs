@@ -1,5 +1,5 @@
-#[cfg(feature = "typesense_derive")]
+#[cfg(feature = "derive")]
 mod compile;
 
-#[cfg(feature = "typesense_derive")]
+#[cfg(feature = "derive")]
 mod derive_collection_schema_test;

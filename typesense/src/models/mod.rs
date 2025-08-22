@@ -6,6 +6,7 @@ pub use multi_search::*;
 pub use scoped_key_parameters::*;
 pub use search_result::*;
 
+pub use typesense_codegen::apis::operations_api::TakeSnapshotParams;
 pub use typesense_codegen::models::{
     AnalyticsEventCreateResponse, AnalyticsEventCreateSchema, AnalyticsRuleDeleteResponse,
     AnalyticsRuleParameters, AnalyticsRuleParametersDestination, AnalyticsRuleParametersSource,

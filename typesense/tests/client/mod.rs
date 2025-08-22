@@ -7,6 +7,7 @@ mod derive_integration_test;
 mod documents_test;
 mod keys_test;
 mod multi_search_test;
+mod operations_test;
 mod presets_test;
 mod search_overrides_test;
 mod stemming_dictionaries_test;
