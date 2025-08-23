@@ -3,7 +3,6 @@
 //! An instance of `Synonyms` is created via the `client.collection("collection_name").synonyms()` method.
 
 use crate::{Client, Error};
-use std::sync::Arc;
 use typesense_codegen::{
     apis::{configuration, synonyms_api},
     models,
@@ -42,7 +41,7 @@ impl<'a> Synonyms<'a> {
             search_synonym_schema: schema,
         };
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { synonyms_api::upsert_search_synonym(&config, params_for_move).await }
             })
@@ -58,7 +57,7 @@ impl<'a> Synonyms<'a> {
         };
 
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { synonyms_api::get_search_synonyms(&config, params_for_move).await }
             })

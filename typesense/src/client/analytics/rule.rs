@@ -3,7 +3,6 @@
 //! An `Rule` instance is created via the `Client::analytics().rule("rule_name")` method.
 
 use crate::{Client, Error};
-use std::sync::Arc;
 use typesense_codegen::{
     apis::{analytics_api, configuration},
     models,
@@ -31,7 +30,7 @@ impl<'a> Rule<'a> {
             rule_name: self.rule_name.to_string(),
         };
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { analytics_api::retrieve_analytics_rule(&config, params_for_move).await }
             })
@@ -47,7 +46,7 @@ impl<'a> Rule<'a> {
             rule_name: self.rule_name.to_string(),
         };
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { analytics_api::delete_analytics_rule(&config, params_for_move).await }
             })

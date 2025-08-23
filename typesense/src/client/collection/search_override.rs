@@ -3,7 +3,6 @@
 //! An instance of `SearchOverride` is created via the `Client::collection("collection_name").search_override("search_override_id")` method.
 
 use crate::{Client, Error};
-use std::sync::Arc;
 use typesense_codegen::{
     apis::{configuration, documents_api},
     models,
@@ -38,7 +37,7 @@ impl<'a> SearchOverride<'a> {
         };
 
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { documents_api::get_search_override(&config, params_for_move).await }
             })
@@ -56,7 +55,7 @@ impl<'a> SearchOverride<'a> {
         };
 
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { documents_api::delete_search_override(&config, params_for_move).await }
             })

@@ -3,7 +3,6 @@
 //! An instance of `Dictionary` is created via the `Client::stemming().dictionary()` method.
 
 use crate::client::{Client, Error};
-use std::sync::Arc;
 use typesense_codegen::{
     apis::{configuration, stemming_api},
     models,
@@ -34,7 +33,7 @@ impl<'a> Dictionary<'a> {
             dictionary_id: self.dictionary_id.to_string(),
         };
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { stemming_api::get_stemming_dictionary(&config, params_for_move).await }
             })

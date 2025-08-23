@@ -3,7 +3,6 @@
 //! A `Collections` instance is created via the main `client.collections()` method.
 
 use crate::{Client, Error};
-use std::sync::Arc;
 use typesense_codegen::{
     apis::{collections_api, configuration},
     models,
@@ -39,7 +38,7 @@ impl<'a> Collections<'a> {
         };
 
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { collections_api::create_collection(&config, params_for_move).await }
             })
@@ -54,7 +53,7 @@ impl<'a> Collections<'a> {
         &self,
     ) -> Result<Vec<models::CollectionResponse>, Error<collections_api::GetCollectionsError>> {
         self.client
-            .execute(|config: Arc<configuration::Configuration>| async move {
+            .execute(|config: configuration::Configuration| async move {
                 collections_api::get_collections(&config).await
             })
             .await

@@ -3,7 +3,6 @@
 //! An `Alias` instance is created via the main `client.alias()` method.
 
 use crate::{Client, Error};
-use std::sync::Arc;
 use typesense_codegen::{
     apis::{collections_api, configuration},
     models,
@@ -28,11 +27,11 @@ impl<'a> Alias<'a> {
         &self,
     ) -> Result<models::CollectionAlias, Error<collections_api::GetAliasError>> {
         let params = collections_api::GetAliasParams {
-            alias_name: self.name.to_string(),
+            alias_name: self.name.to_owned(),
         };
 
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { collections_api::get_alias(&config, params_for_move).await }
             })
@@ -47,7 +46,7 @@ impl<'a> Alias<'a> {
             alias_name: self.name.to_string(),
         };
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { collections_api::delete_alias(&config, params_for_move).await }
             })

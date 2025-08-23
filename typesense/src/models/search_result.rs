@@ -1,16 +1,14 @@
 //! Contains the generic `SearchResult` and `SearchResultHit` structs
 
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use serde_json::Value;
 use typesense_codegen::models as raw_models;
 
-/// Represents a single search result hit, with the document deserialized into a strongly-typed struct `T`.
+/// Represents a single search result hit, with the document deserialized into a strongly-typed struct `D`.
 ///
-/// This struct is generic over the document type `T`, which must be deserializable from JSON.
+/// This struct is generic over the document type `D`, which must be deserializable from JSON.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-// Add this line to help the derive macro with the generic bound.
-#[serde(bound(serialize = "T: Serialize", deserialize = "T: DeserializeOwned"))]
-pub struct SearchResultHit<T: DeserializeOwned> {
+pub struct SearchResultHit<D> {
     /// (Deprecated) Contains highlighted portions of the search fields
     #[serde(rename = "highlights", skip_serializing_if = "Option::is_none")]
     pub highlights: Option<Vec<raw_models::SearchHighlight>>,
@@ -19,9 +17,9 @@ pub struct SearchResultHit<T: DeserializeOwned> {
     #[serde(rename = "highlight", skip_serializing_if = "Option::is_none")]
     pub highlight: Option<std::collections::HashMap<String, serde_json::Value>>,
 
-    /// The full document that was matched, deserialized into type `T`.
+    /// The full document that was matched, deserialized into type `D`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub document: Option<T>,
+    pub document: Option<D>,
 
     /// The score of the text match.
     #[serde(rename = "text_match", skip_serializing_if = "Option::is_none")]
@@ -45,15 +43,13 @@ pub struct SearchResultHit<T: DeserializeOwned> {
 
 /// Represents the full response from a Typesense search query, containing strongly-typed hits.
 ///
-/// This struct is generic over the document type `T`. It is the return type of the
+/// This struct is generic over the document type `D`. It is the return type of the
 /// `documents().search()` method.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-// Add this line to help the derive macro with the generic bound.
-#[serde(bound(serialize = "T: Serialize", deserialize = "T: DeserializeOwned"))]
-pub struct SearchResult<T: DeserializeOwned> {
-    /// The search result hits, with documents deserialized into type `T`.
+pub struct SearchResult<D> {
+    /// The search result hits, with documents deserialized into type `D`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub hits: Option<Vec<SearchResultHit<T>>>,
+    pub hits: Option<Vec<SearchResultHit<D>>>,
 
     /// The number of documents found.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -96,21 +92,21 @@ pub struct SearchResult<T: DeserializeOwned> {
     pub conversation: Option<Box<raw_models::SearchResultConversation>>,
 }
 
-impl<T> SearchResult<T>
+impl<D> SearchResult<D>
 where
-    T: DeserializeOwned,
+    D: DeserializeOwned,
 {
-    /// Transforms a raw, non-generic `SearchResult` from the API into a strongly-typed `SearchResult<T>`.
+    /// Transforms a raw, non-generic `SearchResult` from the API into a strongly-typed `SearchResult<D>`.
     pub(crate) fn from_raw(
         raw_result: raw_models::SearchResult,
     ) -> Result<Self, serde_json::Error> {
         let typed_hits = match raw_result.hits {
             Some(raw_hits) => {
-                let hits_result: Result<Vec<SearchResultHit<T>>, _> = raw_hits
+                let hits_result: Result<Vec<SearchResultHit<D>>, _> = raw_hits
                     .into_iter()
                     .map(|raw_hit| {
-                        // Map each raw hit to a Result<SearchResultHit<T>, _>
-                        let document: Result<Option<T>, _> = raw_hit
+                        // Map each raw hit to a Result<SearchResultHit<D>, _>
+                        let document: Result<Option<D>, _> = raw_hit
                             .document
                             .map(|doc_value| serde_json::from_value(doc_value))
                             .transpose();
@@ -151,37 +147,36 @@ where
 // This impl block specifically targets `SearchResult<serde_json::Value>`.
 // The methods inside will only be available on a search result of that exact type.
 impl SearchResult<Value> {
-    /// Attempts to convert a `SearchResult<serde_json::Value>` into a `SearchResult<T>`.
+    /// Attempts to convert a `SearchResult<serde_json::Value>` into a `SearchResult<D>`.
     ///
     /// This method is useful after a `perform_union` call where you know all resulting
-    /// documents share the same schema and can be deserialized into a single concrete type `T`.
+    /// documents share the same schema and can be deserialized into a single concrete type `D`.
     ///
     /// It iterates through each hit and tries to deserialize its `document` field. If any
-    /// document fails to deserialize into type `T`, the entire conversion fails.
+    /// document fails to deserialize into type `D`, the entire conversion fails.
     ///
     /// # Type Parameters
     ///
-    /// * `T` - The concrete, `DeserializeOwned` type you want to convert the documents into.
+    /// * `D` - The concrete, `DeserializeOwned` type you want to convert the documents into.
     ///
     /// # Errors
     ///
     /// Returns a `serde_json::Error` if any document in the hit list cannot be successfully
-    /// deserialized into `T`.
-    pub fn try_into_typed<T: DeserializeOwned>(self) -> Result<SearchResult<T>, serde_json::Error> {
+    /// deserialized into `D`.
+    pub fn try_into_typed<D: DeserializeOwned>(self) -> Result<SearchResult<D>, serde_json::Error> {
         // This logic is very similar to `from_raw`, but it converts between generic types
         // instead of from a raw model.
         let typed_hits = match self.hits {
             Some(value_hits) => {
-                let hits_result: Result<Vec<SearchResultHit<T>>, _> = value_hits
+                let hits_result: Result<Vec<SearchResultHit<D>>, _> = value_hits
                     .into_iter()
                     .map(|value_hit| {
                         // `value_hit` here is `SearchResultHit<serde_json::Value>`
-                        let document: Option<T> = match value_hit.document {
+                        let document: Option<D> = match value_hit.document {
                             Some(doc_value) => Some(serde_json::from_value(doc_value)?),
                             None => None,
                         };
 
-                        // Construct the new, strongly-typed hit.
                         Ok(SearchResultHit {
                             document,
                             highlights: value_hit.highlights,
@@ -199,7 +194,6 @@ impl SearchResult<Value> {
             None => None,
         };
 
-        // Construct the final, strongly-typed search result, carrying over all metadata.
         Ok(SearchResult {
             hits: typed_hits,
             found: self.found,

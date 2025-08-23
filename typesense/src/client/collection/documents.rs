@@ -7,7 +7,6 @@
 use crate::models::SearchResult;
 use crate::{Client, Error};
 use serde::{Serialize, de::DeserializeOwned};
-use std::sync::Arc;
 use typesense_codegen::{
     apis::{configuration, documents_api},
     models::{
@@ -61,7 +60,7 @@ where
             dirty_values: params.unwrap_or_default().dirty_values, // Or expose this as an argument if needed
         };
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { documents_api::index_document(&config, params_for_move).await }
             })
@@ -132,7 +131,7 @@ where
         };
 
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { documents_api::import_documents(&config, params_for_move).await }
             })
@@ -155,7 +154,7 @@ where
         };
 
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { documents_api::export_documents(&config, params_for_move).await }
             })
@@ -179,7 +178,7 @@ where
             truncate: params.truncate,
         };
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { documents_api::delete_documents(&config, params_for_move).await }
             })
@@ -203,7 +202,7 @@ where
             body: document,
         };
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { documents_api::update_documents(&config, params_for_move).await }
             })
@@ -296,7 +295,7 @@ where
 
         let raw_result = self
             .client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = search_params.clone();
                 async move { documents_api::search_collection(&config, params_for_move).await }
             })

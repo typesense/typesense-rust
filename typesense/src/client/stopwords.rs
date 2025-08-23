@@ -3,7 +3,6 @@
 //! A `Stopwords` instance is created via the main `Client::stopwords()` method.
 
 use crate::{Client, Error};
-use std::sync::Arc;
 use typesense_codegen::{
     apis::{configuration, stopwords_api},
     models,
@@ -37,7 +36,7 @@ impl<'a> Stopwords<'a> {
             stopwords_set_upsert_schema: schema,
         };
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { stopwords_api::upsert_stopwords_set(&config, params_for_move).await }
             })
@@ -52,7 +51,7 @@ impl<'a> Stopwords<'a> {
         Error<stopwords_api::RetrieveStopwordsSetsError>,
     > {
         self.client
-            .execute(|config: Arc<configuration::Configuration>| async move {
+            .execute(|config: configuration::Configuration| async move {
                 stopwords_api::retrieve_stopwords_sets(&config).await
             })
             .await

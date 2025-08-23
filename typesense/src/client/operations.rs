@@ -3,7 +3,6 @@
 //! An `Operations` instance is created via the main `Client::operations()` method.
 
 use crate::{Client, Error};
-use std::sync::Arc;
 use typesense_codegen::{
     apis::{configuration, debug_api, health_api, operations_api},
     models,
@@ -28,7 +27,7 @@ impl<'a> Operations<'a> {
     /// to the specific node that responded successfully.
     pub async fn debug(&self) -> Result<models::Debug200Response, Error<debug_api::DebugError>> {
         self.client
-            .execute(|config: Arc<configuration::Configuration>| async move {
+            .execute(|config: configuration::Configuration| async move {
                 debug_api::debug(&config).await
             })
             .await
@@ -38,7 +37,7 @@ impl<'a> Operations<'a> {
     /// When a node is running out of memory / disk, the API response will have an additional resource_error field that's set to either `OUT_OF_DISK`` or `OUT_OF_MEMORY``.
     pub async fn health(&self) -> Result<models::HealthStatus, Error<health_api::HealthError>> {
         self.client
-            .execute(|config: Arc<configuration::Configuration>| async move {
+            .execute(|config: configuration::Configuration| async move {
                 health_api::health(&config).await
             })
             .await
@@ -74,7 +73,7 @@ impl<'a> Operations<'a> {
         &self,
     ) -> Result<serde_json::Value, Error<operations_api::RetrieveMetricsError>> {
         self.client
-            .execute(|config: Arc<configuration::Configuration>| async move {
+            .execute(|config: configuration::Configuration| async move {
                 operations_api::retrieve_metrics(&config).await
             })
             .await
@@ -101,7 +100,7 @@ impl<'a> Operations<'a> {
         &self,
     ) -> Result<models::ApiStatsResponse, Error<operations_api::RetrieveApiStatsError>> {
         self.client
-            .execute(|config: Arc<configuration::Configuration>| async move {
+            .execute(|config: configuration::Configuration| async move {
                 operations_api::retrieve_api_stats(&config).await
             })
             .await
@@ -114,7 +113,7 @@ impl<'a> Operations<'a> {
         params: operations_api::TakeSnapshotParams,
     ) -> Result<models::SuccessStatus, Error<operations_api::TakeSnapshotError>> {
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { operations_api::take_snapshot(&config, params_for_move).await }
             })
@@ -125,7 +124,7 @@ impl<'a> Operations<'a> {
     /// The follower node that you run this operation against will become the new leader, once this command succeeds.
     pub async fn vote(&self) -> Result<models::SuccessStatus, Error<operations_api::VoteError>> {
         self.client
-            .execute(|config: Arc<configuration::Configuration>| async move {
+            .execute(|config: configuration::Configuration| async move {
                 operations_api::vote(&config).await
             })
             .await
@@ -136,7 +135,7 @@ impl<'a> Operations<'a> {
         &self,
     ) -> Result<Vec<models::SchemaChangeStatus>, Error<operations_api::GetSchemaChangesError>> {
         self.client
-            .execute(|config: Arc<configuration::Configuration>| async move {
+            .execute(|config: configuration::Configuration| async move {
                 operations_api::get_schema_changes(&config).await
             })
             .await

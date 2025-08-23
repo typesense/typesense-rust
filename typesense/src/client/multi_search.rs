@@ -3,11 +3,10 @@
 //! A `MultiSearch` instance is created via the main `Client::multi_search()` method.
 
 use crate::{
-    models::SearchResult, traits::MultiSearchResultExt, Client, Error, MultiSearchParseError,
-    MultiSearchSearchesParameter,
+    Client, Error, MultiSearchParseError, MultiSearchSearchesParameter, models::SearchResult,
+    traits::MultiSearchResultExt,
 };
 use serde::de::DeserializeOwned;
-use std::sync::Arc;
 use typesense_codegen::{
     apis::{
         configuration::Configuration,
@@ -170,7 +169,7 @@ impl<'a> MultiSearch<'a> {
 
         let raw_result = self
             .client
-            .execute(|config: Arc<Configuration>| {
+            .execute(|config: Configuration| {
                 let params_for_move: MultiSearchParams = multi_search_params.clone();
                 async move { documents_api::multi_search(&config, params_for_move).await }
             })
@@ -289,7 +288,7 @@ impl<'a> MultiSearch<'a> {
         // Execute the request to get the raw JSON value
         let raw_result = self
             .client
-            .execute(|config: Arc<Configuration>| {
+            .execute(|config: Configuration| {
                 let params_for_move = multi_search_params.clone();
                 async move { documents_api::multi_search(&config, params_for_move).await }
             })
@@ -303,7 +302,7 @@ impl<'a> MultiSearch<'a> {
                 let raw_search_result: raw_models::SearchResult =
                     serde_json::from_value(json_value).map_err(Error::from)?;
 
-                // Then, use your existing constructor to convert the raw result to the typed one,
+                // Then, use our existing constructor to convert the raw result to the typed one,
                 // specifying `serde_json::Value` as the document type.
                 SearchResult::<serde_json::Value>::from_raw(raw_search_result).map_err(Error::from)
             }

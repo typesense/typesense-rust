@@ -3,7 +3,6 @@
 //! An `Events` instance is created via the `Client::analytics().events()` method.
 
 use crate::{Client, Error};
-use std::sync::Arc;
 use typesense_codegen::{
     apis::{analytics_api, configuration},
     models,
@@ -37,7 +36,7 @@ impl<'a> Events<'a> {
             analytics_event_create_schema: schema,
         };
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { analytics_api::create_analytics_event(&config, params_for_move).await }
             })

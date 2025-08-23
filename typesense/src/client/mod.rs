@@ -303,9 +303,9 @@ impl Client {
 
     /// The core execution method that handles multi-node failover and retries.
     /// This internal method is called by all public API methods.
-    pub(super) async fn execute<F, Fut, T, E>(&self, api_call: F) -> Result<T, Error<E>>
+    pub(super) async fn execute<'a, F, Fut, T, E>(&'a self, api_call: F) -> Result<T, Error<E>>
     where
-        F: Fn(Arc<configuration::Configuration>) -> Fut,
+        F: Fn(configuration::Configuration) -> Fut,
         Fut: Future<Output = Result<T, apis::Error<E>>>,
         E: std::fmt::Debug + 'static,
         apis::Error<E>: std::error::Error + 'static,
@@ -324,11 +324,9 @@ impl Client {
 
             #[cfg(target_arch = "wasm32")]
             let http_client = reqwest::Client::builder()
-                // .timeout() is not available on wasm32
                 .build()
                 .expect("Failed to build reqwest client");
 
-            // This client handles transient retries (e.g. network blips) on the *current node*.
             #[cfg(not(target_arch = "wasm32"))]
             let http_client = ReqwestMiddlewareClientBuilder::new(
                 reqwest::Client::builder()
@@ -339,8 +337,8 @@ impl Client {
             .with(RetryTransientMiddleware::new_with_policy(self.retry_policy))
             .build();
 
-            // Create a temporary, single-node config for the generated API function.
-            let gen_config = Arc::new(configuration::Configuration {
+            // Create the temporary config on the stack for this attempt.
+            let gen_config = configuration::Configuration {
                 base_path: node_url
                     .to_string()
                     .strip_suffix('/')
@@ -352,27 +350,24 @@ impl Client {
                 }),
                 client: http_client,
                 ..Default::default()
-            });
+            };
 
             match api_call(gen_config).await {
                 Ok(response) => {
-                    self.set_node_health(&node_arc, true); // Mark as healthy on success.
+                    self.set_node_health(&node_arc, true);
                     return Ok(response);
                 }
                 Err(e) => {
                     if is_retriable(&e) {
-                        self.set_node_health(&node_arc, false); // Mark as unhealthy on retriable error.
+                        self.set_node_health(&node_arc, false);
                         last_api_error = Some(e);
-                        // Continue loop to try the next node.
                     } else {
-                        // Non-retriable error (e.g., 404 Not Found), fail fast.
                         return Err(e.into());
                     }
                 }
             }
         }
 
-        // If the loop finishes, all nodes have failed.
         Err(crate::Error::AllNodesFailed {
             source: last_api_error
                 .expect("No nodes were available to try, or all errors were non-retriable."),

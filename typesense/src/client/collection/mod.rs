@@ -12,8 +12,7 @@ use crate::{Client, Error};
 
 use search_override::SearchOverride;
 use search_overrides::SearchOverrides;
-use serde::{de::DeserializeOwned, Serialize};
-use std::sync::Arc;
+use serde::{Serialize, de::DeserializeOwned};
 use synonym::Synonym;
 use synonyms::Synonyms;
 use typesense_codegen::{
@@ -106,7 +105,7 @@ where
         };
 
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { collections_api::get_collection(&config, params_for_move).await }
             })
@@ -124,7 +123,7 @@ where
             collection_name: self.collection_name.to_string(),
         };
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { collections_api::delete_collection(&config, params_for_move).await }
             })
@@ -144,7 +143,7 @@ where
             collection_update_schema: update_schema,
         };
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { collections_api::update_collection(&config, params_for_move).await }
             })

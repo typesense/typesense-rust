@@ -3,7 +3,6 @@
 //! An instance of `Models` is created via the `Conversations::models()` method.
 
 use crate::{Client, Error};
-use std::sync::Arc;
 use typesense_codegen::{
     apis::{configuration, conversations_api},
     models,
@@ -37,7 +36,7 @@ impl<'a> Models<'a> {
             conversation_model_create_schema: schema,
         };
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move {
                     conversations_api::create_conversation_model(&config, params_for_move).await
@@ -54,7 +53,7 @@ impl<'a> Models<'a> {
         Error<conversations_api::RetrieveAllConversationModelsError>,
     > {
         self.client
-            .execute(|config: Arc<configuration::Configuration>| async move {
+            .execute(|config: configuration::Configuration| async move {
                 conversations_api::retrieve_all_conversation_models(&config).await
             })
             .await

@@ -3,7 +3,6 @@
 //! A `Preset` instance is created via the main `Client::preset(id)` method.
 
 use crate::{Client, Error};
-use std::sync::Arc;
 use typesense_codegen::{
     apis::{configuration, presets_api},
     models,
@@ -31,7 +30,7 @@ impl<'a> Preset<'a> {
             preset_id: self.preset_id.to_string(),
         };
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { presets_api::retrieve_preset(&config, params_for_move).await }
             })
@@ -46,7 +45,7 @@ impl<'a> Preset<'a> {
             preset_id: self.preset_id.to_string(),
         };
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { presets_api::delete_preset(&config, params_for_move).await }
             })

@@ -5,7 +5,6 @@
 //! A `Presets` instance is created via the main `Client::presets()` method.
 
 use crate::{Client, Error};
-use std::sync::Arc;
 use typesense_codegen::{
     apis::{configuration, presets_api},
     models,
@@ -29,7 +28,7 @@ impl<'a> Presets<'a> {
         &self,
     ) -> Result<models::PresetsRetrieveSchema, Error<presets_api::RetrieveAllPresetsError>> {
         self.client
-            .execute(|config: Arc<configuration::Configuration>| async move {
+            .execute(|config: configuration::Configuration| async move {
                 presets_api::retrieve_all_presets(&config).await
             })
             .await
@@ -50,7 +49,7 @@ impl<'a> Presets<'a> {
             preset_upsert_schema: schema,
         };
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { presets_api::upsert_preset(&config, params_for_move).await }
             })

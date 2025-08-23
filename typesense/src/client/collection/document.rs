@@ -6,7 +6,6 @@
 
 use crate::{Client, Error};
 use serde::{Serialize, de::DeserializeOwned};
-use std::sync::Arc;
 use typesense_codegen::{
     apis::{configuration, documents_api},
     models,
@@ -54,7 +53,7 @@ where
 
         let result_value = self
             .client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { documents_api::get_document(&config, params_for_move).await }
             })
@@ -120,7 +119,7 @@ where
 
         let result_value = self
             .client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { documents_api::update_document(&config, params_for_move).await }
             })
@@ -143,7 +142,7 @@ where
 
         let result_value = self
             .client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { documents_api::delete_document(&config, params_for_move).await }
             })

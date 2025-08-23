@@ -3,13 +3,12 @@
 //! An `Keys` instance is created via the `Client::keys()` method.
 
 use crate::{
-    models::{self, ScopedKeyParameters},
     Client, Error,
+    models::{self, ScopedKeyParameters},
 };
-use base64::{engine::general_purpose::STANDARD as Base64Engine, Engine};
+use base64::{Engine, engine::general_purpose::STANDARD as Base64Engine};
 use hmac::{Hmac, Mac};
 use sha2::Sha256;
-use std::sync::Arc;
 use typesense_codegen::apis::{configuration, keys_api};
 
 /// Provides methods for managing a collection of Typesense API keys.
@@ -40,7 +39,7 @@ impl<'a> Keys<'a> {
             api_key_schema: Some(schema),
         };
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { keys_api::create_key(&config, params_for_move).await }
             })
@@ -50,7 +49,7 @@ impl<'a> Keys<'a> {
     /// Lists all API keys and their metadata.
     pub async fn retrieve(&self) -> Result<models::ApiKeysResponse, Error<keys_api::GetKeysError>> {
         self.client
-            .execute(|config: Arc<configuration::Configuration>| async move {
+            .execute(|config: configuration::Configuration| async move {
                 keys_api::get_keys(&config).await
             })
             .await

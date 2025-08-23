@@ -3,7 +3,6 @@
 //! An instance of `Stopword` is created via the `Client::stopword()` method.
 
 use crate::{Client, Error};
-use std::sync::Arc;
 use typesense_codegen::{
     apis::{configuration, stopwords_api},
     models,
@@ -32,7 +31,7 @@ impl<'a> Stopword<'a> {
             set_id: self.set_id.to_string(),
         };
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { stopwords_api::retrieve_stopwords_set(&config, params_for_move).await }
             })
@@ -48,7 +47,7 @@ impl<'a> Stopword<'a> {
             set_id: self.set_id.to_string(),
         };
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { stopwords_api::delete_stopwords_set(&config, params_for_move).await }
             })

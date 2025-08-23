@@ -3,7 +3,6 @@
 //! A `Key` instance is created via the `Client::key(key_id)` method.
 
 use crate::{Client, Error};
-use std::sync::Arc;
 use typesense_codegen::{
     apis::{configuration, keys_api},
     models,
@@ -32,7 +31,7 @@ impl<'a> Key<'a> {
             key_id: self.key_id,
         };
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { keys_api::get_key(&config, params_for_move).await }
             })
@@ -47,7 +46,7 @@ impl<'a> Key<'a> {
             key_id: self.key_id,
         };
         self.client
-            .execute(|config: Arc<configuration::Configuration>| {
+            .execute(|config: configuration::Configuration| {
                 let params_for_move = params.clone();
                 async move { keys_api::delete_key(&config, params_for_move).await }
             })
