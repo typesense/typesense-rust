@@ -8,12 +8,15 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
-serde = "^1.0"
-serde_derive = "^1.0"
+serde = { version = "^1.0", features = ["derive"] }
 serde_json = "^1.0"
-url = "^2.2"
-uuid = { version = "^1.0", features = ["serde", "v4", "js"] }
+serde_repr = "^0.1"
+url = "^2.5"
+reqwest = { version = "0.12", default-features = false, features = ["json"] }
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+reqwest-middleware = { version = "0.4", features = ["json"] }
 
-[dependencies.reqwest]
-version = "^0.12"
-features = ["json", "multipart"]
+[features]
+default = ["native-tls"]
+native-tls = ["reqwest/native-tls"]
+rustls = ["reqwest/rustls-tls"]

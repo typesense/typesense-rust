@@ -10,7 +10,7 @@ Method | HTTP request | Description
 
 ## get_search_override
 
-> crate::models::SearchOverride get_search_override(collection_name, override_id)
+> models::SearchOverride get_search_override(collection_name, override_id)
 Retrieve a single search override
 
 Retrieve the details of a search override, given its id.
@@ -25,7 +25,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::SearchOverride**](SearchOverride.md)
+[**models::SearchOverride**](SearchOverride.md)
 
 ### Authorization
 
