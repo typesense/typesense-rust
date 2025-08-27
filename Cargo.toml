@@ -2,7 +2,8 @@
 members = [
     "typesense",
     "typesense_derive",
-    "typesense_codegen"
+    "typesense_codegen",
+    "xtask",
 ]
 
 resolver = "3"

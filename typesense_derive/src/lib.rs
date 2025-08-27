@@ -43,18 +43,17 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
     } = extract_attrs(attrs)?;
     let collection_name = collection_name.unwrap_or_else(|| ident.to_string().to_lowercase());
 
-    if let Some(ref sorting_field) = default_sorting_field {
-        if !fields.iter().any(|field|
+    if let Some(ref sorting_field) = default_sorting_field
+        && !fields.iter().any(|field|
                 // At this point we are sure that this field is a named field.
                 field.ident.as_ref().unwrap() == sorting_field)
-        {
-            return Err(syn::Error::new_spanned(
-                item_ts,
-                format!(
-                    "defined default_sorting_field = \"{sorting_field}\" does not match with any field."
-                ),
-            ));
-        }
+    {
+        return Err(syn::Error::new_spanned(
+            item_ts,
+            format!(
+                "defined default_sorting_field = \"{sorting_field}\" does not match with any field."
+            ),
+        ));
     }
 
     let typesense_fields = fields
@@ -98,17 +97,16 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
 
 // Get the inner type for a given wrapper
 fn ty_inner_type<'a>(ty: &'a syn::Type, wrapper: &'static str) -> Option<&'a syn::Type> {
-    if let syn::Type::Path(p) = ty {
-        if p.path.segments.len() == 1 && p.path.segments[0].ident == wrapper {
-            if let syn::PathArguments::AngleBracketed(ref inner_ty) = p.path.segments[0].arguments {
-                if inner_ty.args.len() == 1 {
-                    // len is 1 so this should not fail
-                    let inner_ty = inner_ty.args.first().unwrap();
-                    if let syn::GenericArgument::Type(t) = inner_ty {
-                        return Some(t);
-                    }
-                }
-            }
+    if let syn::Type::Path(p) = ty
+        && p.path.segments.len() == 1
+        && p.path.segments[0].ident == wrapper
+        && let syn::PathArguments::AngleBracketed(ref inner_ty) = p.path.segments[0].arguments
+        && inner_ty.args.len() == 1
+    {
+        // len is 1 so this should not fail
+        let inner_ty = inner_ty.args.first().unwrap();
+        if let syn::GenericArgument::Type(t) = inner_ty {
+            return Some(t);
         }
     }
     None
@@ -231,42 +229,39 @@ fn to_typesense_field_type(field: &Field) -> syn::Result<proc_macro2::TokenStrea
             .attrs
             .iter()
             .filter_map(|attr| {
-                if attr.path.segments.len() == 1 && attr.path.segments[0].ident == "typesense" {
-                    if let Some(proc_macro2::TokenTree::Group(g)) =
+                if attr.path.segments.len() == 1
+                    && attr.path.segments[0].ident == "typesense"
+                    && let Some(proc_macro2::TokenTree::Group(g)) =
                         attr.tokens.clone().into_iter().next()
-                    {
-                        let mut tokens = g.stream().into_iter();
-                        match tokens.next() {
-                            Some(proc_macro2::TokenTree::Ident(ref i)) => {
-                                if i != "facet" {
-                                    return Some(Err(syn::Error::new_spanned(
-                                        i,
-                                        format!("Unexpected token {i}. Did you mean `facet`?"),
-                                    )));
-                                }
-                            }
-                            Some(ref tt) => {
+                {
+                    let mut tokens = g.stream().into_iter();
+                    match tokens.next() {
+                        Some(proc_macro2::TokenTree::Ident(ref i)) => {
+                            if i != "facet" {
                                 return Some(Err(syn::Error::new_spanned(
-                                    tt,
-                                    format!("Unexpected token {tt}. Did you mean `facet`?"),
-                                )));
-                            }
-                            None => {
-                                return Some(Err(syn::Error::new_spanned(
-                                    attr,
-                                    "expected `facet`",
+                                    i,
+                                    format!("Unexpected token {i}. Did you mean `facet`?"),
                                 )));
                             }
                         }
-
-                        if let Some(ref tt) = tokens.next() {
+                        Some(ref tt) => {
                             return Some(Err(syn::Error::new_spanned(
                                 tt,
-                                "Unexpected token. Expected )",
+                                format!("Unexpected token {tt}. Did you mean `facet`?"),
                             )));
                         }
-                        return Some(Ok(()));
+                        None => {
+                            return Some(Err(syn::Error::new_spanned(attr, "expected `facet`")));
+                        }
                     }
+
+                    if let Some(ref tt) = tokens.next() {
+                        return Some(Err(syn::Error::new_spanned(
+                            tt,
+                            "Unexpected token. Expected )",
+                        )));
+                    }
+                    return Some(Ok(()));
                 }
                 None
             })
