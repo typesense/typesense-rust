@@ -37,6 +37,10 @@ enum Task {
     CodeGen,
 }
 
+#[cfg(target_family = "wasm")]
+fn main() {}
+
+#[cfg(not(target_family = "wasm"))]
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
@@ -50,6 +54,7 @@ fn main() -> Result<()> {
     Ok(())
 }
 
+#[cfg(not(target_family = "wasm"))]
 fn task_fetch_api_spec() -> Result<()> {
     println!("▶️  Running codegen task...");
 
