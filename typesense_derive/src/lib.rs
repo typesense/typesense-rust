@@ -43,8 +43,8 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
     } = extract_attrs(attrs)?;
     let collection_name = collection_name.unwrap_or_else(|| ident.to_string().to_lowercase());
 
-    if let Some(ref sorting_field) = default_sorting_field {
-        if !fields.iter().any(|field|
+    if let Some(ref sorting_field) = default_sorting_field
+        && !fields.iter().any(|field|
                 // At this point we are sure that this field is a named field.
                 field.ident.as_ref().unwrap() == sorting_field)
         {
@@ -55,7 +55,6 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
                 ),
             ));
         }
-    }
 
     let typesense_fields = fields
         .iter()
@@ -98,19 +97,16 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
 
 // Get the inner type for a given wrapper
 fn ty_inner_type<'a>(ty: &'a syn::Type, wrapper: &'static str) -> Option<&'a syn::Type> {
-    if let syn::Type::Path(p) = ty {
-        if p.path.segments.len() == 1 && p.path.segments[0].ident == wrapper {
-            if let syn::PathArguments::AngleBracketed(ref inner_ty) = p.path.segments[0].arguments {
-                if inner_ty.args.len() == 1 {
+    if let syn::Type::Path(p) = ty
+        && p.path.segments.len() == 1 && p.path.segments[0].ident == wrapper
+            && let syn::PathArguments::AngleBracketed(ref inner_ty) = p.path.segments[0].arguments
+                && inner_ty.args.len() == 1 {
                     // len is 1 so this should not fail
                     let inner_ty = inner_ty.args.first().unwrap();
                     if let syn::GenericArgument::Type(t) = inner_ty {
                         return Some(t);
                     }
                 }
-            }
-        }
-    }
     None
 }
 
@@ -231,8 +227,8 @@ fn to_typesense_field_type(field: &Field) -> syn::Result<proc_macro2::TokenStrea
             .attrs
             .iter()
             .filter_map(|attr| {
-                if attr.path.segments.len() == 1 && attr.path.segments[0].ident == "typesense" {
-                    if let Some(proc_macro2::TokenTree::Group(g)) =
+                if attr.path.segments.len() == 1 && attr.path.segments[0].ident == "typesense"
+                    && let Some(proc_macro2::TokenTree::Group(g)) =
                         attr.tokens.clone().into_iter().next()
                     {
                         let mut tokens = g.stream().into_iter();
@@ -267,7 +263,6 @@ fn to_typesense_field_type(field: &Field) -> syn::Result<proc_macro2::TokenStrea
                         }
                         return Some(Ok(()));
                     }
-                }
                 None
             })
             .collect::<syn::Result<Vec<_>>>()?;
