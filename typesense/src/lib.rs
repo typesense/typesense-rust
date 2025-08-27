@@ -8,7 +8,7 @@
 //! # Examples
 //!
 //! ```
-//! #[cfg(any(feature = "tokio_test", target_arch = "wasm32"))]
+//! #[cfg(not(target_family = "wasm"))]
 //! {
 //! use serde::{Deserialize, Serialize};
 //! use typesense::document::Document;
