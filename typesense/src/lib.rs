@@ -42,13 +42,18 @@
 //! }
 //! }
 //! ```
+mod client;
+mod traits;
 
-pub mod collection_schema;
-pub mod document;
-pub mod field;
-pub mod keys;
+pub mod builders;
+pub mod error;
+pub mod models;
+pub mod prelude;
 
-pub use typesense_codegen::*;
+pub use builders::*;
+pub use client::Client;
+pub use error::*;
+pub use models::*;
 
 #[cfg(feature = "typesense_derive")]
 #[doc(hidden)]

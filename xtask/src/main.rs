@@ -12,6 +12,7 @@ const SPEC_URL: &str =
 // Input spec file, expected in the project root.
 const INPUT_SPEC_FILE: &str = "openapi.yml";
 const OUTPUT_PREPROCESSED_FILE: &str = "./preprocessed_openapi.yml";
+const CUSTOM_TEMPLATES_DIR: &str = "custom-templates"; // Directory containing our custom templates
 
 // Output directory for the generated code.
 const OUTPUT_DIR: &str = "typesense_codegen";
@@ -117,14 +118,14 @@ fn task_codegen() -> Result<()> {
         .arg("rust")
         .arg("-o")
         .arg(format!("/local/{}", OUTPUT_DIR)) // Output path inside the container
+        .arg("-t") // specify the template directory
+        .arg(format!("/local/{}", CUSTOM_TEMPLATES_DIR))
         .arg("--additional-properties")
         .arg("library=reqwest")
         .arg("--additional-properties")
         .arg("supportMiddleware=true")
         .arg("--additional-properties")
         .arg("useSingleRequestParameter=true")
-        // .arg("--additional-properties")
-        // .arg("useBonBuilder=true")
         .status()
         .context("Failed to execute Docker command. Is Docker installed and running?")?;
 

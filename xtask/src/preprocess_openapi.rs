@@ -33,21 +33,28 @@ pub fn preprocess_openapi_file(
         "/collections/{collectionName}/documents/export",
         "get",
         "exportDocumentsParameters",
-        Some("ExportDocumentsParameters"), // Copy schema to components
+        Some("ExportDocumentsParameters"),
     )?;
     unwrap_parameters_by_path(
         doc_root,
         "/collections/{collectionName}/documents",
         "patch",
         "updateDocumentsParameters",
-        Some("UpdateDocumentsParameters"), // Copy schema to components
+        Some("UpdateDocumentsParameters"),
     )?;
     unwrap_parameters_by_path(
         doc_root,
         "/collections/{collectionName}/documents",
         "delete",
         "deleteDocumentsParameters",
-        Some("DeleteDocumentsParameters"), // Copy schema to components
+        Some("DeleteDocumentsParameters"),
+    )?;
+    unwrap_parameters_by_path(
+        doc_root,
+        "/collections",
+        "get",
+        "getCollectionsParameters",
+        Some("GetCollectionsParameters"),
     )?;
     println!("Preprocessing complete.");
 

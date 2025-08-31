@@ -1,6 +1,6 @@
 # \HealthApi
 
-All URIs are relative to *http://localhost*
+All URIs are relative to *http://localhost:8108*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -10,7 +10,7 @@ Method | HTTP request | Description
 
 ## health
 
-> crate::models::HealthStatus health()
+> models::HealthStatus health()
 Checks if Typesense server is ready to accept requests.
 
 Checks if Typesense server is ready to accept requests.
@@ -21,7 +21,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**crate::models::HealthStatus**](HealthStatus.md)
+[**models::HealthStatus**](HealthStatus.md)
 
 ### Authorization
 

@@ -1,6 +1,6 @@
 # \DebugApi
 
-All URIs are relative to *http://localhost*
+All URIs are relative to *http://localhost:8108*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -10,7 +10,7 @@ Method | HTTP request | Description
 
 ## debug
 
-> crate::models::Debug200Response debug()
+> models::Debug200Response debug()
 Print debugging information
 
 Print debugging information
@@ -21,7 +21,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**crate::models::Debug200Response**](debug_200_response.md)
+[**models::Debug200Response**](debug_200_response.md)
 
 ### Authorization
 
