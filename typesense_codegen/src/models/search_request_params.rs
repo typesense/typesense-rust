@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct SearchRequestParams {
     #[serde(rename = "collection_name")]
     pub collection_name: String,
@@ -24,7 +24,7 @@ pub struct SearchRequestParams {
 }
 
 impl SearchRequestParams {
-    pub fn new(collection_name: String, q: String, per_page: i32) -> SearchRequestParams {
+    pub fn new(collection_name: String, q: String, per_page: i32) -> SearchRequestParams{
         SearchRequestParams {
             collection_name,
             q,

@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct SearchOverrideExclude {
     /// document id that should be excluded from the search results.
     #[serde(rename = "id")]
@@ -19,7 +19,7 @@ pub struct SearchOverrideExclude {
 }
 
 impl SearchOverrideExclude {
-    pub fn new(id: String) -> SearchOverrideExclude {
+    pub fn new(id: String) -> SearchOverrideExclude{
         SearchOverrideExclude {
             id,
         }

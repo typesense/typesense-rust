@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct MultiSearchResultItem {
     #[serde(rename = "facet_counts", skip_serializing_if = "Option::is_none")]
     pub facet_counts: Option<Vec<models::FacetCounts>>,
@@ -36,7 +36,7 @@ pub struct MultiSearchResultItem {
     pub grouped_hits: Option<Vec<models::SearchGroupedHit>>,
     /// The documents that matched the search query
     #[serde(rename = "hits", skip_serializing_if = "Option::is_none")]
-    pub hits: Option<Vec<models::SearchResultHit>>,
+    pub hits: Option<Vec<models::SearchResultHit<D>>>,
     #[serde(rename = "request_params", skip_serializing_if = "Option::is_none")]
     pub request_params: Option<Box<models::SearchRequestParams>>,
     #[serde(rename = "conversation", skip_serializing_if = "Option::is_none")]
@@ -53,7 +53,7 @@ pub struct MultiSearchResultItem {
 }
 
 impl MultiSearchResultItem {
-    pub fn new() -> MultiSearchResultItem {
+    pub fn new() -> MultiSearchResultItem{
         MultiSearchResultItem {
             facet_counts: None,
             found: None,

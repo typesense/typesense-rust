@@ -11,14 +11,14 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct CreateAnalyticsRule200ResponseOneOfInnerAnyOf {
     #[serde(rename = "error", skip_serializing_if = "Option::is_none")]
     pub error: Option<String>,
 }
 
 impl CreateAnalyticsRule200ResponseOneOfInnerAnyOf {
-    pub fn new() -> CreateAnalyticsRule200ResponseOneOfInnerAnyOf {
+    pub fn new() -> CreateAnalyticsRule200ResponseOneOfInnerAnyOf{
         CreateAnalyticsRule200ResponseOneOfInnerAnyOf {
             error: None,
         }

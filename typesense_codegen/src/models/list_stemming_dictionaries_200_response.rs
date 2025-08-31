@@ -11,14 +11,14 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct ListStemmingDictionaries200Response {
     #[serde(rename = "dictionaries", skip_serializing_if = "Option::is_none")]
     pub dictionaries: Option<Vec<String>>,
 }
 
 impl ListStemmingDictionaries200Response {
-    pub fn new() -> ListStemmingDictionaries200Response {
+    pub fn new() -> ListStemmingDictionaries200Response{
         ListStemmingDictionaries200Response {
             dictionaries: None,
         }

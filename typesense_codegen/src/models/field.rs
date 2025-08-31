@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct Field {
     #[serde(rename = "name")]
     pub name: String,
@@ -62,7 +62,7 @@ pub struct Field {
 }
 
 impl Field {
-    pub fn new(name: String, r#type: String) -> Field {
+    pub fn new(name: String, r#type: String) -> Field{
         Field {
             name,
             r#type,

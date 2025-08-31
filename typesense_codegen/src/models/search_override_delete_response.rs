@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct SearchOverrideDeleteResponse {
     /// The id of the override that was deleted
     #[serde(rename = "id")]
@@ -19,7 +19,7 @@ pub struct SearchOverrideDeleteResponse {
 }
 
 impl SearchOverrideDeleteResponse {
-    pub fn new(id: String) -> SearchOverrideDeleteResponse {
+    pub fn new(id: String) -> SearchOverrideDeleteResponse{
         SearchOverrideDeleteResponse {
             id,
         }

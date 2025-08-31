@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct ApiStatsResponse {
     #[serde(rename = "delete_latency_ms", skip_serializing_if = "Option::is_none")]
     pub delete_latency_ms: Option<f64>,
@@ -42,7 +42,7 @@ pub struct ApiStatsResponse {
 }
 
 impl ApiStatsResponse {
-    pub fn new() -> ApiStatsResponse {
+    pub fn new() -> ApiStatsResponse{
         ApiStatsResponse {
             delete_latency_ms: None,
             delete_requests_per_second: None,

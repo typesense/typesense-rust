@@ -11,14 +11,14 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct AnalyticsEventCreateResponse {
     #[serde(rename = "ok")]
     pub ok: bool,
 }
 
 impl AnalyticsEventCreateResponse {
-    pub fn new(ok: bool) -> AnalyticsEventCreateResponse {
+    pub fn new(ok: bool) -> AnalyticsEventCreateResponse{
         AnalyticsEventCreateResponse {
             ok,
         }

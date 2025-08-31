@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct AnalyticsEventsResponseEventsInner {
     #[serde(rename = "name", skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
@@ -32,7 +32,7 @@ pub struct AnalyticsEventsResponseEventsInner {
 }
 
 impl AnalyticsEventsResponseEventsInner {
-    pub fn new() -> AnalyticsEventsResponseEventsInner {
+    pub fn new() -> AnalyticsEventsResponseEventsInner{
         AnalyticsEventsResponseEventsInner {
             name: None,
             event_type: None,

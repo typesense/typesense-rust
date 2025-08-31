@@ -11,14 +11,14 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct SearchSynonymsResponse {
     #[serde(rename = "synonyms")]
     pub synonyms: Vec<models::SearchSynonym>,
 }
 
 impl SearchSynonymsResponse {
-    pub fn new(synonyms: Vec<models::SearchSynonym>) -> SearchSynonymsResponse {
+    pub fn new(synonyms: Vec<models::SearchSynonym>) -> SearchSynonymsResponse{
         SearchSynonymsResponse {
             synonyms,
         }

@@ -12,7 +12,7 @@ use crate::models;
 use serde::{Deserialize, Serialize};
 
 /// SearchResultHitHybridSearchInfo : Information about hybrid search scoring
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct SearchResultHitHybridSearchInfo {
     /// Combined score from rank fusion of text and vector search
     #[serde(rename = "rank_fusion_score", skip_serializing_if = "Option::is_none")]
@@ -21,7 +21,7 @@ pub struct SearchResultHitHybridSearchInfo {
 
 impl SearchResultHitHybridSearchInfo {
     /// Information about hybrid search scoring
-    pub fn new() -> SearchResultHitHybridSearchInfo {
+    pub fn new() -> SearchResultHitHybridSearchInfo{
         SearchResultHitHybridSearchInfo {
             rank_fusion_score: None,
         }

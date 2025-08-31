@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct NlSearchModelDeleteSchema {
     /// ID of the deleted NL search model
     #[serde(rename = "id")]
@@ -19,7 +19,7 @@ pub struct NlSearchModelDeleteSchema {
 }
 
 impl NlSearchModelDeleteSchema {
-    pub fn new(id: String) -> NlSearchModelDeleteSchema {
+    pub fn new(id: String) -> NlSearchModelDeleteSchema{
         NlSearchModelDeleteSchema {
             id,
         }

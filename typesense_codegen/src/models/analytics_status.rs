@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct AnalyticsStatus {
     #[serde(rename = "popular_prefix_queries", skip_serializing_if = "Option::is_none")]
     pub popular_prefix_queries: Option<i32>,
@@ -30,7 +30,7 @@ pub struct AnalyticsStatus {
 }
 
 impl AnalyticsStatus {
-    pub fn new() -> AnalyticsStatus {
+    pub fn new() -> AnalyticsStatus{
         AnalyticsStatus {
             popular_prefix_queries: None,
             nohits_prefix_queries: None,

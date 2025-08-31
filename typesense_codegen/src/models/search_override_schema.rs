@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct SearchOverrideSchema {
     #[serde(rename = "rule")]
     pub rule: Box<models::SearchOverrideRule>,
@@ -51,7 +51,7 @@ pub struct SearchOverrideSchema {
 }
 
 impl SearchOverrideSchema {
-    pub fn new(rule: models::SearchOverrideRule) -> SearchOverrideSchema {
+    pub fn new(rule: models::SearchOverrideRule) -> SearchOverrideSchema{
         SearchOverrideSchema {
             rule: Box::new(rule),
             includes: None,

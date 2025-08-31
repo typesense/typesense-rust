@@ -11,14 +11,14 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct DeleteStopwordsSet200Response {
     #[serde(rename = "id")]
     pub id: String,
 }
 
 impl DeleteStopwordsSet200Response {
-    pub fn new(id: String) -> DeleteStopwordsSet200Response {
+    pub fn new(id: String) -> DeleteStopwordsSet200Response{
         DeleteStopwordsSet200Response {
             id,
         }

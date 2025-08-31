@@ -11,8 +11,8 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchResultHit {
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
+pub struct SearchResultHit<D> {
     /// (Deprecated) Contains highlighted portions of the search fields
     #[serde(rename = "highlights", skip_serializing_if = "Option::is_none")]
     pub highlights: Option<Vec<models::SearchHighlight>>,
@@ -21,7 +21,7 @@ pub struct SearchResultHit {
     pub highlight: Option<std::collections::HashMap<String, serde_json::Value>>,
     /// Can be any key-value pair
     #[serde(rename = "document", skip_serializing_if = "Option::is_none")]
-    pub document: Option<std::collections::HashMap<String, serde_json::Value>>,
+    pub document: Option<D>,
     #[serde(rename = "text_match", skip_serializing_if = "Option::is_none")]
     pub text_match: Option<i64>,
     #[serde(rename = "text_match_info", skip_serializing_if = "Option::is_none")]
@@ -39,8 +39,8 @@ pub struct SearchResultHit {
     pub search_index: Option<i32>,
 }
 
-impl SearchResultHit {
-    pub fn new() -> SearchResultHit {
+impl<D> SearchResultHit<D> {
+    pub fn new() -> SearchResultHit<D>{
         SearchResultHit {
             highlights: None,
             highlight: None,

@@ -12,7 +12,7 @@ use crate::models;
 use serde::{Deserialize, Serialize};
 
 /// AnalyticsEventData : Event payload
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct AnalyticsEventData {
     #[serde(rename = "user_id", skip_serializing_if = "Option::is_none")]
     pub user_id: Option<String>,
@@ -28,7 +28,7 @@ pub struct AnalyticsEventData {
 
 impl AnalyticsEventData {
     /// Event payload
-    pub fn new() -> AnalyticsEventData {
+    pub fn new() -> AnalyticsEventData{
         AnalyticsEventData {
             user_id: None,
             doc_id: None,

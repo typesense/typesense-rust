@@ -11,14 +11,14 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct SearchOverridesResponse {
     #[serde(rename = "overrides")]
     pub overrides: Vec<models::SearchOverride>,
 }
 
 impl SearchOverridesResponse {
-    pub fn new(overrides: Vec<models::SearchOverride>) -> SearchOverridesResponse {
+    pub fn new(overrides: Vec<models::SearchOverride>) -> SearchOverridesResponse{
         SearchOverridesResponse {
             overrides,
         }

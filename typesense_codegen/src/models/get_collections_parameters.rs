@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct GetCollectionsParameters {
     /// Comma-separated list of fields from the collection to exclude from the response
     #[serde(rename = "exclude_fields", skip_serializing_if = "Option::is_none")]
@@ -25,7 +25,7 @@ pub struct GetCollectionsParameters {
 }
 
 impl GetCollectionsParameters {
-    pub fn new() -> GetCollectionsParameters {
+    pub fn new() -> GetCollectionsParameters{
         GetCollectionsParameters {
             exclude_fields: None,
             limit: None,

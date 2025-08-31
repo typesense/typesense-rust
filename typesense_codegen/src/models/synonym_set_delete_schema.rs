@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct SynonymSetDeleteSchema {
     /// Name of the deleted synonym set
     #[serde(rename = "name")]
@@ -19,7 +19,7 @@ pub struct SynonymSetDeleteSchema {
 }
 
 impl SynonymSetDeleteSchema {
-    pub fn new(name: String) -> SynonymSetDeleteSchema {
+    pub fn new(name: String) -> SynonymSetDeleteSchema{
         SynonymSetDeleteSchema {
             name,
         }

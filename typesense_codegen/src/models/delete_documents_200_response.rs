@@ -11,14 +11,14 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct DeleteDocuments200Response {
     #[serde(rename = "num_deleted")]
     pub num_deleted: i32,
 }
 
 impl DeleteDocuments200Response {
-    pub fn new(num_deleted: i32) -> DeleteDocuments200Response {
+    pub fn new(num_deleted: i32) -> DeleteDocuments200Response{
         DeleteDocuments200Response {
             num_deleted,
         }

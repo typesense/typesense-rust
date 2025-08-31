@@ -1072,7 +1072,7 @@ pub async fn multi_search(configuration: &configuration::Configuration, params: 
 }
 
 /// Search for documents in a collection that match the search criteria.
-pub async fn search_collection(configuration: &configuration::Configuration, params: SearchCollectionParams) -> Result<models::SearchResult, Error<SearchCollectionError>> {
+pub async fn search_collection<D: for<'de> serde::Deserialize<'de> + Serialize>(configuration: &configuration::Configuration, params: SearchCollectionParams) -> Result<models::SearchResult<D>, Error<SearchCollectionError>> {
 
     let uri_str = format!("{}/collections/{collectionName}/documents/search", configuration.base_path, collectionName=crate::apis::urlencode(params.collection_name));
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);

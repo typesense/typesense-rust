@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct UpdateDocuments200Response {
     /// The number of documents that have been updated
     #[serde(rename = "num_updated")]
@@ -19,7 +19,7 @@ pub struct UpdateDocuments200Response {
 }
 
 impl UpdateDocuments200Response {
-    pub fn new(num_updated: i32) -> UpdateDocuments200Response {
+    pub fn new(num_updated: i32) -> UpdateDocuments200Response{
         UpdateDocuments200Response {
             num_updated,
         }

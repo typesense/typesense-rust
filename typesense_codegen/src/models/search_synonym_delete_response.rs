@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct SearchSynonymDeleteResponse {
     /// The id of the synonym that was deleted
     #[serde(rename = "id")]
@@ -19,7 +19,7 @@ pub struct SearchSynonymDeleteResponse {
 }
 
 impl SearchSynonymDeleteResponse {
-    pub fn new(id: String) -> SearchSynonymDeleteResponse {
+    pub fn new(id: String) -> SearchSynonymDeleteResponse{
         SearchSynonymDeleteResponse {
             id,
         }

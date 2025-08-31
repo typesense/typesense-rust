@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct DeleteDocumentsParameters {
     #[serde(rename = "filter_by")]
     pub filter_by: String,
@@ -26,7 +26,7 @@ pub struct DeleteDocumentsParameters {
 }
 
 impl DeleteDocumentsParameters {
-    pub fn new(filter_by: String) -> DeleteDocumentsParameters {
+    pub fn new(filter_by: String) -> DeleteDocumentsParameters{
         DeleteDocumentsParameters {
             filter_by,
             batch_size: None,

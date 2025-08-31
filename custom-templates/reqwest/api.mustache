@@ -92,7 +92,7 @@ pub enum {{{operationIdCamelCase}}}Error {
 /// {{{.}}}
 {{/notes}}
 {{#vendorExtensions.x-group-parameters}}
-pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}(configuration: &configuration::Configuration{{#allParams}}{{#-first}}, {{!
+pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}{{{vendorExtensions.x-rust-operation-generic-parameter}}}(configuration: &configuration::Configuration{{#allParams}}{{#-first}}, {{!
 ### Params
 }}params: {{{operationIdCamelCase}}}Params{{/-first}}{{/allParams}}{{!
 ### Function return type
@@ -104,12 +104,12 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}(configuration: 
 ### Multi response support
 }}{{#supportMultipleResponses}}ResponseContent<{{{operationIdCamelCase}}}Success>{{/supportMultipleResponses}}{{!
 ### Regular return type
-}}{{^supportMultipleResponses}}{{^returnType}}(){{/returnType}}{{{returnType}}}{{/supportMultipleResponses}}{{/isResponseFile}}{{!
+}}{{^supportMultipleResponses}}{{^returnType}}(){{/returnType}}{{{returnType}}}{{{vendorExtensions.x-rust-return-type-generic-parameter}}}{{/supportMultipleResponses}}{{/isResponseFile}}{{!
 ### Error Type
 }}, Error<{{{operationIdCamelCase}}}Error>> {
 {{/vendorExtensions.x-group-parameters}}
 {{^vendorExtensions.x-group-parameters}}
-pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}(configuration: &configuration::Configuration, {{#allParams}}{{{paramName}}}: {{!
+pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}{{{vendorExtensions.x-rust-operation-generic-parameter}}}(configuration: &configuration::Configuration, {{#allParams}}{{{paramName}}}: {{!
 ### Option Start
 }}{{^required}}Option<{{/required}}{{#required}}{{#isNullable}}Option<{{/isNullable}}{{/required}}{{!
 ### &str and Vec<&str>
@@ -131,7 +131,7 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}(configuration: 
 ### Multi response support
 }}{{#supportMultipleResponses}}ResponseContent<{{{operationIdCamelCase}}}Success>{{/supportMultipleResponses}}{{!
 ### Regular return type
-}}{{^supportMultipleResponses}}{{^returnType}}(){{/returnType}}{{{returnType}}}{{/supportMultipleResponses}}{{/isResponseFile}}{{!
+}}{{^supportMultipleResponses}}{{^returnType}}(){{/returnType}}{{{returnType}}}{{{vendorExtensions.x-rust-return-type-generic-parameter}}}{{/supportMultipleResponses}}{{/isResponseFile}}{{!
 ### Error Type
 }}, Error<{{{operationIdCamelCase}}}Error>> {
     {{#allParams.0}}

@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct CollectionAliasSchema {
     /// Name of the collection you wish to map the alias to
     #[serde(rename = "collection_name")]
@@ -19,7 +19,7 @@ pub struct CollectionAliasSchema {
 }
 
 impl CollectionAliasSchema {
-    pub fn new(collection_name: String) -> CollectionAliasSchema {
+    pub fn new(collection_name: String) -> CollectionAliasSchema{
         CollectionAliasSchema {
             collection_name,
         }

@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct CreateAnalyticsRule200ResponseOneOfInner {
     #[serde(rename = "name")]
     pub name: String,
@@ -30,7 +30,7 @@ pub struct CreateAnalyticsRule200ResponseOneOfInner {
 }
 
 impl CreateAnalyticsRule200ResponseOneOfInner {
-    pub fn new(name: String, r#type: Type, collection: String, event_type: String) -> CreateAnalyticsRule200ResponseOneOfInner {
+    pub fn new(name: String, r#type: Type, collection: String, event_type: String) -> CreateAnalyticsRule200ResponseOneOfInner{
         CreateAnalyticsRule200ResponseOneOfInner {
             name,
             r#type,

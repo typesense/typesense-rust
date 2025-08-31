@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct MultiSearchCollectionParameters {
     /// The query text to search for in the collection. Use * as the search string to return all documents. This is typically useful when used in conjunction with filter_by.
     #[serde(rename = "q", skip_serializing_if = "Option::is_none")]
@@ -216,7 +216,7 @@ pub struct MultiSearchCollectionParameters {
 }
 
 impl MultiSearchCollectionParameters {
-    pub fn new() -> MultiSearchCollectionParameters {
+    pub fn new() -> MultiSearchCollectionParameters{
         MultiSearchCollectionParameters {
             q: None,
             query_by: None,

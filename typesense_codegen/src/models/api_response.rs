@@ -11,14 +11,14 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct ApiResponse {
     #[serde(rename = "message")]
     pub message: String,
 }
 
 impl ApiResponse {
-    pub fn new(message: String) -> ApiResponse {
+    pub fn new(message: String) -> ApiResponse{
         ApiResponse {
             message,
         }

@@ -11,14 +11,14 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct CollectionAliasesResponse {
     #[serde(rename = "aliases")]
     pub aliases: Vec<models::CollectionAlias>,
 }
 
 impl CollectionAliasesResponse {
-    pub fn new(aliases: Vec<models::CollectionAlias>) -> CollectionAliasesResponse {
+    pub fn new(aliases: Vec<models::CollectionAlias>) -> CollectionAliasesResponse{
         CollectionAliasesResponse {
             aliases,
         }

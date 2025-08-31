@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct StopwordsSetSchema {
     #[serde(rename = "id")]
     pub id: String,
@@ -22,7 +22,7 @@ pub struct StopwordsSetSchema {
 }
 
 impl StopwordsSetSchema {
-    pub fn new(id: String, stopwords: Vec<String>) -> StopwordsSetSchema {
+    pub fn new(id: String, stopwords: Vec<String>) -> StopwordsSetSchema{
         StopwordsSetSchema {
             id,
             stopwords,

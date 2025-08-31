@@ -11,14 +11,14 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct Debug200Response {
     #[serde(rename = "version", skip_serializing_if = "Option::is_none")]
     pub version: Option<String>,
 }
 
 impl Debug200Response {
-    pub fn new() -> Debug200Response {
+    pub fn new() -> Debug200Response{
         Debug200Response {
             version: None,
         }

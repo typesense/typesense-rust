@@ -11,14 +11,14 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct StopwordsSetRetrieveSchema {
     #[serde(rename = "stopwords")]
     pub stopwords: Box<models::StopwordsSetSchema>,
 }
 
 impl StopwordsSetRetrieveSchema {
-    pub fn new(stopwords: models::StopwordsSetSchema) -> StopwordsSetRetrieveSchema {
+    pub fn new(stopwords: models::StopwordsSetSchema) -> StopwordsSetRetrieveSchema{
         StopwordsSetRetrieveSchema {
             stopwords: Box::new(stopwords),
         }

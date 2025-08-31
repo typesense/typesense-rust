@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct SearchResultHitTextMatchInfo {
     #[serde(rename = "best_field_score", skip_serializing_if = "Option::is_none")]
     pub best_field_score: Option<String>,
@@ -30,7 +30,7 @@ pub struct SearchResultHitTextMatchInfo {
 }
 
 impl SearchResultHitTextMatchInfo {
-    pub fn new() -> SearchResultHitTextMatchInfo {
+    pub fn new() -> SearchResultHitTextMatchInfo{
         SearchResultHitTextMatchInfo {
             best_field_score: None,
             best_field_weight: None,

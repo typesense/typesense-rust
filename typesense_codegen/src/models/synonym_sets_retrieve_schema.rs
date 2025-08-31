@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct SynonymSetsRetrieveSchema {
     /// Array of synonym sets
     #[serde(rename = "synonym_sets")]
@@ -19,7 +19,7 @@ pub struct SynonymSetsRetrieveSchema {
 }
 
 impl SynonymSetsRetrieveSchema {
-    pub fn new(synonym_sets: Vec<models::SynonymSetSchema>) -> SynonymSetsRetrieveSchema {
+    pub fn new(synonym_sets: Vec<models::SynonymSetSchema>) -> SynonymSetsRetrieveSchema{
         SynonymSetsRetrieveSchema {
             synonym_sets,
         }

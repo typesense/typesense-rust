@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct AnalyticsEvent {
     /// Name of the analytics rule this event corresponds to
     #[serde(rename = "name")]
@@ -24,7 +24,7 @@ pub struct AnalyticsEvent {
 }
 
 impl AnalyticsEvent {
-    pub fn new(name: String, event_type: String, data: models::AnalyticsEventData) -> AnalyticsEvent {
+    pub fn new(name: String, event_type: String, data: models::AnalyticsEventData) -> AnalyticsEvent{
         AnalyticsEvent {
             name,
             event_type,

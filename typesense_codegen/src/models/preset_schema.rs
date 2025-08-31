@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct PresetSchema {
     #[serde(rename = "value")]
     pub value: Box<models::PresetUpsertSchemaValue>,
@@ -20,7 +20,7 @@ pub struct PresetSchema {
 }
 
 impl PresetSchema {
-    pub fn new(value: models::PresetUpsertSchemaValue, name: String) -> PresetSchema {
+    pub fn new(value: models::PresetUpsertSchemaValue, name: String) -> PresetSchema{
         PresetSchema {
             value: Box::new(value),
             name,

@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct ConversationModelUpdateSchema {
     /// An explicit id for the model, otherwise the API will return a response with an auto-generated conversation model id.
     #[serde(rename = "id", skip_serializing_if = "Option::is_none")]
@@ -43,7 +43,7 @@ pub struct ConversationModelUpdateSchema {
 }
 
 impl ConversationModelUpdateSchema {
-    pub fn new() -> ConversationModelUpdateSchema {
+    pub fn new() -> ConversationModelUpdateSchema{
         ConversationModelUpdateSchema {
             id: None,
             model_name: None,

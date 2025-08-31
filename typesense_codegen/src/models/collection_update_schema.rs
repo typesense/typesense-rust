@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct CollectionUpdateSchema {
     /// A list of fields for querying, filtering and faceting
     #[serde(rename = "fields")]
@@ -25,7 +25,7 @@ pub struct CollectionUpdateSchema {
 }
 
 impl CollectionUpdateSchema {
-    pub fn new(fields: Vec<models::Field>) -> CollectionUpdateSchema {
+    pub fn new(fields: Vec<models::Field>) -> CollectionUpdateSchema{
         CollectionUpdateSchema {
             fields,
             synonym_sets: None,

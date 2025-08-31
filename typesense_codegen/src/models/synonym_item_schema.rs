@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct SynonymItemSchema {
     /// Unique identifier for the synonym item
     #[serde(rename = "id")]
@@ -31,7 +31,7 @@ pub struct SynonymItemSchema {
 }
 
 impl SynonymItemSchema {
-    pub fn new(id: String, synonyms: Vec<String>) -> SynonymItemSchema {
+    pub fn new(id: String, synonyms: Vec<String>) -> SynonymItemSchema{
         SynonymItemSchema {
             id,
             synonyms,

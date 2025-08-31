@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct AnalyticsRuleCreate {
     #[serde(rename = "name")]
     pub name: String,
@@ -28,7 +28,7 @@ pub struct AnalyticsRuleCreate {
 }
 
 impl AnalyticsRuleCreate {
-    pub fn new(name: String, r#type: Type, collection: String, event_type: String) -> AnalyticsRuleCreate {
+    pub fn new(name: String, r#type: Type, collection: String, event_type: String) -> AnalyticsRuleCreate{
         AnalyticsRuleCreate {
             name,
             r#type,

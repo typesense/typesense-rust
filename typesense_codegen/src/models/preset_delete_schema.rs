@@ -11,14 +11,14 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct PresetDeleteSchema {
     #[serde(rename = "name")]
     pub name: String,
 }
 
 impl PresetDeleteSchema {
-    pub fn new(name: String) -> PresetDeleteSchema {
+    pub fn new(name: String) -> PresetDeleteSchema{
         PresetDeleteSchema {
             name,
         }

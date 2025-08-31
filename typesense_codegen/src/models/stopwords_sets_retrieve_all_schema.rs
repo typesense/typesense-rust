@@ -11,14 +11,14 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct StopwordsSetsRetrieveAllSchema {
     #[serde(rename = "stopwords")]
     pub stopwords: Vec<models::StopwordsSetSchema>,
 }
 
 impl StopwordsSetsRetrieveAllSchema {
-    pub fn new(stopwords: Vec<models::StopwordsSetSchema>) -> StopwordsSetsRetrieveAllSchema {
+    pub fn new(stopwords: Vec<models::StopwordsSetSchema>) -> StopwordsSetsRetrieveAllSchema{
         StopwordsSetsRetrieveAllSchema {
             stopwords,
         }

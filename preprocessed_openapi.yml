@@ -405,6 +405,8 @@ paths:
       summary: Search for documents in a collection
       description: Search for documents in a collection that match the search criteria.
       operationId: searchCollection
+      x-rust-operation-generic-parameter: '<D: for<''de> serde::Deserialize<''de> + Serialize>'
+      x-rust-return-type-generic-parameter: <D>
       parameters:
       - name: collectionName
         in: path

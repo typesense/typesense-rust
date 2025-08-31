@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct SearchSynonymSchema {
     /// For 1-way synonyms, indicates the root word that words in the `synonyms` parameter map to.
     #[serde(rename = "root", skip_serializing_if = "Option::is_none")]
@@ -28,7 +28,7 @@ pub struct SearchSynonymSchema {
 }
 
 impl SearchSynonymSchema {
-    pub fn new(synonyms: Vec<String>) -> SearchSynonymSchema {
+    pub fn new(synonyms: Vec<String>) -> SearchSynonymSchema{
         SearchSynonymSchema {
             root: None,
             synonyms,

@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct StemmingDictionaryWordsInner {
     /// The word form to be stemmed
     #[serde(rename = "word")]
@@ -22,7 +22,7 @@ pub struct StemmingDictionaryWordsInner {
 }
 
 impl StemmingDictionaryWordsInner {
-    pub fn new(word: String, root: String) -> StemmingDictionaryWordsInner {
+    pub fn new(word: String, root: String) -> StemmingDictionaryWordsInner{
         StemmingDictionaryWordsInner {
             word,
             root,

@@ -11,14 +11,14 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct SearchRequestParamsVoiceQuery {
     #[serde(rename = "transcribed_query", skip_serializing_if = "Option::is_none")]
     pub transcribed_query: Option<String>,
 }
 
 impl SearchRequestParamsVoiceQuery {
-    pub fn new() -> SearchRequestParamsVoiceQuery {
+    pub fn new() -> SearchRequestParamsVoiceQuery{
         SearchRequestParamsVoiceQuery {
             transcribed_query: None,
         }

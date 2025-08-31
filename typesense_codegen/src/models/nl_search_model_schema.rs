@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct NlSearchModelSchema {
     /// Name of the NL model to use
     #[serde(rename = "model_name", skip_serializing_if = "Option::is_none")]
@@ -73,7 +73,7 @@ pub struct NlSearchModelSchema {
 }
 
 impl NlSearchModelSchema {
-    pub fn new(id: String) -> NlSearchModelSchema {
+    pub fn new(id: String) -> NlSearchModelSchema{
         NlSearchModelSchema {
             model_name: None,
             api_key: None,

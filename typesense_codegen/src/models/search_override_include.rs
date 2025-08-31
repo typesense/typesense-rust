@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct SearchOverrideInclude {
     /// document id that should be included
     #[serde(rename = "id")]
@@ -22,7 +22,7 @@ pub struct SearchOverrideInclude {
 }
 
 impl SearchOverrideInclude {
-    pub fn new(id: String, position: i32) -> SearchOverrideInclude {
+    pub fn new(id: String, position: i32) -> SearchOverrideInclude{
         SearchOverrideInclude {
             id,
             position,

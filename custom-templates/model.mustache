@@ -122,8 +122,8 @@ impl Default for {{classname}} {
 {{^isEnum}}
 {{^discriminator}}
 {{#vendorExtensions.x-rust-has-byte-array}}#[serde_as]
-{{/vendorExtensions.x-rust-has-byte-array}}{{#oneOf.isEmpty}}#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct {{{classname}}} {
+{{/vendorExtensions.x-rust-has-byte-array}}{{#oneOf.isEmpty}}#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
+pub struct {{{classname}}}{{{vendorExtensions.x-rust-generic-parameter}}} {
 {{#vars}}
     {{#description}}
     /// {{{.}}}
@@ -132,6 +132,10 @@ pub struct {{{classname}}} {
     {{#vendorExtensions.isMandatory}}#[serde_as(as = "serde_with::base64::Base64")]{{/vendorExtensions.isMandatory}}{{^vendorExtensions.isMandatory}}#[serde_as(as = "{{^serdeAsDoubleOption}}Option{{/serdeAsDoubleOption}}{{#serdeAsDoubleOption}}super::DoubleOption{{/serdeAsDoubleOption}}<serde_with::base64::Base64>")]{{/vendorExtensions.isMandatory}}
     {{/isByteArray}}
     #[serde(rename = "{{{baseName}}}"{{^required}}{{#isNullable}}, default{{^isByteArray}}, with = "::serde_with::rust::double_option"{{/isByteArray}}{{/isNullable}}{{/required}}{{^required}}, skip_serializing_if = "Option::is_none"{{/required}}{{#required}}{{#isNullable}}, deserialize_with = "Option::deserialize"{{/isNullable}}{{/required}})]
+    {{#vendorExtensions.x-rust-type}}
+    pub {{{name}}}: {{{.}}},
+    {{/vendorExtensions.x-rust-type}}
+    {{^vendorExtensions.x-rust-type}}
     pub {{{name}}}: {{!
     ### Option Start
     }}{{#isNullable}}Option<{{/isNullable}}{{^required}}Option<{{/required}}{{!
@@ -147,10 +151,11 @@ pub struct {{{classname}}} {
     }}{{/isEnum}}{{!
     ### Option End (and trailing comma)
     }}{{#isNullable}}>{{/isNullable}}{{^required}}>{{/required}},
+    {{/vendorExtensions.x-rust-type}}
 {{/vars}}
 }
 
-impl {{{classname}}} {
+impl{{{vendorExtensions.x-rust-generic-parameter}}} {{{classname}}}{{{vendorExtensions.x-rust-generic-parameter}}} {
     {{#description}}
     /// {{{.}}}
     {{/description}}
@@ -164,10 +169,15 @@ impl {{{classname}}} {
     ### Option End
     }}{{#isNullable}}>{{/isNullable}}{{!
     ### Comma for next arguement
-    }}{{^-last}}, {{/-last}}{{/requiredVars}}) -> {{{classname}}} {
+    }}{{^-last}}, {{/-last}}{{/requiredVars}}) -> {{{classname}}}{{{vendorExtensions.x-rust-generic-parameter}}}{
         {{{classname}}} {
             {{#vars}}
+            {{#vendorExtensions.x-rust-type}}
+            {{{name}}}: None,
+            {{/vendorExtensions.x-rust-type}}
+            {{^vendorExtensions.x-rust-type}}
             {{{name}}}{{^required}}: None{{/required}}{{#required}}{{#isModel}}{{^avoidBoxedModels}}: {{^isNullable}}Box::new({{{name}}}){{/isNullable}}{{#isNullable}}if let Some(x) = {{{name}}} {Some(Box::new(x))} else {None}{{/isNullable}}{{/avoidBoxedModels}}{{/isModel}}{{/required}},
+            {{/vendorExtensions.x-rust-type}}
             {{/vars}}
         }
     }

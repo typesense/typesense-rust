@@ -11,14 +11,14 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct SuccessStatus {
     #[serde(rename = "success")]
     pub success: bool,
 }
 
 impl SuccessStatus {
-    pub fn new(success: bool) -> SuccessStatus {
+    pub fn new(success: bool) -> SuccessStatus{
         SuccessStatus {
             success,
         }

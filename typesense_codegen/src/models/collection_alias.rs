@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct CollectionAlias {
     /// Name of the collection alias
     #[serde(rename = "name")]
@@ -22,7 +22,7 @@ pub struct CollectionAlias {
 }
 
 impl CollectionAlias {
-    pub fn new(name: String, collection_name: String) -> CollectionAlias {
+    pub fn new(name: String, collection_name: String) -> CollectionAlias{
         CollectionAlias {
             name,
             collection_name,

@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct FieldEmbed {
     #[serde(rename = "from")]
     pub from: Vec<String>,
@@ -20,7 +20,7 @@ pub struct FieldEmbed {
 }
 
 impl FieldEmbed {
-    pub fn new(from: Vec<String>, model_config: models::FieldEmbedModelConfig) -> FieldEmbed {
+    pub fn new(from: Vec<String>, model_config: models::FieldEmbedModelConfig) -> FieldEmbed{
         FieldEmbed {
             from,
             model_config: Box::new(model_config),

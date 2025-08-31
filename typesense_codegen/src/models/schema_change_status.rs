@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct SchemaChangeStatus {
     /// Name of the collection being modified
     #[serde(rename = "collection", skip_serializing_if = "Option::is_none")]
@@ -25,7 +25,7 @@ pub struct SchemaChangeStatus {
 }
 
 impl SchemaChangeStatus {
-    pub fn new() -> SchemaChangeStatus {
+    pub fn new() -> SchemaChangeStatus{
         SchemaChangeStatus {
             collection: None,
             validated_docs: None,

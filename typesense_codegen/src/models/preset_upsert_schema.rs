@@ -11,14 +11,14 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct PresetUpsertSchema {
     #[serde(rename = "value")]
     pub value: Box<models::PresetUpsertSchemaValue>,
 }
 
 impl PresetUpsertSchema {
-    pub fn new(value: models::PresetUpsertSchemaValue) -> PresetUpsertSchema {
+    pub fn new(value: models::PresetUpsertSchemaValue) -> PresetUpsertSchema{
         PresetUpsertSchema {
             value: Box::new(value),
         }

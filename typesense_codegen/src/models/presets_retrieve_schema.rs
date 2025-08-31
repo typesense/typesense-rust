@@ -11,14 +11,14 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct PresetsRetrieveSchema {
     #[serde(rename = "presets")]
     pub presets: Vec<models::PresetSchema>,
 }
 
 impl PresetsRetrieveSchema {
-    pub fn new(presets: Vec<models::PresetSchema>) -> PresetsRetrieveSchema {
+    pub fn new(presets: Vec<models::PresetSchema>) -> PresetsRetrieveSchema{
         PresetsRetrieveSchema {
             presets,
         }

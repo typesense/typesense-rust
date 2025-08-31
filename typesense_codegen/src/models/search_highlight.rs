@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct SearchHighlight {
     #[serde(rename = "field", skip_serializing_if = "Option::is_none")]
     pub field: Option<String>,
@@ -35,7 +35,7 @@ pub struct SearchHighlight {
 }
 
 impl SearchHighlight {
-    pub fn new() -> SearchHighlight {
+    pub fn new() -> SearchHighlight{
         SearchHighlight {
             field: None,
             snippet: None,

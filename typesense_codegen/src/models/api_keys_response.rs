@@ -11,14 +11,14 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct ApiKeysResponse {
     #[serde(rename = "keys")]
     pub keys: Vec<models::ApiKey>,
 }
 
 impl ApiKeysResponse {
-    pub fn new(keys: Vec<models::ApiKey>) -> ApiKeysResponse {
+    pub fn new(keys: Vec<models::ApiKey>) -> ApiKeysResponse{
         ApiKeysResponse {
             keys,
         }

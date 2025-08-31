@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct ImportDocumentsParameters {
     #[serde(rename = "batch_size", skip_serializing_if = "Option::is_none")]
     pub batch_size: Option<i32>,
@@ -29,7 +29,7 @@ pub struct ImportDocumentsParameters {
 }
 
 impl ImportDocumentsParameters {
-    pub fn new() -> ImportDocumentsParameters {
+    pub fn new() -> ImportDocumentsParameters{
         ImportDocumentsParameters {
             batch_size: None,
             return_id: None,

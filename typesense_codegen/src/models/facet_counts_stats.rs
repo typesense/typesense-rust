@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct FacetCountsStats {
     #[serde(rename = "max", skip_serializing_if = "Option::is_none")]
     pub max: Option<f64>,
@@ -26,7 +26,7 @@ pub struct FacetCountsStats {
 }
 
 impl FacetCountsStats {
-    pub fn new() -> FacetCountsStats {
+    pub fn new() -> FacetCountsStats{
         FacetCountsStats {
             max: None,
             min: None,

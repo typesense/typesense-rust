@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct FacetCounts {
     #[serde(rename = "counts", skip_serializing_if = "Option::is_none")]
     pub counts: Option<Vec<models::FacetCountsCountsInner>>,
@@ -22,7 +22,7 @@ pub struct FacetCounts {
 }
 
 impl FacetCounts {
-    pub fn new() -> FacetCounts {
+    pub fn new() -> FacetCounts{
         FacetCounts {
             counts: None,
             field_name: None,

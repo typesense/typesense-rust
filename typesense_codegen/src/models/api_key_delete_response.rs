@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct ApiKeyDeleteResponse {
     /// The id of the API key that was deleted
     #[serde(rename = "id")]
@@ -19,7 +19,7 @@ pub struct ApiKeyDeleteResponse {
 }
 
 impl ApiKeyDeleteResponse {
-    pub fn new(id: i64) -> ApiKeyDeleteResponse {
+    pub fn new(id: i64) -> ApiKeyDeleteResponse{
         ApiKeyDeleteResponse {
             id,
         }

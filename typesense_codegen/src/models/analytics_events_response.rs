@@ -11,14 +11,14 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct AnalyticsEventsResponse {
     #[serde(rename = "events")]
     pub events: Vec<models::AnalyticsEventsResponseEventsInner>,
 }
 
 impl AnalyticsEventsResponse {
-    pub fn new(events: Vec<models::AnalyticsEventsResponseEventsInner>) -> AnalyticsEventsResponse {
+    pub fn new(events: Vec<models::AnalyticsEventsResponseEventsInner>) -> AnalyticsEventsResponse{
         AnalyticsEventsResponse {
             events,
         }

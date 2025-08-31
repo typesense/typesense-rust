@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct CollectionResponse {
     /// Name of the collection
     #[serde(rename = "name")]
@@ -48,7 +48,7 @@ pub struct CollectionResponse {
 }
 
 impl CollectionResponse {
-    pub fn new(name: String, fields: Vec<models::Field>, num_documents: i64, created_at: i64) -> CollectionResponse {
+    pub fn new(name: String, fields: Vec<models::Field>, num_documents: i64, created_at: i64) -> CollectionResponse{
         CollectionResponse {
             name,
             fields,

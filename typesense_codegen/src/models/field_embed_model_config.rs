@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct FieldEmbedModelConfig {
     #[serde(rename = "model_name")]
     pub model_name: String,
@@ -36,7 +36,7 @@ pub struct FieldEmbedModelConfig {
 }
 
 impl FieldEmbedModelConfig {
-    pub fn new(model_name: String) -> FieldEmbedModelConfig {
+    pub fn new(model_name: String) -> FieldEmbedModelConfig{
         FieldEmbedModelConfig {
             model_name,
             api_key: None,

@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct SearchResultConversation {
     #[serde(rename = "answer")]
     pub answer: String,
@@ -24,7 +24,7 @@ pub struct SearchResultConversation {
 }
 
 impl SearchResultConversation {
-    pub fn new(answer: String, conversation_history: Vec<serde_json::Value>, conversation_id: String, query: String) -> SearchResultConversation {
+    pub fn new(answer: String, conversation_history: Vec<serde_json::Value>, conversation_id: String, query: String) -> SearchResultConversation{
         SearchResultConversation {
             answer,
             conversation_history,

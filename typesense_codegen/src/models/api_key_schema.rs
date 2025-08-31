@@ -11,7 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
 pub struct ApiKeySchema {
     #[serde(rename = "value", skip_serializing_if = "Option::is_none")]
     pub value: Option<String>,
@@ -26,7 +26,7 @@ pub struct ApiKeySchema {
 }
 
 impl ApiKeySchema {
-    pub fn new(description: String, actions: Vec<String>, collections: Vec<String>) -> ApiKeySchema {
+    pub fn new(description: String, actions: Vec<String>, collections: Vec<String>) -> ApiKeySchema{
         ApiKeySchema {
             value: None,
             description,
