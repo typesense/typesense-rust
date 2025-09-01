@@ -54,11 +54,15 @@ impl<'a> Collections<'a> {
     /// recent collections appearing first.
     pub async fn retrieve(
         &self,
-        params: &GetCollectionsParams,
+        params: &GetCollectionsParameters,
     ) -> Result<Vec<models::CollectionResponse>, Error<collections_api::GetCollectionsError>> {
         self.client
             .execute(|config: configuration::Configuration| {
-                let params_for_move = params.clone();
+                let params_for_move = GetCollectionsParams {
+                    exclude_fields: params.exclude_fields.clone(),
+                    limit: params.limit,
+                    offset: params.offset,
+                };
                 async move { collections_api::get_collections(&config, params_for_move).await }
             })
             .await

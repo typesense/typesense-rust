@@ -45,12 +45,10 @@
 mod client;
 mod traits;
 
-pub mod builders;
 pub mod error;
 pub mod models;
 pub mod prelude;
 
-pub use builders::*;
 pub use client::Client;
 pub use error::*;
 pub use models::*;

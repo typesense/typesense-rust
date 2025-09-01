@@ -6,10 +6,7 @@
 
 use crate::{Client, Error};
 use serde::{Serialize, de::DeserializeOwned};
-use typesense_codegen::{
-    apis::{configuration, documents_api},
-    models,
-};
+use typesense_codegen::apis::{configuration, documents_api};
 
 /// Provides methods for interacting with a single document within a specific Typesense collection.
 ///
