@@ -12,18 +12,18 @@ use crate::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
-pub struct SearchGroupedHit {
+pub struct SearchGroupedHit<D> {
     #[serde(rename = "found", skip_serializing_if = "Option::is_none")]
     pub found: Option<i32>,
     #[serde(rename = "group_key")]
     pub group_key: Vec<serde_json::Value>,
     /// The documents that matched the search query
     #[serde(rename = "hits")]
-    pub hits: Vec<models::SearchResultHit>,
+    pub hits: Vec<models::SearchResultHit<D>>,
 }
 
-impl SearchGroupedHit {
-    pub fn new(group_key: Vec<serde_json::Value>, hits: Vec<models::SearchResultHit>) -> SearchGroupedHit{
+impl<D> SearchGroupedHit<D> {
+    pub fn new(group_key: Vec<serde_json::Value>, hits: Vec<models::SearchResultHit<D>>) -> SearchGroupedHit<D>{
         SearchGroupedHit {
             found: None,
             group_key,

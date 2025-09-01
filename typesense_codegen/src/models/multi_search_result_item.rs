@@ -12,7 +12,7 @@ use crate::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
-pub struct MultiSearchResultItem {
+pub struct MultiSearchResultItem<D> {
     #[serde(rename = "facet_counts", skip_serializing_if = "Option::is_none")]
     pub facet_counts: Option<Vec<models::FacetCounts>>,
     /// The number of documents found
@@ -33,7 +33,7 @@ pub struct MultiSearchResultItem {
     #[serde(rename = "page", skip_serializing_if = "Option::is_none")]
     pub page: Option<i32>,
     #[serde(rename = "grouped_hits", skip_serializing_if = "Option::is_none")]
-    pub grouped_hits: Option<Vec<models::SearchGroupedHit>>,
+    pub grouped_hits: Option<Vec<models::SearchGroupedHit<D>>>,
     /// The documents that matched the search query
     #[serde(rename = "hits", skip_serializing_if = "Option::is_none")]
     pub hits: Option<Vec<models::SearchResultHit<D>>>,
@@ -52,8 +52,8 @@ pub struct MultiSearchResultItem {
     pub error: Option<String>,
 }
 
-impl MultiSearchResultItem {
-    pub fn new() -> MultiSearchResultItem{
+impl<D> MultiSearchResultItem<D> {
+    pub fn new() -> MultiSearchResultItem<D>{
         MultiSearchResultItem {
             facet_counts: None,
             found: None,

@@ -12,15 +12,15 @@ use crate::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
-pub struct MultiSearchResult {
+pub struct MultiSearchResult<D> {
     #[serde(rename = "results")]
-    pub results: Vec<models::MultiSearchResultItem>,
+    pub results: Vec<models::MultiSearchResultItem<D>>,
     #[serde(rename = "conversation", skip_serializing_if = "Option::is_none")]
     pub conversation: Option<Box<models::SearchResultConversation>>,
 }
 
-impl MultiSearchResult {
-    pub fn new(results: Vec<models::MultiSearchResultItem>) -> MultiSearchResult{
+impl<D> MultiSearchResult<D> {
+    pub fn new(results: Vec<models::MultiSearchResultItem<D>>) -> MultiSearchResult<D>{
         MultiSearchResult {
             results,
             conversation: None,

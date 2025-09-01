@@ -160,20 +160,22 @@ impl{{{vendorExtensions.x-rust-generic-parameter}}} {{{classname}}}{{{vendorExte
     /// {{{.}}}
     {{/description}}
     pub fn new({{#requiredVars}}{{{name}}}: {{!
-    ### Option Start
-    }}{{#isNullable}}Option<{{/isNullable}}{{!
-    ### Enums
-    }}{{#isEnum}}{{#isArray}}{{#uniqueItems}}std::collections::HashSet<{{/uniqueItems}}{{^uniqueItems}}Vec<{{/uniqueItems}}{{/isArray}}{{{enumName}}}{{#isArray}}>{{/isArray}}{{/isEnum}}{{!
-    ### Non-Enums
-    }}{{^isEnum}}{{#isByteArray}}Vec<u8>{{/isByteArray}}{{^isByteArray}}{{{dataType}}}{{/isByteArray}}{{/isEnum}}{{!
-    ### Option End
-    }}{{#isNullable}}>{{/isNullable}}{{!
+    ### CHANGE 1: If x-rust-type is available for a required var, use it for the parameter type.
+    }}{{#vendorExtensions.x-rust-type}}{{{.}}}{{/vendorExtensions.x-rust-type}}{{!
+    ### Fallback to original logic if x-rust-type is not present.
+    }}{{^vendorExtensions.x-rust-type}}{{#isNullable}}Option<{{/isNullable}}{{#isEnum}}{{#isArray}}{{#uniqueItems}}std::collections::HashSet<{{/uniqueItems}}{{^uniqueItems}}Vec<{{/uniqueItems}}{{/isArray}}{{{enumName}}}{{#isArray}}>{{/isArray}}{{/isEnum}}{{^isEnum}}{{#isByteArray}}Vec<u8>{{/isByteArray}}{{^isByteArray}}{{{dataType}}}{{/isByteArray}}{{/isEnum}}{{#isNullable}}>{{/isNullable}}{{/vendorExtensions.x-rust-type}}{{!
     ### Comma for next arguement
     }}{{^-last}}, {{/-last}}{{/requiredVars}}) -> {{{classname}}}{{{vendorExtensions.x-rust-generic-parameter}}}{
         {{{classname}}} {
             {{#vars}}
             {{#vendorExtensions.x-rust-type}}
+            {{! Differentiate between required and optional fields with x-rust-type.}}
+            {{#required}}
+            {{{name}}},
+            {{/required}}
+            {{^required}}
             {{{name}}}: None,
+            {{/required}}
             {{/vendorExtensions.x-rust-type}}
             {{^vendorExtensions.x-rust-type}}
             {{{name}}}{{^required}}: None{{/required}}{{#required}}{{#isModel}}{{^avoidBoxedModels}}: {{^isNullable}}Box::new({{{name}}}){{/isNullable}}{{#isNullable}}if let Some(x) = {{{name}}} {Some(Box::new(x))} else {None}{{/isNullable}}{{/avoidBoxedModels}}{{/isModel}}{{/required}},

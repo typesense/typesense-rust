@@ -13,7 +13,7 @@ use typesense_codegen::{
 
 /// Provides methods for interacting with a single document within a specific Typesense collection.
 ///
-/// This struct is created by calling a method like `client.collection::<T>("collection_name").document("document_id")`.
+/// This struct is created by calling a method like `client.collection("collection_name").document("document_id")` or `client.collection_of::<MyType>("collection_name").document("document_id")`.
 /// The generic `T` represents the shape of the document and must implement `Serialize` and `DeserializeOwned`.
 /// If `T` is not specified, it defaults to `serde_json::Value` for schemaless interactions.
 pub struct Document<'a, T = serde_json::Value>

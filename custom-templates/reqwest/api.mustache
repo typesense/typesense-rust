@@ -96,17 +96,7 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}{{{vendorExtensi
 ### Params
 }}params: {{{operationIdCamelCase}}}Params{{/-first}}{{/allParams}}{{!
 ### Function return type
-}}) -> Result<{{!
-### Response File Support
-}}{{#isResponseFile}}{{#supportAsync}}reqwest::Response{{/supportAsync}}{{^supportAsync}}reqwest::blocking::Response{{/supportAsync}}{{/isResponseFile}}{{!
-### Regular Responses
-}}{{^isResponseFile}}{{!
-### Multi response support
-}}{{#supportMultipleResponses}}ResponseContent<{{{operationIdCamelCase}}}Success>{{/supportMultipleResponses}}{{!
-### Regular return type
-}}{{^supportMultipleResponses}}{{^returnType}}(){{/returnType}}{{{returnType}}}{{{vendorExtensions.x-rust-return-type-generic-parameter}}}{{/supportMultipleResponses}}{{/isResponseFile}}{{!
-### Error Type
-}}, Error<{{{operationIdCamelCase}}}Error>> {
+}}) -> Result<{{#vendorExtensions.x-rust-return-type}}{{{.}}}{{/vendorExtensions.x-rust-return-type}}{{^vendorExtensions.x-rust-return-type}}{{#isResponseFile}}{{#supportAsync}}reqwest::Response{{/supportAsync}}{{^supportAsync}}reqwest::blocking::Response{{/supportAsync}}{{/isResponseFile}}{{^isResponseFile}}{{#supportMultipleResponses}}ResponseContent<{{{operationIdCamelCase}}}Success>{{/supportMultipleResponses}}{{^supportMultipleResponses}}{{^returnType}}(){{/returnType}}{{{returnType}}}{{/supportMultipleResponses}}{{/isResponseFile}}{{/vendorExtensions.x-rust-return-type}}, Error<{{{operationIdCamelCase}}}Error>> {
 {{/vendorExtensions.x-group-parameters}}
 {{^vendorExtensions.x-group-parameters}}
 pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}{{{vendorExtensions.x-rust-operation-generic-parameter}}}(configuration: &configuration::Configuration, {{#allParams}}{{{paramName}}}: {{!
@@ -123,7 +113,7 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}{{{vendorExtensi
 ### Comma for next arguement
 }}{{^-last}}, {{/-last}}{{/allParams}}{{!
 ### Function return type
-}}) -> Result<{{!
+}}) -> Result<{{#vendorExtensions.x-rust-return-type}}{{{vendorExtensions.x-rust-return-type}}}{{/vendorExtensions.x-rust-return-type}}{{^vendorExtensions.x-rust-return-type}}{{!
 ### Response File Support
 }}{{#isResponseFile}}{{#supportAsync}}reqwest::Response{{/supportAsync}}{{^supportAsync}}reqwest::blocking::Response{{/supportAsync}}{{/isResponseFile}}{{!
 ### Regular Responses
@@ -131,7 +121,7 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}{{{vendorExtensi
 ### Multi response support
 }}{{#supportMultipleResponses}}ResponseContent<{{{operationIdCamelCase}}}Success>{{/supportMultipleResponses}}{{!
 ### Regular return type
-}}{{^supportMultipleResponses}}{{^returnType}}(){{/returnType}}{{{returnType}}}{{{vendorExtensions.x-rust-return-type-generic-parameter}}}{{/supportMultipleResponses}}{{/isResponseFile}}{{!
+}}{{^supportMultipleResponses}}{{^returnType}}(){{/returnType}}{{{returnType}}}{{{vendorExtensions.x-rust-return-type-generic-parameter}}}{{/supportMultipleResponses}}{{/isResponseFile}}{{/vendorExtensions.x-rust-return-type}}{{!
 ### Error Type
 }}, Error<{{{operationIdCamelCase}}}Error>> {
     {{#allParams.0}}

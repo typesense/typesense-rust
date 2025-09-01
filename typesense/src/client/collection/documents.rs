@@ -132,8 +132,9 @@ where
         };
 
         self.client
-            .execute(|config: configuration::Configuration| async move {
-                documents_api::import_documents(&config, params.clone()).await
+            .execute(|config: configuration::Configuration| {
+                let params_for_move = params.clone();
+                async move { documents_api::import_documents(&config, params_for_move).await }
             })
             .await
     }
@@ -154,8 +155,9 @@ where
         };
 
         self.client
-            .execute(|config: configuration::Configuration| async move {
-                documents_api::export_documents(&config, params.clone()).await
+            .execute(|config: configuration::Configuration| {
+                let params_for_move = params.clone();
+                async move { documents_api::export_documents(&config, params_for_move).await }
             })
             .await
     }
@@ -177,8 +179,9 @@ where
             truncate: params.truncate,
         };
         self.client
-            .execute(|config: configuration::Configuration| async move {
-                documents_api::delete_documents(&config, params.clone()).await
+            .execute(|config: configuration::Configuration| {
+                let params_for_move = params.clone();
+                async move { documents_api::delete_documents(&config, params_for_move).await }
             })
             .await
     }
@@ -200,8 +203,9 @@ where
             body: document,
         };
         self.client
-            .execute(|config: configuration::Configuration| async move {
-                documents_api::update_documents(&config, params.clone()).await
+            .execute(|config: configuration::Configuration| {
+                let params_for_move = params.clone();
+                async move { documents_api::update_documents(&config, params_for_move).await }
             })
             .await
     }
@@ -292,14 +296,11 @@ where
             synonym_sets: params.synonym_sets,
         };
 
-        let raw_result = self
-            .client
-            .execute(|config: configuration::Configuration| async move {
-                documents_api::search_collection(&config, params.clone()).await
+        self.client
+            .execute(|config: configuration::Configuration| {
+                let params_for_move = search_params.clone();
+                async move { documents_api::search_collection(&config, params_for_move).await }
             })
-            .await?;
-
-        // Transform the raw API result into our generic, typed SearchResult<T>.
-        SearchResult::from_raw(raw_result).map_err(Error::from)
+            .await
     }
 }

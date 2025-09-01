@@ -33,7 +33,7 @@ pub struct SearchResult<D> {
     #[serde(rename = "page", skip_serializing_if = "Option::is_none")]
     pub page: Option<i32>,
     #[serde(rename = "grouped_hits", skip_serializing_if = "Option::is_none")]
-    pub grouped_hits: Option<Vec<models::SearchGroupedHit>>,
+    pub grouped_hits: Option<Vec<models::SearchGroupedHit<D>>>,
     /// The documents that matched the search query
     #[serde(rename = "hits", skip_serializing_if = "Option::is_none")]
     pub hits: Option<Vec<models::SearchResultHit<D>>>,

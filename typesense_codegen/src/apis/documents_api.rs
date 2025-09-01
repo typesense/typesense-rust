@@ -836,7 +836,7 @@ pub async fn index_document(configuration: &configuration::Configuration, params
 }
 
 /// This is especially useful to avoid round-trip network latencies incurred otherwise if each of these requests are sent in separate HTTP requests. You can also use this feature to do a federated search across multiple collections in a single HTTP request.
-pub async fn multi_search(configuration: &configuration::Configuration, params: MultiSearchParams) -> Result<models::MultiSearchResult, Error<MultiSearchError>> {
+pub async fn multi_search(configuration: &configuration::Configuration, params: MultiSearchParams) -> Result<serde_json::Value, Error<MultiSearchError>> {
 
     let uri_str = format!("{}/multi_search", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::POST, &uri_str);

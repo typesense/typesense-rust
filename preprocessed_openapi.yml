@@ -406,7 +406,7 @@ paths:
       description: Search for documents in a collection that match the search criteria.
       operationId: searchCollection
       x-rust-operation-generic-parameter: '<D: for<''de> serde::Deserialize<''de> + Serialize>'
-      x-rust-return-type-generic-parameter: <D>
+      x-rust-return-type: models::SearchResult<D>
       parameters:
       - name: collectionName
         in: path
@@ -1757,6 +1757,7 @@ paths:
       - documents
       summary: send multiple search requests in a single HTTP request
       description: This is especially useful to avoid round-trip network latencies incurred otherwise if each of these requests are sent in separate HTTP requests. You can also use this feature to do a federated search across multiple collections in a single HTTP request.
+      x-rust-return-type: serde_json::Value
       parameters:
       - name: q
         in: query
@@ -3151,6 +3152,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SearchGroupedHit'
+          x-rust-type: Option<Vec<models::SearchGroupedHit<D>>>
         hits:
           type: array
           description: The documents that matched the search query
@@ -3207,6 +3209,7 @@ components:
       required:
       - group_key
       - hits
+      x-rust-generic-parameter: <D>
       properties:
         found:
           type: integer
@@ -3218,6 +3221,7 @@ components:
           description: The documents that matched the search query
           items:
             $ref: '#/components/schemas/SearchResultHit'
+          x-rust-type: Vec<models::SearchResultHit<D>>
     SearchResultHit:
       type: object
       x-rust-generic-parameter: <D>
@@ -3590,6 +3594,7 @@ components:
           items:
             $ref: '#/components/schemas/ApiKey'
     MultiSearchResult:
+      x-rust-generic-parameter: <D>
       type: object
       required:
       - results
@@ -3598,9 +3603,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MultiSearchResultItem'
+          x-rust-type: Vec<models::MultiSearchResultItem<D>>
         conversation:
           $ref: '#/components/schemas/SearchResultConversation'
     MultiSearchResultItem:
+      x-rust-generic-parameter: <D>
       allOf:
       - $ref: '#/components/schemas/SearchResult'
       - type: object

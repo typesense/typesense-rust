@@ -4,7 +4,10 @@
 
 use crate::{Client, Error};
 use typesense_codegen::{
-    apis::{collections_api, configuration},
+    apis::{
+        collections_api::{self, GetCollectionsParams},
+        configuration,
+    },
     models::{self, GetCollectionsParameters},
 };
 
@@ -20,6 +23,7 @@ impl<'a> Collections<'a> {
     pub(super) fn new(client: &'a Client) -> Self {
         Self { client }
     }
+    // --- Collection-Specific Methods ---
 
     /// Creates a new collection with the given schema.
     ///
@@ -37,8 +41,9 @@ impl<'a> Collections<'a> {
         };
 
         self.client
-            .execute(|config: configuration::Configuration| async move {
-                collections_api::create_collection(&config, params.clone()).await
+            .execute(|config: configuration::Configuration| {
+                let params_for_move = params.clone();
+                async move { collections_api::create_collection(&config, params_for_move).await }
             })
             .await
     }
@@ -49,11 +54,12 @@ impl<'a> Collections<'a> {
     /// recent collections appearing first.
     pub async fn retrieve(
         &self,
-        params: &GetCollectionsParameters,
+        params: &GetCollectionsParams,
     ) -> Result<Vec<models::CollectionResponse>, Error<collections_api::GetCollectionsError>> {
         self.client
-            .execute(|config: configuration::Configuration| async move {
-                collections_api::get_collections(&config, params.clone()).await
+            .execute(|config: configuration::Configuration| {
+                let params_for_move = params.clone();
+                async move { collections_api::get_collections(&config, params_for_move).await }
             })
             .await
     }
