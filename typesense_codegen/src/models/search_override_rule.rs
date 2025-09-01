@@ -12,6 +12,7 @@ use crate::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
+#[builder(on(String, into))]
 pub struct SearchOverrideRule {
     /// List of tag values to associate with this override rule.
     #[serde(rename = "tags", skip_serializing_if = "Option::is_none")]

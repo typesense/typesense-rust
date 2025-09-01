@@ -12,6 +12,7 @@ use crate::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
+#[builder(on(String, into))]
 pub struct SynonymItemSchema {
     /// Unique identifier for the synonym item
     #[serde(rename = "id")]

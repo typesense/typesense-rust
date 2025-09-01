@@ -12,6 +12,7 @@ use crate::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
+#[builder(on(String, into))]
 pub struct MultiSearchSearchesParameter {
     /// When true, merges the search results from each search query into a single ordered set of hits.
     #[serde(rename = "union", skip_serializing_if = "Option::is_none")]

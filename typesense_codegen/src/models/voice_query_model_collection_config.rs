@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 
 /// VoiceQueryModelCollectionConfig : Configuration for the voice query model 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
+#[builder(on(String, into))]
 pub struct VoiceQueryModelCollectionConfig {
     #[serde(rename = "model_name", skip_serializing_if = "Option::is_none")]
     pub model_name: Option<String>,

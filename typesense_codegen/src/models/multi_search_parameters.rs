@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 
 /// MultiSearchParameters : Parameters for the multi search API. 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
+#[builder(on(String, into))]
 pub struct MultiSearchParameters {
     /// The query text to search for in the collection. Use * as the search string to return all documents. This is typically useful when used in conjunction with filter_by.
     #[serde(rename = "q", skip_serializing_if = "Option::is_none")]

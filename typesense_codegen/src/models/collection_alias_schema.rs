@@ -12,6 +12,7 @@ use crate::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
+#[builder(on(String, into))]
 pub struct CollectionAliasSchema {
     /// Name of the collection you wish to map the alias to
     #[serde(rename = "collection_name")]

@@ -12,6 +12,7 @@ use crate::models;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
+#[builder(on(String, into))]
 pub struct AnalyticsRuleCreateParams {
     #[serde(rename = "destination_collection", skip_serializing_if = "Option::is_none")]
     pub destination_collection: Option<String>,
