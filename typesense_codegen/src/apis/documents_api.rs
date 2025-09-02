@@ -584,8 +584,7 @@ pub async fn export_documents(configuration: &configuration::Configuration, para
     if !status.is_client_error() && !status.is_server_error() {
         let content = resp.text().await?;
         match content_type {
-            ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
-            ContentType::Text => return Err(Error::from(serde_json::Error::custom("Received `text/plain` content type response that cannot be converted to `String`"))),
+            ContentType::Json | ContentType::Text => return Ok(content),
             ContentType::Unsupported(unknown_type) => return Err(Error::from(serde_json::Error::custom(format!("Received `{unknown_type}` content type response that cannot be converted to `String`")))),
         }
     } else {
@@ -758,7 +757,7 @@ pub async fn import_documents(configuration: &configuration::Configuration, para
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&params.body);
+    req_builder = req_builder.header(reqwest::header::CONTENT_TYPE, "text/plain").body(params.body);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -774,8 +773,7 @@ pub async fn import_documents(configuration: &configuration::Configuration, para
     if !status.is_client_error() && !status.is_server_error() {
         let content = resp.text().await?;
         match content_type {
-            ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
-            ContentType::Text => return Err(Error::from(serde_json::Error::custom("Received `text/plain` content type response that cannot be converted to `String`"))),
+            ContentType::Json | ContentType::Text => return Ok(content),
             ContentType::Unsupported(unknown_type) => return Err(Error::from(serde_json::Error::custom(format!("Received `{unknown_type}` content type response that cannot be converted to `String`")))),
         }
     } else {
@@ -1061,8 +1059,8 @@ pub async fn multi_search(configuration: &configuration::Configuration, params: 
         let content = resp.text().await?;
         match content_type {
             ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
-            ContentType::Text => return Err(Error::from(serde_json::Error::custom("Received `text/plain` content type response that cannot be converted to `models::MultiSearchResult`"))),
-            ContentType::Unsupported(unknown_type) => return Err(Error::from(serde_json::Error::custom(format!("Received `{unknown_type}` content type response that cannot be converted to `models::MultiSearchResult`")))),
+            ContentType::Text => return Err(Error::from(serde_json::Error::custom("Received `text/plain` content type response that cannot be converted to `serde_json::Value`"))),
+            ContentType::Unsupported(unknown_type) => return Err(Error::from(serde_json::Error::custom(format!("Received `{unknown_type}` content type response that cannot be converted to `serde_json::Value`")))),
         }
     } else {
         let content = resp.text().await?;
@@ -1317,8 +1315,8 @@ pub async fn search_collection<D: for<'de> serde::Deserialize<'de> + Serialize>(
         let content = resp.text().await?;
         match content_type {
             ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
-            ContentType::Text => return Err(Error::from(serde_json::Error::custom("Received `text/plain` content type response that cannot be converted to `models::SearchResult`"))),
-            ContentType::Unsupported(unknown_type) => return Err(Error::from(serde_json::Error::custom(format!("Received `{unknown_type}` content type response that cannot be converted to `models::SearchResult`")))),
+            ContentType::Text => return Err(Error::from(serde_json::Error::custom("Received `text/plain` content type response that cannot be converted to `models::SearchResult<D>`"))),
+            ContentType::Unsupported(unknown_type) => return Err(Error::from(serde_json::Error::custom(format!("Received `{unknown_type}` content type response that cannot be converted to `models::SearchResult<D>`")))),
         }
     } else {
         let content = resp.text().await?;

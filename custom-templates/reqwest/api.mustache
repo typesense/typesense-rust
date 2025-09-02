@@ -433,6 +433,16 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}{{{vendorExtensi
     {{/hasFormParams}}
     {{/isMultipart}}
     {{#hasBodyParam}}
+    {{! Check for the raw text body extension first }}
+    {{#vendorExtensions.x-rust-body-is-raw-text}}
+    {{! If the flag is true, we generate only the raw text body logic }}
+    {{#bodyParams}}
+    req_builder = req_builder.header(reqwest::header::CONTENT_TYPE, "text/plain").body({{{vendorExtensions.x-rust-param-identifier}}});
+    {{/bodyParams}}
+    {{/vendorExtensions.x-rust-body-is-raw-text}}
+    {{! Now, handle the case where the extension is NOT present. This is the "else" block }}
+    {{^vendorExtensions.x-rust-body-is-raw-text}}
+    {{! This contains the original default logic }}
     {{#bodyParams}}
     {{#isFile}}
     req_builder = req_builder.body({{{vendorExtensions.x-rust-param-identifier}}});
@@ -441,6 +451,7 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}{{{vendorExtensi
     req_builder = req_builder.json(&{{{vendorExtensions.x-rust-param-identifier}}});
     {{/isFile}}
     {{/bodyParams}}
+    {{/vendorExtensions.x-rust-body-is-raw-text}}
     {{/hasBodyParam}}
 
     let req = req_builder.build()?;
@@ -472,14 +483,14 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}{{{vendorExtensi
         {{#returnType}}
         let content = resp.text(){{#supportAsync}}.await{{/supportAsync}}?;
         match content_type {
-            ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
             {{#vendorExtensions.x-supports-plain-text}}
-            ContentType::Text => return Ok(content),
+            ContentType::Json | ContentType::Text => return Ok(content),
             {{/vendorExtensions.x-supports-plain-text}}
             {{^vendorExtensions.x-supports-plain-text}}
-            ContentType::Text => return Err(Error::from(serde_json::Error::custom("Received `text/plain` content type response that cannot be converted to `{{returnType}}`"))),
+            ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
+            ContentType::Text => return Err(Error::from(serde_json::Error::custom("Received `text/plain` content type response that cannot be converted to `{{#vendorExtensions.x-rust-return-type}}{{{.}}}{{/vendorExtensions.x-rust-return-type}}{{^vendorExtensions.x-rust-return-type}}{{{returnType}}}{{/vendorExtensions.x-rust-return-type}}`"))),
             {{/vendorExtensions.x-supports-plain-text}}
-            ContentType::Unsupported(unknown_type) => return Err(Error::from(serde_json::Error::custom(format!("Received `{unknown_type}` content type response that cannot be converted to `{{returnType}}`")))),
+            ContentType::Unsupported(unknown_type) => return Err(Error::from(serde_json::Error::custom(format!("Received `{unknown_type}` content type response that cannot be converted to `{{#vendorExtensions.x-rust-return-type}}{{{.}}}{{/vendorExtensions.x-rust-return-type}}{{^vendorExtensions.x-rust-return-type}}{{{returnType}}}{{/vendorExtensions.x-rust-return-type}}`")))),
         }
         {{/returnType}}
         {{/isResponseFile}}
