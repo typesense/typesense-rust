@@ -58,7 +58,7 @@ fn convert_hit_ref<D: DeserializeOwned>(
         geo_distance_meters: raw_hit.geo_distance_meters.clone(),
         vector_distance: raw_hit.vector_distance,
         hybrid_search_info: raw_hit.hybrid_search_info.clone(),
-        search_index: raw_hit.search_index.clone(),
+        search_index: raw_hit.search_index,
     })
 }
 

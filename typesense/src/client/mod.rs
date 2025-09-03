@@ -275,7 +275,7 @@ impl Client {
 
     /// The core execution method that handles multi-node failover and retries.
     /// This internal method is called by all public API methods.
-    pub(super) async fn execute<'a, F, Fut, T, E>(&'a self, api_call: F) -> Result<T, Error<E>>
+    pub(super) async fn execute<F, Fut, T, E>(&self, api_call: F) -> Result<T, Error<E>>
     where
         F: Fn(configuration::Configuration) -> Fut,
         Fut: Future<Output = Result<T, apis::Error<E>>>,
