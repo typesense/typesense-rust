@@ -12,7 +12,7 @@ const SPEC_URL: &str =
 // Input spec file, expected in the project root.
 const INPUT_SPEC_FILE: &str = "openapi.yml";
 const OUTPUT_PREPROCESSED_FILE: &str = "./preprocessed_openapi.yml";
-const CUSTOM_TEMPLATES_DIR: &str = "custom-templates"; // Directory containing our custom templates
+const CUSTOM_TEMPLATES_DIR: &str = "openapi-generator-template"; // Directory containing our custom templates
 
 // Output directory for the generated code.
 const OUTPUT_DIR: &str = "typesense_codegen";
