@@ -3,6 +3,7 @@ mod collections_test;
 
 mod documents_test;
 mod keys_test;
+mod multi_search_test;
 
 use reqwest::Url;
 use reqwest_retry::policies::ExponentialBackoff;

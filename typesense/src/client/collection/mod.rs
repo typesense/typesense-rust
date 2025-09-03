@@ -1,6 +1,6 @@
 //! Provides access to the collection and alias-related API endpoints.
 //!
-//! A `Collections` instance is created via the main `Client::collections()` method.
+//! A `Collections` instance is created via the main `client.collections()` method.
 
 mod document;
 mod documents;
@@ -20,7 +20,7 @@ where
     T: DeserializeOwned + Serialize + Send + Sync,
 {
     pub(super) client: &'a Client,
-    pub(super) collection_name: &'a str,
+    pub(super) collection_name: String,
     pub(super) _phantom: std::marker::PhantomData<T>,
 }
 
@@ -29,7 +29,7 @@ where
     T: DeserializeOwned + Serialize + Send + Sync,
 {
     /// Creates a new `Collection` instance.
-    pub(super) fn new(client: &'a Client, collection_name: &'a str) -> Self {
+    pub(super) fn new(client: &'a Client, collection_name: String) -> Self {
         Self {
             client,
             collection_name,
@@ -39,12 +39,16 @@ where
 
     /// Provides access to the document-related API endpoints for a specific collection.
     pub fn documents(&'a self) -> documents::Documents<'a, T> {
-        documents::Documents::new(self.client, self.collection_name)
+        documents::Documents::new(self.client, self.collection_name.to_owned())
     }
 
     /// Provides access to the API endpoints for a single document within a Typesense collection.
-    pub fn document(&'a self, document_id: &'a str) -> document::Document<'a, T> {
-        document::Document::new(self.client, self.collection_name, document_id)
+    pub fn document(&'a self, document_id: impl Into<String>) -> document::Document<'a, T> {
+        document::Document::new(
+            self.client,
+            self.collection_name.to_owned(),
+            document_id.into(),
+        )
     }
 
     /// Retrieves the details of a collection, given its name.
@@ -52,7 +56,7 @@ where
         &self,
     ) -> Result<models::CollectionResponse, Error<collections_api::GetCollectionError>> {
         let params = collections_api::GetCollectionParams {
-            collection_name: self.collection_name.to_string(),
+            collection_name: self.collection_name.to_owned(),
         };
 
         self.client
@@ -64,14 +68,11 @@ where
     }
 
     /// Permanently drops a collection.
-    ///
-    /// This action cannot be undone. For large collections, this might have an
-    /// impact on read latencies during the delete operation.
     pub async fn delete(
         &self,
     ) -> Result<models::CollectionResponse, Error<collections_api::DeleteCollectionError>> {
         let params = collections_api::DeleteCollectionParams {
-            collection_name: self.collection_name.to_string(),
+            collection_name: self.collection_name.to_owned(),
         };
         self.client
             .execute(|config: configuration::Configuration| {
@@ -90,7 +91,7 @@ where
         update_schema: models::CollectionUpdateSchema,
     ) -> Result<models::CollectionUpdateSchema, Error<collections_api::UpdateCollectionError>> {
         let params = collections_api::UpdateCollectionParams {
-            collection_name: self.collection_name.to_string(),
+            collection_name: self.collection_name.to_owned(),
             collection_update_schema: update_schema,
         };
         self.client

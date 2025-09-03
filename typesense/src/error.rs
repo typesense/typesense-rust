@@ -18,7 +18,6 @@ where
 {
     /// Occurs when an operation fails against all configured Typesense nodes.
     ///
-    /// This error is only returned when using a client configured with multiple nodes.
     /// It signifies that the client attempted the operation against each node in turn,
     /// and every attempt failed. The user should check the health and connectivity
     /// of all their Typesense nodes.

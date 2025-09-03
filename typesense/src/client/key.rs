@@ -1,6 +1,6 @@
 //! Provides access to the API endpoints for managing a single API key.
 //!
-//! A `Key` instance is created via the `Client::key(key_id)` method.
+//! A `Key` instance is created via the `client.key(key_id)` method.
 
 use crate::{Client, Error};
 use typesense_codegen::{

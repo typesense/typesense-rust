@@ -1,6 +1,6 @@
 //! Provides access to the API endpoints for managing the collection of API keys.
 //!
-//! An `Keys` instance is created via the `Client::keys()` method.
+//! An `Keys` instance is created via the `client.keys()` method.
 
 use crate::{
     Client, Error,

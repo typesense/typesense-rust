@@ -15,7 +15,6 @@ pub struct ScopedKeyParameters {
     pub search_params: Option<SearchParameters>,
 
     /// The number of `multi_search` requests that can be performed using this key.
-    /// This is an optional parameter to further restrict the key's capabilities.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub limit_multi_searches: Option<i64>,
 

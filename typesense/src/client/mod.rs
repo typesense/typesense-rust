@@ -18,9 +18,8 @@
 //! ```no_run
 //! #[cfg(not(target_family = "wasm"))]
 //! {
-//! use typesense::{Client, models};
+//! use typesense::{Client, models, ExponentialBackoff};
 //! use reqwest::Url;
-//! use reqwest_retry::policies::ExponentialBackoff;
 //! use std::time::Duration;
 //!
 //! #[tokio::main]
@@ -60,12 +59,9 @@
 //!
 //! ### WebAssembly (Wasm) Usage
 //!
-//! When compiling for a WebAssembly target (`wasm32-unknown-unknown`), the
-//! client's underlying HTTP transport and runtime are different.
-//!
-//! - `reqwest` internally uses the browser's **fetch API**.
-//! - Tokio-based features such as middleware, retries, and connection
-//!   timeouts are **not available**.
+//! When compiling for a WebAssembly target (`wasm32-unknown-unknown`),
+//! Tokio-based features such as middleware, retries, and connection
+//! timeouts are **not available**.
 //!
 //! Example:
 //!
@@ -115,6 +111,7 @@ mod collection;
 mod collections;
 mod key;
 mod keys;
+mod multi_search;
 
 use collection::Collection;
 use collections::Collections;
@@ -130,7 +127,7 @@ use reqwest::Url;
 use reqwest_middleware::ClientBuilder as ReqwestMiddlewareClientBuilder;
 #[cfg(not(target_arch = "wasm32"))]
 use reqwest_retry::RetryTransientMiddleware;
-use reqwest_retry::policies::ExponentialBackoff;
+pub use reqwest_retry::policies::ExponentialBackoff;
 
 use std::future::Future;
 use std::sync::{
@@ -153,7 +150,6 @@ struct Node {
 /// API resource groups (namespaces) like `collections`, `documents`, and `operations`.
 #[derive(Debug)]
 pub struct Client {
-    // The Client now holds the stateful Node list.
     nodes: Vec<Arc<Mutex<Node>>>,
     nearest_node: Option<Arc<Mutex<Node>>>,
     api_key: String,
@@ -168,7 +164,7 @@ pub struct Client {
 
 #[bon::bon]
 impl Client {
-    /// Creates a new `Client` with the given configuration.
+    /// Creates a new `Client`.
     ///
     /// Returns an error if the configuration contains no nodes. Default values:
     /// - **nearest_node**: None.
@@ -181,7 +177,7 @@ impl Client {
         api_key: impl Into<String>,
         /// A list of all nodes in the Typesense cluster.
         nodes: Vec<Url>,
-        /// An optional, preferred node to try first for every request. Ideal for reducing latency.
+        /// An optional, preferred node to try first for every request. This is for your server-side load balancer.
         #[builder(into)]
         nearest_node: Option<Url>,
         #[builder(default = Duration::from_secs(60))]
@@ -293,7 +289,6 @@ impl Client {
         for _ in 0..num_nodes_to_try {
             let node_arc = self.get_next_node();
             let node_url = {
-                // Lock is held for a very short duration.
                 let node = node_arc.lock().unwrap();
                 node.url.clone()
             };
@@ -313,7 +308,7 @@ impl Client {
             .with(RetryTransientMiddleware::new_with_policy(self.retry_policy))
             .build();
 
-            // Create the temporary config on the stack for this attempt.
+            // Create a temporary config for this attempt.
             let gen_config = configuration::Configuration {
                 base_path: node_url
                     .to_string()
@@ -355,7 +350,7 @@ impl Client {
     /// ```no_run
     /// # #[cfg(not(target_family = "wasm"))]
     /// # {
-    /// # use typesense::Client;
+    /// # use typesense::{Client, GetCollectionsParameters};
     /// # use reqwest::Url;
     /// #
     /// # #[tokio::main]
@@ -365,7 +360,7 @@ impl Client {
     /// #    .api_key("xyz")
     /// #    .build()
     /// #    .unwrap();
-    /// let all_collections = client.collections().retrieve().await.unwrap();
+    /// let all_collections = client.collections().retrieve(GetCollectionsParameters::default()).await.unwrap();
     /// # Ok(())
     /// # }
     /// # }
@@ -381,9 +376,6 @@ impl Client {
     ///
     /// # Type Parameters
     /// * `T` - The type of the documents in the collection. It must be serializable and deserializable.
-    ///         **This defaults to `serde_json::Value`**, allowing you to perform collection-level
-    ///         operations (like delete, update, retrieve schema) without specifying a type,
-    ///         or to work with schemaless documents.
     ///
     /// # Arguments
     /// * `collection_name` - The name of the collection to interact with.
@@ -418,11 +410,11 @@ impl Client {
     /// # }
     /// # }
     /// ```
-    pub fn collection_of<'a, T>(&'a self, collection_name: &'a str) -> Collection<'a, T>
+    pub fn collection_of<'a, T>(&'a self, collection_name: impl Into<String>) -> Collection<'a, T>
     where
         T: DeserializeOwned + Serialize + Send + Sync,
     {
-        Collection::new(self, collection_name)
+        Collection::new(self, collection_name.into())
     }
 
     /// Provides access to API endpoints for a specific collection using schemaless `serde_json::Value` documents.
@@ -454,8 +446,11 @@ impl Client {
     /// # }
     /// # }
     /// ```
-    pub fn collection<'a>(&'a self, collection_name: &'a str) -> Collection<'a, serde_json::Value> {
-        Collection::new(self, collection_name)
+    pub fn collection<'a>(
+        &'a self,
+        collection_name: impl Into<String>,
+    ) -> Collection<'a, serde_json::Value> {
+        Collection::new(self, collection_name.into())
     }
 
     /// Provides access to endpoints for managing the collection of API keys.
@@ -516,6 +511,41 @@ impl Client {
     pub fn key(&self, key_id: i64) -> Key<'_> {
         Key::new(self, key_id)
     }
+
+    /// Provides access to the multi search endpoint.
+    ///
+    /// # Example
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::{Client, models};
+    /// # use reqwest::Url;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// # let search_requests = models::MultiSearchBody {
+    /// #     searches: vec![models::MultiSearchCollectionParameters {
+    /// #         collection: Some("products".to_string()),
+    /// #         q: Some("phone".to_string()),
+    /// #         query_by: Some("name".to_string()),
+    /// #         ..Default::default()
+    /// #     }],
+    /// #     ..Default::default()
+    /// # };
+    /// # let common_params = models::MultiSearchParameters::default();
+    /// let results = client.multi_search().perform(search_requests, common_params).await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    pub fn multi_search(&self) -> multi_search::MultiSearch<'_> {
+        multi_search::MultiSearch::new(self)
+    }
 }
 
 /// A helper function to determine if an error is worth retrying on another node.
@@ -528,11 +558,10 @@ where
         // Server-side errors (5xx) indicate a problem with the node, so we should try another.
         apis::Error::ResponseError(content) => content.status.is_server_error(),
 
-        // Underlying reqwest errors (e.g., connection refused) are retriable on both native and wasm.
+        // Underlying reqwest errors (e.g., connection refused) are retriable.
         apis::Error::Reqwest(_) => true,
 
         // Network-level errors from middleware are always retriable.
-        // This match arm is ONLY included when compiling for non-wasm targets.
         #[cfg(not(target_arch = "wasm32"))]
         apis::Error::ReqwestMiddleware(_) => true,
 

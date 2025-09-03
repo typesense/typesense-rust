@@ -136,7 +136,7 @@ async fn run_test_document_lifecycle() {
         ..Default::default()
     };
     let import_res = documents_client
-        .import(new_books_jsonl, import_params)
+        .import_jsonl(new_books_jsonl, import_params)
         .await;
     assert!(import_res.is_ok(), "Bulk import failed");
 

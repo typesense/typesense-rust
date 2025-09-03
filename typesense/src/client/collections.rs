@@ -23,12 +23,8 @@ impl<'a> Collections<'a> {
     pub(super) fn new(client: &'a Client) -> Self {
         Self { client }
     }
-    // --- Collection-Specific Methods ---
 
     /// Creates a new collection with the given schema.
-    ///
-    /// When a collection is created, you give it a name and describe the fields
-    /// that will be indexed from the documents added to the collection.
     ///
     /// # Arguments
     /// * `schema` - A `CollectionSchema` object describing the collection to be created.
@@ -48,13 +44,10 @@ impl<'a> Collections<'a> {
             .await
     }
 
-    /// Returns a summary of all collections in the Typesense cluster.
-    ///
-    /// The collections are returned sorted by creation date, with the most
-    /// recent collections appearing first.
+    /// List the existing Typesense collections.
     pub async fn retrieve(
         &self,
-        params: &GetCollectionsParameters,
+        params: GetCollectionsParameters,
     ) -> Result<Vec<models::CollectionResponse>, Error<collections_api::GetCollectionsError>> {
         self.client
             .execute(|config: configuration::Configuration| {

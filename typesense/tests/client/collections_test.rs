@@ -2,7 +2,6 @@ use typesense::{
     GetCollectionsParameters,
     models::{CollectionSchema, CollectionUpdateSchema, Field},
 };
-use typesense_codegen::apis::collections_api::GetCollectionParams;
 
 use super::{get_client, new_id};
 
@@ -46,7 +45,7 @@ async fn logic_test_collections_and_collection_lifecycle() {
     // --- 3. Retrieve all collections (via `collections`) ---
     let retrieve_all_result = client
         .collections()
-        .retrieve(&GetCollectionsParameters::default())
+        .retrieve(GetCollectionsParameters::default())
         .await;
     assert!(
         retrieve_all_result.is_ok(),

@@ -25,7 +25,7 @@ where
     T: DeserializeOwned + Serialize + Send + Sync,
 {
     pub(super) client: &'a Client,
-    pub(super) collection_name: &'a str,
+    pub(super) collection_name: String,
     pub(super) _phantom: std::marker::PhantomData<T>,
 }
 
@@ -34,9 +34,7 @@ where
     T: DeserializeOwned + Serialize + Send + Sync,
 {
     /// Creates a new `Documents` instance.
-    ///
-    /// This is typically called by `Client::documents()`.
-    pub(super) fn new(client: &'a Client, collection_name: &'a str) -> Self {
+    pub(super) fn new(client: &'a Client, collection_name: String) -> Self {
         Self {
             client,
             collection_name,
@@ -55,9 +53,9 @@ where
         params: Option<DocumentIndexParameters>,
     ) -> Result<serde_json::Value, Error<documents_api::IndexDocumentError>> {
         let params = documents_api::IndexDocumentParams {
-            collection_name: self.collection_name.to_string(),
+            collection_name: self.collection_name.to_owned(),
             body: document,
-            action: Some(action.to_string()),
+            action: Some(action.to_owned()),
             dirty_values: params.unwrap_or_default().dirty_values, // Or expose this as an argument if needed
         };
         self.client
@@ -75,11 +73,11 @@ where
     /// auto-generate an ID. The newly indexed document is returned.
     ///
     /// # Arguments
-    /// * `document` - A reference to the document to create.
+    /// * `document` - A serializable struct or a `serde_json::Value` representing the document to create.
     /// * `params` - Optional parameters like `dirty_values`.
-    pub async fn create(
+    pub async fn create<U: Serialize>(
         &self,
-        document: &T,
+        document: U,
         params: Option<DocumentIndexParameters>,
     ) -> Result<T, Error<documents_api::IndexDocumentError>> {
         let doc_value = serde_json::to_value(document)?;
@@ -90,14 +88,14 @@ where
     /// Creates a new document or updates an existing one if an ID match is found.
     ///
     /// This method requires the full document to be sent. For partial updates, use
-    /// `collection.document("...").update()`. The indexed document is returned.
+    /// `collection("...").document("...").update()`. The indexed document is returned.
     ///
     /// # Arguments
-    /// * `document` - A reference to the document to upsert.
+    /// * `document` - A serializable struct or a `serde_json::Value` representing the document to upsert.
     /// * `params` - Optional parameters like `dirty_values`.
-    pub async fn upsert(
+    pub async fn upsert<U: Serialize>(
         &self,
-        document: &T,
+        document: U,
         params: Option<DocumentIndexParameters>,
     ) -> Result<T, Error<documents_api::IndexDocumentError>> {
         let doc_value = serde_json::to_value(document)?;
@@ -114,14 +112,14 @@ where
     /// # Arguments
     /// * `documents_jsonl` - A string containing the documents in JSONL format.
     /// * `params` - An `ImportDocumentsParameters` struct containing options like `action` and `batch_size`.
-    pub async fn import(
+    pub async fn import_jsonl(
         &self,
         documents_jsonl: String,
         params: ImportDocumentsParameters,
     ) -> Result<String, Error<documents_api::ImportDocumentsError>> {
         let params = documents_api::ImportDocumentsParams {
             body: documents_jsonl,
-            collection_name: self.collection_name.to_string(),
+            collection_name: self.collection_name.to_owned(),
 
             action: params.action,
             batch_size: params.batch_size,
@@ -148,7 +146,7 @@ where
         params: ExportDocumentsParameters,
     ) -> Result<String, Error<documents_api::ExportDocumentsError>> {
         let params = documents_api::ExportDocumentsParams {
-            collection_name: self.collection_name.to_string(),
+            collection_name: self.collection_name.to_owned(),
             exclude_fields: params.exclude_fields,
             filter_by: params.filter_by,
             include_fields: params.include_fields,
@@ -172,7 +170,7 @@ where
     ) -> Result<raw_models::DeleteDocuments200Response, Error<documents_api::DeleteDocumentsError>>
     {
         let params = documents_api::DeleteDocumentsParams {
-            collection_name: self.collection_name.to_string(),
+            collection_name: self.collection_name.to_owned(),
             filter_by: Some(params.filter_by),
             batch_size: params.batch_size,
             ignore_not_found: params.ignore_not_found,
@@ -189,18 +187,18 @@ where
     /// Updates a batch of documents matching a specific filter condition.
     ///
     /// # Arguments
-    /// * `document` - A `serde_json::Value` containing the fields to update.
+    /// * `document` - A serializable struct or a `serde_json::Value` containing the fields to update.
     /// * `params` - A `UpdateDocumentsParameters` describing the conditions for updating documents.
-    pub async fn update(
+    pub async fn update<U: Serialize>(
         &self,
-        document: serde_json::Value,
+        document: U,
         params: UpdateDocumentsParameters,
     ) -> Result<raw_models::UpdateDocuments200Response, Error<documents_api::UpdateDocumentsError>>
     {
         let params = documents_api::UpdateDocumentsParams {
-            collection_name: self.collection_name.to_string(),
+            collection_name: self.collection_name.to_owned(),
             filter_by: params.filter_by,
-            body: document,
+            body: serde_json::to_value(document)?,
         };
         self.client
             .execute(|config: configuration::Configuration| {
@@ -220,7 +218,7 @@ where
         params: raw_models::SearchParameters,
     ) -> Result<SearchResult<T>, Error<documents_api::SearchCollectionError>> {
         let search_params = documents_api::SearchCollectionParams {
-            collection_name: self.collection_name.to_string(),
+            collection_name: self.collection_name.to_owned(),
 
             // Map all corresponding fields directly.
             cache_ttl: params.cache_ttl,

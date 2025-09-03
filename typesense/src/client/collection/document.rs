@@ -18,8 +18,8 @@ where
     T: DeserializeOwned + Serialize + Send + Sync,
 {
     pub(super) client: &'a Client,
-    pub(super) collection_name: &'a str,
-    pub(super) document_id: &'a str,
+    pub(super) collection_name: String,
+    pub(super) document_id: String,
     pub(super) _phantom: std::marker::PhantomData<T>,
 }
 
@@ -28,8 +28,7 @@ where
     T: DeserializeOwned + Serialize + Send + Sync,
 {
     /// Creates a new `Document` instance for a specific document ID.
-    /// This is intended for internal use by the parent `Collection` struct.
-    pub(super) fn new(client: &'a Client, collection_name: &'a str, document_id: &'a str) -> Self {
+    pub(super) fn new(client: &'a Client, collection_name: String, document_id: String) -> Self {
         Self {
             client,
             collection_name,
@@ -44,8 +43,8 @@ where
     /// A `Result` containing the strongly-typed document `T` if successful.
     pub async fn retrieve(&self) -> Result<T, Error<documents_api::GetDocumentError>> {
         let params = documents_api::GetDocumentParams {
-            collection_name: self.collection_name.to_string(),
-            document_id: self.document_id.to_string(),
+            collection_name: self.collection_name.to_owned(),
+            document_id: self.document_id.to_owned(),
         };
 
         let result_value = self
@@ -104,12 +103,12 @@ where
     /// ```
     pub async fn update<U: Serialize>(
         &self,
-        partial_document: &U,
+        partial_document: U,
         params: Option<crate::models::DocumentIndexParameters>,
     ) -> Result<T, Error<documents_api::UpdateDocumentError>> {
         let params = documents_api::UpdateDocumentParams {
-            collection_name: self.collection_name.to_string(),
-            document_id: self.document_id.to_string(),
+            collection_name: self.collection_name.to_owned(),
+            document_id: self.document_id.to_owned(),
             body: serde_json::to_value(partial_document)?,
             dirty_values: params.unwrap_or_default().dirty_values,
         };
@@ -133,8 +132,8 @@ where
     /// A `Result` containing the deleted document deserialized into `T`.
     pub async fn delete(&self) -> Result<T, Error<documents_api::DeleteDocumentError>> {
         let params = documents_api::DeleteDocumentParams {
-            collection_name: self.collection_name.to_string(),
-            document_id: self.document_id.to_string(),
+            collection_name: self.collection_name.to_owned(),
+            document_id: self.document_id.to_owned(),
         };
 
         let result_value = self
