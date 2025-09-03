@@ -69,16 +69,16 @@ impl<'a> MultiSearch<'a> {
     ///     searches: vec![
     ///         // Search #0 targets the 'products' collection
     ///         models::MultiSearchCollectionParameters {
-    ///             collection: Some("products".to_string()),
-    ///             q: Some("shoe".to_string()),
-    ///             query_by: Some("name".to_string()),
+    ///             collection: Some("products".to_owned()),
+    ///             q: Some("shoe".to_owned()),
+    ///             query_by: Some("name".to_owned()),
     ///             ..Default::default()
     ///         },
     ///         // Search #1 targets the 'brands' collection
     ///         models::MultiSearchCollectionParameters {
-    ///             collection: Some("brands".to_string()),
-    ///             q: Some("nike".to_string()),
-    ///             query_by: Some("company_name".to_string()),
+    ///             collection: Some("brands".to_owned()),
+    ///             q: Some("nike".to_owned()),
+    ///             query_by: Some("company_name".to_owned()),
     ///             ..Default::default()
     ///         },
     ///     ],

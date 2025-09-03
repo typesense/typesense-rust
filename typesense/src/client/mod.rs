@@ -39,8 +39,8 @@
 //!
 //!     // Search for a document
 //!     let search_params = models::SearchParameters {
-//!         q: Some("phone".to_string()),
-//!         query_by: Some("name".to_string()),
+//!         q: Some("phone".to_owned()),
+//!         query_by: Some("name".to_owned()),
 //!         ..Default::default()
 //!     };
 //!
@@ -92,8 +92,8 @@
 //!
 //!         // Search for a document
 //!         let search_params = models::SearchParameters {
-//!             q: Some("phone".to_string()),
-//!             query_by: Some("name".to_string()),
+//!             q: Some("phone".to_owned()),
+//!             query_by: Some("name".to_owned()),
 //!             ..Default::default()
 //!         };
 //!
@@ -470,9 +470,9 @@ impl Client {
     /// #    .build()
     /// #    .unwrap();
     /// # let schema = models::ApiKeySchema {
-    /// #     description: "Search-only key.".to_string(),
-    /// #     actions: vec!["documents:search".to_string()],
-    /// #     collections: vec!["*".to_string()],
+    /// #     description: "Search-only key.".to_owned(),
+    /// #     actions: vec!["documents:search".to_owned()],
+    /// #     collections: vec!["*".to_owned()],
     /// #     ..Default::default()
     /// # };
     /// let new_key = client.keys().create(schema).await.unwrap();
@@ -530,9 +530,9 @@ impl Client {
     /// #    .unwrap();
     /// # let search_requests = models::MultiSearchBody {
     /// #     searches: vec![models::MultiSearchCollectionParameters {
-    /// #         collection: Some("products".to_string()),
-    /// #         q: Some("phone".to_string()),
-    /// #         query_by: Some("name".to_string()),
+    /// #         collection: Some("products".to_owned()),
+    /// #         q: Some("phone".to_owned()),
+    /// #         query_by: Some("name".to_owned()),
     /// #         ..Default::default()
     /// #     }],
     /// #     ..Default::default()

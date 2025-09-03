@@ -14,13 +14,13 @@ async fn logic_test_collections_and_collection_lifecycle() {
         name: collection_name.clone(),
         fields: vec![
             Field {
-                name: "name".to_string(),
-                r#type: "string".to_string(),
+                name: "name".to_owned(),
+                r#type: "string".to_owned(),
                 ..Default::default()
             },
             Field {
-                name: "price".to_string(),
-                r#type: "int32".to_string(),
+                name: "price".to_owned(),
+                r#type: "int32".to_owned(),
                 ..Default::default()
             },
         ],
@@ -65,14 +65,14 @@ async fn logic_test_collections_and_collection_lifecycle() {
         fields: vec![
             // Add a new field
             Field {
-                name: "description".to_string(),
-                r#type: "string".to_string(),
+                name: "description".to_owned(),
+                r#type: "string".to_owned(),
                 optional: Some(true),
                 ..Default::default()
             },
             // Drop an existing field
             Field {
-                name: "price".to_string(),
+                name: "price".to_owned(),
                 drop: Some(true),
                 ..Default::default()
             },

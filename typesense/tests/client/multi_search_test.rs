@@ -16,20 +16,20 @@ async fn setup_multi_search_tests(
 ) {
     // --- Create collections ---
     let products_schema = CollectionSchema {
-        name: products_collection_name.to_string(),
+        name: products_collection_name.to_owned(),
         fields: vec![
-            Field::new("name".to_string(), "string".to_string()),
-            Field::new("price".to_string(), "int32".to_string()),
+            Field::new("name".to_owned(), "string".to_owned()),
+            Field::new("price".to_owned(), "int32".to_owned()),
         ],
         ..Default::default()
     };
     client.collections().create(products_schema).await.unwrap();
 
     let brands_schema = CollectionSchema {
-        name: brands_collection_name.to_string(),
+        name: brands_collection_name.to_owned(),
         fields: vec![
-            Field::new("company_name".to_string(), "string".to_string()),
-            Field::new("country".to_string(), "string".to_string()),
+            Field::new("company_name".to_owned(), "string".to_owned()),
+            Field::new("country".to_owned(), "string".to_owned()),
         ],
         ..Default::default()
     };
@@ -302,8 +302,8 @@ async fn run_test_multi_search_generic_parsing() {
     assert_eq!(
         *product_doc,
         Product {
-            id: "p2".to_string(),
-            name: "MacBook Pro".to_string(),
+            id: "p2".to_owned(),
+            name: "MacBook Pro".to_owned(),
             price: 1999,
         }
     );
@@ -325,9 +325,9 @@ async fn run_test_multi_search_generic_parsing() {
     assert_eq!(
         *brand_doc,
         Brand {
-            id: "b1".to_string(),
-            company_name: "Apple Inc.".to_string(),
-            country: "USA".to_string(),
+            id: "b1".to_owned(),
+            company_name: "Apple Inc.".to_owned(),
+            country: "USA".to_owned(),
         }
     );
 }

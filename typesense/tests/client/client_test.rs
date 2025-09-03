@@ -11,7 +11,7 @@ use wiremock::{Mock, MockServer, ResponseTemplate};
 // Helper to create a mock Typesense server for a successful collection retrieval.
 async fn setup_mock_server_ok(server: &MockServer, collection_name: &str) {
     let response_body = CollectionResponse {
-        name: collection_name.to_string(),
+        name: collection_name.to_owned(),
         ..Default::default()
     };
 

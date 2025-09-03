@@ -7,9 +7,9 @@ async fn run_test_keys_lifecycle() {
 
     // --- 1. Create a new API Key (via `keys`) ---
     let key_schema = ApiKeySchema {
-        description: key_description.to_string(),
-        actions: vec!["documents:search".to_string()], // Grant only search permissions
-        collections: vec!["*".to_string()],            // For all collections
+        description: key_description.to_owned(),
+        actions: vec!["documents:search".to_owned()], // Grant only search permissions
+        collections: vec!["*".to_owned()],            // For all collections
         ..Default::default()
     };
 
@@ -22,7 +22,7 @@ async fn run_test_keys_lifecycle() {
         created_key.value.is_some(),
         "The full API key value should be present upon creation."
     );
-    assert_eq!(created_key.description, key_description.to_string());
+    assert_eq!(created_key.description, key_description.to_owned());
 
     let key_id = created_key.id.unwrap();
 
@@ -88,7 +88,7 @@ fn test_generate_scoped_search_key_with_example_values() {
     // The parameters to be embedded in the new scoped key.
     let params = ScopedKeyParameters {
         search_params: Some(SearchParameters {
-            filter_by: Some("company_id:124".to_string()),
+            filter_by: Some("company_id:124".to_owned()),
             ..Default::default()
         }),
         expires_at: Some(1906054106),

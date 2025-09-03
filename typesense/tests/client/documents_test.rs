@@ -17,19 +17,19 @@ async fn run_test_document_lifecycle() {
         name: collection_name.clone(),
         fields: vec![
             Field {
-                name: "title".to_string(),
-                r#type: "string".to_string(),
+                name: "title".to_owned(),
+                r#type: "string".to_owned(),
                 ..Default::default()
             },
             Field {
-                name: "author".to_string(),
-                r#type: "string".to_string(),
+                name: "author".to_owned(),
+                r#type: "string".to_owned(),
                 facet: Some(true),
                 ..Default::default()
             },
             Field {
-                name: "publication_year".to_string(),
-                r#type: "int32".to_string(),
+                name: "publication_year".to_owned(),
+                r#type: "int32".to_owned(),
                 ..Default::default()
             },
         ],
@@ -142,8 +142,8 @@ async fn run_test_document_lifecycle() {
 
     // --- 11. Verify Import via Search ---
     let search_after_import_params = SearchParameters {
-        q: Some("*".to_string()),
-        query_by: Some("title".to_string()),
+        q: Some("*".to_owned()),
+        query_by: Some("title".to_owned()),
         ..Default::default()
     };
     let search_after_import_res = documents_client.search(search_after_import_params).await;
@@ -153,7 +153,7 @@ async fn run_test_document_lifecycle() {
 
     // --- 12. Bulk Update (via `documents().update()`) ---
     let bulk_update_params = UpdateDocumentsParameters {
-        filter_by: Some("publication_year:<1960".to_string()),
+        filter_by: Some("publication_year:<1960".to_owned()),
     };
     let bulk_update_payload = json!({ "author": "Sci-Fi Pioneer" });
     let bulk_update_res = documents_client
@@ -165,7 +165,7 @@ async fn run_test_document_lifecycle() {
 
     // --- 13. Export documents (via `documents().export()`) ---
     let export_params = ExportDocumentsParameters {
-        filter_by: Some("author:\"Sci-Fi Pioneer\"".to_string()),
+        filter_by: Some("author:\"Sci-Fi Pioneer\"".to_owned()),
         ..Default::default()
     };
     let export_res = documents_client.export(export_params).await;
@@ -181,7 +181,7 @@ async fn run_test_document_lifecycle() {
 
     // --- 14. Bulk Delete ---
     let delete_params = DeleteDocumentsParameters {
-        filter_by: "publication_year:>1960".to_string(),
+        filter_by: "publication_year:>1960".to_owned(),
         ..Default::default()
     };
     let bulk_delete_res = documents_client.delete(delete_params).await;
@@ -212,24 +212,24 @@ async fn run_test_generic_document_lifecycle() {
         name: collection_name.clone(),
         fields: vec![
             Field {
-                name: "title".to_string(),
-                r#type: "string".to_string(),
+                name: "title".to_owned(),
+                r#type: "string".to_owned(),
                 ..Default::default()
             },
             Field {
-                name: "author".to_string(),
-                r#type: "string".to_string(),
+                name: "author".to_owned(),
+                r#type: "string".to_owned(),
                 facet: Some(true),
                 ..Default::default()
             },
             Field {
-                name: "publication_year".to_string(),
-                r#type: "int32".to_string(),
+                name: "publication_year".to_owned(),
+                r#type: "int32".to_owned(),
                 ..Default::default()
             },
             Field {
-                name: "in_stock".to_string(),
-                r#type: "bool".to_string(),
+                name: "in_stock".to_owned(),
+                r#type: "bool".to_owned(),
                 optional: Some(true),
                 ..Default::default()
             },
@@ -248,16 +248,16 @@ async fn run_test_generic_document_lifecycle() {
 
     let book_1 = Book {
         id: new_id("book_1"),
-        title: "Dune".to_string(),
-        author: "Frank Herbert".to_string(),
+        title: "Dune".to_owned(),
+        author: "Frank Herbert".to_owned(),
         publication_year: 1965,
         in_stock: Some(true),
     };
 
     let book_2 = Book {
         id: new_id("book_2"),
-        title: "Foundation".to_string(),
-        author: "Isaac Asimov".to_string(),
+        title: "Foundation".to_owned(),
+        author: "Isaac Asimov".to_owned(),
         publication_year: 1951,
         in_stock: Some(false),
     };
@@ -280,8 +280,8 @@ async fn run_test_generic_document_lifecycle() {
 
     // --- 5. Search for documents with strongly-typed results ---
     let search_params = SearchParameters {
-        q: Some("dune".to_string()),
-        query_by: Some("title".to_string()),
+        q: Some("dune".to_owned()),
+        query_by: Some("title".to_owned()),
         ..Default::default()
     };
     let search_res = typed_collection.documents().search(search_params).await;
