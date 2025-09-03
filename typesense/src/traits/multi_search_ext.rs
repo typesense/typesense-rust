@@ -1,10 +1,10 @@
+use crate::models::{MultiSearchResult, MultiSearchResultItem, SearchGroupedHit, SearchResultHit};
 use serde::de::DeserializeOwned;
 use serde_json::Value;
-use typesense_codegen::models::{self as raw_models, SearchGroupedHit, SearchResultHit};
 
 use crate::{MultiSearchParseError, SearchResult};
 
-/// An extension trait for `typesense_codegen::models::MultiSearchResult` to provide typed parsing.
+/// An extension trait for `MultiSearchResult` to provide typed parsing.
 pub trait MultiSearchResultExt {
     /// Parses the result at a specific index from a multi-search response into a strongly-typed `SearchResult<T>`.
     ///
@@ -19,92 +19,122 @@ pub trait MultiSearchResultExt {
     ) -> Result<SearchResult<T>, MultiSearchParseError>;
 }
 
-/// An extension trait for `typesense_codegen::models::MultiSearchResult` to provide typed parsing.
+/// An extension trait for `SearchResult<Value>` to provide typed parsing.
+///
+/// This is primarily useful when working with results from a **union search**.
+/// Since union searches return documents as raw JSON (`serde_json::Value`),
+/// this trait allows you to attempt conversion into a concrete typed document
+/// model of your choosing.
 pub trait UnionSearchResultExt {
-    /// Parses the result at a specific index from a multi-search response into a strongly-typed `SearchResult<T>`.
-    ///
-    /// # Arguments
-    /// * `index` - The zero-based index of the search result to parse.
+    /// Attempts to convert a `SearchResult<Value>` into a `SearchResult<D>`.
     ///
     /// # Type Parameters
     /// * `D` - The concrete document type to deserialize the hits into.
+    ///
+    /// # Errors
+    /// Returns a `serde_json::Error` if any document in the result cannot be
+    /// successfully deserialized into type `D`.
     fn try_into_typed<D: DeserializeOwned>(self) -> Result<SearchResult<D>, serde_json::Error>;
 }
+/// Small helpers to convert documents stored as `serde_json::Value` into a concrete `D`.
+fn deserialize_opt_document<D: DeserializeOwned>(
+    doc: Option<Value>,
+) -> Result<Option<D>, serde_json::Error> {
+    match doc {
+        Some(v) => Ok(Some(serde_json::from_value(v)?)),
+        None => Ok(None),
+    }
+}
 
+fn convert_hit_ref<D: DeserializeOwned>(
+    raw_hit: &SearchResultHit<Value>,
+) -> Result<SearchResultHit<D>, serde_json::Error> {
+    Ok(SearchResultHit {
+        document: deserialize_opt_document(raw_hit.document.clone())?,
+        highlights: raw_hit.highlights.clone(),
+        highlight: raw_hit.highlight.clone(),
+        text_match: raw_hit.text_match,
+        text_match_info: raw_hit.text_match_info.clone(),
+        geo_distance_meters: raw_hit.geo_distance_meters.clone(),
+        vector_distance: raw_hit.vector_distance,
+        hybrid_search_info: raw_hit.hybrid_search_info.clone(),
+        search_index: raw_hit.search_index.clone(),
+    })
+}
+
+fn convert_group_ref<D: DeserializeOwned>(
+    raw_group: &SearchGroupedHit<Value>,
+) -> Result<SearchGroupedHit<D>, serde_json::Error> {
+    let hits = raw_group
+        .hits
+        .iter()
+        .map(convert_hit_ref::<D>)
+        .collect::<Result<Vec<_>, _>>()?;
+
+    Ok(SearchGroupedHit {
+        found: raw_group.found,
+        group_key: raw_group.group_key.clone(),
+        hits,
+    })
+}
+
+fn convert_hit_owned<D: DeserializeOwned>(
+    value_hit: SearchResultHit<Value>,
+) -> Result<SearchResultHit<D>, serde_json::Error> {
+    Ok(SearchResultHit {
+        document: deserialize_opt_document(value_hit.document)?,
+        highlights: value_hit.highlights,
+        highlight: value_hit.highlight,
+        text_match: value_hit.text_match,
+        text_match_info: value_hit.text_match_info,
+        geo_distance_meters: value_hit.geo_distance_meters,
+        vector_distance: value_hit.vector_distance,
+        hybrid_search_info: value_hit.hybrid_search_info,
+        search_index: value_hit.search_index,
+    })
+}
+
+fn convert_group_owned<D: DeserializeOwned>(
+    group: SearchGroupedHit<Value>,
+) -> Result<SearchGroupedHit<D>, serde_json::Error> {
+    let hits = group
+        .hits
+        .into_iter()
+        .map(convert_hit_owned::<D>)
+        .collect::<Result<Vec<_>, _>>()?;
+
+    Ok(SearchGroupedHit {
+        found: group.found,
+        group_key: group.group_key,
+        hits,
+    })
+}
+
+/// Convert a single `MultiSearchResultItem<Value>` into a strongly-typed `SearchResult<D>`.
 fn multi_search_item_to_search_result<D: DeserializeOwned>(
-    item: &raw_models::MultiSearchResultItem<Value>,
-) -> Result<raw_models::SearchResult<D>, serde_json::Error> {
+    item: &MultiSearchResultItem<Value>,
+) -> Result<SearchResult<D>, serde_json::Error> {
     let typed_hits = match &item.hits {
-        Some(raw_hits) => {
-            let hits_result: Result<Vec<SearchResultHit<D>>, _> = raw_hits
-                .into_iter()
-                .map(|raw_hit| {
-                    // Map each raw hit to a Result<SearchResultHit<D>, _>
-                    let document: Result<Option<D>, _> = raw_hit
-                        .document
-                        .clone()
-                        .map(|doc_value| serde_json::from_value(doc_value))
-                        .transpose();
-                    Ok(SearchResultHit {
-                        document: document?,
-                        highlights: raw_hit.highlights.clone(),
-                        highlight: raw_hit.highlight.clone(),
-                        text_match: raw_hit.text_match,
-                        text_match_info: raw_hit.text_match_info.clone(),
-                        geo_distance_meters: raw_hit.geo_distance_meters.clone(),
-                        vector_distance: raw_hit.vector_distance,
-                        hybrid_search_info: raw_hit.hybrid_search_info.clone(),
-                        search_index: raw_hit.search_index,
-                    })
-                })
-                .collect();
-
-            Some(hits_result?)
-        }
-        None => None,
-    };
-    // Parse grouped_hits into SearchGroupedHit<D>
-    let typed_grouped_hits = match &item.grouped_hits {
-        Some(raw_groups) => {
-            let groups_result: Result<Vec<SearchGroupedHit<D>>, _> = raw_groups
+        Some(raw_hits) => Some(
+            raw_hits
                 .iter()
-                .map(|raw_group| {
-                    let hits_result: Result<Vec<SearchResultHit<D>>, _> = raw_group
-                        .hits
-                        .iter()
-                        .map(|raw_hit| {
-                            let document: Result<Option<D>, _> = raw_hit
-                                .document
-                                .clone()
-                                .map(|doc_value| serde_json::from_value(doc_value))
-                                .transpose();
-                            Ok(SearchResultHit {
-                                document: document?,
-                                highlights: raw_hit.highlights.clone(),
-                                highlight: raw_hit.highlight.clone(),
-                                text_match: raw_hit.text_match,
-                                text_match_info: raw_hit.text_match_info.clone(),
-                                geo_distance_meters: raw_hit.geo_distance_meters.clone(),
-                                vector_distance: raw_hit.vector_distance,
-                                hybrid_search_info: raw_hit.hybrid_search_info.clone(),
-                                search_index: raw_hit.search_index.clone(),
-                            })
-                        })
-                        .collect();
-
-                    Ok(SearchGroupedHit {
-                        found: raw_group.found,
-                        group_key: raw_group.group_key.clone(),
-                        hits: hits_result?,
-                    })
-                })
-                .collect();
-            Some(groups_result?)
-        }
+                .map(convert_hit_ref::<D>)
+                .collect::<Result<Vec<_>, _>>()?,
+        ),
         None => None,
     };
 
-    Ok(raw_models::SearchResult {
+    let typed_grouped_hits = match &item.grouped_hits {
+        Some(raw_groups) => Some(
+            raw_groups
+                .iter()
+                .map(convert_group_ref::<D>)
+                .collect::<Result<Vec<_>, _>>()?,
+        ),
+        None => None,
+    };
+
+    Ok(SearchResult {
         hits: typed_hits,
         grouped_hits: typed_grouped_hits,
         facet_counts: item.facet_counts.clone(),
@@ -120,7 +150,8 @@ fn multi_search_item_to_search_result<D: DeserializeOwned>(
     })
 }
 
-impl MultiSearchResultExt for raw_models::MultiSearchResult<Value> {
+/// Extension to parse an item out of a `MultiSearchResult<Value>` into a typed `SearchResult<T>`.
+impl MultiSearchResultExt for MultiSearchResult<Value> {
     fn parse_at<T: DeserializeOwned>(
         &self,
         index: usize,
@@ -142,103 +173,32 @@ impl MultiSearchResultExt for raw_models::MultiSearchResult<Value> {
     }
 }
 
-// This impl block specifically targets `SearchResult<serde_json::Value>`.
-// The methods inside will only be available on a search result of that exact type.
+/// Trait for converting a `SearchResult<Value>` (union result) into a typed one.
 impl UnionSearchResultExt for SearchResult<Value> {
-    /// Attempts to convert a `SearchResult<serde_json::Value>` into a `SearchResult<D>`.
-    ///
-    /// This method is useful after a `perform_union` call where you know all resulting
-    /// documents share the same schema and can be deserialized into a single concrete type `D`.
-    ///
-    /// It iterates through each hit and tries to deserialize its `document` field. If any
-    /// document fails to deserialize into type `D`, the entire conversion fails.
-    ///
-    /// # Type Parameters
-    ///
-    /// * `D` - The concrete, `DeserializeOwned` type you want to convert the documents into.
-    ///
-    /// # Errors
-    ///
-    /// Returns a `serde_json::Error` if any document in the hit list cannot be successfully
-    /// deserialized into `D`.
     fn try_into_typed<D: DeserializeOwned>(self) -> Result<SearchResult<D>, serde_json::Error> {
-        // This logic is very similar to `from_raw`, but it converts between generic types
-        // instead of from a raw model.
         let typed_hits = match self.hits {
-            Some(value_hits) => {
-                let hits_result: Result<Vec<SearchResultHit<D>>, _> = value_hits
+            Some(value_hits) => Some(
+                value_hits
                     .into_iter()
-                    .map(|value_hit| {
-                        // `value_hit` here is `SearchResultHit<serde_json::Value>`
-                        let document: Option<D> = match value_hit.document {
-                            Some(doc_value) => Some(serde_json::from_value(doc_value)?),
-                            None => None,
-                        };
-
-                        Ok(SearchResultHit {
-                            document,
-                            highlights: value_hit.highlights,
-                            highlight: value_hit.highlight,
-                            text_match: value_hit.text_match,
-                            text_match_info: value_hit.text_match_info,
-                            geo_distance_meters: value_hit.geo_distance_meters,
-                            vector_distance: value_hit.vector_distance,
-                            hybrid_search_info: value_hit.hybrid_search_info,
-                            search_index: value_hit.search_index,
-                        })
-                    })
-                    .collect();
-
-                Some(hits_result?)
-            }
+                    .map(convert_hit_owned::<D>)
+                    .collect::<Result<Vec<_>, _>>()?,
+            ),
             None => None,
         };
 
-        // Parse grouped_hits into SearchGroupedHit<D>
-        let typed_grouped_hits = match &self.grouped_hits {
-            Some(raw_groups) => {
-                let groups_result: Result<Vec<SearchGroupedHit<D>>, _> = raw_groups
-                    .iter()
-                    .map(|raw_group| {
-                        let hits_result: Result<Vec<SearchResultHit<D>>, _> = raw_group
-                            .hits
-                            .iter()
-                            .map(|raw_hit| {
-                                let document: Result<Option<D>, _> = raw_hit
-                                    .document
-                                    .clone()
-                                    .map(|doc_value| serde_json::from_value(doc_value))
-                                    .transpose();
-                                Ok(SearchResultHit {
-                                    document: document?,
-                                    highlights: raw_hit.highlights.clone(),
-                                    highlight: raw_hit.highlight.clone(),
-                                    text_match: raw_hit.text_match,
-                                    text_match_info: raw_hit.text_match_info.clone(),
-                                    geo_distance_meters: raw_hit.geo_distance_meters.clone(),
-                                    vector_distance: raw_hit.vector_distance,
-                                    hybrid_search_info: raw_hit.hybrid_search_info.clone(),
-                                    search_index: raw_hit.search_index.clone(),
-                                })
-                            })
-                            .collect();
-
-                        Ok(SearchGroupedHit {
-                            found: raw_group.found,
-                            group_key: raw_group.group_key.clone(),
-                            hits: hits_result?,
-                        })
-                    })
-                    .collect();
-                Some(groups_result?)
-            }
+        let typed_grouped_hits = match self.grouped_hits {
+            Some(raw_groups) => Some(
+                raw_groups
+                    .into_iter()
+                    .map(convert_group_owned::<D>)
+                    .collect::<Result<Vec<_>, _>>()?,
+            ),
             None => None,
         };
 
         Ok(SearchResult {
             hits: typed_hits,
             grouped_hits: typed_grouped_hits,
-
             found: self.found,
             found_docs: self.found_docs,
             out_of: self.out_of,
