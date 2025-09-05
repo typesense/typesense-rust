@@ -17,7 +17,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     env:
-      TZ: "/usr/share/zoneinfo/your/location"
+      TZ: '/usr/share/zoneinfo/your/location'
     steps:
       - uses: actions/checkout@v4
       - name: Cache .cargo and target
@@ -39,7 +39,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: fmt
-          args: --all -- --check
+          args: --package typesense --package typesense_derive --package xtask -- --check
       - run: rustup component add clippy
       - name: Run clippy
         uses: actions-rs/cargo@v1
