@@ -371,7 +371,7 @@ impl Client {
 
     /// Provides access to API endpoints for a specific collection.
     ///
-    /// This method returns a `Collection` handle, which is generic over the type of document
+    /// This method returns a `Collection<T>` handle, which is generic over the type of document
     /// stored in that collection.
     ///
     /// # Type Parameters

@@ -1,26 +1,40 @@
 name: CI
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
+    paths-ignore:
+      - '**/*.md'
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - '**/*.md'
 
 jobs:
   tests:
-    runs-on: "${{ matrix.platform.os }}-latest"
+    runs-on: '${{ matrix.platform.os }}-latest'
     strategy:
       matrix:
-        platform: [
-          { os: "ubuntu", target: "x86_64-unknown-linux-gnu" },
-          { os: "ubuntu", target: "wasm32-unknown-unknown" },
-        ]
-    env:
-      # used to connect to httpmock
-      URL: "http://localhost:5000"
-      API_KEY: "VerySecretKey"
+        platform:
+          [
+            { os: 'ubuntu', target: 'x86_64-unknown-linux-gnu' },
+            { os: 'ubuntu', target: 'wasm32-unknown-unknown' },
+          ]
+    services:
+      typesense:
+        image: typesense/typesense:29.0
+        ports:
+          - 8108:8108/tcp
+        volumes:
+          - /tmp/typesense-server-data:/data
+        env:
+          TYPESENSE_DATA_DIR: '/data'
+          TYPESENSE_API_KEY: 'xyz'
+          TYPESENSE_ENABLE_CORS: true
+          TYPESENSE_URL: 'http://localhost:8108'
     steps:
       - uses: actions/checkout@v4
       - name: Cache .cargo and target
@@ -38,16 +52,9 @@ jobs:
           target: ${{ matrix.platform.target }}
           profile: minimal
           default: true
-      - name: Install httpmock
-        uses: actions-rs/cargo@v1
-        with:
-          command: install
-          args: --features standalone -- httpmock
-      - name: Run httpmock
-        run: httpmock --expose --mock-files-dir=./mocks &
       - name: Install test runner for wasm
         if: matrix.platform.target == 'wasm32-unknown-unknown'
-        run:  curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
       - name: Stable Build
         uses: actions-rs/cargo@v1
         with:
