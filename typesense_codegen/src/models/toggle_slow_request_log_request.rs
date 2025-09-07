@@ -11,8 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
-#[builder(on(String, into))]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ToggleSlowRequestLogRequest {
     #[serde(rename = "log-slow-requests-time-ms")]
     pub log_slow_requests_time_ms: i32,

@@ -11,8 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
-#[builder(on(String, into))]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ExportDocumentsParameters {
     /// Filter conditions for refining your search results. Separate multiple conditions with &&.
     #[serde(rename = "filter_by", skip_serializing_if = "Option::is_none")]

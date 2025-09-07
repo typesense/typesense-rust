@@ -12,8 +12,7 @@ use crate::models;
 use serde::{Deserialize, Serialize};
 
 /// AnalyticsRuleUpdate : Fields allowed to update on an analytics rule
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
-#[builder(on(String, into))]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct AnalyticsRuleUpdate {
     #[serde(rename = "name", skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,

@@ -2864,6 +2864,7 @@ components:
       - name
       - fields
       type: object
+      x-rust-builder: true
       properties:
         name:
           type: string
@@ -2977,6 +2978,7 @@ components:
       - name
       - type
       type: object
+      x-rust-builder: true
       properties:
         name:
           type: string
@@ -3624,6 +3626,7 @@ components:
             description: Error description
     SearchParameters:
       type: object
+      x-rust-builder: true
       properties:
         q:
           description: The query text to search for in the collection. Use * as the search string to return all documents. This is typically useful when used in conjunction with filter_by.
@@ -3899,6 +3902,7 @@ components:
       description: |
         Parameters for the multi search API.
       type: object
+      x-rust-builder: true
       properties:
         q:
           description: The query text to search for in the collection. Use * as the search string to return all documents. This is typically useful when used in conjunction with filter_by.
@@ -4158,6 +4162,7 @@ components:
           items:
             $ref: '#/components/schemas/MultiSearchCollectionParameters'
     MultiSearchCollectionParameters:
+      x-rust-builder: true
       allOf:
       - $ref: '#/components/schemas/MultiSearchParameters'
       - type: object

@@ -121,9 +121,12 @@ impl Default for {{classname}} {
 {{!-- for non-enum schemas --}}
 {{^isEnum}}
 {{^discriminator}}
-{{#vendorExtensions.x-rust-has-byte-array}}#[serde_as]
-{{/vendorExtensions.x-rust-has-byte-array}}{{#oneOf.isEmpty}}#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
+{{#vendorExtensions.x-rust-builder}}
+#[derive(bon::Builder)]
 #[builder(on(String, into))]
+{{/vendorExtensions.x-rust-builder}}
+{{#vendorExtensions.x-rust-has-byte-array}}#[serde_as]
+{{/vendorExtensions.x-rust-has-byte-array}}{{#oneOf.isEmpty}}#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct {{{classname}}}{{{vendorExtensions.x-rust-generic-parameter}}} {
 {{#vars}}
     {{#description}}

@@ -11,8 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
-#[builder(on(String, into))]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SearchResultHitTextMatchInfo {
     #[serde(rename = "best_field_score", skip_serializing_if = "Option::is_none")]
     pub best_field_score: Option<String>,

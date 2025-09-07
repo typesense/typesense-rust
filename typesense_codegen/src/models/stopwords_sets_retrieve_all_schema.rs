@@ -11,8 +11,7 @@
 use crate::models;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
-#[builder(on(String, into))]
+#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct StopwordsSetsRetrieveAllSchema {
     #[serde(rename = "stopwords")]
     pub stopwords: Vec<models::StopwordsSetSchema>,
