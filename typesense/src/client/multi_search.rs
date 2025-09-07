@@ -27,8 +27,7 @@ impl<'a> MultiSearch<'a> {
     /// Performs a **federated** multi-search operation, returning a list of search results.
     ///
     /// This function allows you to send multiple search queries in a single HTTP request, which is
-    /// efficient for reducing network latency. It is specifically designed for federated searches,
-    /// where each query in the request runs independently and returns its own corresponding result.
+    /// efficient for reducing network latency.
     ///
     /// The returned `MultiSearchResult` contains a `results` vector where each item maps to a
     /// query in the request, in the exact same order. To process these results in a type-safe
@@ -141,33 +140,53 @@ impl<'a> MultiSearch<'a> {
 
     /// Performs a multi-search request in **union** mode, returning a single, merged `SearchResult`.
     ///
-    /// This function is ideal for building a federated search experience where results from
-    /// different collections are displayed together in a single, ranked list. It forces
-    /// `union: true` in the search request.
-    ///
     /// For more details, see the
     /// [official Typesense API documentation on union search](https://typesense.org/docs/latest/api/federated-multi-search.html#union-search).
     ///
     /// ### Handling Search Results
     ///
-    /// The return type of this function is always `SearchResult<serde_json::Value>` because
-    /// the search queries can target collections with different document schemas.
-    ///
     /// #### 1. Heterogeneous Documents (Different Schemas)
     ///
-    /// When searching across different collections (e.g., `products` and `brands`), you must
-    /// inspect the `serde_json::Value` of each document to determine its type before
+    /// When searching across different collections (e.g., `products` and `brands`), generic parameter `D` must be `serde_json::Value`.
+    /// You must inspect the `serde_json::Value` of each document to determine its type before
     /// deserializing it into a concrete struct.
     ///
     /// ```no_run
-    /// # use typesense::models::SearchResult;
+    /// # use typesense::{models, Client};
     /// # use serde_json::Value;
+    /// # use reqwest::Url;
     /// # #[derive(serde::Deserialize)]
     /// # struct Product { name: String }
     /// # #[derive(serde::Deserialize)]
     /// # struct Brand { company_name: String }
     /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
-    /// # let search_result: SearchResult<Value> = todo!();
+    /// # let client = Client::builder()
+    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let search_requests = models::MultiSearchBody {
+    ///     searches: vec![
+    ///         // Search #0 targets the 'products' collection
+    ///         models::MultiSearchCollectionParameters {
+    ///             collection: Some("products".to_owned()),
+    ///             q: Some("shoe".to_owned()),
+    ///             query_by: Some("name".to_owned()),
+    ///             ..Default::default()
+    ///         },
+    ///         // Search #1 targets the 'brands' collection
+    ///         models::MultiSearchCollectionParameters {
+    ///             collection: Some("brands".to_owned()),
+    ///             q: Some("nike".to_owned()),
+    ///             query_by: Some("company_name".to_owned()),
+    ///             ..Default::default()
+    ///         },
+    ///     ],
+    ///     ..Default::default()
+    /// };
+    /// let common_params = models::MultiSearchParameters::default();
+    ///
+    /// let search_result: models::SearchResult<Value> = client.multi_search().perform_union(search_requests, common_params).await?;
     /// for hit in search_result.hits.unwrap_or_default() {
     ///     if let Some(doc) = hit.document {
     ///         if doc.get("price").is_some() {
@@ -185,22 +204,40 @@ impl<'a> MultiSearch<'a> {
     ///
     /// #### 2. Homogeneous Documents (Same Schema)
     ///
-    /// If all search queries target collections that share the **same schema**, you can
-    /// convert the entire result into a strongly-typed `SearchResult<T>` using the
-    /// [`SearchResult::try_into_typed`] helper method. This is much more convenient
-    /// than parsing each hit individually.
+    /// If all search queries target collections that share the **same schema**, you can directly use the concrete type for `D`.
     ///
     /// ```no_run
-    /// # use typesense::{models::SearchResult, prelude::*};
+    /// # use typesense::{models, Client};
+    /// # use reqwest::Url;
     /// # use serde_json::Value;
     /// # #[derive(serde::Deserialize)]
     /// # struct Product { name: String }
     /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
-    /// # let client: typesense::Client = todo!();
-    /// let value_result: SearchResult<Value> = client.multi_search().perform_union(todo!(), todo!()).await?;
+    /// # let client = Client::builder()
+    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let search_requests = models::MultiSearchBody {
+    ///     searches: vec![
+    ///         models::MultiSearchCollectionParameters {
+    ///             collection: Some("products".to_owned()),
+    ///             q: Some("shoe".to_owned()),
+    ///             query_by: Some("name".to_owned()),
+    ///             ..Default::default()
+    ///         },
+    ///         models::MultiSearchCollectionParameters {
+    ///             collection: Some("products".to_owned()),
+    ///             q: Some("sock".to_owned()),
+    ///             query_by: Some("name".to_owned()),
+    ///             ..Default::default()
+    ///         },
+    ///     ],
+    ///     ..Default::default()
+    /// };
+    /// let common_params = models::MultiSearchParameters::default();
     ///
-    /// // Convert the entire result into a strongly-typed one.
-    /// let typed_result: SearchResult<Product> = value_result.try_into_typed()?;
+    /// let typed_result: models::SearchResult<Product> = client.multi_search().perform_union(search_requests, common_params).await?;
     ///
     /// if let Some(product) = typed_result.hits.unwrap_or_default().get(0) {
     ///     println!("Found product: {}", product.document.as_ref().unwrap().name);
@@ -216,13 +253,13 @@ impl<'a> MultiSearch<'a> {
     ///
     /// # Returns
     ///
-    /// A `Result` containing a `SearchResult<serde_json::Value>` on success, or an `Error` on failure.
-    pub async fn perform_union(
+    /// A `Result` containing a `SearchResult<D>` on success, or an `Error` on failure.
+    pub async fn perform_union<D: for<'de> serde::Deserialize<'de>>(
         &self,
         search_requests: MultiSearchBody,
         common_search_params: raw_models::MultiSearchParameters,
-    ) -> Result<SearchResult<serde_json::Value>, Error<documents_api::MultiSearchError>> {
-        // Explicitly set `union: true` for the request body, overriding any user value.
+    ) -> Result<SearchResult<D>, Error<documents_api::MultiSearchError>> {
+        // Explicitly set `union: true` for the request body
         let request_body = raw_models::MultiSearchSearchesParameter {
             union: Some(true),
             searches: search_requests.searches,
@@ -239,12 +276,8 @@ impl<'a> MultiSearch<'a> {
             })
             .await;
 
-        // Handle the result: parse to raw SearchResult, then convert to generic SearchResult<Value>
         match raw_result {
-            Ok(json_value) => {
-                // A union search returns a single SearchResult object, not a MultiSearchResult.
-                serde_json::from_value(json_value).map_err(Error::from)
-            }
+            Ok(json_value) => serde_json::from_value(json_value).map_err(Error::from),
             Err(e) => Err(e),
         }
     }

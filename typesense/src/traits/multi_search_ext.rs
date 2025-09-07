@@ -19,23 +19,6 @@ pub trait MultiSearchResultExt {
     ) -> Result<SearchResult<T>, MultiSearchParseError>;
 }
 
-/// An extension trait for `SearchResult<Value>` to provide typed parsing.
-///
-/// This is primarily useful when working with results from a **union search**.
-/// Since union searches return documents as raw JSON (`serde_json::Value`),
-/// this trait allows you to attempt conversion into a concrete typed document
-/// model of your choosing.
-pub trait UnionSearchResultExt {
-    /// Attempts to convert a `SearchResult<Value>` into a `SearchResult<D>`.
-    ///
-    /// # Type Parameters
-    /// * `D` - The concrete document type to deserialize the hits into.
-    ///
-    /// # Errors
-    /// Returns a `serde_json::Error` if any document in the result cannot be
-    /// successfully deserialized into type `D`.
-    fn try_into_typed<D: DeserializeOwned>(self) -> Result<SearchResult<D>, serde_json::Error>;
-}
 /// Small helpers to convert documents stored as `serde_json::Value` into a concrete `D`.
 fn deserialize_opt_document<D: DeserializeOwned>(
     doc: Option<Value>,
@@ -74,38 +57,6 @@ fn convert_group_ref<D: DeserializeOwned>(
     Ok(SearchGroupedHit {
         found: raw_group.found,
         group_key: raw_group.group_key.clone(),
-        hits,
-    })
-}
-
-fn convert_hit_owned<D: DeserializeOwned>(
-    value_hit: SearchResultHit<Value>,
-) -> Result<SearchResultHit<D>, serde_json::Error> {
-    Ok(SearchResultHit {
-        document: deserialize_opt_document(value_hit.document)?,
-        highlights: value_hit.highlights,
-        highlight: value_hit.highlight,
-        text_match: value_hit.text_match,
-        text_match_info: value_hit.text_match_info,
-        geo_distance_meters: value_hit.geo_distance_meters,
-        vector_distance: value_hit.vector_distance,
-        hybrid_search_info: value_hit.hybrid_search_info,
-        search_index: value_hit.search_index,
-    })
-}
-
-fn convert_group_owned<D: DeserializeOwned>(
-    group: SearchGroupedHit<Value>,
-) -> Result<SearchGroupedHit<D>, serde_json::Error> {
-    let hits = group
-        .hits
-        .into_iter()
-        .map(convert_hit_owned::<D>)
-        .collect::<Result<Vec<_>, _>>()?;
-
-    Ok(SearchGroupedHit {
-        found: group.found,
-        group_key: group.group_key,
         hits,
     })
 }
@@ -170,45 +121,5 @@ impl MultiSearchResultExt for MultiSearchResult<Value> {
 
         multi_search_item_to_search_result(raw_item)
             .map_err(|source| MultiSearchParseError::Deserialization { index, source })
-    }
-}
-
-/// Trait for converting a `SearchResult<Value>` (union result) into a typed one.
-impl UnionSearchResultExt for SearchResult<Value> {
-    fn try_into_typed<D: DeserializeOwned>(self) -> Result<SearchResult<D>, serde_json::Error> {
-        let typed_hits = match self.hits {
-            Some(value_hits) => Some(
-                value_hits
-                    .into_iter()
-                    .map(convert_hit_owned::<D>)
-                    .collect::<Result<Vec<_>, _>>()?,
-            ),
-            None => None,
-        };
-
-        let typed_grouped_hits = match self.grouped_hits {
-            Some(raw_groups) => Some(
-                raw_groups
-                    .into_iter()
-                    .map(convert_group_owned::<D>)
-                    .collect::<Result<Vec<_>, _>>()?,
-            ),
-            None => None,
-        };
-
-        Ok(SearchResult {
-            hits: typed_hits,
-            grouped_hits: typed_grouped_hits,
-            found: self.found,
-            found_docs: self.found_docs,
-            out_of: self.out_of,
-            page: self.page,
-            search_time_ms: self.search_time_ms,
-            facet_counts: self.facet_counts,
-            search_cutoff: self.search_cutoff,
-            request_params: self.request_params,
-            conversation: self.conversation,
-            union_request_params: self.union_request_params,
-        })
     }
 }

@@ -362,7 +362,7 @@ async fn run_test_multi_search_union_heterogeneous() {
     // Call the new union function
     let result = client
         .multi_search()
-        .perform_union(search_requests, common_params)
+        .perform_union::<serde_json::Value>(search_requests, common_params)
         .await;
 
     assert!(
@@ -440,19 +440,12 @@ async fn run_test_multi_search_union_homogeneous_and_typed_conversion() {
         ],
     };
 
-    // 1. Call perform_union, which returns a SearchResult<Value>
-    let value_result = client
+    let typed_result: SearchResult<Product> = client
         .multi_search()
         .perform_union(search_requests, MultiSearchParameters::default())
         .await
         .expect("Union search failed");
 
-    // 2. Use the helper to convert it to a SearchResult<Product>
-    let typed_result: SearchResult<Product> = value_result
-        .try_into_typed()
-        .expect("Conversion to typed result failed");
-
-    // 3. Assert the strongly-typed result
     assert_eq!(typed_result.found, Some(2));
     let mut hits = typed_result.hits.expect("Expected hits");
 
