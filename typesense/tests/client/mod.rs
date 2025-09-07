@@ -5,7 +5,6 @@ mod documents_test;
 mod keys_test;
 mod multi_search_test;
 
-use reqwest::Url;
 use reqwest_retry::policies::ExponentialBackoff;
 use std::time::Duration;
 use typesense::Client;
@@ -14,7 +13,7 @@ use web_time::{SystemTime, UNIX_EPOCH};
 /// Helper function to create a new client for all tests in this suite.
 pub fn get_client() -> Client {
     Client::builder()
-        .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+        .nodes(vec!["http://localhost:8108"])
         .api_key("xyz")
         .healthcheck_interval(Duration::from_secs(5))
         .retry_policy(ExponentialBackoff::builder().build_with_max_retries(0))

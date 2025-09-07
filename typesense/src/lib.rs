@@ -26,7 +26,6 @@
 //! {
 //!     use serde::{Deserialize, Serialize};
 //!     use typesense::{Client, Typesense, ExponentialBackoff, prelude::*};
-//!     use reqwest::Url;
 //!     use std::time::Duration;
 //!
 //!     /// A struct representing a company document.
@@ -45,7 +44,7 @@
 //!     #[tokio::main]
 //!     async fn main() -> Result<(), Box<dyn std::error::Error>> {
 //!         let client = Client::builder()
-//!             .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+//!             .nodes(vec!["http://localhost:8108"])
 //!             .api_key("xyz")
 //!             .healthcheck_interval(Duration::from_secs(60))
 //!             .retry_policy(ExponentialBackoff::builder().build_with_max_retries(3))
@@ -77,7 +76,6 @@
 //! {
 //!     use serde::{Deserialize, Serialize};
 //!     use typesense::{Client, Typesense, prelude::*};
-//!     use reqwest::Url;
 //!     use std::time::Duration;
 //!     use wasm_bindgen_futures::spawn_local;
 //!
@@ -97,7 +95,7 @@
 //!     fn main() {
 //!         spawn_local(async {
 //!             let client = Client::builder()
-//!                 .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+//!                 .nodes(vec!["http://localhost:8108"])
 //!                 .api_key("xyz")
 //!                 .healthcheck_interval(Duration::from_secs(60))
 //!                 // .retry_policy(...)       <-- disabled in Wasm

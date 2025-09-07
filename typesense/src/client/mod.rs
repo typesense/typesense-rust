@@ -19,13 +19,12 @@
 //! #[cfg(not(target_family = "wasm"))]
 //! {
 //! use typesense::{Client, models, ExponentialBackoff};
-//! use reqwest::Url;
 //! use std::time::Duration;
 //!
 //! #[tokio::main]
 //! async fn main() -> Result<(), Box<dyn std::error::Error>> {
 //!     let client = Client::builder()
-//!         .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+//!         .nodes(vec!["http://localhost:8108"])
 //!         .api_key("xyz")
 //!         .healthcheck_interval(Duration::from_secs(60))
 //!         .retry_policy(ExponentialBackoff::builder().build_with_max_retries(3))
@@ -76,7 +75,7 @@
 //! fn main() {
 //!     spawn_local(async {
 //!         let client = Client::builder()
-//!             .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+//!             .nodes(vec!["http://localhost:8108"])
 //!             .api_key("xyz")
 //!             .healthcheck_interval(Duration::from_secs(60))
 //!             // .retry_policy(...)       <-- not supported in Wasm
@@ -122,7 +121,6 @@ use serde::Serialize;
 use serde::de::DeserializeOwned;
 
 use crate::Error;
-use reqwest::Url;
 #[cfg(not(target_arch = "wasm32"))]
 use reqwest_middleware::ClientBuilder as ReqwestMiddlewareClientBuilder;
 #[cfg(not(target_arch = "wasm32"))]
@@ -140,7 +138,7 @@ use web_time::{Duration, Instant};
 // This is an internal detail to track the state of each node.
 #[derive(Debug)]
 struct Node {
-    url: Url,
+    url: String,
     is_healthy: bool,
     last_access_timestamp: Instant,
 }
@@ -174,12 +172,17 @@ impl Client {
     #[builder]
     pub fn new(
         /// The Typesense API key used for authentication.
-        api_key: impl Into<String>,
-        /// A list of all nodes in the Typesense cluster.
-        nodes: Vec<Url>,
-        /// An optional, preferred node to try first for every request. This is for your server-side load balancer.
         #[builder(into)]
-        nearest_node: Option<Url>,
+        api_key: String,
+        /// A list of all nodes in the Typesense cluster.
+        #[builder(
+            with = |iter: impl IntoIterator<Item = impl Into<String>>|
+                iter.into_iter().map(Into::into).collect::<Vec<String>>()
+        )]
+        nodes: Vec<String>,
+        #[builder(into)]
+        /// An optional, preferred node to try first for every request. This is for your server-side load balancer.
+        nearest_node: Option<String>,
         #[builder(default = Duration::from_secs(60))]
         /// The duration after which an unhealthy node will be retried for requests.
         healthcheck_interval: Duration,
@@ -216,7 +219,7 @@ impl Client {
         Ok(Self {
             nodes: node_list,
             nearest_node: nearest_node_arc,
-            api_key: api_key.into(),
+            api_key,
             healthcheck_interval,
             current_node_index: AtomicUsize::new(0),
 
@@ -311,7 +314,6 @@ impl Client {
             // Create a temporary config for this attempt.
             let gen_config = configuration::Configuration {
                 base_path: node_url
-                    .to_string()
                     .strip_suffix('/')
                     .unwrap_or(node_url.as_str())
                     .to_string(),
@@ -351,12 +353,11 @@ impl Client {
     /// # #[cfg(not(target_family = "wasm"))]
     /// # {
     /// # use typesense::{Client, GetCollectionsParameters};
-    /// # use reqwest::Url;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// # let client = Client::builder()
-    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .nodes(vec!["http://localhost:8108"])
     /// #    .api_key("xyz")
     /// #    .build()
     /// #    .unwrap();
@@ -389,13 +390,12 @@ impl Client {
     /// # {
     /// # use typesense::Client;
     /// # use serde::{Serialize, Deserialize};
-    /// # use reqwest::Url;
     /// #
     /// # #[derive(Serialize, Deserialize, Debug)]
     /// # struct Book { id: String, title: String }
     /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
     /// # let client = Client::builder()
-    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .nodes(vec!["http://localhost:8108"])
     /// #    .api_key("xyz")
     /// #    .build()
     /// #    .unwrap();
@@ -433,10 +433,9 @@ impl Client {
     /// # #[cfg(not(target_family = "wasm"))]
     /// # {
     /// # use typesense::Client;
-    /// # use reqwest::Url;
     /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
     /// # let client = Client::builder()
-    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .nodes(vec!["http://localhost:8108"])
     /// #    .api_key("xyz")
     /// #    .build()
     /// #    .unwrap();
@@ -460,12 +459,11 @@ impl Client {
     /// # #[cfg(not(target_family = "wasm"))]
     /// # {
     /// # use typesense::{Client, models};
-    /// # use reqwest::Url;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// # let client = Client::builder()
-    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .nodes(vec!["http://localhost:8108"])
     /// #    .api_key("xyz")
     /// #    .build()
     /// #    .unwrap();
@@ -494,12 +492,11 @@ impl Client {
     /// # #[cfg(not(target_family = "wasm"))]
     /// # {
     /// # use typesense::Client;
-    /// # use reqwest::Url;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// # let client = Client::builder()
-    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .nodes(vec!["http://localhost:8108"])
     /// #    .api_key("xyz")
     /// #    .build()
     /// #    .unwrap();
@@ -519,12 +516,11 @@ impl Client {
     /// # #[cfg(not(target_family = "wasm"))]
     /// # {
     /// # use typesense::{Client, models};
-    /// # use reqwest::Url;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// # let client = Client::builder()
-    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .nodes(vec!["http://localhost:8108"])
     /// #    .api_key("xyz")
     /// #    .build()
     /// #    .unwrap();
