@@ -352,7 +352,7 @@ impl Client {
     /// ```no_run
     /// # #[cfg(not(target_family = "wasm"))]
     /// # {
-    /// # use typesense::{Client, GetCollectionsParameters};
+    /// # use typesense::{Client, models::GetCollectionsParameters};
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {

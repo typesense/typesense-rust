@@ -2,7 +2,7 @@ use crate::models::{MultiSearchResult, MultiSearchResultItem, SearchGroupedHit, 
 use serde::de::DeserializeOwned;
 use serde_json::Value;
 
-use crate::{MultiSearchParseError, SearchResult};
+use crate::{MultiSearchParseError, models::SearchResult};
 
 /// An extension trait for `MultiSearchResult` to provide typed parsing.
 pub trait MultiSearchResultExt {

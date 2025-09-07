@@ -2,7 +2,10 @@
 //!
 //! A `MultiSearch` instance is created via the main `client.multi_search()` method.
 
-use crate::{Client, Error, MultiSearchBody, models::SearchResult};
+use crate::{
+    Client, Error,
+    models::{MultiSearchBody, SearchResult},
+};
 use typesense_codegen::{
     apis::{
         configuration::Configuration,
@@ -46,7 +49,7 @@ impl<'a> MultiSearch<'a> {
     /// ```no_run
     /// # #[cfg(not(target_family = "wasm"))]
     /// # {
-    /// # use typesense::{Client, SearchResult, models, prelude::*};
+    /// # use typesense::{Client, models::{self, SearchResult}, prelude::*};
     /// # use reqwest::Url;
     /// # use serde::Deserialize;
     /// #

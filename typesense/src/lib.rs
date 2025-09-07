@@ -121,7 +121,6 @@ pub mod prelude;
 
 pub use client::{Client, ExponentialBackoff};
 pub use error::*;
-pub use models::*;
 
 #[cfg(feature = "typesense_derive")]
 #[doc(hidden)]

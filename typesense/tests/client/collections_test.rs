@@ -1,6 +1,5 @@
-use typesense::{
-    GetCollectionsParameters,
-    models::{CollectionSchema, CollectionUpdateSchema, Field},
+use typesense::models::{
+    CollectionSchema, CollectionUpdateSchema, Field, GetCollectionsParameters,
 };
 
 use super::{get_client, new_id};
