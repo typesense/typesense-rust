@@ -32,6 +32,7 @@ impl<'a> Keys<'a> {
     ///
     /// # Arguments
     /// * `schema` - An `ApiKeySchema` object describing the key's permissions.
+    #[inline]
     pub async fn create(
         &self,
         schema: models::ApiKeySchema,
@@ -43,6 +44,7 @@ impl<'a> Keys<'a> {
     }
 
     /// Lists all API keys and their metadata.
+    #[inline]
     pub async fn retrieve(&self) -> Result<models::ApiKeysResponse, Error<keys_api::GetKeysError>> {
         execute_wrapper!(self, keys_api::get_keys)
     }
