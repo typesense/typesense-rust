@@ -199,7 +199,9 @@ impl Client {
         )]
         nodes: Vec<String>,
         #[builder(into)]
-        /// An optional, preferred node to try first for every request. This is for your server-side load balancer.
+        /// An optional, preferred node to try first for every request.
+        /// This is for your server-side load balancer.
+        /// Do not add this node to all nodes list, should be a separate one.
         nearest_node: Option<String>,
         #[builder(default = Duration::from_secs(60))]
         /// The duration after which an unhealthy node will be retried for requests.
@@ -268,6 +270,11 @@ impl Client {
 
     /// Selects the next node to use for a request based on health and priority.
     fn get_next_node(&self) -> &Node {
+        // if only one node (including nearest)
+        if self.nodes.len() == 1 {
+            return self.nodes.first().unwrap_safe_unchecked();
+        }
+
         let (nodes_len, mut index) = if self.is_nearest_node_set {
             let last_node_index = self.nodes.len() - 1;
             (last_node_index, last_node_index)
