@@ -239,10 +239,10 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}{{{vendorExtensi
     {{#isApiKey}}
     {{#isKeyInQuery}}
     if let Some(ref apikey) = configuration.api_key {
-        let key = apikey.key.clone();
+        let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{} {}", prefix, key),
-            None => key,
+            Some(ref prefix) => format!("{prefix} {key}"),
+            None => key.clone(),
         };
         req_builder = req_builder.query(&[("{{{keyParamName}}}", value)]);
     }
@@ -310,10 +310,10 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}{{{vendorExtensi
     {{#isApiKey}}
     {{#isKeyInHeader}}
     if let Some(ref apikey) = configuration.api_key {
-        let key = apikey.key.clone();
+        let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{} {}", prefix, key),
-            None => key,
+            Some(ref prefix) => format!("{prefix} {key}"),
+            None => key.clone(),
         };
         req_builder = req_builder.header("{{{keyParamName}}}", value);
     };

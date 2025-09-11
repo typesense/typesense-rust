@@ -112,35 +112,59 @@ mod key;
 mod keys;
 mod multi_search;
 
+use crate::Error;
 use collection::Collection;
 use collections::Collections;
 use key::Key;
 use keys::Keys;
 
-use serde::Serialize;
-use serde::de::DeserializeOwned;
+use debug_unsafe::{option::OptionUnwrapper, slice::SliceGetter};
+use serde::{Serialize, de::DeserializeOwned};
 
-use crate::Error;
 #[cfg(not(target_arch = "wasm32"))]
 use reqwest_middleware::ClientBuilder as ReqwestMiddlewareClientBuilder;
 #[cfg(not(target_arch = "wasm32"))]
 use reqwest_retry::RetryTransientMiddleware;
 pub use reqwest_retry::policies::ExponentialBackoff;
 
-use std::future::Future;
-use std::sync::{
-    Arc, Mutex,
-    atomic::{AtomicUsize, Ordering},
+use std::{
+    future::Future,
+    sync::{
+        RwLock,
+        atomic::{AtomicBool, AtomicUsize, Ordering},
+    },
 };
 use typesense_codegen::apis::{self, configuration};
 use web_time::{Duration, Instant};
 
+/// Wraps api call in `client::execute()`
+#[macro_export]
+macro_rules! execute_wrapper {
+    ($self:ident, $call:expr) => {
+        $self
+            .client
+            .execute(|config: &typesense_codegen::apis::configuration::Configuration| $call(config))
+            .await
+    };
+    ($self:ident, $call:expr, $params:expr) => {
+        $self
+            .client
+            .execute(
+                |config: &typesense_codegen::apis::configuration::Configuration| {
+                    let params_cloned = $params.clone();
+                    $call(config, params_cloned)
+                },
+            )
+            .await
+    };
+}
+
 // This is an internal detail to track the state of each node.
 #[derive(Debug)]
 struct Node {
-    url: String,
-    is_healthy: bool,
-    last_access_timestamp: Instant,
+    config: configuration::Configuration,
+    is_healthy: AtomicBool,
+    last_accessed: RwLock<Instant>,
 }
 /// The main entry point for all interactions with the Typesense API.
 ///
@@ -148,16 +172,10 @@ struct Node {
 /// API resource groups (namespaces) like `collections`, `documents`, and `operations`.
 #[derive(Debug)]
 pub struct Client {
-    nodes: Vec<Arc<Mutex<Node>>>,
-    nearest_node: Option<Arc<Mutex<Node>>>,
-    api_key: String,
+    nodes: Vec<Node>,
+    is_nearest_node_set: bool,
     healthcheck_interval: Duration,
     current_node_index: AtomicUsize,
-
-    #[cfg(not(target_arch = "wasm32"))]
-    retry_policy: ExponentialBackoff,
-    #[cfg(not(target_arch = "wasm32"))]
-    connection_timeout: Duration,
 }
 
 #[bon::bon]
@@ -193,146 +211,117 @@ impl Client {
         /// The timeout for each individual network request.
         connection_timeout: Duration,
     ) -> Result<Self, &'static str> {
-        if nodes.is_empty() && nearest_node.is_none() {
-            return Err("Configuration must include at least one node or a nearest_node.");
-        }
+        let is_nearest_node_set = nearest_node.is_some();
 
-        let node_list = nodes
+        let nodes: Vec<_> = nodes
             .into_iter()
-            .map(|url| {
-                Arc::new(Mutex::new(Node {
-                    url,
-                    is_healthy: true,
-                    last_access_timestamp: Instant::now(),
-                }))
+            .chain(nearest_node)
+            .map(|mut url| {
+                #[cfg(target_arch = "wasm32")]
+                let http_client = reqwest::Client::builder()
+                    .build()
+                    .expect("Failed to build reqwest client");
+
+                #[cfg(not(target_arch = "wasm32"))]
+                let http_client = ReqwestMiddlewareClientBuilder::new(
+                    reqwest::Client::builder()
+                        .timeout(connection_timeout)
+                        .build()
+                        .expect("Failed to build reqwest client"),
+                )
+                .with(RetryTransientMiddleware::new_with_policy(retry_policy))
+                .build();
+
+                if url.len() > 1 && url.chars().last().unwrap_safe_unchecked() == '/' {
+                    url.pop();
+                }
+
+                let config = configuration::Configuration {
+                    base_path: url,
+                    api_key: Some(configuration::ApiKey {
+                        prefix: None,
+                        key: api_key.clone(),
+                    }),
+                    client: http_client,
+                    ..Default::default()
+                };
+
+                Node {
+                    config,
+                    is_healthy: AtomicBool::new(true),
+                    last_accessed: RwLock::new(Instant::now()),
+                }
             })
             .collect();
 
-        let nearest_node_arc = nearest_node.map(|url| {
-            Arc::new(Mutex::new(Node {
-                url,
-                is_healthy: true,
-                last_access_timestamp: Instant::now(),
-            }))
-        });
+        if nodes.is_empty() {
+            return Err("Configuration must include at least one node or a nearest_node.");
+        }
 
         Ok(Self {
-            nodes: node_list,
-            nearest_node: nearest_node_arc,
-            api_key,
+            nodes,
+            is_nearest_node_set,
             healthcheck_interval,
             current_node_index: AtomicUsize::new(0),
-
-            #[cfg(not(target_arch = "wasm32"))]
-            retry_policy,
-            #[cfg(not(target_arch = "wasm32"))]
-            connection_timeout,
         })
     }
 
     /// Selects the next node to use for a request based on health and priority.
-    fn get_next_node(&self) -> Arc<Mutex<Node>> {
-        // 1. Always try the nearest_node first if it exists.
-        if let Some(nearest_node_arc) = &self.nearest_node {
-            let node = nearest_node_arc.lock().unwrap();
-            let is_due_for_check = Instant::now().duration_since(node.last_access_timestamp)
-                >= self.healthcheck_interval;
-
-            if node.is_healthy || is_due_for_check {
-                return Arc::clone(nearest_node_arc);
-            }
-        }
-
-        // 2. Fallback to the main list of nodes if no healthy nearest_node is available.
-        if self.nodes.is_empty() {
-            // This can only happen if ONLY a nearest_node was provided and it's unhealthy.
-            // We must return it to give it a chance to recover.
-            return Arc::clone(self.nearest_node.as_ref().unwrap());
-        }
-
-        // 3. Loop through all nodes once to find a healthy one.
+    fn get_next_node(&self) -> &Node {
+        let (nodes_len, mut index) = if self.is_nearest_node_set {
+            let last_node_index = self.nodes.len() - 1;
+            (last_node_index, last_node_index)
+        } else {
+            (
+                self.nodes.len(),
+                self.current_node_index.fetch_add(1, Ordering::Relaxed) % self.nodes.len(),
+            )
+        };
         for _ in 0..self.nodes.len() {
-            let index = self.current_node_index.fetch_add(1, Ordering::Relaxed) % self.nodes.len();
-            let node_arc = &self.nodes[index];
-            let node = node_arc.lock().unwrap();
-            let is_due_for_check = Instant::now().duration_since(node.last_access_timestamp)
-                >= self.healthcheck_interval;
+            let node = self.nodes.get_safe_unchecked(index);
 
-            if node.is_healthy || is_due_for_check {
-                return Arc::clone(node_arc);
+            if node.is_healthy.load(Ordering::Relaxed)
+                || node.last_accessed.read().unwrap().elapsed() >= self.healthcheck_interval
+            {
+                return node;
             }
+            index = self.current_node_index.fetch_add(1, Ordering::Relaxed) % nodes_len;
         }
 
-        // 4. If all nodes are unhealthy and not due for a check, just pick the next one in the round-robin.
+        // If all nodes are unhealthy and not due for a check, just pick the next one in the round-robin.
         // This gives it a chance to prove it has recovered.
         let index = self.current_node_index.load(Ordering::Relaxed) % self.nodes.len();
-        Arc::clone(&self.nodes[index])
+        self.nodes.get_safe_unchecked(index)
     }
 
     /// Sets the health status of a given node after a request attempt.
-    fn set_node_health(&self, node_arc: &Arc<Mutex<Node>>, is_healthy: bool) {
-        let mut node = node_arc.lock().unwrap();
-        node.is_healthy = is_healthy;
-        node.last_access_timestamp = Instant::now();
+    #[inline]
+    fn set_node_health(&self, node: &Node, is_healthy: bool) {
+        *node.last_accessed.write().unwrap() = Instant::now();
+        node.is_healthy.store(is_healthy, Ordering::Relaxed);
     }
 
     /// The core execution method that handles multi-node failover and retries.
     /// This internal method is called by all public API methods.
-    pub(super) async fn execute<F, Fut, T, E>(&self, api_call: F) -> Result<T, Error<E>>
+    pub(super) async fn execute<F, Fut, T, E, 'a>(&'a self, api_call: F) -> Result<T, Error<E>>
     where
-        F: Fn(configuration::Configuration) -> Fut,
+        F: Fn(&'a configuration::Configuration) -> Fut,
         Fut: Future<Output = Result<T, apis::Error<E>>>,
         E: std::fmt::Debug + 'static,
         apis::Error<E>: std::error::Error + 'static,
     {
         let mut last_api_error: Option<apis::Error<E>> = None;
-        let num_nodes_to_try = self.nodes.len() + self.nearest_node.is_some() as usize;
-
         // Loop up to the total number of available nodes.
-        for _ in 0..num_nodes_to_try {
-            let node_arc = self.get_next_node();
-            let node_url = {
-                let node = node_arc.lock().unwrap();
-                node.url.clone()
-            };
-
-            #[cfg(target_arch = "wasm32")]
-            let http_client = reqwest::Client::builder()
-                .build()
-                .expect("Failed to build reqwest client");
-
-            #[cfg(not(target_arch = "wasm32"))]
-            let http_client = ReqwestMiddlewareClientBuilder::new(
-                reqwest::Client::builder()
-                    .timeout(self.connection_timeout)
-                    .build()
-                    .expect("Failed to build reqwest client"),
-            )
-            .with(RetryTransientMiddleware::new_with_policy(self.retry_policy))
-            .build();
-
-            // Create a temporary config for this attempt.
-            let gen_config = configuration::Configuration {
-                base_path: node_url
-                    .strip_suffix('/')
-                    .unwrap_or(node_url.as_str())
-                    .to_string(),
-                api_key: Some(configuration::ApiKey {
-                    prefix: None,
-                    key: self.api_key.clone(),
-                }),
-                client: http_client,
-                ..Default::default()
-            };
-
-            match api_call(gen_config).await {
+        for _ in 0..self.nodes.len() {
+            let node = self.get_next_node();
+            match api_call(&node.config).await {
                 Ok(response) => {
-                    self.set_node_health(&node_arc, true);
+                    self.set_node_health(node, true);
                     return Ok(response);
                 }
                 Err(e) => {
                     if is_retriable(&e) {
-                        self.set_node_health(&node_arc, false);
+                        self.set_node_health(node, false);
                         last_api_error = Some(e);
                     } else {
                         return Err(e.into());
@@ -366,6 +355,7 @@ impl Client {
     /// # }
     /// # }
     /// ```
+    #[inline]
     pub fn collections(&self) -> Collections<'_> {
         Collections::new(self)
     }
@@ -410,6 +400,7 @@ impl Client {
     /// # }
     /// # }
     /// ```
+    #[inline]
     pub fn collection_of<'a, T>(&'a self, collection_name: impl Into<String>) -> Collection<'a, T>
     where
         T: DeserializeOwned + Serialize + Send + Sync,
@@ -445,6 +436,7 @@ impl Client {
     /// # }
     /// # }
     /// ```
+    #[inline]
     pub fn collection<'a>(
         &'a self,
         collection_name: impl Into<String>,
@@ -478,6 +470,7 @@ impl Client {
     /// # }
     /// # }
     /// ```
+    #[inline]
     pub fn keys(&self) -> Keys<'_> {
         Keys::new(self)
     }
@@ -505,6 +498,7 @@ impl Client {
     /// # }
     /// # }
     /// ```
+    #[inline]
     pub fn key(&self, key_id: i64) -> Key<'_> {
         Key::new(self, key_id)
     }
@@ -539,6 +533,7 @@ impl Client {
     /// # }
     /// # }
     /// ```
+    #[inline]
     pub fn multi_search(&self) -> multi_search::MultiSearch<'_> {
         multi_search::MultiSearch::new(self)
     }

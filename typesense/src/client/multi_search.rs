@@ -3,14 +3,11 @@
 //! A `MultiSearch` instance is created via the main `client.multi_search()` method.
 
 use crate::{
-    Client, Error,
+    Client, Error, execute_wrapper,
     models::{MultiSearchBody, SearchResult},
 };
 use typesense_codegen::{
-    apis::{
-        configuration::Configuration,
-        documents_api::{self, MultiSearchParams},
-    },
+    apis::documents_api::{self, MultiSearchParams},
     models as raw_models,
 };
 
@@ -23,6 +20,7 @@ pub struct MultiSearch<'a> {
 
 impl<'a> MultiSearch<'a> {
     /// Creates a new `MultiSearch` instance.
+    #[inline]
     pub(super) fn new(client: &'a Client) -> Self {
         Self { client }
     }
@@ -126,13 +124,7 @@ impl<'a> MultiSearch<'a> {
         };
         let multi_search_params = build_multi_search_params(request_body, common_search_params);
 
-        let raw_result = self
-            .client
-            .execute(|config: Configuration| {
-                let params_for_move: MultiSearchParams = multi_search_params.clone();
-                async move { documents_api::multi_search(&config, params_for_move).await }
-            })
-            .await;
+        let raw_result = execute_wrapper!(self, documents_api::multi_search, multi_search_params);
 
         // Now, handle the raw result and parse it into the strong type.
         match raw_result {
@@ -271,13 +263,7 @@ impl<'a> MultiSearch<'a> {
         let multi_search_params = build_multi_search_params(request_body, common_search_params);
 
         // Execute the request to get the raw JSON value
-        let raw_result = self
-            .client
-            .execute(|config: Configuration| {
-                let params_for_move = multi_search_params.clone();
-                async move { documents_api::multi_search(&config, params_for_move).await }
-            })
-            .await;
+        let raw_result = execute_wrapper!(self, documents_api::multi_search, multi_search_params);
 
         match raw_result {
             Ok(json_value) => serde_json::from_value(json_value).map_err(Error::from),

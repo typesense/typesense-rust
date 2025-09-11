@@ -2,7 +2,7 @@
 //!
 //! A `Collections` instance is created via the main `client.collections()` method.
 
-use crate::{Client, Error};
+use crate::{Client, Error, execute_wrapper};
 use typesense_codegen::{
     apis::{
         collections_api::{self, GetCollectionsParams},
@@ -20,6 +20,7 @@ pub struct Collections<'a> {
 
 impl<'a> Collections<'a> {
     /// Creates a new `Collection` instance
+    #[inline]
     pub(super) fn new(client: &'a Client) -> Self {
         Self { client }
     }
@@ -35,13 +36,7 @@ impl<'a> Collections<'a> {
         let params = collections_api::CreateCollectionParams {
             collection_schema: schema,
         };
-
-        self.client
-            .execute(|config: configuration::Configuration| {
-                let params_for_move = params.clone();
-                async move { collections_api::create_collection(&config, params_for_move).await }
-            })
-            .await
+        execute_wrapper!(self, collections_api::create_collection, params)
     }
 
     /// List the existing Typesense collections.
@@ -50,13 +45,13 @@ impl<'a> Collections<'a> {
         params: GetCollectionsParameters,
     ) -> Result<Vec<models::CollectionResponse>, Error<collections_api::GetCollectionsError>> {
         self.client
-            .execute(|config: configuration::Configuration| {
+            .execute(|config: &configuration::Configuration| {
                 let params_for_move = GetCollectionsParams {
                     exclude_fields: params.exclude_fields.clone(),
                     limit: params.limit,
                     offset: params.offset,
                 };
-                async move { collections_api::get_collections(&config, params_for_move).await }
+                collections_api::get_collections(config, params_for_move)
             })
             .await
     }

@@ -35,11 +35,11 @@ jobs:
           profile: minimal
           default: true
       - run: rustup component add rustfmt
-      - name: Check formt
+      - name: Check format
         uses: actions-rs/cargo@v1
         with:
           command: fmt
-          args: --package typesense --package typesense_derive --package xtask -- --check
+          args: -- --check
       - run: rustup component add clippy
       - name: Run clippy
         uses: actions-rs/cargo@v1

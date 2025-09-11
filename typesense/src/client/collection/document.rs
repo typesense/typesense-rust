@@ -4,9 +4,9 @@
 //! via a parent `Collection` struct, for example:
 //! `client.collection::<Book>("books").document("123")`
 
-use crate::{Client, Error};
+use crate::{Client, Error, execute_wrapper};
 use serde::{Serialize, de::DeserializeOwned};
-use typesense_codegen::apis::{configuration, documents_api};
+use typesense_codegen::apis::documents_api;
 
 /// Provides methods for interacting with a single document within a specific Typesense collection.
 ///
@@ -28,6 +28,7 @@ where
     T: DeserializeOwned + Serialize + Send + Sync,
 {
     /// Creates a new `Document` instance for a specific document ID.
+    #[inline]
     pub(super) fn new(client: &'a Client, collection_name: String, document_id: String) -> Self {
         Self {
             client,
@@ -47,13 +48,7 @@ where
             document_id: self.document_id.to_owned(),
         };
 
-        let result_value = self
-            .client
-            .execute(|config: configuration::Configuration| {
-                let params_for_move = params.clone();
-                async move { documents_api::get_document(&config, params_for_move).await }
-            })
-            .await?;
+        let result_value = execute_wrapper!(self, documents_api::get_document, params)?;
 
         // Deserialize the raw JSON value into the user's type T.
         serde_json::from_value(result_value).map_err(Error::from)
@@ -113,13 +108,7 @@ where
             dirty_values: params.unwrap_or_default().dirty_values,
         };
 
-        let result_value = self
-            .client
-            .execute(|config: configuration::Configuration| {
-                let params_for_move = params.clone();
-                async move { documents_api::update_document(&config, params_for_move).await }
-            })
-            .await?;
+        let result_value = execute_wrapper!(self, documents_api::update_document, params)?;
 
         // Deserialize the raw JSON value of the updated document into T.
         serde_json::from_value(result_value).map_err(Error::from)
@@ -136,13 +125,7 @@ where
             document_id: self.document_id.to_owned(),
         };
 
-        let result_value = self
-            .client
-            .execute(|config: configuration::Configuration| {
-                let params_for_move = params.clone();
-                async move { documents_api::delete_document(&config, params_for_move).await }
-            })
-            .await?;
+        let result_value = execute_wrapper!(self, documents_api::delete_document, params)?;
 
         // Deserialize the raw JSON value of the deleted document into T.
         serde_json::from_value(result_value).map_err(Error::from)

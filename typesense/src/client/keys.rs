@@ -3,13 +3,13 @@
 //! An `Keys` instance is created via the `client.keys()` method.
 
 use crate::{
-    Client, Error,
+    Client, Error, execute_wrapper,
     models::{self, ScopedKeyParameters},
 };
 use base64::{Engine, engine::general_purpose::STANDARD as Base64Engine};
 use hmac::{Hmac, Mac};
 use sha2::Sha256;
-use typesense_codegen::apis::{configuration, keys_api};
+use typesense_codegen::apis::keys_api;
 
 /// Provides methods for managing a collection of Typesense API keys.
 ///
@@ -20,6 +20,7 @@ pub struct Keys<'a> {
 
 impl<'a> Keys<'a> {
     /// Creates a new `Keys` instance.
+    #[inline]
     pub(super) fn new(client: &'a Client) -> Self {
         Self { client }
     }
@@ -38,21 +39,12 @@ impl<'a> Keys<'a> {
         let params = keys_api::CreateKeyParams {
             api_key_schema: Some(schema),
         };
-        self.client
-            .execute(|config: configuration::Configuration| {
-                let params_for_move = params.clone();
-                async move { keys_api::create_key(&config, params_for_move).await }
-            })
-            .await
+        execute_wrapper!(self, keys_api::create_key, params)
     }
 
     /// Lists all API keys and their metadata.
     pub async fn retrieve(&self) -> Result<models::ApiKeysResponse, Error<keys_api::GetKeysError>> {
-        self.client
-            .execute(|config: configuration::Configuration| async move {
-                keys_api::get_keys(&config).await
-            })
-            .await
+        execute_wrapper!(self, keys_api::get_keys)
     }
 
     /// Generate a scoped search API key that can have embedded search parameters in them.

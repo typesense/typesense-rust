@@ -1,8 +1,6 @@
 use anyhow::{Context, Result};
 use clap::{Parser, ValueEnum};
-use std::env;
-use std::fs;
-use std::process::Command;
+use std::{env, fs, process::Command};
 mod preprocess_openapi;
 use preprocess_openapi::preprocess_openapi_file;
 

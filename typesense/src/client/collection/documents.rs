@@ -4,12 +4,13 @@
 //! via the main `client.collection("collection_name").documents()` method or
 //! `client.collection_of::<T>("...").documents()`.
 
-use crate::models::DocumentIndexParameters;
-use crate::models::SearchResult;
-use crate::{Client, Error};
+use crate::{
+    Client, Error, execute_wrapper,
+    models::{DocumentIndexParameters, SearchResult},
+};
 use serde::{Serialize, de::DeserializeOwned};
 use typesense_codegen::{
-    apis::{configuration, documents_api},
+    apis::documents_api,
     models::{
         self as raw_models, DeleteDocumentsParameters, ExportDocumentsParameters,
         ImportDocumentsParameters, UpdateDocumentsParameters,
@@ -34,6 +35,7 @@ where
     T: DeserializeOwned + Serialize + Send + Sync,
 {
     /// Creates a new `Documents` instance.
+    #[inline]
     pub(super) fn new(client: &'a Client, collection_name: String) -> Self {
         Self {
             client,
@@ -58,12 +60,7 @@ where
             action: Some(action.to_owned()),
             dirty_values: params.unwrap_or_default().dirty_values, // Or expose this as an argument if needed
         };
-        self.client
-            .execute(|config: configuration::Configuration| {
-                let params_for_move = params.clone();
-                async move { documents_api::index_document(&config, params_for_move).await }
-            })
-            .await
+        execute_wrapper!(self, documents_api::index_document, params)
     }
 
     /// Creates a new document in the collection.
@@ -128,13 +125,7 @@ where
             return_doc: params.return_doc,
             return_id: params.return_id,
         };
-
-        self.client
-            .execute(|config: configuration::Configuration| {
-                let params_for_move = params.clone();
-                async move { documents_api::import_documents(&config, params_for_move).await }
-            })
-            .await
+        execute_wrapper!(self, documents_api::import_documents, params)
     }
 
     /// Exports all documents in a collection in JSONL format.
@@ -151,13 +142,7 @@ where
             filter_by: params.filter_by,
             include_fields: params.include_fields,
         };
-
-        self.client
-            .execute(|config: configuration::Configuration| {
-                let params_for_move = params.clone();
-                async move { documents_api::export_documents(&config, params_for_move).await }
-            })
-            .await
+        execute_wrapper!(self, documents_api::export_documents, params)
     }
 
     /// Deletes a batch of documents matching a specific filter condition.
@@ -176,12 +161,7 @@ where
             ignore_not_found: params.ignore_not_found,
             truncate: params.truncate,
         };
-        self.client
-            .execute(|config: configuration::Configuration| {
-                let params_for_move = params.clone();
-                async move { documents_api::delete_documents(&config, params_for_move).await }
-            })
-            .await
+        execute_wrapper!(self, documents_api::delete_documents, params)
     }
 
     /// Updates a batch of documents matching a specific filter condition.
@@ -200,12 +180,7 @@ where
             filter_by: params.filter_by,
             body: serde_json::to_value(document)?,
         };
-        self.client
-            .execute(|config: configuration::Configuration| {
-                let params_for_move = params.clone();
-                async move { documents_api::update_documents(&config, params_for_move).await }
-            })
-            .await
+        execute_wrapper!(self, documents_api::update_documents, params)
     }
 
     /// Searches for documents in the collection that match the given criteria.
@@ -293,12 +268,6 @@ where
             enable_analytics: params.enable_analytics,
             synonym_sets: params.synonym_sets,
         };
-
-        self.client
-            .execute(|config: configuration::Configuration| {
-                let params_for_move = search_params.clone();
-                async move { documents_api::search_collection(&config, params_for_move).await }
-            })
-            .await
+        execute_wrapper!(self, documents_api::search_collection, search_params)
     }
 }

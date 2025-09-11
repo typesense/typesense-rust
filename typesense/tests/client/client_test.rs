@@ -2,10 +2,11 @@
 
 use reqwest_retry::policies::ExponentialBackoff;
 use std::time::Duration;
-use typesense::models::CollectionResponse;
-use typesense::*;
-use wiremock::matchers::{header, method, path};
-use wiremock::{Mock, MockServer, ResponseTemplate};
+use typesense::{models::CollectionResponse, *};
+use wiremock::{
+    Mock, MockServer, ResponseTemplate,
+    matchers::{header, method, path},
+};
 
 // Helper to create a mock Typesense server for a successful collection retrieval.
 async fn setup_mock_server_ok(server: &MockServer, collection_name: &str) {
@@ -133,8 +134,8 @@ async fn test_round_robin_failover() {
     let client = get_client(vec![server1.uri(), server2.uri(), server3.uri()], None);
 
     // First request should fail over to the third node
-    let result = client.collection("products").retrieve().await;
-    assert!(result.is_ok());
+    assert!(client.collection("products").retrieve().await.is_ok());
+
     assert_eq!(server1.received_requests().await.unwrap().len(), 1);
     assert_eq!(server2.received_requests().await.unwrap().len(), 1);
     assert_eq!(server3.received_requests().await.unwrap().len(), 1);
@@ -146,19 +147,18 @@ async fn test_round_robin_failover() {
     // Reset server 3 to also fail
     server3.reset().await;
     setup_mock_server_503(&server3, "products").await;
-    // Make server 1 healthy again
-    server1.reset().await;
-    setup_mock_server_ok(&server1, "products").await;
+    // Make server 2 healthy again
+    server2.reset().await;
+    setup_mock_server_ok(&server2, "products").await;
 
-    let result2 = client.collection("products").retrieve().await;
-    assert!(result2.is_ok());
+    assert!(client.collection("products").retrieve().await.is_ok());
 
     // Server 3 was tried first and failed.
     assert_eq!(server3.received_requests().await.unwrap().len(), 1);
-    // Server 1 was tried next and succeeded.
-    assert_eq!(server1.received_requests().await.unwrap().len(), 1);
-    // Server 2 was not touched this time.
-    assert_eq!(server2.received_requests().await.unwrap().len(), 1); // Remains 1 from first call
+    // Server 2 was tried next and succeeded.
+    assert_eq!(server2.received_requests().await.unwrap().len(), 1);
+    // Server 1 was not touched this time.
+    assert_eq!(server1.received_requests().await.unwrap().len(), 1); // Remains 1 from first call
 }
 
 #[tokio::test]
@@ -189,7 +189,7 @@ async fn test_health_check_and_node_recovery() {
     assert_eq!(server2.received_requests().await.unwrap().len(), 2); // Got another request
 
     // 3. Wait for the healthcheck interval to pass.
-    tokio::time::sleep(Duration::from_millis(600)).await;
+    tokio::time::sleep(Duration::from_millis(501)).await;
 
     // 4. Make server1 healthy again.
     server1.reset().await;

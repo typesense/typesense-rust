@@ -4,13 +4,10 @@
 
 mod document;
 mod documents;
-use crate::{Client, Error};
+use crate::{Client, Error, execute_wrapper};
 
 use serde::{Serialize, de::DeserializeOwned};
-use typesense_codegen::{
-    apis::{collections_api, configuration},
-    models,
-};
+use typesense_codegen::{apis::collections_api, models};
 
 /// Provides methods for interacting with a Typesense collection.
 ///
@@ -29,6 +26,7 @@ where
     T: DeserializeOwned + Serialize + Send + Sync,
 {
     /// Creates a new `Collection` instance.
+    #[inline]
     pub(super) fn new(client: &'a Client, collection_name: String) -> Self {
         Self {
             client,
@@ -38,11 +36,13 @@ where
     }
 
     /// Provides access to the document-related API endpoints for a specific collection.
+    #[inline]
     pub fn documents(&'a self) -> documents::Documents<'a, T> {
         documents::Documents::new(self.client, self.collection_name.to_owned())
     }
 
     /// Provides access to the API endpoints for a single document within a Typesense collection.
+    #[inline]
     pub fn document(&'a self, document_id: impl Into<String>) -> document::Document<'a, T> {
         document::Document::new(
             self.client,
@@ -52,40 +52,32 @@ where
     }
 
     /// Retrieves the details of a collection, given its name.
+    #[inline]
     pub async fn retrieve(
         &self,
     ) -> Result<models::CollectionResponse, Error<collections_api::GetCollectionError>> {
         let params = collections_api::GetCollectionParams {
             collection_name: self.collection_name.to_owned(),
         };
-
-        self.client
-            .execute(|config: configuration::Configuration| {
-                let params_for_move = params.clone();
-                async move { collections_api::get_collection(&config, params_for_move).await }
-            })
-            .await
+        execute_wrapper!(self, collections_api::get_collection, params)
     }
 
     /// Permanently drops a collection.
+    #[inline]
     pub async fn delete(
         &self,
     ) -> Result<models::CollectionResponse, Error<collections_api::DeleteCollectionError>> {
         let params = collections_api::DeleteCollectionParams {
             collection_name: self.collection_name.to_owned(),
         };
-        self.client
-            .execute(|config: configuration::Configuration| {
-                let params_for_move = params.clone();
-                async move { collections_api::delete_collection(&config, params_for_move).await }
-            })
-            .await
+        execute_wrapper!(self, collections_api::delete_collection, params)
     }
 
     /// Updates a collection's schema to modify the fields and their types.
     ///
     /// # Arguments
     /// * `update_schema` - A `CollectionUpdateSchema` object describing the fields to update.
+    #[inline]
     pub async fn update(
         &self,
         update_schema: models::CollectionUpdateSchema,
@@ -94,11 +86,6 @@ where
             collection_name: self.collection_name.to_owned(),
             collection_update_schema: update_schema,
         };
-        self.client
-            .execute(|config: configuration::Configuration| {
-                let params_for_move = params.clone();
-                async move { collections_api::update_collection(&config, params_for_move).await }
-            })
-            .await
+        execute_wrapper!(self, collections_api::update_collection, params)
     }
 }
