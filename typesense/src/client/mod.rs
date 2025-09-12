@@ -140,12 +140,9 @@ use web_time::{Duration, Instant};
 #[macro_export]
 macro_rules! execute_wrapper {
     ($self:ident, $call:expr) => {
-        $self
-            .client
-            .execute(|config: &typesense_codegen::apis::configuration::Configuration| $call(config))
-            .await
+        $self.client.execute($call).await
     };
-    ($self:ident, $call:expr, $params:expr) => {
+    ($self:ident, $call:expr, $params:ident) => {
         $self
             .client
             .execute(
