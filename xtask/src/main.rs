@@ -136,5 +136,20 @@ fn task_codegen() -> Result<()> {
 
     println!("✅ Codegen task finished successfully.");
     println!("   Generated code is available in '{}'", OUTPUT_DIR);
+
+    // Run cargo fmt after codegen
+    println!("▶️  Running cargo fmt...");
+    let fmt_status = Command::new("cargo")
+        .arg("fmt")
+        .arg("--all")
+        .status()
+        .context("Failed to run cargo fmt")?;
+
+    if !fmt_status.success() {
+        eprintln!("⚠️  cargo fmt failed (check your Rust installation).");
+    } else {
+        println!("✅ Successfully formatted the code.");
+    }
+
     Ok(())
 }
