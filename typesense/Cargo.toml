@@ -19,17 +19,17 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 typesense_codegen = { workspace = true }
 typesense_derive = { workspace = true, optional = true }
-anyhow = "1.0"
-base64 = "0.22"
-bon = "3.7.0"
-debug_unsafe = "0.1"
-hmac = "0.12"
-reqwest-retry = "0.7.0"
-serde = { version = "1", features = ["derive"] }
-serde_json = "1.0"
-sha2 = "0.10"
-thiserror = "1.0"
-web-time = "=1.1.0" # required for wasm32 target
+anyhow = { workspace = true }
+base64 = { workspace = true }
+bon = { workspace = true }
+debug_unsafe = { workspace = true }
+hmac = { workspace = true }
+reqwest-retry = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+thiserror = { workspace = true }
+web-time = { workspace = true } # required for wasm32 target
 
 # native-only dependencies
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
@@ -43,20 +43,20 @@ reqwest = { version = "0.12", default-features = false, features = ["json"] }
 
 [dev-dependencies]
 dotenvy = "0.15"
-trybuild = "1.0.42"
 nanoid = "0.4"
+trybuild = "1.0.42"
 
 # native-only dev deps
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 tokio = { version = "1.5", features = ["macros", "rt", "rt-multi-thread"] }
-wiremock = "0.5"
+wiremock = "0.6"
 
 # wasm test deps
 [target.'cfg(target_arch = "wasm32")'.dev-dependencies]
 console_error_panic_hook = "0.1.6"
 wasm-bindgen = "0.2"
-wasm-bindgen-test = "0.3.23"
 wasm-bindgen-futures = "0.4.50"
+wasm-bindgen-test = "0.3.23"
 
 [[test]]
 name = "derive_tests"

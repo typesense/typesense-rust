@@ -118,15 +118,14 @@ use collections::Collections;
 use key::Key;
 use keys::Keys;
 
-use debug_unsafe::{option::OptionUnwrapper, slice::SliceGetter};
-use serde::{Serialize, de::DeserializeOwned};
-
 #[cfg(not(target_arch = "wasm32"))]
 use reqwest_middleware::ClientBuilder as ReqwestMiddlewareClientBuilder;
 #[cfg(not(target_arch = "wasm32"))]
 use reqwest_retry::RetryTransientMiddleware;
 pub use reqwest_retry::policies::ExponentialBackoff;
 
+use debug_unsafe::{option::OptionUnwrapper, slice::SliceGetter};
+use serde::{Serialize, de::DeserializeOwned};
 use std::{
     future::Future,
     sync::{

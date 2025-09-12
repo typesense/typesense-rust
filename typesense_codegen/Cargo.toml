@@ -8,12 +8,13 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
-serde = { version = "^1.0", features = ["derive"] }
-serde_json = "^1.0"
-serde_repr = "^0.1"
-url = "^2.5"
-bon = "3.7.0"
+bon = { workspace = true }
 reqwest = { version = "0.12", default-features = false, features = ["json"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_repr = { workspace = true }
+url = { workspace = true }
+
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 reqwest-middleware = { version = "0.4", features = ["json"] }
 
