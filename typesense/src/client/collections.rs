@@ -4,10 +4,7 @@
 
 use crate::{Client, Error, execute_wrapper};
 use typesense_codegen::{
-    apis::{
-        collections_api::{self, GetCollectionsParams},
-        configuration,
-    },
+    apis::collections_api::{self, GetCollectionsParams},
     models::{self, GetCollectionsParameters},
 };
 
@@ -44,15 +41,11 @@ impl<'c> Collections<'c> {
         &self,
         params: GetCollectionsParameters,
     ) -> Result<Vec<models::CollectionResponse>, Error<collections_api::GetCollectionsError>> {
-        self.client
-            .execute(|config: &configuration::Configuration| {
-                let params_for_move = GetCollectionsParams {
-                    exclude_fields: params.exclude_fields.clone(),
-                    limit: params.limit,
-                    offset: params.offset,
-                };
-                collections_api::get_collections(config, params_for_move)
-            })
-            .await
+        let params = GetCollectionsParams {
+            exclude_fields: params.exclude_fields,
+            limit: params.limit,
+            offset: params.offset,
+        };
+        execute_wrapper!(self, collections_api::get_collections, params)
     }
 }

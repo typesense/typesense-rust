@@ -147,8 +147,7 @@ macro_rules! execute_wrapper {
             .client
             .execute(
                 |config: &typesense_codegen::apis::configuration::Configuration| {
-                    let params_cloned = $params.clone();
-                    $call(config, params_cloned)
+                    $call(config, &$params)
                 },
             )
             .await

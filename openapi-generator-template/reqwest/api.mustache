@@ -94,7 +94,7 @@ pub enum {{{operationIdCamelCase}}}Error {
 {{#vendorExtensions.x-group-parameters}}
 pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}{{{vendorExtensions.x-rust-generic-parameter}}}(configuration: &configuration::Configuration{{#allParams}}{{#-first}}, {{!
 ### Params
-}}params: {{{operationIdCamelCase}}}Params{{/-first}}{{/allParams}}{{!
+}}params: &{{{operationIdCamelCase}}}Params{{/-first}}{{/allParams}}{{!
 ### Function return type
 }}) -> Result<{{#vendorExtensions.x-rust-return-type}}{{{.}}}{{/vendorExtensions.x-rust-return-type}}{{^vendorExtensions.x-rust-return-type}}{{#isResponseFile}}{{#supportAsync}}reqwest::Response{{/supportAsync}}{{^supportAsync}}reqwest::blocking::Response{{/supportAsync}}{{/isResponseFile}}{{^isResponseFile}}{{#supportMultipleResponses}}ResponseContent<{{{operationIdCamelCase}}}Success>{{/supportMultipleResponses}}{{^supportMultipleResponses}}{{^returnType}}(){{/returnType}}{{{returnType}}}{{/supportMultipleResponses}}{{/isResponseFile}}{{/vendorExtensions.x-rust-return-type}}, Error<{{{operationIdCamelCase}}}Error>> {
 {{/vendorExtensions.x-group-parameters}}
@@ -132,7 +132,7 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}{{{vendorExtensi
     {{/allParams}}
 {{/vendorExtensions.x-group-parameters}}
 
-    let uri_str = format!("{}{{{path}}}", configuration.base_path{{#pathParams}}, {{{baseName}}}={{#isString}}crate::apis::urlencode({{/isString}}{{{vendorExtensions.x-rust-param-identifier}}}{{^required}}.unwrap(){{/required}}{{#required}}{{#isNullable}}.unwrap(){{/isNullable}}{{/required}}{{#isArray}}.join(",").as_ref(){{/isArray}}{{^isString}}{{^isUuid}}{{^isPrimitiveType}}{{^isContainer}}.to_string(){{/isContainer}}{{/isPrimitiveType}}{{/isUuid}}{{/isString}}{{#isString}}){{/isString}}{{/pathParams}});
+    let uri_str = format!("{}{{{path}}}", configuration.base_path{{#pathParams}}, {{{baseName}}}={{#isString}}crate::apis::urlencode(&{{/isString}}{{{vendorExtensions.x-rust-param-identifier}}}{{^required}}.unwrap(){{/required}}{{#required}}{{#isNullable}}.unwrap(){{/isNullable}}{{/required}}{{#isArray}}.join(",").as_ref(){{/isArray}}{{^isString}}{{^isUuid}}{{^isPrimitiveType}}{{^isContainer}}.to_string(){{/isContainer}}{{/isPrimitiveType}}{{/isUuid}}{{/isString}}{{#isString}}){{/isString}}{{/pathParams}});
     let mut req_builder = configuration.client.request(reqwest::Method::{{{httpMethod}}}, &uri_str);
 
     {{#queryParams}}
@@ -437,7 +437,7 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}{{{vendorExtensi
     {{#vendorExtensions.x-rust-body-is-raw-text}}
     {{! If the flag is true, we generate only the raw text body logic }}
     {{#bodyParams}}
-    req_builder = req_builder.header(reqwest::header::CONTENT_TYPE, "text/plain").body({{{vendorExtensions.x-rust-param-identifier}}});
+    req_builder = req_builder.header(reqwest::header::CONTENT_TYPE, "text/plain").body({{{vendorExtensions.x-rust-param-identifier}}}.to_owned());
     {{/bodyParams}}
     {{/vendorExtensions.x-rust-body-is-raw-text}}
     {{! Now, handle the case where the extension is NOT present. This is the "else" block }}
