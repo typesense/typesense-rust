@@ -429,8 +429,6 @@ paths:
       summary: Search for documents in a collection
       description: Search for documents in a collection that match the search criteria.
       operationId: searchCollection
-      x-rust-generic-parameter: "<D: for<'de> serde::Deserialize<'de> + Serialize>"
-      x-rust-return-type: "models::SearchResult<D>"
       parameters:
         - name: collectionName
           in: path
@@ -697,7 +695,6 @@ paths:
       summary: Export all documents in a collection
       description: Export all documents in a collection in JSON lines format.
       operationId: exportDocuments
-      x-supports-plain-text: true
       parameters:
         - name: collectionName
           in: path
@@ -749,8 +746,6 @@ paths:
         JSON structure. You can feed the output file from a Typesense export operation
         directly as import.
       operationId: importDocuments
-      x-rust-body-is-raw-text: true
-      x-supports-plain-text: true
       parameters:
         - name: collectionName
           in: path
@@ -1417,7 +1412,6 @@ paths:
       description:
         This is especially useful to avoid round-trip network latencies incurred otherwise if each of these requests are sent in separate HTTP requests.
         You can also use this feature to do a federated search across multiple collections in a single HTTP request.
-      x-rust-return-type: "serde_json::Value"
       parameters:
         - name: multiSearchParameters
           required: true
@@ -2165,7 +2159,6 @@ components:
         - name
         - fields
       type: object
-      x-rust-builder: true
       properties:
         name:
           type: string
@@ -2289,7 +2282,6 @@ components:
         - name
         - type
       type: object
-      x-rust-builder: true
       properties:
         name:
           type: string
@@ -2447,7 +2439,6 @@ components:
             $ref: "#/components/schemas/CollectionAlias"
     SearchResult:
       type: object
-      x-rust-generic-parameter: "<D>"
       properties:
         facet_counts:
           type: array
@@ -2474,13 +2465,11 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/SearchGroupedHit"
-          x-rust-type: "Option<Vec<models::SearchGroupedHit<D>>>"
         hits:
           type: array
           description: The documents that matched the search query
           items:
             $ref: "#/components/schemas/SearchResultHit"
-          x-rust-type: "Option<Vec<models::SearchResultHit<D>>>"
         request_params:
             $ref: "#/components/schemas/SearchRequestParams"
         conversation:
@@ -2531,7 +2520,6 @@ components:
       required:
         - group_key
         - hits
-      x-rust-generic-parameter: "<D>"
       properties:
         found:
           type: integer
@@ -2543,10 +2531,8 @@ components:
           description: The documents that matched the search query
           items:
             $ref: "#/components/schemas/SearchResultHit"
-          x-rust-type: "Vec<models::SearchResultHit<D>>"
     SearchResultHit:
       type: object
-      x-rust-generic-parameter: "<D>"
       properties:
         highlights:
           type: array
@@ -2559,7 +2545,6 @@ components:
           additionalProperties: true
         document:
           type: object
-          x-rust-type: "Option<D>"
           description: Can be any key-value pair
           additionalProperties:
             type: object
@@ -2925,7 +2910,6 @@ components:
           items:
             $ref: "#/components/schemas/ApiKey"
     MultiSearchResult:
-      x-rust-generic-parameter: "<D>"
       type: object
       required:
         - results
@@ -2934,11 +2918,9 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/MultiSearchResultItem"
-          x-rust-type: "Vec<models::MultiSearchResultItem<D>>"
         conversation:
           $ref: "#/components/schemas/SearchResultConversation"
     MultiSearchResultItem:
-      x-rust-generic-parameter: "<D>"
       allOf:
       - $ref: "#/components/schemas/SearchResult"
       - type: object
@@ -2952,7 +2934,6 @@ components:
             description: Error description
     SearchParameters:
       type: object
-      x-rust-builder: true
       properties:
         q:
           description: The query text to search for in the collection.
@@ -3364,7 +3345,6 @@ components:
       description: >
         Parameters for the multi search API.
       type: object
-      x-rust-builder: true
       properties:
         q:
           description: The query text to search for in the collection.
@@ -3752,7 +3732,6 @@ components:
           items:
             $ref: "#/components/schemas/MultiSearchCollectionParameters"
     MultiSearchCollectionParameters:
-      x-rust-builder: true
       allOf:
         - $ref: "#/components/schemas/MultiSearchParameters"
         - type: object

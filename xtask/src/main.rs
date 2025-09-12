@@ -1,7 +1,9 @@
 use anyhow::{Context, Result};
 use clap::{Parser, ValueEnum};
 use std::{env, fs, process::Command};
+mod add_vendor_attributes;
 mod preprocess_openapi;
+mod vendor_attributes;
 use preprocess_openapi::preprocess_openapi_file;
 
 const SPEC_URL: &str =

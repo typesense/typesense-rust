@@ -1,6 +1,8 @@
 use serde_yaml::{Mapping, Value};
 use std::fs;
 
+use crate::add_vendor_attributes::add_vendor_attributes;
+
 // --- Main function to orchestrate the file reading, processing, and writing ---
 pub fn preprocess_openapi_file(
     input_path: &str,
@@ -19,6 +21,10 @@ pub fn preprocess_openapi_file(
 
     // --- Step 2: Apply all the required transformations ---
     println!("Preprocessing the spec...");
+
+    add_vendor_attributes(doc_root)?;
+
+    println!("Unwrapping parameters...");
     unwrap_search_parameters(doc_root)?;
     unwrap_multi_search_parameters(doc_root)?;
     unwrap_parameters_by_path(
