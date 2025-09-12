@@ -9,7 +9,7 @@ Rust client library for Typesense | Work In Progress &amp; Help Wanted!
 
 When updating or adding new parameters and endpoints, make changes directly in the [Typesense API spec repository](https://github.com/typesense/typesense-api-spec).
 
-Once your changes are merged, you can update this project as follows:
+Once your changes are merged, you can update this project as follows (you can also run tasks individually):
 
 ```bash
 cargo xtask fetch code-gen
@@ -24,7 +24,7 @@ This will:
 
 The preprocessing step does two things:
 
-- Unwrap/flatten the URL params defined as objects into individual URL parameters (in [`preprocess_openapi.rs`](xtask/src/preprocess_openapi.rs))
+- Flatten the URL params defined as objects into individual URL parameters (in [`preprocess_openapi.rs`](xtask/src/preprocess_openapi.rs))
 - Inject OpenAPI vendor attributes (e.g., generic parameters, schema builders) into the spec before code generation (in [`add_vendor_attributes.rs`](./xtask/src/add_vendor_attributes.rs))
 
 If you'd like to contribute, please join our [Slack Community](https://join.slack.com/t/typesense-community/shared_invite/zt-mx4nbsbn-AuOL89O7iBtvkz136egSJg) and say hello!
