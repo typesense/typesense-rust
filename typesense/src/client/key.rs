@@ -8,15 +8,15 @@ use typesense_codegen::{apis::keys_api, models};
 /// Provides methods for managing a specific Typesense API key.
 ///
 /// This struct is created by calling `client.key(key_id)`.
-pub struct Key<'a> {
-    pub(super) client: &'a Client,
+pub struct Key<'c> {
+    pub(super) client: &'c Client,
     pub(super) key_id: i64,
 }
 
-impl<'a> Key<'a> {
+impl<'c> Key<'c> {
     /// Creates a new `Key` instance for a specific key ID.
     #[inline]
-    pub(super) fn new(client: &'a Client, key_id: i64) -> Self {
+    pub(super) fn new(client: &'c Client, key_id: i64) -> Self {
         Self { client, key_id }
     }
 

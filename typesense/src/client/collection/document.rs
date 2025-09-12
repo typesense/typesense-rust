@@ -13,23 +13,23 @@ use typesense_codegen::apis::documents_api;
 /// This struct is created by calling a method like `client.collection("collection_name").document("document_id")` or `client.collection_of::<MyType>("collection_name").document("document_id")`.
 /// The generic `T` represents the shape of the document and must implement `Serialize` and `DeserializeOwned`.
 /// If `T` is not specified, it defaults to `serde_json::Value` for schemaless interactions.
-pub struct Document<'a, T = serde_json::Value>
+pub struct Document<'c, 'n, T = serde_json::Value>
 where
     T: DeserializeOwned + Serialize + Send + Sync,
 {
-    pub(super) client: &'a Client,
-    pub(super) collection_name: String,
+    pub(super) client: &'c Client,
+    pub(super) collection_name: &'n str,
     pub(super) document_id: String,
     pub(super) _phantom: std::marker::PhantomData<T>,
 }
 
-impl<'a, T> Document<'a, T>
+impl<'c, 'n, T> Document<'c, 'n, T>
 where
     T: DeserializeOwned + Serialize + Send + Sync,
 {
     /// Creates a new `Document` instance for a specific document ID.
     #[inline]
-    pub(super) fn new(client: &'a Client, collection_name: String, document_id: String) -> Self {
+    pub(super) fn new(client: &'c Client, collection_name: &'n str, document_id: String) -> Self {
         Self {
             client,
             collection_name,

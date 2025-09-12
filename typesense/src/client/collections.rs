@@ -14,14 +14,14 @@ use typesense_codegen::{
 /// Provides methods for interacting with Typesense collections and aliases.
 ///
 /// This struct is created by calling `client.collections()`.
-pub struct Collections<'a> {
-    pub(super) client: &'a Client,
+pub struct Collections<'c> {
+    pub(super) client: &'c Client,
 }
 
-impl<'a> Collections<'a> {
+impl<'c> Collections<'c> {
     /// Creates a new `Collection` instance
     #[inline]
-    pub(super) fn new(client: &'a Client) -> Self {
+    pub(super) fn new(client: &'c Client) -> Self {
         Self { client }
     }
 

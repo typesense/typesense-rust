@@ -21,22 +21,22 @@ use typesense_codegen::{
 /// This struct is generic over the document type `T`. If created via `client.collection(...)`,
 /// `T` defaults to `serde_json::Value`. If created via `client.collection_of::<MyType>(...)`,
 /// `T` will be `MyType`.
-pub struct Documents<'a, T = serde_json::Value>
+pub struct Documents<'c, 'n, T = serde_json::Value>
 where
     T: DeserializeOwned + Serialize + Send + Sync,
 {
-    pub(super) client: &'a Client,
-    pub(super) collection_name: String,
+    pub(super) client: &'c Client,
+    pub(super) collection_name: &'n str,
     pub(super) _phantom: std::marker::PhantomData<T>,
 }
 
-impl<'a, T> Documents<'a, T>
+impl<'c, 'n, T> Documents<'c, 'n, T>
 where
     T: DeserializeOwned + Serialize + Send + Sync,
 {
     /// Creates a new `Documents` instance.
     #[inline]
-    pub(super) fn new(client: &'a Client, collection_name: String) -> Self {
+    pub(super) fn new(client: &'c Client, collection_name: &'n str) -> Self {
         Self {
             client,
             collection_name,

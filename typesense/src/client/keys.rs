@@ -14,14 +14,14 @@ use typesense_codegen::apis::keys_api;
 /// Provides methods for managing a collection of Typesense API keys.
 ///
 /// This struct is created by calling `client.keys()`.
-pub struct Keys<'a> {
-    pub(super) client: &'a Client,
+pub struct Keys<'c> {
+    pub(super) client: &'c Client,
 }
 
-impl<'a> Keys<'a> {
+impl<'c> Keys<'c> {
     /// Creates a new `Keys` instance.
     #[inline]
-    pub(super) fn new(client: &'a Client) -> Self {
+    pub(super) fn new(client: &'c Client) -> Self {
         Self { client }
     }
 

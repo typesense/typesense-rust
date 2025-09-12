@@ -404,11 +404,11 @@ impl Client {
     /// # }
     /// ```
     #[inline]
-    pub fn collection_of<'a, T>(&'a self, collection_name: impl Into<String>) -> Collection<'a, T>
+    pub fn collection_of<'c, 'n, T>(&'c self, collection_name: &'n str) -> Collection<'c, 'n, T>
     where
         T: DeserializeOwned + Serialize + Send + Sync,
     {
-        Collection::new(self, collection_name.into())
+        Collection::new(self, collection_name)
     }
 
     /// Provides access to API endpoints for a specific collection using schemaless `serde_json::Value` documents.
@@ -440,11 +440,11 @@ impl Client {
     /// # }
     /// ```
     #[inline]
-    pub fn collection<'a>(
-        &'a self,
-        collection_name: impl Into<String>,
-    ) -> Collection<'a, serde_json::Value> {
-        Collection::new(self, collection_name.into())
+    pub fn collection<'c, 'n>(
+        &'c self,
+        collection_name: &'n str,
+    ) -> Collection<'c, 'n, serde_json::Value> {
+        self.collection_of(collection_name)
     }
 
     /// Provides access to endpoints for managing the collection of API keys.

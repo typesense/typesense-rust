@@ -14,14 +14,14 @@ use typesense_codegen::{
 /// Provides methods for performing multi-search operations across multiple collections.
 ///
 /// This struct is created by calling `client.multi_search()`.
-pub struct MultiSearch<'a> {
-    pub(super) client: &'a Client,
+pub struct MultiSearch<'c> {
+    pub(super) client: &'c Client,
 }
 
-impl<'a> MultiSearch<'a> {
+impl<'c> MultiSearch<'c> {
     /// Creates a new `MultiSearch` instance.
     #[inline]
-    pub(super) fn new(client: &'a Client) -> Self {
+    pub(super) fn new(client: &'c Client) -> Self {
         Self { client }
     }
 
