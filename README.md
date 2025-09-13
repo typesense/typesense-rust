@@ -27,4 +27,18 @@ The preprocessing step does two things:
 - Flatten the URL params defined as objects into individual URL parameters (in [`preprocess_openapi.rs`](xtask/src/preprocess_openapi.rs))
 - Inject OpenAPI vendor attributes (e.g., generic parameters, schema builders) into the spec before code generation (in [`add_vendor_attributes.rs`](./xtask/src/add_vendor_attributes.rs))
 
+You can also run `code-gen` directly through Docker:
+
+```
+docker run --rm \
+    -v $PWD:/local openapitools/openapi-generator-cli generate \
+    -i /local/preprocessed_openapi.yml \
+    -g rust \
+    -o /local/typesense_codegen \
+    -t /local/openapi-generator-template \
+    --additional-properties library=reqwest \
+    --additional-properties supportMiddleware=true \
+    --additional-properties useSingleRequestParameter=true
+```
+
 If you'd like to contribute, please join our [Slack Community](https://join.slack.com/t/typesense-community/shared_invite/zt-mx4nbsbn-AuOL89O7iBtvkz136egSJg) and say hello!
