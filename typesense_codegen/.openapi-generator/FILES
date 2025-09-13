@@ -121,6 +121,7 @@ src/apis/debug_api.rs
 src/apis/documents_api.rs
 src/apis/health_api.rs
 src/apis/keys_api.rs
+src/apis/mod.rs
 src/apis/nl_search_models_api.rs
 src/apis/operations_api.rs
 src/apis/override_api.rs
@@ -128,6 +129,7 @@ src/apis/presets_api.rs
 src/apis/stemming_api.rs
 src/apis/stopwords_api.rs
 src/apis/synonyms_api.rs
+src/lib.rs
 src/models/analytics_event.rs
 src/models/analytics_event_create_response.rs
 src/models/analytics_event_data.rs
