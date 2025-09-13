@@ -26,3 +26,6 @@ Cargo.toml
 src/apis/configuration.rs
 src/apis/mod.rs
 src/lib.rs
+.gitignore
+.travis.yml
+git_push.sh
