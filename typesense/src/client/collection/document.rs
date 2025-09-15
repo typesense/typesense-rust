@@ -4,7 +4,7 @@
 //! via a parent `Collection` struct, for example:
 //! `client.collection::<Book>().document("123")`
 
-use crate::{Client, Error, execute_wrapper};
+use crate::{Client, Error, execute_wrapper, traits};
 use serde::{Serialize, de::DeserializeOwned};
 use typesense_codegen::apis::documents_api;
 
@@ -55,6 +55,28 @@ where
         serde_json::from_value(result_value).map_err(Error::from)
     }
 
+    /// Deletes this individual document from the collection.
+    /// The deleted document is returned.
+    ///
+    /// # Returns
+    /// A `Result` containing the deleted document deserialized into `D`.
+    pub async fn delete(&self) -> Result<D, Error<documents_api::DeleteDocumentError>> {
+        let params = documents_api::DeleteDocumentParams {
+            collection_name: self.collection_name.to_owned(),
+            document_id: self.document_id.to_owned(),
+        };
+
+        let result_value = execute_wrapper!(self, documents_api::delete_document, params)?;
+
+        // Deserialize the raw JSON value of the deleted document into T.
+        serde_json::from_value(result_value).map_err(Error::from)
+    }
+}
+
+impl<'c, 'n, D> Document<'c, 'n, D>
+where
+    D: traits::Document,
+{
     /// Updates this individual document. The update can be partial.
     /// The updated full document is returned.
     ///
@@ -68,9 +90,9 @@ where
     /// # Example
     /// ```no_run
     /// # use serde::{Serialize, Deserialize};
-    /// # use typesense::{Client, models};
+    /// # use typesense::{Client, Typesense, models};
     /// # use reqwest::Url;
-    /// # #[derive(Serialize, Deserialize)]
+    /// # #[derive(Typesense, Serialize, Deserialize)]
     /// # struct Book { id: String, title: String, pages: i32 }
     /// #
     /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
@@ -79,7 +101,7 @@ where
     /// #    .api_key("xyz")
     /// #    .build()
     /// #    .unwrap();
-    /// let book_update = serde_json::json!({ "pages": 654 });
+    /// let book_update = BookPartial { pages: Some(654), ..Default::default() };
     ///
     /// // Simple update
     /// let updated_book = client.collection_named::<Book>("books").document("123")
@@ -97,38 +119,21 @@ where
     /// # Ok(())
     /// # }
     /// ```
-    pub async fn update<U: Serialize>(
+    pub async fn update(
         &self,
-        partial_document: U,
+        partial_document: &D::Partial,
         params: Option<crate::models::DocumentIndexParameters>,
     ) -> Result<D, Error<documents_api::UpdateDocumentError>> {
         let params = documents_api::UpdateDocumentParams {
             collection_name: self.collection_name.to_owned(),
             document_id: self.document_id.to_owned(),
-            body: serde_json::to_value(partial_document)?,
+            body: partial_document,
             dirty_values: params.and_then(|d| d.dirty_values),
         };
 
         let result_value = execute_wrapper!(self, documents_api::update_document, params)?;
 
         // Deserialize the raw JSON value of the updated document into T.
-        serde_json::from_value(result_value).map_err(Error::from)
-    }
-
-    /// Deletes this individual document from the collection.
-    /// The deleted document is returned.
-    ///
-    /// # Returns
-    /// A `Result` containing the deleted document deserialized into `D`.
-    pub async fn delete(&self) -> Result<D, Error<documents_api::DeleteDocumentError>> {
-        let params = documents_api::DeleteDocumentParams {
-            collection_name: self.collection_name.to_owned(),
-            document_id: self.document_id.to_owned(),
-        };
-
-        let result_value = execute_wrapper!(self, documents_api::delete_document, params)?;
-
-        // Deserialize the raw JSON value of the deleted document into T.
         serde_json::from_value(result_value).map_err(Error::from)
     }
 }

@@ -27,6 +27,13 @@ pub struct DeleteNlSearchModelParams {
     pub model_id: String,
 }
 
+/*
+/// struct for passing parameters to the method [`retrieve_all_nl_search_models`]
+#[derive(Clone, Debug)]
+pub struct RetrieveAllNlSearchModelsParams {
+}
+*/
+
 /// struct for passing parameters to the method [`retrieve_nl_search_model`]
 #[derive(Clone, Debug)]
 pub struct RetrieveNlSearchModelParams {
@@ -208,7 +215,9 @@ pub async fn delete_nl_search_model(
 
 /// Retrieve all NL search models.
 pub async fn retrieve_all_nl_search_models(
-    configuration: &configuration::Configuration,
+    configuration: &configuration::Configuration, /*
+                                                  , params: &RetrieveAllNlSearchModelsParams
+                                                  */
 ) -> Result<Vec<models::NlSearchModelSchema>, Error<RetrieveAllNlSearchModelsError>> {
     let uri_str = format!("{}/nl_search_models", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);

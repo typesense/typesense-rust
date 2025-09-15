@@ -41,6 +41,13 @@ pub struct GetAliasParams {
     pub alias_name: String,
 }
 
+/*
+/// struct for passing parameters to the method [`get_aliases`]
+#[derive(Clone, Debug)]
+pub struct GetAliasesParams {
+}
+*/
+
 /// struct for passing parameters to the method [`get_collection`]
 #[derive(Clone, Debug)]
 pub struct GetCollectionParams {
@@ -395,7 +402,9 @@ pub async fn get_alias(
 
 /// List all aliases and the corresponding collections that they map to.
 pub async fn get_aliases(
-    configuration: &configuration::Configuration,
+    configuration: &configuration::Configuration, /*
+                                                  , params: &GetAliasesParams
+                                                  */
 ) -> Result<models::CollectionAliasesResponse, Error<GetAliasesError>> {
     let uri_str = format!("{}/aliases", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);

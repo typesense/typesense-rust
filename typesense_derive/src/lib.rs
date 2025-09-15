@@ -16,7 +16,7 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
 
     let ItemStruct {
         attrs,
-        vis: _,
+        vis,
         struct_token: _,
         ident,
         generics,
@@ -77,9 +77,28 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
         proc_macro2::TokenStream::new()
     };
 
+    let optional_fields = fields.iter().map(|f| {
+        let vis = &f.vis;
+        let ident = &f.ident;
+        let ty = &f.ty;
+        quote! {
+            #[serde(skip_serializing_if = "Option::is_none")]
+            #vis #ident: Option<#ty>,
+        }
+    });
+
+    let name_partial = Ident::new(&(ident.to_string() + "Partial"), ident.span());
+
     let generated_code = quote! {
+        #[derive(Default, Serialize)]
+        #vis struct #name_partial {
+            #(#optional_fields)*
+        }
+        impl typesense::prelude::DocumentPartial for #name_partial {}
+
         impl #impl_generics typesense::prelude::Document for #ident #ty_generics #where_clause {
             const COLLECTION_NAME: &str = #collection_name;
+            type Partial = #name_partial;
 
             fn collection_schema() -> typesense::models::CollectionSchema {
                 let name = Self::COLLECTION_NAME.to_owned();

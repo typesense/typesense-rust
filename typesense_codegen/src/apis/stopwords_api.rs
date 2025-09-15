@@ -27,6 +27,13 @@ pub struct RetrieveStopwordsSetParams {
     pub set_id: String,
 }
 
+/*
+/// struct for passing parameters to the method [`retrieve_stopwords_sets`]
+#[derive(Clone, Debug)]
+pub struct RetrieveStopwordsSetsParams {
+}
+*/
+
 /// struct for passing parameters to the method [`upsert_stopwords_set`]
 #[derive(Clone, Debug)]
 pub struct UpsertStopwordsSetParams {
@@ -193,7 +200,9 @@ pub async fn retrieve_stopwords_set(
 
 /// Retrieve the details of all stopwords sets
 pub async fn retrieve_stopwords_sets(
-    configuration: &configuration::Configuration,
+    configuration: &configuration::Configuration, /*
+                                                  , params: &RetrieveStopwordsSetsParams
+                                                  */
 ) -> Result<models::StopwordsSetsRetrieveAllSchema, Error<RetrieveStopwordsSetsError>> {
     let uri_str = format!("{}/stopwords", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);

@@ -13,6 +13,13 @@ use crate::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
+/*
+/// struct for passing parameters to the method [`health`]
+#[derive(Clone, Debug)]
+pub struct HealthParams {
+}
+*/
+
 /// struct for typed errors of method [`health`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -22,7 +29,9 @@ pub enum HealthError {
 
 /// Checks if Typesense server is ready to accept requests.
 pub async fn health(
-    configuration: &configuration::Configuration,
+    configuration: &configuration::Configuration, /*
+                                                  , params: &HealthParams
+                                                  */
 ) -> Result<models::HealthStatus, Error<HealthError>> {
     let uri_str = format!("{}/health", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);

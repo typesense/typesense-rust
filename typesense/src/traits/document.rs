@@ -6,11 +6,16 @@
 use crate::models::CollectionSchema;
 use serde::{Serialize, de::DeserializeOwned};
 
-/// Trait that should implement every struct that wants to be represented as a Typesense
+/// Trait for partial structs
+pub trait DocumentPartial: Serialize {}
+
+/// Trait that every struct should implement that wants to be represented as a Typesense
 /// Document
 pub trait Document: DeserializeOwned + Serialize {
     /// Collection name
     const COLLECTION_NAME: &'static str;
+    /// A struct for partial updates
+    type Partial: DocumentPartial;
 
     /// Collection schema associated with the document.
     fn collection_schema() -> CollectionSchema;

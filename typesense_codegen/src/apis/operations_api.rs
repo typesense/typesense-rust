@@ -13,6 +13,41 @@ use crate::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
+/*
+/// struct for passing parameters to the method [`clear_cache`]
+#[derive(Clone, Debug)]
+pub struct ClearCacheParams {
+}
+*/
+
+/*
+/// struct for passing parameters to the method [`compact_db`]
+#[derive(Clone, Debug)]
+pub struct CompactDbParams {
+}
+*/
+
+/*
+/// struct for passing parameters to the method [`get_schema_changes`]
+#[derive(Clone, Debug)]
+pub struct GetSchemaChangesParams {
+}
+*/
+
+/*
+/// struct for passing parameters to the method [`retrieve_api_stats`]
+#[derive(Clone, Debug)]
+pub struct RetrieveApiStatsParams {
+}
+*/
+
+/*
+/// struct for passing parameters to the method [`retrieve_metrics`]
+#[derive(Clone, Debug)]
+pub struct RetrieveMetricsParams {
+}
+*/
+
 /// struct for passing parameters to the method [`take_snapshot`]
 #[derive(Clone, Debug)]
 pub struct TakeSnapshotParams {
@@ -25,6 +60,13 @@ pub struct TakeSnapshotParams {
 pub struct ToggleSlowRequestLogParams {
     pub toggle_slow_request_log_request: Option<models::ToggleSlowRequestLogRequest>,
 }
+
+/*
+/// struct for passing parameters to the method [`vote`]
+#[derive(Clone, Debug)]
+pub struct VoteParams {
+}
+*/
 
 /// struct for typed errors of method [`clear_cache`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -84,7 +126,9 @@ pub enum VoteError {
 
 /// Clear the cached responses of search requests that are sent with `use_cache` parameter in the LRU cache.
 pub async fn clear_cache(
-    configuration: &configuration::Configuration,
+    configuration: &configuration::Configuration, /*
+                                                  , params: &ClearCacheParams
+                                                  */
 ) -> Result<models::SuccessStatus, Error<ClearCacheError>> {
     let uri_str = format!("{}/operations/cache/clear", configuration.base_path);
     let mut req_builder = configuration
@@ -142,7 +186,9 @@ pub async fn clear_cache(
 
 /// Typesense uses RocksDB to store your documents on the disk. If you do frequent writes or updates, you could benefit from running a compaction of the underlying RocksDB database. This could reduce the size of the database and decrease read latency. While the database will not block during this operation, we recommend running it during off-peak hours.
 pub async fn compact_db(
-    configuration: &configuration::Configuration,
+    configuration: &configuration::Configuration, /*
+                                                  , params: &CompactDbParams
+                                                  */
 ) -> Result<models::SuccessStatus, Error<CompactDbError>> {
     let uri_str = format!("{}/operations/db/compact", configuration.base_path);
     let mut req_builder = configuration
@@ -200,7 +246,9 @@ pub async fn compact_db(
 
 /// Returns the status of any ongoing schema change operations. If no schema changes are in progress, returns an empty response.
 pub async fn get_schema_changes(
-    configuration: &configuration::Configuration,
+    configuration: &configuration::Configuration, /*
+                                                  , params: &GetSchemaChangesParams
+                                                  */
 ) -> Result<Vec<models::SchemaChangeStatus>, Error<GetSchemaChangesError>> {
     let uri_str = format!("{}/operations/schema_changes", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -256,7 +304,9 @@ pub async fn get_schema_changes(
 
 /// Retrieve the stats about API endpoints.
 pub async fn retrieve_api_stats(
-    configuration: &configuration::Configuration,
+    configuration: &configuration::Configuration, /*
+                                                  , params: &RetrieveApiStatsParams
+                                                  */
 ) -> Result<models::ApiStatsResponse, Error<RetrieveApiStatsError>> {
     let uri_str = format!("{}/stats.json", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -312,7 +362,9 @@ pub async fn retrieve_api_stats(
 
 /// Retrieve the metrics.
 pub async fn retrieve_metrics(
-    configuration: &configuration::Configuration,
+    configuration: &configuration::Configuration, /*
+                                                  , params: &RetrieveMetricsParams
+                                                  */
 ) -> Result<serde_json::Value, Error<RetrieveMetricsError>> {
     let uri_str = format!("{}/metrics.json", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -488,7 +540,9 @@ pub async fn toggle_slow_request_log(
 
 /// Triggers a follower node to initiate the raft voting process, which triggers leader re-election. The follower node that you run this operation against will become the new leader, once this command succeeds.
 pub async fn vote(
-    configuration: &configuration::Configuration,
+    configuration: &configuration::Configuration, /*
+                                                  , params: &VoteParams
+                                                  */
 ) -> Result<models::SuccessStatus, Error<VoteError>> {
     let uri_str = format!("{}/operations/vote", configuration.base_path);
     let mut req_builder = configuration

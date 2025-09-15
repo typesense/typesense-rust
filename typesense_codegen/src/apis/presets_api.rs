@@ -20,6 +20,13 @@ pub struct DeletePresetParams {
     pub preset_id: String,
 }
 
+/*
+/// struct for passing parameters to the method [`retrieve_all_presets`]
+#[derive(Clone, Debug)]
+pub struct RetrieveAllPresetsParams {
+}
+*/
+
 /// struct for passing parameters to the method [`retrieve_preset`]
 #[derive(Clone, Debug)]
 pub struct RetrievePresetParams {
@@ -132,7 +139,9 @@ pub async fn delete_preset(
 
 /// Retrieve the details of all presets
 pub async fn retrieve_all_presets(
-    configuration: &configuration::Configuration,
+    configuration: &configuration::Configuration, /*
+                                                  , params: &RetrieveAllPresetsParams
+                                                  */
 ) -> Result<models::PresetsRetrieveSchema, Error<RetrieveAllPresetsError>> {
     let uri_str = format!("{}/presets", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);

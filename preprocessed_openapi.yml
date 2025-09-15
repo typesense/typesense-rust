@@ -348,6 +348,9 @@ paths:
               description: Can be any key-value pair
               x-go-type: interface{}
         required: true
+        x-rust-type: B
+      x-rust-params-generic-parameter: <B>
+      x-rust-generic-parameter: '<B: Serialize>'
     delete:
       tags:
       - documents
@@ -1253,6 +1256,9 @@ paths:
               description: Can be any key-value pair
               x-go-type: interface{}
         required: true
+        x-rust-type: B
+      x-rust-params-generic-parameter: <B>
+      x-rust-generic-parameter: '<B: Serialize>'
       responses:
         '200':
           description: The document referenced by the ID was updated

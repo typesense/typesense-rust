@@ -34,6 +34,13 @@ pub struct GetKeyParams {
     pub key_id: i64,
 }
 
+/*
+/// struct for passing parameters to the method [`get_keys`]
+#[derive(Clone, Debug)]
+pub struct GetKeysParams {
+}
+*/
+
 /// struct for typed errors of method [`create_key`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -251,7 +258,9 @@ pub async fn get_key(
 }
 
 pub async fn get_keys(
-    configuration: &configuration::Configuration,
+    configuration: &configuration::Configuration, /*
+                                                  , params: &GetKeysParams
+                                                  */
 ) -> Result<models::ApiKeysResponse, Error<GetKeysError>> {
     let uri_str = format!("{}/keys", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);

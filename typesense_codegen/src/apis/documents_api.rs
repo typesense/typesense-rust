@@ -255,24 +255,24 @@ pub struct SearchCollectionParams {
 
 /// struct for passing parameters to the method [`update_document`]
 #[derive(Clone, Debug)]
-pub struct UpdateDocumentParams {
+pub struct UpdateDocumentParams<B> {
     /// The name of the collection to search for the document under
     pub collection_name: String,
     /// The Document ID
     pub document_id: String,
     /// The document object with fields to be updated
-    pub body: serde_json::Value,
+    pub body: B,
     /// Dealing with Dirty Data
     pub dirty_values: Option<models::DirtyValues>,
 }
 
 /// struct for passing parameters to the method [`update_documents`]
 #[derive(Clone, Debug)]
-pub struct UpdateDocumentsParams {
+pub struct UpdateDocumentsParams<B> {
     /// The name of the collection to update documents in
     pub collection_name: String,
     /// The document fields to be updated
-    pub body: serde_json::Value,
+    pub body: B,
     pub filter_by: Option<String>,
 }
 
@@ -1548,9 +1548,9 @@ pub async fn search_collection<D: for<'de> serde::Deserialize<'de> + Serialize>(
 }
 
 /// Update an individual document from a collection by using its ID. The update can be partial.
-pub async fn update_document(
+pub async fn update_document<B: Serialize>(
     configuration: &configuration::Configuration,
-    params: &UpdateDocumentParams,
+    params: &UpdateDocumentParams<B>,
 ) -> Result<serde_json::Value, Error<UpdateDocumentError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}/documents/{documentId}",
@@ -1616,9 +1616,9 @@ pub async fn update_document(
 }
 
 /// The filter_by query parameter is used to filter to specify a condition against which the documents are matched. The request body contains the fields that should be updated for any documents that match the filter condition. This endpoint is only available if the Typesense server is version `0.25.0.rc12` or later.
-pub async fn update_documents(
+pub async fn update_documents<B: Serialize>(
     configuration: &configuration::Configuration,
-    params: &UpdateDocumentsParams,
+    params: &UpdateDocumentsParams<B>,
 ) -> Result<models::UpdateDocuments200Response, Error<UpdateDocumentsError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}/documents",

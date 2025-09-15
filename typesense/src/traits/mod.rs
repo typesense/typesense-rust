@@ -4,6 +4,6 @@ mod document;
 mod field_type;
 mod multi_search_ext;
 
-pub use document::Document;
+pub use document::*;
 pub use field_type::*;
 pub use multi_search_ext::MultiSearchResultExt;

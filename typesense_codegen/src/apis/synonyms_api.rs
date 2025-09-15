@@ -27,6 +27,13 @@ pub struct RetrieveSynonymSetParams {
     pub synonym_set_name: String,
 }
 
+/*
+/// struct for passing parameters to the method [`retrieve_synonym_sets`]
+#[derive(Clone, Debug)]
+pub struct RetrieveSynonymSetsParams {
+}
+*/
+
 /// struct for passing parameters to the method [`upsert_synonym_set`]
 #[derive(Clone, Debug)]
 pub struct UpsertSynonymSetParams {
@@ -193,7 +200,9 @@ pub async fn retrieve_synonym_set(
 
 /// Retrieve all synonym sets
 pub async fn retrieve_synonym_sets(
-    configuration: &configuration::Configuration,
+    configuration: &configuration::Configuration, /*
+                                                  , params: &RetrieveSynonymSetsParams
+                                                  */
 ) -> Result<Vec<models::SynonymSetSchema>, Error<RetrieveSynonymSetsError>> {
     let uri_str = format!("{}/synonym_sets", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
