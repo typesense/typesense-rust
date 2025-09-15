@@ -83,8 +83,8 @@ pub async fn delete_search_override(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -143,8 +143,8 @@ pub async fn get_search_overrides(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -205,8 +205,8 @@ pub async fn upsert_search_override(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };

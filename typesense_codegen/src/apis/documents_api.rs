@@ -421,8 +421,8 @@ pub async fn delete_document(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -496,8 +496,8 @@ pub async fn delete_documents(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -559,8 +559,8 @@ pub async fn delete_search_override(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -629,8 +629,8 @@ pub async fn export_documents(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -686,8 +686,8 @@ pub async fn get_document(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -748,8 +748,8 @@ pub async fn get_search_override(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -808,8 +808,8 @@ pub async fn get_search_overrides(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -890,8 +890,8 @@ pub async fn import_documents(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -957,8 +957,8 @@ pub async fn index_document(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -1219,8 +1219,8 @@ pub async fn multi_search(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -1504,8 +1504,8 @@ pub async fn search_collection<D: for<'de> serde::Deserialize<'de> + Serialize>(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -1571,8 +1571,8 @@ pub async fn update_document(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -1638,8 +1638,8 @@ pub async fn update_documents(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -1701,8 +1701,8 @@ pub async fn upsert_search_override(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };

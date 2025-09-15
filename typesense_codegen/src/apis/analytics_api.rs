@@ -152,8 +152,8 @@ pub async fn create_analytics_event(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -212,8 +212,8 @@ pub async fn create_analytics_rule(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -276,8 +276,8 @@ pub async fn delete_analytics_rule(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -334,8 +334,8 @@ pub async fn flush_analytics(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -394,8 +394,8 @@ pub async fn get_analytics_events(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -450,8 +450,8 @@ pub async fn get_analytics_status(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -511,8 +511,8 @@ pub async fn retrieve_analytics_rule(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -571,8 +571,8 @@ pub async fn retrieve_analytics_rules(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -632,8 +632,8 @@ pub async fn upsert_analytics_rule(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };

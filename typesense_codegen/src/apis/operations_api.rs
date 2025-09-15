@@ -97,8 +97,8 @@ pub async fn clear_cache(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -155,8 +155,8 @@ pub async fn compact_db(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -211,8 +211,8 @@ pub async fn get_schema_changes(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -267,8 +267,8 @@ pub async fn retrieve_api_stats(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -323,8 +323,8 @@ pub async fn retrieve_metrics(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -383,8 +383,8 @@ pub async fn take_snapshot(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -442,8 +442,8 @@ pub async fn toggle_slow_request_log(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -501,8 +501,8 @@ pub async fn vote(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };

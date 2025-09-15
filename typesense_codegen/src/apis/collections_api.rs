@@ -163,8 +163,8 @@ pub async fn create_collection(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -226,8 +226,8 @@ pub async fn delete_alias(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -289,8 +289,8 @@ pub async fn delete_collection(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -350,8 +350,8 @@ pub async fn get_alias(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -406,8 +406,8 @@ pub async fn get_aliases(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -467,8 +467,8 @@ pub async fn get_collection(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -533,8 +533,8 @@ pub async fn get_collections(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -596,8 +596,8 @@ pub async fn update_collection(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
@@ -658,8 +658,8 @@ pub async fn upsert_alias(
     if let Some(ref apikey) = configuration.api_key {
         let key = &apikey.key;
         let value = match apikey.prefix {
-            Some(ref prefix) => format!("{prefix} {key}"),
-            None => key.clone(),
+            Some(ref prefix) => &format!("{prefix} {key}"),
+            None => key,
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
