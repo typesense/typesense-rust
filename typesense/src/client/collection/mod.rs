@@ -11,19 +11,19 @@ use typesense_codegen::{apis::collections_api, models};
 
 /// Provides methods for interacting with a Typesense collection.
 ///
-/// This struct is created by calling `client.collection("collection_name")`.
+/// This struct is created by calling `client.collection()`.
 pub struct Collection<'c, 'n, D = serde_json::Value>
 where
-    D: DeserializeOwned + Serialize + Send + Sync,
+    D: DeserializeOwned + Serialize,
 {
-    pub(super) client: &'c Client,
-    pub(super) collection_name: &'n str,
-    pub(super) _phantom: std::marker::PhantomData<D>,
+    client: &'c Client,
+    collection_name: &'n str,
+    _phantom: std::marker::PhantomData<D>,
 }
 
 impl<'c, 'n, D> Collection<'c, 'n, D>
 where
-    D: DeserializeOwned + Serialize + Send + Sync,
+    D: DeserializeOwned + Serialize,
 {
     /// Creates a new `Collection` instance.
     #[inline]

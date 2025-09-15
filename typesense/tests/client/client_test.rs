@@ -61,7 +61,7 @@ async fn test_success_on_first_node() {
 
     let client = get_client(vec![server1.uri()], None);
 
-    let result = client.collection("products").retrieve().await;
+    let result = client.collection_schemaless("products").retrieve().await;
 
     assert!(result.is_ok());
     assert_eq!(result.unwrap().name, "products");
@@ -78,7 +78,7 @@ async fn test_failover_to_second_node() {
 
     let client = get_client(vec![server1.uri(), server2.uri()], None);
 
-    let result = client.collection("products").retrieve().await;
+    let result = client.collection_schemaless("products").retrieve().await;
     assert!(result.is_ok());
 
     // The first server should have been tried and failed.
@@ -96,7 +96,7 @@ async fn test_nearest_node_is_prioritized() {
 
     let client = get_client(vec![regular_server.uri()], Some(nearest_server.uri()));
 
-    let result = client.collection("products").retrieve().await;
+    let result = client.collection_schemaless("products").retrieve().await;
     assert!(result.is_ok());
 
     // Only the nearest node should have received a request.
@@ -113,7 +113,7 @@ async fn test_failover_from_nearest_to_regular_node() {
 
     let client = get_client(vec![regular_server.uri()], Some(nearest_server.uri()));
 
-    let result = client.collection("products").retrieve().await;
+    let result = client.collection_schemaless("products").retrieve().await;
     assert!(result.is_ok());
 
     // Nearest node should have failed.
@@ -134,7 +134,13 @@ async fn test_round_robin_failover() {
     let client = get_client(vec![server1.uri(), server2.uri(), server3.uri()], None);
 
     // First request should fail over to the third node
-    assert!(client.collection("products").retrieve().await.is_ok());
+    assert!(
+        client
+            .collection_schemaless("products")
+            .retrieve()
+            .await
+            .is_ok()
+    );
 
     assert_eq!(server1.received_requests().await.unwrap().len(), 1);
     assert_eq!(server2.received_requests().await.unwrap().len(), 1);
@@ -151,7 +157,13 @@ async fn test_round_robin_failover() {
     server2.reset().await;
     setup_mock_server_ok(&server2, "products").await;
 
-    assert!(client.collection("products").retrieve().await.is_ok());
+    assert!(
+        client
+            .collection_schemaless("products")
+            .retrieve()
+            .await
+            .is_ok()
+    );
 
     // Server 3 was tried first and failed.
     assert_eq!(server3.received_requests().await.unwrap().len(), 1);
@@ -179,12 +191,24 @@ async fn test_health_check_and_node_recovery() {
         .expect("Failed to create client");
 
     // 1. First request fails over to server2, marking server1 as unhealthy.
-    assert!(client.collection("products").retrieve().await.is_ok());
+    assert!(
+        client
+            .collection_schemaless("products")
+            .retrieve()
+            .await
+            .is_ok()
+    );
     assert_eq!(server1.received_requests().await.unwrap().len(), 1);
     assert_eq!(server2.received_requests().await.unwrap().len(), 1);
 
     // 2. Immediate second request should go directly to server2.
-    assert!(client.collection("products").retrieve().await.is_ok());
+    assert!(
+        client
+            .collection_schemaless("products")
+            .retrieve()
+            .await
+            .is_ok()
+    );
     assert_eq!(server1.received_requests().await.unwrap().len(), 1); // No new request
     assert_eq!(server2.received_requests().await.unwrap().len(), 2); // Got another request
 
@@ -196,7 +220,13 @@ async fn test_health_check_and_node_recovery() {
     setup_mock_server_ok(&server1, "products").await;
 
     // 5. The next request should try server1 again (due to healthcheck expiry) and succeed.
-    assert!(client.collection("products").retrieve().await.is_ok());
+    assert!(
+        client
+            .collection_schemaless("products")
+            .retrieve()
+            .await
+            .is_ok()
+    );
     assert_eq!(server1.received_requests().await.unwrap().len(), 1); // Server 1 received its first successful req
     assert_eq!(server2.received_requests().await.unwrap().len(), 2); // No new request for server 2
 }
@@ -210,7 +240,7 @@ async fn test_all_nodes_fail() {
 
     let client = get_client(vec![server1.uri(), server2.uri()], None);
 
-    let result = client.collection("products").retrieve().await;
+    let result = client.collection_schemaless("products").retrieve().await;
     assert!(result.is_err());
 
     match result.err().unwrap() {
@@ -233,7 +263,7 @@ async fn test_fail_fast_on_non_retriable_error() {
 
     let client = get_client(vec![server1.uri(), server2.uri()], None);
 
-    let result = client.collection("products").retrieve().await;
+    let result = client.collection_schemaless("products").retrieve().await;
     assert!(result.is_err());
 
     // Check that the error is the non-retriable API error.
@@ -264,9 +294,9 @@ async fn test_load_balancing_with_healthy_nodes() {
     let client = get_client(vec![server1.uri(), server2.uri(), server3.uri()], None);
 
     // 3. Make three consecutive requests
-    let result1 = client.collection("products").retrieve().await;
-    let result2 = client.collection("products").retrieve().await;
-    let result3 = client.collection("products").retrieve().await;
+    let result1 = client.collection_schemaless("products").retrieve().await;
+    let result2 = client.collection_schemaless("products").retrieve().await;
+    let result3 = client.collection_schemaless("products").retrieve().await;
 
     // 4. Assert all requests were successful
     assert!(result1.is_ok());

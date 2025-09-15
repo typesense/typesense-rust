@@ -33,7 +33,7 @@
 //!         .unwrap();
 //!
 //!     // Retrieve details for a collection
-//!     let collection = client.collection("products").retrieve().await?;
+//!     let collection = client.collection_schemaless("products").retrieve().await?;
 //!     println!("Collection Name: {}", collection.name);
 //!
 //!     // Search for a document
@@ -44,7 +44,7 @@
 //!     };
 //!
 //!     let search_results = client
-//!         .collection("products")
+//!         .collection_schemaless("products")
 //!         .documents()
 //!         .search(search_params)
 //!         .await?;
@@ -84,7 +84,7 @@
 //!             .unwrap();
 //!
 //!         // Retrieve details for a collection
-//!         match client.collection("products").retrieve().await {
+//!         match client.collection_schemaless("products").retrieve().await {
 //!             Ok(collection) => println!("Collection Name: {}", collection.name),
 //!             Err(e) => eprintln!("Error retrieving collection: {}", e),
 //!         }
@@ -96,7 +96,7 @@
 //!             ..Default::default()
 //!         };
 //!
-//!         match client.collection("products").documents().search(search_params).await {
+//!         match client.collection_schemaless("products").documents().search(search_params).await {
 //!             Ok(search_results) => {
 //!                 println!("Found {} hits.", search_results.found.unwrap_or(0));
 //!             }
@@ -112,7 +112,7 @@ mod key;
 mod keys;
 mod multi_search;
 
-use crate::Error;
+use crate::{Error, traits::Document};
 use collection::Collection;
 use collections::Collections;
 use key::Key;
@@ -368,7 +368,7 @@ impl Client {
     /// stored in that collection.
     ///
     /// # Type Parameters
-    /// * `T` - The type of the documents in the collection. It must be serializable and deserializable.
+    /// * `D` - The type of the documents in the collection. It must be serializable and deserializable.
     ///
     /// # Arguments
     /// * `collection_name` - The name of the collection to interact with.
@@ -392,7 +392,7 @@ impl Client {
     /// #    .build()
     /// #    .unwrap();
     /// // Get a typed handle to the "books" collection
-    /// let books_collection = client.collection_of::<Book>("books");
+    /// let books_collection = client.collection_named::<Book>("books");
     ///
     /// // Retrieve a single book, it returns `Result<Book, ...>`
     /// let book = books_collection.document("123").retrieve().await?;
@@ -403,17 +403,62 @@ impl Client {
     /// # }
     /// ```
     #[inline]
-    pub fn collection_of<'c, 'n, T>(&'c self, collection_name: &'n str) -> Collection<'c, 'n, T>
+    pub fn collection_named<'c, 'n, D>(&'c self, collection_name: &'n str) -> Collection<'c, 'n, D>
     where
-        T: DeserializeOwned + Serialize + Send + Sync,
+        D: DeserializeOwned + Serialize,
     {
         Collection::new(self, collection_name)
+    }
+
+    /// Provides access to API endpoints for a specific collection.
+    ///
+    /// This method returns a `Collection<T>` handle, which is generic over the type of document
+    /// stored in that collection.
+    ///
+    /// # Type Parameters
+    /// * `D` - The type of the documents in the collection. It must be of trait Document.
+    ///
+    /// # Example: Working with a strongly-typed collection
+    ///
+    /// When you want to retrieve or search for documents and have them automatically
+    /// deserialized into your own structs.
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::{Client, Typesense};
+    /// # use serde::{Serialize, Deserialize};
+    /// #
+    /// # #[derive(Typesense, Serialize, Deserialize, Debug)]
+    /// # struct Book { id: String, title: String }
+    /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec!["http://localhost:8108"])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// // Get a typed handle to the "books" collection
+    /// let books_collection = client.collection::<Book>();
+    ///
+    /// // Retrieve a single book, it returns `Result<Book, ...>`
+    /// let book = books_collection.document("123").retrieve().await?;
+    /// println!("Retrieved book: {:?}", book);
+    /// #
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    #[inline]
+    pub fn collection<'c, 'n, D>(&'c self) -> Collection<'c, 'n, D>
+    where
+        D: Document,
+    {
+        Collection::new(self, D::COLLECTION_NAME)
     }
 
     /// Provides access to API endpoints for a specific collection using schemaless `serde_json::Value` documents.
     ///
     /// This is the simplest way to interact with a collection when you do not need strong typing.
-    /// It is a convenient shorthand for `client.collection_of::<serde_json::Value>("...")`.
+    /// It is a convenient shorthand for `client.collection_named::<serde_json::Value>("...")`.
     ///
     /// The returned handle can be used for both document operations (which will return `serde_json::Value`)
     /// and collection-level operations (like `.delete()` or `.retrieve()`).
@@ -432,18 +477,18 @@ impl Client {
     /// #    .api_key("xyz")
     /// #    .build()
     /// #    .unwrap();
-    /// let products_collection = client.collection("products");
+    /// let products_collection = client.collection_schemaless("products");
     /// #
     /// # Ok(())
     /// # }
     /// # }
     /// ```
     #[inline]
-    pub fn collection<'c, 'n>(
+    pub fn collection_schemaless<'c, 'n>(
         &'c self,
         collection_name: &'n str,
     ) -> Collection<'c, 'n, serde_json::Value> {
-        self.collection_of(collection_name)
+        Collection::new(self, collection_name)
     }
 
     /// Provides access to endpoints for managing the collection of API keys.

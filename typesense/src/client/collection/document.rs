@@ -2,7 +2,7 @@
 //!
 //! An instance of `Document` is scoped to a specific document and is created
 //! via a parent `Collection` struct, for example:
-//! `client.collection::<Book>("books").document("123")`
+//! `client.collection::<Book>().document("123")`
 
 use crate::{Client, Error, execute_wrapper};
 use serde::{Serialize, de::DeserializeOwned};
@@ -10,22 +10,23 @@ use typesense_codegen::apis::documents_api;
 
 /// Provides methods for interacting with a single document within a specific Typesense collection.
 ///
-/// This struct is created by calling a method like `client.collection("collection_name").document("document_id")` or `client.collection_of::<MyType>("collection_name").document("document_id")`.
-/// The generic `T` represents the shape of the document and must implement `Serialize` and `DeserializeOwned`.
-/// If `T` is not specified, it defaults to `serde_json::Value` for schemaless interactions.
+/// This struct is created by calling a method like `client.collection_schemaless("collection_name").document("document_id")`
+/// or `client.collection::<MyType>().document("document_id")`.
+/// The generic `D` represents the shape of the document and must implement `Serialize` and `DeserializeOwned`.
+/// If `D` is not specified, it defaults to `serde_json::Value` for schemaless interactions.
 pub struct Document<'c, 'n, D = serde_json::Value>
 where
-    D: DeserializeOwned + Serialize + Send + Sync,
+    D: DeserializeOwned + Serialize,
 {
-    pub(super) client: &'c Client,
-    pub(super) collection_name: &'n str,
-    pub(super) document_id: String,
-    pub(super) _phantom: std::marker::PhantomData<D>,
+    client: &'c Client,
+    collection_name: &'n str,
+    document_id: String,
+    _phantom: std::marker::PhantomData<D>,
 }
 
 impl<'c, 'n, D> Document<'c, 'n, D>
 where
-    D: DeserializeOwned + Serialize + Send + Sync,
+    D: DeserializeOwned + Serialize,
 {
     /// Creates a new `Document` instance for a specific document ID.
     #[inline]
@@ -38,10 +39,10 @@ where
         }
     }
 
-    /// Fetches this individual document from the collection and deserializes it into `T`.
+    /// Fetches this individual document from the collection and deserializes it into `D`.
     ///
     /// # Returns
-    /// A `Result` containing the strongly-typed document `T` if successful.
+    /// A `Result` containing the strongly-typed document `D` if successful.
     pub async fn retrieve(&self) -> Result<D, Error<documents_api::GetDocumentError>> {
         let params = documents_api::GetDocumentParams {
             collection_name: self.collection_name.to_owned(),
@@ -62,7 +63,7 @@ where
     /// * `params` - An optional `DocumentIndexParameters` struct to specify additional parameters, such as `dirty_values` which determines what Typesense should do when the type of a particular field being indexed does not match the previously inferred type for that field, or the one defined in the collection's schema.
     ///
     /// # Returns
-    /// A `Result` containing the full, updated document deserialized into `T`.
+    /// A `Result` containing the full, updated document deserialized into `D`.
     ///
     /// # Example
     /// ```no_run
@@ -81,7 +82,7 @@ where
     /// let book_update = serde_json::json!({ "pages": 654 });
     ///
     /// // Simple update
-    /// let updated_book = client.collection_of::<Book>("books").document("123")
+    /// let updated_book = client.collection_named::<Book>("books").document("123")
     ///     .update(&book_update, None)
     ///     .await?;
     ///
@@ -89,7 +90,7 @@ where
     /// let params = models::DocumentIndexParameters {
     ///     dirty_values: Some(models::DirtyValues::CoerceOrReject),
     /// };
-    /// let updated_book_with_params = client.collection_of::<Book>("books").document("124")
+    /// let updated_book_with_params = client.collection_named::<Book>("books").document("124")
     ///     .update(&book_update, Some(params))
     ///     .await?;
     /// #
@@ -105,7 +106,7 @@ where
             collection_name: self.collection_name.to_owned(),
             document_id: self.document_id.to_owned(),
             body: serde_json::to_value(partial_document)?,
-            dirty_values: params.unwrap_or_default().dirty_values,
+            dirty_values: params.and_then(|d| d.dirty_values),
         };
 
         let result_value = execute_wrapper!(self, documents_api::update_document, params)?;
@@ -118,7 +119,7 @@ where
     /// The deleted document is returned.
     ///
     /// # Returns
-    /// A `Result` containing the deleted document deserialized into `T`.
+    /// A `Result` containing the deleted document deserialized into `D`.
     pub async fn delete(&self) -> Result<D, Error<documents_api::DeleteDocumentError>> {
         let params = documents_api::DeleteDocumentParams {
             collection_name: self.collection_name.to_owned(),

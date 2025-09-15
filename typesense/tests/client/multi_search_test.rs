@@ -47,7 +47,7 @@ async fn setup_multi_search_tests(
     .join("\n");
 
     client
-        .collection(products_collection_name)
+        .collection_schemaless(products_collection_name)
         .documents()
         .import_jsonl(
             product_docs,
@@ -70,7 +70,7 @@ async fn setup_multi_search_tests(
     .join("\n");
 
     client
-        .collection(brands_collection_name)
+        .collection_schemaless(brands_collection_name)
         .documents()
         .import_jsonl(
             brand_docs,

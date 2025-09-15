@@ -12,11 +12,11 @@ pub trait MultiSearchResultExt {
     /// * `index` - The zero-based index of the search result to parse.
     ///
     /// # Type Parameters
-    /// * `T` - The concrete document type to deserialize the hits into.
-    fn parse_at<T: DeserializeOwned>(
+    /// * `D` - The concrete document type to deserialize the hits into.
+    fn parse_at<D: DeserializeOwned>(
         &self,
         index: usize,
-    ) -> Result<SearchResult<T>, MultiSearchParseError>;
+    ) -> Result<SearchResult<D>, MultiSearchParseError>;
 }
 
 /// Small helpers to convert documents stored as `serde_json::Value` into a concrete `D`.

@@ -9,6 +9,9 @@ use serde::{Serialize, de::DeserializeOwned};
 /// Trait that should implement every struct that wants to be represented as a Typesense
 /// Document
 pub trait Document: DeserializeOwned + Serialize {
+    /// Collection name
+    const COLLECTION_NAME: &'static str;
+
     /// Collection schema associated with the document.
     fn collection_schema() -> CollectionSchema;
 }

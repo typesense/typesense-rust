@@ -32,7 +32,10 @@ async fn logic_test_collections_and_collection_lifecycle() {
     assert_eq!(created_collection.name, collection_name);
 
     // --- 2. Retrieve the specific Collection (via `collection`) ---
-    let retrieve_one_result = client.collection(&collection_name).retrieve().await;
+    let retrieve_one_result = client
+        .collection_schemaless(&collection_name)
+        .retrieve()
+        .await;
     assert!(
         retrieve_one_result.is_ok(),
         "Failed to retrieve the newly created collection."
@@ -80,7 +83,7 @@ async fn logic_test_collections_and_collection_lifecycle() {
     };
 
     let update_result = client
-        .collection(&collection_name)
+        .collection_schemaless(&collection_name)
         .update(update_schema)
         .await;
     assert!(update_result.is_ok(), "Failed to update collection");
@@ -94,7 +97,10 @@ async fn logic_test_collections_and_collection_lifecycle() {
     );
 
     // --- 6. Verify the update by retrieving the full schema again ---
-    let retrieve_after_update_result = client.collection(&collection_name).retrieve().await;
+    let retrieve_after_update_result = client
+        .collection_schemaless(&collection_name)
+        .retrieve()
+        .await;
     let retrieved_after_update = retrieve_after_update_result.unwrap();
 
     // Initial fields: name, price. Update: +description, -price. Final fields: name, description.
@@ -126,11 +132,17 @@ async fn logic_test_collections_and_collection_lifecycle() {
     );
 
     // --- 7. Delete the Collection (via `collection`) ---
-    let delete_result = client.collection(&collection_name).delete().await;
+    let delete_result = client
+        .collection_schemaless(&collection_name)
+        .delete()
+        .await;
     assert!(delete_result.is_ok(), "Failed to delete collection");
 
     // --- 8. Verify Deletion ---
-    let get_after_delete_result = client.collection(&collection_name).retrieve().await;
+    let get_after_delete_result = client
+        .collection_schemaless(&collection_name)
+        .retrieve()
+        .await;
     assert!(
         get_after_delete_result.is_err(),
         "Collection should not exist after deletion"

@@ -55,7 +55,7 @@ async fn run_test_document_lifecycle() {
         "author": "J.R.R. Tolkien",
         "publication_year": 1954
     });
-    let collection_client = client.collection(&collection_name);
+    let collection_client = client.collection_schemaless(&collection_name);
     let documents_client = collection_client.documents();
 
     // --- 2. Create a document (via `documents().create()`) ---
@@ -68,7 +68,7 @@ async fn run_test_document_lifecycle() {
 
     // --- 4. Retrieve a single document (via `document(id).retrieve()`) ---
     let retrieve_res = client
-        .collection(&collection_name)
+        .collection_schemaless(&collection_name)
         .document(book_1_id)
         .retrieve()
         .await;
@@ -87,7 +87,7 @@ async fn run_test_document_lifecycle() {
     // --- 6. Update a single document ---
     let partial_update = json!({ "publication_year": 1980 });
     let update_res = client
-        .collection(&collection_name)
+        .collection_schemaless(&collection_name)
         .document(book_1_id)
         .update(&partial_update, None)
         .await;
@@ -95,7 +95,7 @@ async fn run_test_document_lifecycle() {
 
     // --- 7. Verify the single update ---
     let retrieve_after_update_res = client
-        .collection(&collection_name)
+        .collection_schemaless(&collection_name)
         .document(book_1_id)
         .retrieve()
         .await;
@@ -107,7 +107,7 @@ async fn run_test_document_lifecycle() {
 
     // --- 8. Delete a single document ---
     let delete_res = client
-        .collection(&collection_name)
+        .collection_schemaless(&collection_name)
         .document(book_1_id)
         .delete()
         .await;
@@ -115,7 +115,7 @@ async fn run_test_document_lifecycle() {
 
     // --- 9. Verify single deletion ---
     let retrieve_after_delete_res = client
-        .collection(&collection_name)
+        .collection_schemaless(&collection_name)
         .document(book_1_id)
         .retrieve()
         .await;
@@ -244,7 +244,7 @@ async fn run_test_generic_document_lifecycle() {
     );
 
     // Use the strongly-typed collection client
-    let typed_collection = client.collection_of::<Book>(&collection_name);
+    let typed_collection = client.collection_named::<Book>(&collection_name);
 
     let book_1 = Book {
         id: new_id("book_1"),

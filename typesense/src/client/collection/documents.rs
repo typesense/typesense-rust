@@ -1,8 +1,8 @@
 //! Provides access to the document, search, and override-related API endpoints.
 //!
 //! An instance of `Documents` is scoped to a specific collection and is created
-//! via the main `client.collection("collection_name").documents()` method or
-//! `client.collection_of::<T>("...").documents()`.
+//! via the main `client.collection_schemaless("collection_name").documents()` method or
+//! `client.collection_named::<T>("...").documents()`.
 
 use crate::{
     Client, Error, execute_wrapper,
@@ -18,21 +18,21 @@ use typesense_codegen::{
 };
 /// Provides methods for interacting with documents within a specific Typesense collection.
 ///
-/// This struct is generic over the document type `T`. If created via `client.collection(...)`,
-/// `T` defaults to `serde_json::Value`. If created via `client.collection_of::<MyType>(...)`,
-/// `T` will be `MyType`.
+/// This struct is generic over the document type `D`. If created via `client.collection_schemaless(...)`,
+/// `D` defaults to `serde_json::Value`. If created via `client.collection_named::<MyType>(...)`,
+/// `D` will be `MyType`.
 pub struct Documents<'c, 'n, D = serde_json::Value>
 where
-    D: DeserializeOwned + Serialize + Send + Sync,
+    D: DeserializeOwned + Serialize,
 {
-    pub(super) client: &'c Client,
-    pub(super) collection_name: &'n str,
-    pub(super) _phantom: std::marker::PhantomData<D>,
+    client: &'c Client,
+    collection_name: &'n str,
+    _phantom: std::marker::PhantomData<D>,
 }
 
 impl<'c, 'n, D> Documents<'c, 'n, D>
 where
-    D: DeserializeOwned + Serialize + Send + Sync,
+    D: DeserializeOwned + Serialize,
 {
     /// Creates a new `Documents` instance.
     #[inline]
@@ -58,7 +58,7 @@ where
             collection_name: self.collection_name.to_owned(),
             body: document,
             action: Some(action.to_owned()),
-            dirty_values: params.unwrap_or_default().dirty_values, // Or expose this as an argument if needed
+            dirty_values: params.and_then(|d| d.dirty_values), // Or expose this as an argument if needed
         };
         execute_wrapper!(self, documents_api::index_document, params)
     }
@@ -85,7 +85,7 @@ where
     /// Creates a new document or updates an existing one if an ID match is found.
     ///
     /// This method requires the full document to be sent. For partial updates, use
-    /// `collection("...").document("...").update()`. The indexed document is returned.
+    /// `collection().document("...").update()`. The indexed document is returned.
     ///
     /// # Arguments
     /// * `document` - A serializable struct or a `serde_json::Value` representing the document to upsert.
@@ -184,7 +184,7 @@ where
     }
 
     /// Searches for documents in the collection that match the given criteria.
-    /// The search results will have their `document` field deserialized into type `T`.
+    /// The search results will have their `document` field deserialized into type `D`.
     ///
     /// # Arguments
     /// * `params` - A `SearchParameters` struct containing all search parameters.
