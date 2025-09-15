@@ -12,18 +12,18 @@ use typesense_codegen::{apis::collections_api, models};
 /// Provides methods for interacting with a Typesense collection.
 ///
 /// This struct is created by calling `client.collection("collection_name")`.
-pub struct Collection<'c, 'n, T = serde_json::Value>
+pub struct Collection<'c, 'n, D = serde_json::Value>
 where
-    T: DeserializeOwned + Serialize + Send + Sync,
+    D: DeserializeOwned + Serialize + Send + Sync,
 {
     pub(super) client: &'c Client,
     pub(super) collection_name: &'n str,
-    pub(super) _phantom: std::marker::PhantomData<T>,
+    pub(super) _phantom: std::marker::PhantomData<D>,
 }
 
-impl<'c, 'n, T> Collection<'c, 'n, T>
+impl<'c, 'n, D> Collection<'c, 'n, D>
 where
-    T: DeserializeOwned + Serialize + Send + Sync,
+    D: DeserializeOwned + Serialize + Send + Sync,
 {
     /// Creates a new `Collection` instance.
     #[inline]
@@ -37,13 +37,13 @@ where
 
     /// Provides access to the document-related API endpoints for a specific collection.
     #[inline]
-    pub fn documents(&self) -> documents::Documents<'c, 'n, T> {
+    pub fn documents(&self) -> documents::Documents<'c, 'n, D> {
         documents::Documents::new(self.client, self.collection_name)
     }
 
     /// Provides access to the API endpoints for a single document within a Typesense collection.
     #[inline]
-    pub fn document(&self, document_id: impl Into<String>) -> document::Document<'c, 'n, T> {
+    pub fn document(&self, document_id: impl Into<String>) -> document::Document<'c, 'n, D> {
         document::Document::new(self.client, self.collection_name, document_id.into())
     }
 

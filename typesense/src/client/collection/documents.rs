@@ -21,18 +21,18 @@ use typesense_codegen::{
 /// This struct is generic over the document type `T`. If created via `client.collection(...)`,
 /// `T` defaults to `serde_json::Value`. If created via `client.collection_of::<MyType>(...)`,
 /// `T` will be `MyType`.
-pub struct Documents<'c, 'n, T = serde_json::Value>
+pub struct Documents<'c, 'n, D = serde_json::Value>
 where
-    T: DeserializeOwned + Serialize + Send + Sync,
+    D: DeserializeOwned + Serialize + Send + Sync,
 {
     pub(super) client: &'c Client,
     pub(super) collection_name: &'n str,
-    pub(super) _phantom: std::marker::PhantomData<T>,
+    pub(super) _phantom: std::marker::PhantomData<D>,
 }
 
-impl<'c, 'n, T> Documents<'c, 'n, T>
+impl<'c, 'n, D> Documents<'c, 'n, D>
 where
-    T: DeserializeOwned + Serialize + Send + Sync,
+    D: DeserializeOwned + Serialize + Send + Sync,
 {
     /// Creates a new `Documents` instance.
     #[inline]
@@ -76,7 +76,7 @@ where
         &self,
         document: U,
         params: Option<DocumentIndexParameters>,
-    ) -> Result<T, Error<documents_api::IndexDocumentError>> {
+    ) -> Result<D, Error<documents_api::IndexDocumentError>> {
         let doc_value = serde_json::to_value(document)?;
         let result_value = self.index(doc_value, "create", params).await?;
         serde_json::from_value(result_value).map_err(Error::from)
@@ -94,7 +94,7 @@ where
         &self,
         document: U,
         params: Option<DocumentIndexParameters>,
-    ) -> Result<T, Error<documents_api::IndexDocumentError>> {
+    ) -> Result<D, Error<documents_api::IndexDocumentError>> {
         let doc_value = serde_json::to_value(document)?;
         let result_value = self.index(doc_value, "upsert", params).await?;
         serde_json::from_value(result_value).map_err(Error::from)
@@ -191,7 +191,7 @@ where
     pub async fn search(
         &self,
         params: raw_models::SearchParameters,
-    ) -> Result<SearchResult<T>, Error<documents_api::SearchCollectionError>> {
+    ) -> Result<SearchResult<D>, Error<documents_api::SearchCollectionError>> {
         let search_params = documents_api::SearchCollectionParams {
             collection_name: self.collection_name.to_owned(),
 
