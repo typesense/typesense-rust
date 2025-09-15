@@ -1,7 +1,7 @@
 //! Contains the error types for the Typesense client
 
 use thiserror::Error;
-pub use typesense_codegen::apis::Error as ApiError;
+pub use typesense_codegen::apis::{Error as ApiError, ResponseContent};
 
 /// The primary error type for the Typesense client.
 ///
