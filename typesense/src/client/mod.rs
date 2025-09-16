@@ -161,6 +161,16 @@ struct Node {
     is_healthy: AtomicBool,
     last_accessed: RwLock<Instant>,
 }
+
+impl Node {
+    /// Sets the health status of the node
+    #[inline]
+    fn set_health(&self, is_healthy: bool) {
+        *self.last_accessed.write().unwrap() = Instant::now();
+        self.is_healthy.store(is_healthy, Ordering::Relaxed);
+    }
+}
+
 /// The main entry point for all interactions with the Typesense API.
 ///
 /// The client manages connections to multiple nodes and provides access to different
@@ -296,13 +306,6 @@ impl Client {
         self.nodes.get_safe_unchecked(index)
     }
 
-    /// Sets the health status of a given node after a request attempt.
-    #[inline]
-    fn set_node_health(&self, node: &Node, is_healthy: bool) {
-        *node.last_accessed.write().unwrap() = Instant::now();
-        node.is_healthy.store(is_healthy, Ordering::Relaxed);
-    }
-
     /// The core execution method that handles multi-node failover and retries.
     /// This internal method is called by all public API methods.
     pub(super) async fn execute<F, Fut, T, E, 'a>(&'a self, api_call: F) -> Result<T, Error<E>>
@@ -318,12 +321,12 @@ impl Client {
             let node = self.get_next_node();
             match api_call(&node.config).await {
                 Ok(response) => {
-                    self.set_node_health(node, true);
+                    node.set_health(true);
                     return Ok(response);
                 }
                 Err(e) => {
                     if is_retriable(&e) {
-                        self.set_node_health(node, false);
+                        node.set_health(false);
                         last_api_error = Some(e);
                     } else {
                         return Err(e.into());
