@@ -1,10 +1,10 @@
 error: defined default_sorting_field = "wrong_field" does not match with any field.
   --> $DIR/wrong_sorting_field.rs:5:1
    |
-5  | / #[typesense(default_sorting_field = "wrong_field")]
-6  | | struct Company {
-7  | |     company_name: String,
-8  | |     num_employees: i32,
-9  | |     country: String,
+ 5 | / #[typesense(default_sorting_field = "wrong_field")]
+ 6 | | struct Company {
+ 7 | |     company_name: String,
+ 8 | |     num_employees: i32,
+ 9 | |     country: String,
 10 | | }
    | |_^
