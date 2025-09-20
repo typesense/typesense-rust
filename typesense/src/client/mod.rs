@@ -289,6 +289,7 @@ impl Client {
                 self.current_node_index.fetch_add(1, Ordering::Relaxed) % self.nodes.len(),
             )
         };
+
         for _ in 0..self.nodes.len() {
             let node = self.nodes.get_safe_unchecked(index);
 
@@ -302,8 +303,14 @@ impl Client {
 
         // If all nodes are unhealthy and not due for a check, just pick the next one in the round-robin.
         // This gives it a chance to prove it has recovered.
-        let index = self.current_node_index.load(Ordering::Relaxed) % self.nodes.len();
+        index = self.current_node_index.load(Ordering::Relaxed) % self.nodes.len();
         self.nodes.get_safe_unchecked(index)
+    }
+
+    /// For use in legacy APIs.
+    #[inline]
+    pub fn get_legacy_config(&self) -> &configuration::Configuration {
+        &self.get_next_node().config
     }
 
     /// The core execution method that handles multi-node failover and retries.
@@ -367,7 +374,7 @@ impl Client {
 
     /// Provides access to API endpoints for a specific collection.
     ///
-    /// This method returns a `Collection<T>` handle, which is generic over the type of document
+    /// This method returns a `Collection<D>` handle, which is generic over the type of document
     /// stored in that collection.
     ///
     /// # Type Parameters
@@ -415,7 +422,7 @@ impl Client {
 
     /// Provides access to API endpoints for a specific collection.
     ///
-    /// This method returns a `Collection<T>` handle, which is generic over the type of document
+    /// This method returns a `Collection<D>` handle, which is generic over the type of document
     /// stored in that collection.
     ///
     /// # Type Parameters

@@ -122,6 +122,8 @@ pub mod prelude;
 pub use client::{Client, ExponentialBackoff};
 pub use error::*;
 
+pub use typesense_codegen as legacy;
+
 #[cfg(feature = "typesense_derive")]
 #[doc(hidden)]
 pub use typesense_derive::*;

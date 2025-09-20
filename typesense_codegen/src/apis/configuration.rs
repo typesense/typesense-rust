@@ -35,12 +35,14 @@ pub struct ApiKey {
 }
 
 impl Configuration {
+    #[inline]
     pub fn new() -> Configuration {
         Configuration::default()
     }
 }
 
 impl Default for Configuration {
+    #[inline]
     fn default() -> Self {
         #[cfg(target_arch = "wasm32")]
         let client = reqwest::Client::new();
@@ -49,7 +51,7 @@ impl Default for Configuration {
         let client = reqwest_middleware::ClientBuilder::new(reqwest::Client::new()).build();
         Configuration {
             base_path: "http://localhost".to_owned(),
-            user_agent: Some("OpenAPI-Generator/28.0/rust".to_owned()),
+            user_agent: Some("OpenAPI-Generator/30.0/rust".to_owned()),
             client,
             basic_auth: None,
             oauth_access_token: None,
