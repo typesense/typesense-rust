@@ -3,7 +3,7 @@
 [![Crate](https://img.shields.io/crates/v/typesense.svg)](https://crates.io/crates/typesense)
 [![API](https://docs.rs/typesense/badge.svg)](https://docs.rs/typesense)
 
-Rust client library for Typesense | Work In Progress &amp; Help Wanted!
+Community-maintained Rust client library for Typesense | Work In Progress &amp; Help Wanted!
 
 OpenAPI codegen folder was generated with:
 
