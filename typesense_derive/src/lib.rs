@@ -63,7 +63,7 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
 
     let default_sorting_field = if let Some(v) = default_sorting_field {
         quote! {
-            builder = builder.default_sorting_field(#v);
+            let builder = builder.default_sorting_field(#v);
         }
     } else {
         proc_macro2::TokenStream::new()
@@ -71,19 +71,21 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
 
     let enable_nested_fields = if let Some(v) = enable_nested_fields {
         quote! {
-            builder = builder.enable_nested_fields(Some(#v));
+            let builder = builder.enable_nested_fields(#v);
         }
     } else {
         proc_macro2::TokenStream::new()
     };
 
     let generated_code = quote! {
-        impl #impl_generics typesense::document::Document for #ident #ty_generics #where_clause {
-            fn collection_schema() -> typesense::collection_schema::CollectionSchema {
-                let name = #collection_name.to_owned();
+        impl #impl_generics typesense::prelude::Document for #ident #ty_generics #where_clause {
+            const COLLECTION_NAME: &str = #collection_name;
+
+            fn collection_schema() -> typesense::models::CollectionSchema {
+                let name = Self::COLLECTION_NAME.to_owned();
                 let fields = vec![#(#typesense_fields,)*];
 
-                let mut builder = typesense::collection_schema::CollectionSchemaBuilder::new(name, fields);
+                let builder = typesense::models::CollectionSchema::builder().name(name).fields(fields);
 
                 #default_sorting_field
                 #enable_nested_fields
@@ -285,13 +287,13 @@ fn to_typesense_field_type(field: &Field) -> syn::Result<proc_macro2::TokenStrea
         (&field.ty, quote!(None))
     };
     let typesense_field_type = quote!(
-        <#ty as typesense::field::ToTypesenseField>::to_typesense_type().to_owned()
+        <#ty as typesense::prelude::ToTypesenseField>::to_typesense_type().to_owned()
     );
 
     Ok(quote! {
-        typesense::field::FieldBuilder::new(std::string::String::from(stringify!(#name)), #typesense_field_type)
-            .optional(#optional)
-            .facet(#facet)
+        typesense::models::Field::builder().name(std::string::String::from(stringify!(#name))).r#type(#typesense_field_type)
+            .maybe_optional(#optional)
+            .maybe_facet(#facet)
             .build()
     })
 }

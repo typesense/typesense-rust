@@ -21,3 +21,10 @@
 #docs/*.md
 # Then explicitly reverse the ignore rule for a single file:
 #!docs/README.md
+
+Cargo.toml
+src/apis/configuration.rs
+
+.gitignore
+.travis.yml
+git_push.sh

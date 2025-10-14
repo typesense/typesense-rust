@@ -3,52 +3,126 @@
 
 //! # Typesense
 //!
-//! Rust client library for Typesense
+//! A Rust client library for the Typesense API.
+//!
+//! This library provides an ergonomic interface for
+//! interacting with Typesense. It supports multi-node configuration and WebAssembly.
 //!
 //! # Examples
 //!
-//! ```
+//! The following examples demonstrate how to define a collection schema using
+//! the Typesense derive macro and create it on the server.
+//!
+//! ---
+//!
+//! ### Native (Tokio)
+//!
+//! This example shows the typical setup for a server-side application using the
+//! Tokio runtime. It includes features like connection timeouts and automatic
+//! request retries.
+//!
+//! ```no_run
 //! #[cfg(not(target_family = "wasm"))]
 //! {
-//! use serde::{Deserialize, Serialize};
-//! use typesense::document::Document;
-//! use typesense::Typesense;
-//! use typesense::apis::collections_api;
-//! use typesense::apis::configuration::{ApiKey, Configuration};
+//!     use serde::{Deserialize, Serialize};
+//!     use typesense::{Client, Typesense, ExponentialBackoff, prelude::*};
+//!     use std::time::Duration;
 //!
-//! #[derive(Typesense, Serialize, Deserialize)]
-//! #[typesense(collection_name = "companies", default_sorting_field = "num_employees")]
-//! struct Company {
-//!     company_name: String,
-//!     num_employees: i32,
-//!     #[typesense(facet)]
-//!     country: String,
-//! }
+//!     /// A struct representing a company document.
+//!     #[derive(Typesense, Serialize, Deserialize, Debug)]
+//!     #[typesense(
+//!         collection_name = "companies",
+//!         default_sorting_field = "num_employees"
+//!     )]
+//!     struct Company {
+//!         company_name: String,
+//!         num_employees: i32,
+//!         #[typesense(facet)]
+//!         country: String,
+//!     }
 //!
-//! #[tokio::main]
-//! async fn main() {
-//!     let config = Configuration {
-//!         base_path: "http://localhost:5000".to_owned(),
-//!         api_key: Some(ApiKey {
-//!             prefix: None,
-//!             key: "VerySecretKey".to_owned(),
-//!         }),
-//!         ..Default::default()
-//!     };
+//!     #[tokio::main]
+//!     async fn main() -> Result<(), Box<dyn std::error::Error>> {
+//!         let client = Client::builder()
+//!             .nodes(vec!["http://localhost:8108"])
+//!             .api_key("xyz")
+//!             .healthcheck_interval(Duration::from_secs(60))
+//!             .retry_policy(ExponentialBackoff::builder().build_with_max_retries(3))
+//!             .connection_timeout(Duration::from_secs(5))
+//!             .build()?;
 //!
-//!     let collection = collections_api::create_collection(&config, Company::collection_schema())
-//!         .await
-//!         .unwrap();
-//! }
+//!         // Create the collection in Typesense
+//!         let collection = client
+//!             .collections()
+//!             .create(Company::collection_schema())
+//!             .await?;
+//!
+//!         println!("Created collection: {:?}", collection);
+//!         Ok(())
+//!     }
 //! }
 //! ```
+//!
+//! ---
+//!
+//! ### WebAssembly (Wasm)
+//!
+//! This example is tailored for a WebAssembly target.
+//! Key difference: Tokio-dependent features like `.retry_policy()` and `.connection_timeout()`
+//! are disabled. You can still set them in the client builder but it will do nothing.
+//!
+//! ```no_run
+//! #[cfg(target_family = "wasm")]
+//! {
+//!     use serde::{Deserialize, Serialize};
+//!     use typesense::{Client, Typesense, prelude::*};
+//!     use std::time::Duration;
+//!     use wasm_bindgen_futures::spawn_local;
+//!
+//!     /// A struct representing a company document.
+//!     #[derive(Typesense, Serialize, Deserialize, Debug)]
+//!     #[typesense(
+//!         collection_name = "companies",
+//!         default_sorting_field = "num_employees"
+//!     )]
+//!     struct Company {
+//!         company_name: String,
+//!         num_employees: i32,
+//!         #[typesense(facet)]
+//!         country: String,
+//!     }
+//!
+//!     fn main() {
+//!         spawn_local(async {
+//!             let client = Client::builder()
+//!                 .nodes(vec!["http://localhost:8108"])
+//!                 .api_key("xyz")
+//!                 .healthcheck_interval(Duration::from_secs(60))
+//!                 // .retry_policy(...)       <-- disabled in Wasm
+//!                 // .connection_timeout(...) <-- disabled in Wasm
+//!                 .build()
+//!                 .unwrap();
+//!
+//!             // Create the collection in Typesense
+//!             match client.collections().create(Company::collection_schema()).await {
+//!                 Ok(collection) => println!("Created collection: {:?}", collection),
+//!                 Err(e) => eprintln!("Error creating collection: {}", e),
+//!             }
+//!         });
+//!     }
+//! }
+//! ```
+mod client;
+mod traits;
 
-pub mod collection_schema;
-pub mod document;
-pub mod field;
-pub mod keys;
+pub mod error;
+pub mod models;
+pub mod prelude;
 
-pub use typesense_codegen::*;
+pub use client::{Client, ExponentialBackoff};
+pub use error::*;
+
+pub use typesense_codegen as legacy;
 
 #[cfg(feature = "typesense_derive")]
 #[doc(hidden)]

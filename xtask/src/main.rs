@@ -1,9 +1,9 @@
 use anyhow::{Context, Result};
 use clap::{Parser, ValueEnum};
-use std::env;
-use std::fs;
-use std::process::Command;
+use std::{env, fs, process::Command};
+mod add_vendor_attributes;
 mod preprocess_openapi;
+mod vendor_attributes;
 use preprocess_openapi::preprocess_openapi_file;
 
 const SPEC_URL: &str =
@@ -12,6 +12,7 @@ const SPEC_URL: &str =
 // Input spec file, expected in the project root.
 const INPUT_SPEC_FILE: &str = "openapi.yml";
 const OUTPUT_PREPROCESSED_FILE: &str = "./preprocessed_openapi.yml";
+const CUSTOM_TEMPLATES_DIR: &str = "openapi-generator-template"; // Directory containing our custom templates
 
 // Output directory for the generated code.
 const OUTPUT_DIR: &str = "typesense_codegen";
@@ -117,14 +118,14 @@ fn task_codegen() -> Result<()> {
         .arg("rust")
         .arg("-o")
         .arg(format!("/local/{}", OUTPUT_DIR)) // Output path inside the container
+        .arg("-t") // specify the template directory
+        .arg(format!("/local/{}", CUSTOM_TEMPLATES_DIR))
         .arg("--additional-properties")
         .arg("library=reqwest")
         .arg("--additional-properties")
         .arg("supportMiddleware=true")
         .arg("--additional-properties")
         .arg("useSingleRequestParameter=true")
-        // .arg("--additional-properties")
-        // .arg("useBonBuilder=true")
         .status()
         .context("Failed to execute Docker command. Is Docker installed and running?")?;
 
@@ -135,5 +136,20 @@ fn task_codegen() -> Result<()> {
 
     println!("✅ Codegen task finished successfully.");
     println!("   Generated code is available in '{}'", OUTPUT_DIR);
+
+    // Run cargo fmt after codegen
+    println!("▶️  Running cargo fmt...");
+    let fmt_status = Command::new("cargo")
+        .arg("fmt")
+        .arg("--all")
+        .status()
+        .context("Failed to run cargo fmt")?;
+
+    if !fmt_status.success() {
+        eprintln!("⚠️  cargo fmt failed (check your Rust installation).");
+    } else {
+        println!("✅ Successfully formatted the code.");
+    }
+
     Ok(())
 }
