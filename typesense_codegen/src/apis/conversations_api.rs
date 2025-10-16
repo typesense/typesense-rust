@@ -26,13 +26,6 @@ pub struct DeleteConversationModelParams {
     pub model_id: String,
 }
 
-/*
-/// struct for passing parameters to the method [`retrieve_all_conversation_models`]
-#[derive(Clone, Debug)]
-pub struct RetrieveAllConversationModelsParams {
-}
-*/
-
 /// struct for passing parameters to the method [`retrieve_conversation_model`]
 #[derive(Clone, Debug)]
 pub struct RetrieveConversationModelParams {
@@ -209,9 +202,7 @@ pub async fn delete_conversation_model(
 
 /// Retrieve all conversation models
 pub async fn retrieve_all_conversation_models(
-    configuration: &configuration::Configuration, /*
-                                                  , params: &RetrieveAllConversationModelsParams
-                                                  */
+    configuration: &configuration::Configuration,
 ) -> Result<Vec<models::ConversationModelSchema>, Error<RetrieveAllConversationModelsError>> {
     let uri_str = format!("{}/conversations/models", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);

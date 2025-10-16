@@ -51,7 +51,7 @@ where
 
         let result_value = execute_wrapper!(self, documents_api::get_document, params)?;
 
-        // Deserialize the raw JSON value into the user's type T.
+        // Deserialize the raw JSON value into the user's type D.
         serde_json::from_value(result_value).map_err(Error::from)
     }
 

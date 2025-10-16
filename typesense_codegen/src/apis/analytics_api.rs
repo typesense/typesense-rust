@@ -34,13 +34,6 @@ pub struct DeleteAnalyticsRuleParams {
     pub rule_name: String,
 }
 
-/*
-/// struct for passing parameters to the method [`flush_analytics`]
-#[derive(Clone, Debug)]
-pub struct FlushAnalyticsParams {
-}
-*/
-
 /// struct for passing parameters to the method [`get_analytics_events`]
 #[derive(Clone, Debug)]
 pub struct GetAnalyticsEventsParams {
@@ -50,13 +43,6 @@ pub struct GetAnalyticsEventsParams {
     /// Number of events to return (max 1000)
     pub n: i32,
 }
-
-/*
-/// struct for passing parameters to the method [`get_analytics_status`]
-#[derive(Clone, Debug)]
-pub struct GetAnalyticsStatusParams {
-}
-*/
 
 /// struct for passing parameters to the method [`retrieve_analytics_rule`]
 #[derive(Clone, Debug)]
@@ -335,9 +321,7 @@ pub async fn delete_analytics_rule(
 
 /// Triggers a flush of analytics data to persistent storage.
 pub async fn flush_analytics(
-    configuration: &configuration::Configuration, /*
-                                                  , params: &FlushAnalyticsParams
-                                                  */
+    configuration: &configuration::Configuration,
 ) -> Result<models::AnalyticsEventCreateResponse, Error<FlushAnalyticsError>> {
     let uri_str = format!("{}/analytics/flush", configuration.base_path);
     let mut req_builder = configuration
@@ -455,9 +439,7 @@ pub async fn get_analytics_events(
 
 /// Returns sizes of internal analytics buffers and queues.
 pub async fn get_analytics_status(
-    configuration: &configuration::Configuration, /*
-                                                  , params: &GetAnalyticsStatusParams
-                                                  */
+    configuration: &configuration::Configuration,
 ) -> Result<models::AnalyticsStatus, Error<GetAnalyticsStatusError>> {
     let uri_str = format!("{}/analytics/status", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);

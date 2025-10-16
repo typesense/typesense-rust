@@ -29,13 +29,6 @@ pub struct ImportStemmingDictionaryParams {
     pub body: String,
 }
 
-/*
-/// struct for passing parameters to the method [`list_stemming_dictionaries`]
-#[derive(Clone, Debug)]
-pub struct ListStemmingDictionariesParams {
-}
-*/
-
 /// struct for typed errors of method [`get_stemming_dictionary`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -183,9 +176,7 @@ pub async fn import_stemming_dictionary(
 
 /// Retrieve a list of all available stemming dictionaries.
 pub async fn list_stemming_dictionaries(
-    configuration: &configuration::Configuration, /*
-                                                  , params: &ListStemmingDictionariesParams
-                                                  */
+    configuration: &configuration::Configuration,
 ) -> Result<models::ListStemmingDictionaries200Response, Error<ListStemmingDictionariesError>> {
     let uri_str = format!("{}/stemming/dictionaries", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);

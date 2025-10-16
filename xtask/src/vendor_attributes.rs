@@ -213,7 +213,8 @@ impl<'a, 'b> OperationContext<'a, 'b> {
     }
 
     pub fn params_generic_parameter(mut self, generic: &str) -> Self {
-        self.try_set(
+        self.try_set_field(
+            "requestBody",
             "x-rust-params-generic-parameter",
             Value::String(generic.into()),
         );

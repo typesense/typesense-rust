@@ -13,13 +13,6 @@ use crate::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/*
-/// struct for passing parameters to the method [`debug`]
-#[derive(Clone, Debug)]
-pub struct DebugParams {
-}
-*/
-
 /// struct for typed errors of method [`debug`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -29,9 +22,7 @@ pub enum DebugError {
 
 /// Print debugging information
 pub async fn debug(
-    configuration: &configuration::Configuration, /*
-                                                  , params: &DebugParams
-                                                  */
+    configuration: &configuration::Configuration,
 ) -> Result<models::Debug200Response, Error<DebugError>> {
     let uri_str = format!("{}/debug", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
