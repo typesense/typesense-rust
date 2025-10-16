@@ -77,14 +77,18 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
         proc_macro2::TokenStream::new()
     };
 
-    let optional_fields = fields.iter().map(|f| {
+    let optional_fields = fields.iter().filter_map(|f| {
+        let ident = f.ident.as_ref()?;
+        if ident == "id" {
+            return None;
+        }
         let vis = &f.vis;
-        let ident = &f.ident;
         let ty = &f.ty;
-        quote! {
+
+        Some(quote! {
             #[serde(skip_serializing_if = "Option::is_none")]
             #vis #ident: Option<#ty>,
-        }
+        })
     });
 
     let name_partial = Ident::new(&(ident.to_string() + "Partial"), ident.span());
