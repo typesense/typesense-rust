@@ -1,10 +1,11 @@
 use serde::{Deserialize, Serialize};
-use serde_json::json;
 use typesense::models::{
-    CollectionSchema, DeleteDocumentsParameters, DirtyValues, DocumentIndexParameters,
-    ExportDocumentsParameters, Field, ImportDocumentsParameters, IndexAction, SearchParameters,
-    UpdateDocumentsParameters,
+    CollectionSchema, DirtyValues, DocumentIndexParameters, Field, SearchParameters,
 };
+/* use typesense::models::{
+    DeleteDocumentsParameters, ExportDocumentsParameters, ImportDocumentsParameters, IndexAction,
+    UpdateDocumentsParameters,
+}; */
 
 use super::{get_client, new_id};
 
