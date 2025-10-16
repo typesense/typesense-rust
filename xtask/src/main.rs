@@ -32,10 +32,12 @@ struct Cli {
 #[derive(ValueEnum, Clone, Debug)]
 #[clap(rename_all = "kebab-case")] // Allows us to type `code-gen` instead of `CodeGen`
 enum Task {
-    /// Fetches the latest OpenAPI spec from [the Typesense repository](https://github.com/typesense/typesense-api-spec/blob/master/openapi.yml).
-    Fetch,
     /// Generates client code from the spec file using the Docker container.
     CodeGen,
+    /// Fetches the latest OpenAPI spec from [the Typesense repository](https://github.com/typesense/typesense-api-spec/blob/master/openapi.yml).
+    Fetch,
+    /// Preprocesses fetched OpenAPI spec file into a new one
+    Preprocess,
 }
 
 #[cfg(target_family = "wasm")]
@@ -48,16 +50,17 @@ fn main() -> Result<()> {
     for task in cli.tasks {
         println!("▶️  Running task: {:?}", task);
         match task {
-            Task::Fetch => task_fetch_api_spec()?,
             Task::CodeGen => task_codegen()?,
+            Task::Fetch => task_fetch_api_spec()?,
+            Task::Preprocess => preprocess_openapi_file(INPUT_SPEC_FILE, OUTPUT_PREPROCESSED_FILE)
+                .expect("Preprocess failed, aborting!"),
         }
     }
     Ok(())
 }
 
-#[cfg(not(target_family = "wasm"))]
 fn task_fetch_api_spec() -> Result<()> {
-    println!("▶️  Running codegen task...");
+    println!("▶️  Running fetch task...");
 
     println!("  - Downloading spec from {}", SPEC_URL);
     let response =
@@ -80,10 +83,6 @@ fn task_fetch_api_spec() -> Result<()> {
 /// Task to generate client code from the OpenAPI spec using a Docker container.
 fn task_codegen() -> Result<()> {
     println!("▶️  Running codegen task via Docker...");
-
-    println!("Preprocessing the Open API spec file...");
-    preprocess_openapi_file(INPUT_SPEC_FILE, OUTPUT_PREPROCESSED_FILE)
-        .expect("Preprocess failed, aborting!");
     // Get the absolute path to the project's root directory.
     // std::env::current_dir() gives us the directory from which `cargo xtask` was run.
     let project_root = env::current_dir().context("Failed to get current directory")?;

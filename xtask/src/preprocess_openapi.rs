@@ -8,6 +8,7 @@ pub fn preprocess_openapi_file(
     input_path: &str,
     output_path: &str,
 ) -> Result<(), Box<dyn std::error::Error>> {
+    println!("Preprocessing the Open API spec file...");
     // --- Step 1: Read the OpenAPI spec from the input file ---
     println!("Reading OpenAPI spec from {}...", input_path);
     let input_content = fs::read_to_string(input_path)

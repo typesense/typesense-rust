@@ -349,8 +349,8 @@ paths:
               x-go-type: interface{}
         required: true
         x-rust-type: B
-      x-rust-params-generic-parameter: <B>
       x-rust-generic-parameter: '<B: Serialize>'
+      x-rust-params-generic-parameter: <B>
     delete:
       tags:
       - documents
@@ -1257,8 +1257,6 @@ paths:
               x-go-type: interface{}
         required: true
         x-rust-type: B
-      x-rust-params-generic-parameter: <B>
-      x-rust-generic-parameter: '<B: Serialize>'
       responses:
         '200':
           description: The document referenced by the ID was updated
@@ -1273,6 +1271,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-generic-parameter: '<B: Serialize>'
+      x-rust-params-generic-parameter: <B>
     delete:
       tags:
       - documents

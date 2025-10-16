@@ -3,8 +3,19 @@ use serde_yaml::{Mapping, Value};
 /// Where to apply a vendor (x-*) attribute.
 pub enum VendorLocation<'a> {
     Schema(&'a str),
-    SchemaField { schema: &'a str, field: &'a str },
-    Operation { path: &'a str, method: &'a str },
+    SchemaField {
+        schema: &'a str,
+        field: &'a str,
+    },
+    Operation {
+        path: &'a str,
+        method: &'a str,
+    },
+    OperationField {
+        path: &'a str,
+        method: &'a str,
+        field: &'a str,
+    },
 }
 
 /// Main helper struct that holds a mutable borrow of the OpenAPI root mapping.
@@ -84,6 +95,19 @@ impl<'a> VendorAttributes<'a> {
                     .get_map_mut(&["paths", path, method])
                     .map_err(|_| format!("operation not found: {} {}", method, path))?;
                 Self::insert_into_map(op_map, attr, val);
+                Ok(self)
+            }
+            VendorLocation::OperationField {
+                path,
+                method,
+                field,
+            } => {
+                let field_map =
+                    self.get_map_mut(&["paths", path, method, field])
+                        .map_err(|_| {
+                            format!("operation field not found: {} {} {}", method, path, field)
+                        })?;
+                Self::insert_into_map(field_map, attr, val);
                 Ok(self)
             }
         }
@@ -166,13 +190,43 @@ impl<'a, 'b> OperationContext<'a, 'b> {
         }
     }
 
+    fn try_set_field(&mut self, field: &str, attr: &str, val: Value) {
+        if self.error.is_some() {
+            return;
+        }
+        if let Err(e) = self.vendor.set_attr(
+            VendorLocation::OperationField {
+                path: self.path,
+                method: self.method,
+                field,
+            },
+            attr,
+            val,
+        ) {
+            self.error = Some(e);
+        }
+    }
+
     pub fn generic_parameter(mut self, generic: &str) -> Self {
         self.try_set("x-rust-generic-parameter", Value::String(generic.into()));
         self
     }
 
-    pub fn return_type(mut self, rust_type: &str) -> Self {
-        self.try_set("x-rust-return-type", Value::String(rust_type.into()));
+    pub fn params_generic_parameter(mut self, generic: &str) -> Self {
+        self.try_set(
+            "x-rust-params-generic-parameter",
+            Value::String(generic.into()),
+        );
+        self
+    }
+
+    pub fn return_type(mut self, typ: &str) -> Self {
+        self.try_set("x-rust-return-type", Value::String(typ.into()));
+        self
+    }
+
+    pub fn request_type(mut self, typ: &str) -> Self {
+        self.try_set_field("requestBody", "x-rust-type", Value::String(typ.into()));
         self
     }
 
