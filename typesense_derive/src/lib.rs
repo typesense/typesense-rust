@@ -98,17 +98,17 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
         #vis struct #name_partial {
             #(#optional_fields)*
         }
-        impl typesense::prelude::DocumentPartial for #name_partial {}
+        impl ::typesense::prelude::DocumentPartial for #name_partial {}
 
-        impl #impl_generics typesense::prelude::Document for #ident #ty_generics #where_clause {
+        impl #impl_generics ::typesense::prelude::Document for #ident #ty_generics #where_clause {
             const COLLECTION_NAME: &str = #collection_name;
             type Partial = #name_partial;
 
-            fn collection_schema() -> typesense::models::CollectionSchema {
+            fn collection_schema() -> ::typesense::models::CollectionSchema {
                 let name = Self::COLLECTION_NAME.to_owned();
                 let fields = vec![#(#typesense_fields,)*];
 
-                let builder = typesense::models::CollectionSchema::builder().name(name).fields(fields);
+                let builder = ::typesense::models::CollectionSchema::builder().name(name).fields(fields);
 
                 #default_sorting_field
                 #enable_nested_fields
@@ -143,7 +143,7 @@ fn add_trait_bounds(mut generics: syn::Generics) -> syn::Generics {
         if let syn::GenericParam::Type(ref mut type_param) = *param {
             type_param
                 .bounds
-                .push(syn::parse_quote!(typesense::field::ToTypesenseField));
+                .push(syn::parse_quote!(::typesense::field::ToTypesenseField));
         }
     }
     generics
@@ -310,11 +310,11 @@ fn to_typesense_field_type(field: &Field) -> syn::Result<proc_macro2::TokenStrea
         (&field.ty, quote!(None))
     };
     let typesense_field_type = quote!(
-        <#ty as typesense::prelude::ToTypesenseField>::to_typesense_type().to_owned()
+        <#ty as ::typesense::prelude::ToTypesenseField>::to_typesense_type().to_owned()
     );
 
     Ok(quote! {
-        typesense::models::Field::builder().name(std::string::String::from(stringify!(#name))).r#type(#typesense_field_type)
+        ::typesense::models::Field::builder().name(std::string::String::from(stringify!(#name))).r#type(#typesense_field_type)
             .maybe_optional(#optional)
             .maybe_facet(#facet)
             .build()
