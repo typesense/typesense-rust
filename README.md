@@ -12,7 +12,7 @@ When updating or adding new parameters and endpoints, make changes directly in t
 Once your changes are merged, you can update this project as follows (you can also run tasks individually):
 
 ```bash
-cargo xtask fetch code-gen
+cargo xtask fetch preprocess code-gen
 ```
 
 This will:

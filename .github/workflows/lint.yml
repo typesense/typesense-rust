@@ -45,4 +45,4 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: clippy
-          args: --all-features -- -Drust-2018-idioms -Dwarnings
+          args: --all-features -- -Drust-2018-idioms -Drust-2024-compatibility -Dwarnings

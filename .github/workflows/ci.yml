@@ -59,7 +59,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --all-features --target ${{ matrix.platform.target }}
+          args: --all-features --target ${{ matrix.platform.target }} --workspace --exclude xtask
       - name: Tests
         if: matrix.platform.target != 'wasm32-unknown-unknown'
         uses: actions-rs/cargo@v1

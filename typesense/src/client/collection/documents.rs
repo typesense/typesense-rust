@@ -7,6 +7,7 @@
 use crate::{
     Client, Error, execute_wrapper,
     models::{DocumentIndexParameters, SearchResult},
+    traits,
 };
 use serde::{Serialize, de::DeserializeOwned};
 use typesense_codegen::{
@@ -63,43 +64,6 @@ where
         execute_wrapper!(self, documents_api::index_document, params)
     }
 
-    /// Creates a new document in the collection.
-    ///
-    /// Fails if a document with the same ID already exists. If the document has an `id` field
-    /// of type `string`, it will be used as the document's ID. Otherwise, Typesense will
-    /// auto-generate an ID. The newly indexed document is returned.
-    ///
-    /// # Arguments
-    /// * `document` - A serializable struct or a `serde_json::Value` representing the document to create.
-    /// * `params` - Optional parameters like `dirty_values`.
-    pub async fn create<U: Serialize>(
-        &self,
-        document: U,
-        params: Option<DocumentIndexParameters>,
-    ) -> Result<D, Error<documents_api::IndexDocumentError>> {
-        let doc_value = serde_json::to_value(document)?;
-        let result_value = self.index(doc_value, "create", params).await?;
-        serde_json::from_value(result_value).map_err(Error::from)
-    }
-
-    /// Creates a new document or updates an existing one if an ID match is found.
-    ///
-    /// This method requires the full document to be sent. For partial updates, use
-    /// `collection().document("...").update()`. The indexed document is returned.
-    ///
-    /// # Arguments
-    /// * `document` - A serializable struct or a `serde_json::Value` representing the document to upsert.
-    /// * `params` - Optional parameters like `dirty_values`.
-    pub async fn upsert<U: Serialize>(
-        &self,
-        document: U,
-        params: Option<DocumentIndexParameters>,
-    ) -> Result<D, Error<documents_api::IndexDocumentError>> {
-        let doc_value = serde_json::to_value(document)?;
-        let result_value = self.index(doc_value, "upsert", params).await?;
-        serde_json::from_value(result_value).map_err(Error::from)
-    }
-
     // --- Bulk Operation Methods ---
 
     /// Imports a batch of documents in JSONL format.
@@ -132,7 +96,7 @@ where
     ///
     /// # Arguments
     /// * `params` - An `ExportDocumentsParameters` struct containing options like `filter_by` and `include_fields`.
-    pub async fn export(
+    pub async fn export_jsonl(
         &self,
         params: ExportDocumentsParameters,
     ) -> Result<String, Error<documents_api::ExportDocumentsError>> {
@@ -162,25 +126,6 @@ where
             truncate: params.truncate,
         };
         execute_wrapper!(self, documents_api::delete_documents, params)
-    }
-
-    /// Updates a batch of documents matching a specific filter condition.
-    ///
-    /// # Arguments
-    /// * `document` - A serializable struct or a `serde_json::Value` containing the fields to update.
-    /// * `params` - A `UpdateDocumentsParameters` describing the conditions for updating documents.
-    pub async fn update<U: Serialize>(
-        &self,
-        document: U,
-        params: UpdateDocumentsParameters,
-    ) -> Result<raw_models::UpdateDocuments200Response, Error<documents_api::UpdateDocumentsError>>
-    {
-        let params = documents_api::UpdateDocumentsParams {
-            collection_name: self.collection_name.to_owned(),
-            filter_by: params.filter_by,
-            body: serde_json::to_value(document)?,
-        };
-        execute_wrapper!(self, documents_api::update_documents, params)
     }
 
     /// Searches for documents in the collection that match the given criteria.
@@ -269,5 +214,66 @@ where
             synonym_sets: params.synonym_sets,
         };
         execute_wrapper!(self, documents_api::search_collection, search_params)
+    }
+}
+
+impl<'c, 'n, D> Documents<'c, 'n, D>
+where
+    D: traits::Document,
+{
+    /// Creates a new document in the collection.
+    ///
+    /// Fails if a document with the same ID already exists. If the document has an `id` field
+    /// of type `string`, it will be used as the document's ID. Otherwise, Typesense will
+    /// auto-generate an ID. The newly indexed document is returned.
+    ///
+    /// # Arguments
+    /// * `document` - A document struct to create.
+    /// * `params` - Optional parameters like `dirty_values`.
+    pub async fn create(
+        &self,
+        document: &D,
+        params: Option<DocumentIndexParameters>,
+    ) -> Result<D, Error<documents_api::IndexDocumentError>> {
+        let doc_value = serde_json::to_value(document)?;
+        let result_value = self.index(doc_value, "create", params).await?;
+        serde_json::from_value(result_value).map_err(Error::from)
+    }
+
+    /// Creates a new document or updates an existing one if an ID match is found.
+    ///
+    /// This method requires the full document to be sent. For partial updates, use
+    /// `collection().document("...").update()`. The indexed document is returned.
+    ///
+    /// # Arguments
+    /// * `document` - A document struct to upsert.
+    /// * `params` - Optional parameters like `dirty_values`.
+    pub async fn upsert(
+        &self,
+        document: &D,
+        params: Option<DocumentIndexParameters>,
+    ) -> Result<D, Error<documents_api::IndexDocumentError>> {
+        let doc_value = serde_json::to_value(document)?;
+        let result_value = self.index(doc_value, "upsert", params).await?;
+        serde_json::from_value(result_value).map_err(Error::from)
+    }
+
+    /// Updates a batch of documents matching a specific filter condition.
+    ///
+    /// # Arguments
+    /// * `document` - A struct containing the fields to update.
+    /// * `params` - A `UpdateDocumentsParameters` describing the conditions for updating documents.
+    pub async fn update(
+        &self,
+        document: &D::Partial,
+        params: UpdateDocumentsParameters,
+    ) -> Result<raw_models::UpdateDocuments200Response, Error<documents_api::UpdateDocumentsError>>
+    {
+        let params = documents_api::UpdateDocumentsParams {
+            collection_name: self.collection_name.to_owned(),
+            filter_by: params.filter_by,
+            body: document,
+        };
+        execute_wrapper!(self, documents_api::update_documents, params)
     }
 }

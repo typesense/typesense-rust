@@ -62,5 +62,22 @@ pub fn add_vendor_attributes(doc_root: &mut Mapping) -> Result<(), String> {
         .supports_plain_text()
         .done()?;
 
+    attrs
+        .operation("/collections/{collectionName}/documents", "patch")
+        .generic_parameter("<B: Serialize>")
+        .params_generic_parameter("<B>")
+        .request_type("B")
+        .done()?;
+
+    attrs
+        .operation(
+            "/collections/{collectionName}/documents/{documentId}",
+            "patch",
+        )
+        .generic_parameter("<B: Serialize>")
+        .params_generic_parameter("<B>")
+        .request_type("B")
+        .done()?;
+
     Ok(())
 }
