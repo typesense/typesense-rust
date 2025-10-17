@@ -36,11 +36,11 @@ async fn run_test_schemaless_document_lifecycle() {
         ..Default::default()
     };
 
-    let create_collection_result = client.collections().create(schema).await;
-    assert!(
-        create_collection_result.is_ok(),
-        "Failed to create collection"
-    );
+    let _create_collection_response = client
+        .collections()
+        .create(schema)
+        .await
+        .expect("Failed to create collection");
 
     let book_1_id = &new_id("document_1");
     let book_1 = json!({"id": book_1_id, "title": "The Hitchhiker's Guide to the Galaxy","author": "John","publication_year": 1979});
@@ -66,30 +66,32 @@ async fn run_test_schemaless_document_lifecycle() {
     );
 
     // --- Retrieve a single document (via `document(id).retrieve()`) ---
-    let retrieve_res = client
+    let retrieved_book = client
         .collection_schemaless(&collection_name)
         .document(book_1_id)
         .retrieve()
-        .await;
-    assert!(retrieve_res.is_ok(), "Failed to retrieve document 1");
-    assert_eq!(retrieve_res.unwrap(), book_1);
+        .await
+        .expect("Failed to retrieve document 1");
+    assert_eq!(retrieved_book, book_1);
 
     // ---  Search for documents ---
     let search_params = SearchParameters::builder()
         .q("the")
         .query_by("title")
         .build();
-    let search_res = documents_client.search(search_params).await;
-    assert!(search_res.is_ok(), "Search failed");
-    assert_eq!(search_res.unwrap().found, Some(2));
+    let search_res = documents_client
+        .search(search_params)
+        .await
+        .expect("Search failed");
+    assert_eq!(search_res.found, Some(2));
 
     // ---  Delete a single document ---
-    let delete_res = client
+    let _deleted_book = client
         .collection_schemaless(&collection_name)
         .document(book_1_id)
         .delete()
-        .await;
-    assert!(delete_res.is_ok(), "Failed to delete document 1");
+        .await
+        .expect("Failed to delete document 1");
 
     // ---  Verify single deletion ---
     let retrieve_after_delete_res = client
@@ -107,10 +109,10 @@ async fn run_test_schemaless_document_lifecycle() {
         filter_by: Some("author:John".to_owned()),
         ..Default::default()
     };
-    let export_res = documents_client.export_jsonl(export_params).await;
-
-    assert!(export_res.is_ok(), "Export failed");
-    let exported_jsonl = export_res.unwrap();
+    let exported_jsonl = documents_client
+        .export_jsonl(export_params)
+        .await
+        .expect("Export failed");
 
     // Verify the exported content is a JSONL string with 2 lines.
     let lines: Vec<&str> = exported_jsonl.trim().split('\n').collect();
@@ -123,10 +125,12 @@ async fn run_test_schemaless_document_lifecycle() {
         filter_by: "publication_year:>1960".to_owned(),
         ..Default::default()
     };
-    let bulk_delete_res = documents_client.delete(delete_params).await;
-    assert!(bulk_delete_res.is_ok(), "Bulk delete failed");
+    let bulk_delete_response = documents_client
+        .delete(delete_params)
+        .await
+        .expect("Bulk delete failed");
     // Only "The Hitchhiker's Guide to the Galaxy" (1979) should be deleted
-    assert_eq!(bulk_delete_res.unwrap().num_deleted, 1);
+    assert_eq!(bulk_delete_response.num_deleted, 1);
 }
 
 // --- TESTS FOR GENERIC FEATURES ---
@@ -272,7 +276,7 @@ async fn run_test_generic_document_lifecycle() {
     let bulk_update_params = UpdateDocumentsParameters {
         filter_by: Some("publication_year:>1965".to_owned()),
     };
-    let bulk_update_res = typed_collection
+    let bulk_update_response = typed_collection
         .documents()
         .update(
             &BookPartial {
@@ -281,10 +285,10 @@ async fn run_test_generic_document_lifecycle() {
             },
             bulk_update_params,
         )
-        .await;
-    assert!(bulk_update_res.is_ok(), "Bulk update failed");
+        .await
+        .expect("Bulk update failed");
     // Should update book 1 (1966)
-    assert_eq!(bulk_update_res.unwrap().num_updated, 1);
+    assert_eq!(bulk_update_response.num_updated, 1);
 
     // --- 8. Delete a single document, receiving the typed struct back ---
     let deleted_book = typed_collection
