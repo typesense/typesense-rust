@@ -96,7 +96,7 @@ where
     ///
     /// # Arguments
     /// * `params` - An `ExportDocumentsParameters` struct containing options like `filter_by` and `include_fields`.
-    pub async fn export(
+    pub async fn export_jsonl(
         &self,
         params: ExportDocumentsParameters,
     ) -> Result<String, Error<documents_api::ExportDocumentsError>> {
