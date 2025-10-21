@@ -3,8 +3,11 @@ use clap::{Parser, ValueEnum};
 use std::{env, fs, process::Command};
 mod add_vendor_attributes;
 mod preprocess_openapi;
+mod test_clean;
 mod vendor_attributes;
+
 use preprocess_openapi::preprocess_openapi_file;
+use test_clean::test_clean;
 
 const SPEC_URL: &str =
     "https://raw.githubusercontent.com/typesense/typesense-api-spec/master/openapi.yml";
@@ -27,6 +30,10 @@ struct Cli {
     /// The list of tasks to run in sequence.
     #[arg(required = true, value_enum)]
     tasks: Vec<Task>,
+
+    /// Arguments to forward to cargo test
+    #[arg(last(true))]
+    test_args: Vec<String>,
 }
 
 #[derive(ValueEnum, Clone, Debug)]
@@ -38,10 +45,14 @@ enum Task {
     Fetch,
     /// Preprocesses fetched OpenAPI spec file into a new one
     Preprocess,
+    /// Clean up test artifacts, e.g., collections
+    TestClean,
 }
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
+
+    let rt = tokio::runtime::Runtime::new().unwrap();
 
     for task in cli.tasks {
         println!("▶️  Running task: {:?}", task);
@@ -50,6 +61,12 @@ fn main() -> Result<()> {
             Task::Fetch => task_fetch_api_spec()?,
             Task::Preprocess => preprocess_openapi_file(INPUT_SPEC_FILE, OUTPUT_PREPROCESSED_FILE)
                 .expect("Preprocess failed, aborting!"),
+            Task::TestClean => {
+                let test_args = cli.test_args.clone();
+                rt.block_on(async move {
+                    test_clean(test_args).await;
+                });
+            }
         }
     }
     Ok(())

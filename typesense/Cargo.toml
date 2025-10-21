@@ -48,7 +48,7 @@ trybuild = "1.0.42"
 
 # native-only dev deps
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
-tokio = { version = "1.5", features = ["macros", "rt", "rt-multi-thread"] }
+tokio = { workspace = true}
 wiremock = "0.6"
 
 # wasm test deps
