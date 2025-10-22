@@ -41,4 +41,26 @@ docker run --rm \
     --additional-properties useSingleRequestParameter=true
 ```
 
+### Testing
+
+Make sure you have a Typesense server up and running:
+
+```bash
+docker compose up
+```
+
+Then run this command in the root folder to run the integration tests:
+
+```bash
+cargo test-clean -- --all-features
+```
+
+This is an aliased command which will run a script to clean up your Typesense server after the tests finish. You can pass any arguments of `cargo test` after the `--`.
+
+To run test for wasm:
+
+```bash
+cargo test-clean --wasm
+```
+
 If you'd like to contribute, please join our [Slack Community](https://join.slack.com/t/typesense-community/shared_invite/zt-mx4nbsbn-AuOL89O7iBtvkz136egSJg) and say hello!

@@ -31,6 +31,10 @@ struct Cli {
     #[arg(required = true, value_enum)]
     tasks: Vec<Task>,
 
+    /// Flag to run tests for wasm.
+    #[arg(long)]
+    wasm: bool,
+
     /// Arguments to forward to cargo test
     #[arg(last(true))]
     test_args: Vec<String>,
@@ -63,8 +67,9 @@ fn main() -> Result<()> {
                 .expect("Preprocess failed, aborting!"),
             Task::TestClean => {
                 let test_args = cli.test_args.clone();
+                let is_wasm = cli.wasm;
                 rt.block_on(async move {
-                    test_clean(test_args).await;
+                    test_clean(is_wasm, test_args).await;
                 });
             }
         }

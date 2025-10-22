@@ -33,14 +33,25 @@ async fn clean_test_artifacts() {
     println!("✅ Cleanup complete.");
 }
 
-pub async fn test_clean(args: Vec<String>) {
-    println!("Run test with arguments {}", args.join(" "));
-    // Run `cargo test` with the forwarded arguments
-    let status = std::process::Command::new("cargo")
-        .arg("test")
-        .args(&args)
-        .status()
-        .expect("Failed to run cargo test");
+pub async fn test_clean(is_wasm: bool, args: Vec<String>) {
+    let status = if is_wasm {
+        println!("Running wasm-pack test...");
+        std::process::Command::new("wasm-pack")
+            .arg("test")
+            .arg("--headless")
+            .arg("--chrome")
+            .args(&args)
+            .arg("typesense")
+            .status()
+            .expect("Failed to run wasm-pack test")
+    } else {
+        println!("Running cargo test with arguments: {}", args.join(" "));
+        std::process::Command::new("cargo")
+            .arg("test")
+            .args(&args)
+            .status()
+            .expect("Failed to run cargo test")
+    };
 
     clean_test_artifacts().await;
 
