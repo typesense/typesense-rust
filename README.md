@@ -57,7 +57,7 @@ cargo test-clean -- --all-features
 
 This is an alias command which will run a script to clean up your Typesense server after the tests finish. You can pass any arguments of `cargo test` after the `--`.
 
-To run test for wasm:
+To run test for wasm (chrome, headless):
 
 ```bash
 cargo test-clean --wasm
