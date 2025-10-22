@@ -55,7 +55,7 @@ Then run this command in the root folder to run the integration tests:
 cargo test-clean -- --all-features
 ```
 
-This is an aliased command which will run a script to clean up your Typesense server after the tests finish. You can pass any arguments of `cargo test` after the `--`.
+This is an alias command which will run a script to clean up your Typesense server after the tests finish. You can pass any arguments of `cargo test` after the `--`.
 
 To run test for wasm:
 
