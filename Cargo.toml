@@ -33,3 +33,6 @@ sha2 = "0.10"
 thiserror = "2"
 url = "2"
 web-time = "=1.1.0"
+# dev dependencies
+tokio = { version = "1.5", features = ["macros", "rt", "rt-multi-thread"] }
+
