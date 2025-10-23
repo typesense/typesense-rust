@@ -17,9 +17,15 @@ async fn clean_test_artifacts() {
         .await
         .expect("Get all collections failed!");
 
-    println!("Cleaning up {} test collections...", collections.len());
+    println!("Cleaning up test collections...");
+
+    let mut collection_count = 0;
 
     for collection in collections.iter() {
+        if !collection.name.starts_with("test_") {
+            continue;
+        }
+
         if let Err(err) = client
             .collection_schemaless(&collection.name)
             .delete()
@@ -27,9 +33,11 @@ async fn clean_test_artifacts() {
         {
             eprintln!("Failed to delete {}: {}", collection.name, err);
         } else {
+            collection_count += 1;
             println!("Deleted {}", collection.name);
         }
     }
+    println!("Deleted {} test collections.", collection_count);
     println!("✅ Cleanup complete.");
 }
 
