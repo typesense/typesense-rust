@@ -113,6 +113,8 @@ mod collections;
 mod key;
 mod keys;
 mod multi_search;
+mod preset;
+mod presets;
 
 use crate::{Error, traits::Document};
 use alias::Alias;
@@ -121,6 +123,8 @@ use collection::Collection;
 use collections::Collections;
 use key::Key;
 use keys::Keys;
+use preset::Preset;
+use presets::Presets;
 
 #[cfg(not(target_arch = "wasm32"))]
 use reqwest_middleware::ClientBuilder as ReqwestMiddlewareClientBuilder;
@@ -359,12 +363,11 @@ impl Client {
     /// # #[cfg(not(target_family = "wasm"))]
     /// # {
     /// # use typesense::Client;
-    /// # use reqwest::Url;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// # let client = Client::builder()
-    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .nodes(vec!["http://localhost:8108"])
     /// #    .api_key("xyz")
     /// #    .build()
     /// #    .unwrap();
@@ -383,12 +386,11 @@ impl Client {
     /// # #[cfg(not(target_family = "wasm"))]
     /// # {
     /// # use typesense::Client;
-    /// # use reqwest::Url;
     /// #
     /// # #[tokio::main]
     /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// # let client = Client::builder()
-    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .nodes(vec!["http://localhost:8108"])
     /// #    .api_key("xyz")
     /// #    .build()
     /// #    .unwrap();
@@ -646,6 +648,57 @@ impl Client {
     #[inline]
     pub fn multi_search(&self) -> multi_search::MultiSearch<'_> {
         multi_search::MultiSearch::new(self)
+    }
+
+    /// Provides access to endpoints for managing all of your presets.
+    ///
+    /// # Example
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec!["http://localhost:8108"])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let list_of_presets = client.presets().retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    pub fn presets(&self) -> Presets<'_> {
+        Presets::new(self)
+    }
+
+    /// Provides access to endpoints for managing a single preset.
+    ///
+    /// # Arguments
+    /// * `preset_id` - The ID of the preset to manage.
+    ///
+    /// # Example
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec!["http://localhost:8108"])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let preset = client.preset("my-preset").retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    pub fn preset<'a>(&'a self, preset_id: &'a str) -> Preset<'a> {
+        Preset::new(self, preset_id)
     }
 }
 
