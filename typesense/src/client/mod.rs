@@ -106,6 +106,8 @@
 //! }
 //! }
 //! ```
+mod alias;
+mod aliases;
 mod collection;
 mod collections;
 mod key;
@@ -113,6 +115,8 @@ mod keys;
 mod multi_search;
 
 use crate::{Error, traits::Document};
+use alias::Alias;
+use aliases::Aliases;
 use collection::Collection;
 use collections::Collections;
 use key::Key;
@@ -346,6 +350,55 @@ impl Client {
             source: last_api_error
                 .expect("No nodes were available to try, or all errors were non-retriable."),
         })
+    }
+
+    /// Provides access to the collection aliases-related API endpoints.
+    ///
+    /// # Example
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
+    /// # use reqwest::Url;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let all_aliases = client.aliases().retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    pub fn aliases(&self) -> Aliases<'_> {
+        Aliases::new(self)
+    }
+
+    /// Provides access to a specific collection alias's-related API endpoints.
+    /// # Example
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
+    /// # use reqwest::Url;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec![Url::parse("http://localhost:8108").unwrap()])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let specific_alias = client.alias("books_alias").retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    pub fn alias<'a>(&'a self, alias_name: &'a str) -> Alias<'a> {
+        Alias::new(self, alias_name)
     }
 
     /// Provides access to API endpoints for managing collections like `create()` and `retrieve()`.

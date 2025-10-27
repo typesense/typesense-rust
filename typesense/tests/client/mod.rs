@@ -1,3 +1,4 @@
+mod aliases_test;
 mod client_test;
 mod collections_test;
 
