@@ -16,6 +16,7 @@ Name | Type | Description | Notes
 **request_params** | Option<[**models::SearchRequestParams**](SearchRequestParams.md)> |  | [optional]
 **conversation** | Option<[**models::SearchResultConversation**](SearchResultConversation.md)> |  | [optional]
 **union_request_params** | Option<[**Vec<models::SearchRequestParams>**](SearchRequestParams.md)> | Returned only for union query response. | [optional]
+**metadata** | Option<[**std::collections::HashMap<String, serde_json::Value>**](serde_json::Value.md)> | Custom JSON object that can be returned in the search response | [optional]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

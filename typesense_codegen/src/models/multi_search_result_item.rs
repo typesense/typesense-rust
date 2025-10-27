@@ -47,6 +47,9 @@ pub struct MultiSearchResultItem<D> {
         skip_serializing_if = "Option::is_none"
     )]
     pub union_request_params: Option<Vec<models::SearchRequestParams>>,
+    /// Custom JSON object that can be returned in the search response
+    #[serde(rename = "metadata", skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<std::collections::HashMap<String, serde_json::Value>>,
     /// HTTP error code
     #[serde(rename = "code", skip_serializing_if = "Option::is_none")]
     pub code: Option<i64>,
@@ -70,6 +73,7 @@ impl<D> MultiSearchResultItem<D> {
             request_params: None,
             conversation: None,
             union_request_params: None,
+            metadata: None,
             code: None,
             error: None,
         }

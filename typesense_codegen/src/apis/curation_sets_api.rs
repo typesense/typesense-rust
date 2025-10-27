@@ -13,137 +13,137 @@ use crate::{apis::ResponseContent, models};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
-/// struct for passing parameters to the method [`delete_synonym_set`]
+/// struct for passing parameters to the method [`delete_curation_set`]
 #[derive(Clone, Debug)]
-pub struct DeleteSynonymSetParams {
-    /// The name of the synonym set to delete
-    pub synonym_set_name: String,
+pub struct DeleteCurationSetParams {
+    /// The name of the curation set to delete
+    pub curation_set_name: String,
 }
 
-/// struct for passing parameters to the method [`delete_synonym_set_item`]
+/// struct for passing parameters to the method [`delete_curation_set_item`]
 #[derive(Clone, Debug)]
-pub struct DeleteSynonymSetItemParams {
-    /// The name of the synonym set
-    pub synonym_set_name: String,
-    /// The id of the synonym item to delete
+pub struct DeleteCurationSetItemParams {
+    /// The name of the curation set
+    pub curation_set_name: String,
+    /// The id of the curation item to delete
     pub item_id: String,
 }
 
-/// struct for passing parameters to the method [`retrieve_synonym_set`]
+/// struct for passing parameters to the method [`retrieve_curation_set`]
 #[derive(Clone, Debug)]
-pub struct RetrieveSynonymSetParams {
-    /// The name of the synonym set to retrieve
-    pub synonym_set_name: String,
+pub struct RetrieveCurationSetParams {
+    /// The name of the curation set to retrieve
+    pub curation_set_name: String,
 }
 
-/// struct for passing parameters to the method [`retrieve_synonym_set_item`]
+/// struct for passing parameters to the method [`retrieve_curation_set_item`]
 #[derive(Clone, Debug)]
-pub struct RetrieveSynonymSetItemParams {
-    /// The name of the synonym set
-    pub synonym_set_name: String,
-    /// The id of the synonym item to retrieve
+pub struct RetrieveCurationSetItemParams {
+    /// The name of the curation set
+    pub curation_set_name: String,
+    /// The id of the curation item to retrieve
     pub item_id: String,
 }
 
-/// struct for passing parameters to the method [`retrieve_synonym_set_items`]
+/// struct for passing parameters to the method [`retrieve_curation_set_items`]
 #[derive(Clone, Debug)]
-pub struct RetrieveSynonymSetItemsParams {
-    /// The name of the synonym set to retrieve items for
-    pub synonym_set_name: String,
+pub struct RetrieveCurationSetItemsParams {
+    /// The name of the curation set to retrieve items for
+    pub curation_set_name: String,
 }
 
-/// struct for passing parameters to the method [`upsert_synonym_set`]
+/// struct for passing parameters to the method [`upsert_curation_set`]
 #[derive(Clone, Debug)]
-pub struct UpsertSynonymSetParams {
-    /// The name of the synonym set to create/update
-    pub synonym_set_name: String,
-    /// The synonym set to be created/updated
-    pub synonym_set_create_schema: models::SynonymSetCreateSchema,
+pub struct UpsertCurationSetParams {
+    /// The name of the curation set to create/update
+    pub curation_set_name: String,
+    /// The curation set to be created/updated
+    pub curation_set_create_schema: models::CurationSetCreateSchema,
 }
 
-/// struct for passing parameters to the method [`upsert_synonym_set_item`]
+/// struct for passing parameters to the method [`upsert_curation_set_item`]
 #[derive(Clone, Debug)]
-pub struct UpsertSynonymSetItemParams {
-    /// The name of the synonym set
-    pub synonym_set_name: String,
-    /// The id of the synonym item to upsert
+pub struct UpsertCurationSetItemParams {
+    /// The name of the curation set
+    pub curation_set_name: String,
+    /// The id of the curation item to upsert
     pub item_id: String,
-    /// The synonym item to be created/updated
-    pub synonym_item_schema: models::SynonymItemSchema,
+    /// The curation item to be created/updated
+    pub curation_item_create_schema: models::CurationItemCreateSchema,
 }
 
-/// struct for typed errors of method [`delete_synonym_set`]
+/// struct for typed errors of method [`delete_curation_set`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteSynonymSetError {
+pub enum DeleteCurationSetError {
     Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`delete_synonym_set_item`]
+/// struct for typed errors of method [`delete_curation_set_item`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteSynonymSetItemError {
+pub enum DeleteCurationSetItemError {
     Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`retrieve_synonym_set`]
+/// struct for typed errors of method [`retrieve_curation_set`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RetrieveSynonymSetError {
+pub enum RetrieveCurationSetError {
     Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`retrieve_synonym_set_item`]
+/// struct for typed errors of method [`retrieve_curation_set_item`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RetrieveSynonymSetItemError {
+pub enum RetrieveCurationSetItemError {
     Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`retrieve_synonym_set_items`]
+/// struct for typed errors of method [`retrieve_curation_set_items`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RetrieveSynonymSetItemsError {
+pub enum RetrieveCurationSetItemsError {
     Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`retrieve_synonym_sets`]
+/// struct for typed errors of method [`retrieve_curation_sets`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RetrieveSynonymSetsError {
+pub enum RetrieveCurationSetsError {
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`upsert_synonym_set`]
+/// struct for typed errors of method [`upsert_curation_set`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpsertSynonymSetError {
+pub enum UpsertCurationSetError {
     Status400(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method [`upsert_synonym_set_item`]
+/// struct for typed errors of method [`upsert_curation_set_item`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpsertSynonymSetItemError {
+pub enum UpsertCurationSetItemError {
     Status400(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
-/// Delete a specific synonym set by its name
-pub async fn delete_synonym_set(
+/// Delete a specific curation set by its name
+pub async fn delete_curation_set(
     configuration: &configuration::Configuration,
-    params: &DeleteSynonymSetParams,
-) -> Result<models::SynonymSetDeleteSchema, Error<DeleteSynonymSetError>> {
+    params: &DeleteCurationSetParams,
+) -> Result<models::CurationSetDeleteSchema, Error<DeleteCurationSetError>> {
     let uri_str = format!(
-        "{}/synonym_sets/{synonymSetName}",
+        "{}/curation_sets/{curationSetName}",
         configuration.base_path,
-        synonymSetName = crate::apis::urlencode(&params.synonym_set_name)
+        curationSetName = crate::apis::urlencode(&params.curation_set_name)
     );
     let mut req_builder = configuration
         .client
@@ -178,18 +178,18 @@ pub async fn delete_synonym_set(
             ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SynonymSetDeleteSchema`",
+                    "Received `text/plain` content type response that cannot be converted to `models::CurationSetDeleteSchema`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SynonymSetDeleteSchema`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::CurationSetDeleteSchema`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<DeleteSynonymSetError> = serde_json::from_str(&content).ok();
+        let entity: Option<DeleteCurationSetError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -198,15 +198,15 @@ pub async fn delete_synonym_set(
     }
 }
 
-/// Delete a specific synonym item by its id
-pub async fn delete_synonym_set_item(
+/// Delete a specific curation item by its id
+pub async fn delete_curation_set_item(
     configuration: &configuration::Configuration,
-    params: &DeleteSynonymSetItemParams,
-) -> Result<models::SynonymItemDeleteSchema, Error<DeleteSynonymSetItemError>> {
+    params: &DeleteCurationSetItemParams,
+) -> Result<models::CurationItemDeleteSchema, Error<DeleteCurationSetItemError>> {
     let uri_str = format!(
-        "{}/synonym_sets/{synonymSetName}/items/{itemId}",
+        "{}/curation_sets/{curationSetName}/items/{itemId}",
         configuration.base_path,
-        synonymSetName = crate::apis::urlencode(&params.synonym_set_name),
+        curationSetName = crate::apis::urlencode(&params.curation_set_name),
         itemId = crate::apis::urlencode(&params.item_id)
     );
     let mut req_builder = configuration
@@ -242,18 +242,18 @@ pub async fn delete_synonym_set_item(
             ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SynonymItemDeleteSchema`",
+                    "Received `text/plain` content type response that cannot be converted to `models::CurationItemDeleteSchema`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SynonymItemDeleteSchema`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::CurationItemDeleteSchema`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<DeleteSynonymSetItemError> = serde_json::from_str(&content).ok();
+        let entity: Option<DeleteCurationSetItemError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -262,15 +262,15 @@ pub async fn delete_synonym_set_item(
     }
 }
 
-/// Retrieve a specific synonym set by its name
-pub async fn retrieve_synonym_set(
+/// Retrieve a specific curation set by its name
+pub async fn retrieve_curation_set(
     configuration: &configuration::Configuration,
-    params: &RetrieveSynonymSetParams,
-) -> Result<models::SynonymSetCreateSchema, Error<RetrieveSynonymSetError>> {
+    params: &RetrieveCurationSetParams,
+) -> Result<models::CurationSetCreateSchema, Error<RetrieveCurationSetError>> {
     let uri_str = format!(
-        "{}/synonym_sets/{synonymSetName}",
+        "{}/curation_sets/{curationSetName}",
         configuration.base_path,
-        synonymSetName = crate::apis::urlencode(&params.synonym_set_name)
+        curationSetName = crate::apis::urlencode(&params.curation_set_name)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -303,18 +303,18 @@ pub async fn retrieve_synonym_set(
             ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SynonymSetCreateSchema`",
+                    "Received `text/plain` content type response that cannot be converted to `models::CurationSetCreateSchema`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SynonymSetCreateSchema`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::CurationSetCreateSchema`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<RetrieveSynonymSetError> = serde_json::from_str(&content).ok();
+        let entity: Option<RetrieveCurationSetError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -323,15 +323,15 @@ pub async fn retrieve_synonym_set(
     }
 }
 
-/// Retrieve a specific synonym item by its id
-pub async fn retrieve_synonym_set_item(
+/// Retrieve a specific curation item by its id
+pub async fn retrieve_curation_set_item(
     configuration: &configuration::Configuration,
-    params: &RetrieveSynonymSetItemParams,
-) -> Result<models::SynonymItemSchema, Error<RetrieveSynonymSetItemError>> {
+    params: &RetrieveCurationSetItemParams,
+) -> Result<models::CurationItemSchema, Error<RetrieveCurationSetItemError>> {
     let uri_str = format!(
-        "{}/synonym_sets/{synonymSetName}/items/{itemId}",
+        "{}/curation_sets/{curationSetName}/items/{itemId}",
         configuration.base_path,
-        synonymSetName = crate::apis::urlencode(&params.synonym_set_name),
+        curationSetName = crate::apis::urlencode(&params.curation_set_name),
         itemId = crate::apis::urlencode(&params.item_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -365,18 +365,18 @@ pub async fn retrieve_synonym_set_item(
             ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SynonymItemSchema`",
+                    "Received `text/plain` content type response that cannot be converted to `models::CurationItemSchema`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SynonymItemSchema`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::CurationItemSchema`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<RetrieveSynonymSetItemError> = serde_json::from_str(&content).ok();
+        let entity: Option<RetrieveCurationSetItemError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -385,15 +385,15 @@ pub async fn retrieve_synonym_set_item(
     }
 }
 
-/// Retrieve all synonym items in a set
-pub async fn retrieve_synonym_set_items(
+/// Retrieve all curation items in a set
+pub async fn retrieve_curation_set_items(
     configuration: &configuration::Configuration,
-    params: &RetrieveSynonymSetItemsParams,
-) -> Result<Vec<models::SynonymItemSchema>, Error<RetrieveSynonymSetItemsError>> {
+    params: &RetrieveCurationSetItemsParams,
+) -> Result<Vec<models::CurationItemSchema>, Error<RetrieveCurationSetItemsError>> {
     let uri_str = format!(
-        "{}/synonym_sets/{synonymSetName}/items",
+        "{}/curation_sets/{curationSetName}/items",
         configuration.base_path,
-        synonymSetName = crate::apis::urlencode(&params.synonym_set_name)
+        curationSetName = crate::apis::urlencode(&params.curation_set_name)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -426,18 +426,18 @@ pub async fn retrieve_synonym_set_items(
             ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `Vec<models::SynonymItemSchema>`",
+                    "Received `text/plain` content type response that cannot be converted to `Vec<models::CurationItemSchema>`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `Vec<models::SynonymItemSchema>`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `Vec<models::CurationItemSchema>`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<RetrieveSynonymSetItemsError> = serde_json::from_str(&content).ok();
+        let entity: Option<RetrieveCurationSetItemsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -446,11 +446,11 @@ pub async fn retrieve_synonym_set_items(
     }
 }
 
-/// Retrieve all synonym sets
-pub async fn retrieve_synonym_sets(
+/// Retrieve all curation sets
+pub async fn retrieve_curation_sets(
     configuration: &configuration::Configuration,
-) -> Result<Vec<models::SynonymSetSchema>, Error<RetrieveSynonymSetsError>> {
-    let uri_str = format!("{}/synonym_sets", configuration.base_path);
+) -> Result<Vec<models::CurationSetSchema>, Error<RetrieveCurationSetsError>> {
+    let uri_str = format!("{}/curation_sets", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
     if let Some(ref user_agent) = configuration.user_agent {
@@ -482,18 +482,18 @@ pub async fn retrieve_synonym_sets(
             ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `Vec<models::SynonymSetSchema>`",
+                    "Received `text/plain` content type response that cannot be converted to `Vec<models::CurationSetSchema>`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `Vec<models::SynonymSetSchema>`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `Vec<models::CurationSetSchema>`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<RetrieveSynonymSetsError> = serde_json::from_str(&content).ok();
+        let entity: Option<RetrieveCurationSetsError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -502,15 +502,15 @@ pub async fn retrieve_synonym_sets(
     }
 }
 
-/// Create or update a synonym set with the given name
-pub async fn upsert_synonym_set(
+/// Create or update a curation set with the given name
+pub async fn upsert_curation_set(
     configuration: &configuration::Configuration,
-    params: &UpsertSynonymSetParams,
-) -> Result<models::SynonymSetSchema, Error<UpsertSynonymSetError>> {
+    params: &UpsertCurationSetParams,
+) -> Result<models::CurationSetSchema, Error<UpsertCurationSetError>> {
     let uri_str = format!(
-        "{}/synonym_sets/{synonymSetName}",
+        "{}/curation_sets/{curationSetName}",
         configuration.base_path,
-        synonymSetName = crate::apis::urlencode(&params.synonym_set_name)
+        curationSetName = crate::apis::urlencode(&params.curation_set_name)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::PUT, &uri_str);
 
@@ -525,7 +525,7 @@ pub async fn upsert_synonym_set(
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&params.synonym_set_create_schema);
+    req_builder = req_builder.json(&params.curation_set_create_schema);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -544,18 +544,18 @@ pub async fn upsert_synonym_set(
             ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SynonymSetSchema`",
+                    "Received `text/plain` content type response that cannot be converted to `models::CurationSetSchema`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SynonymSetSchema`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::CurationSetSchema`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpsertSynonymSetError> = serde_json::from_str(&content).ok();
+        let entity: Option<UpsertCurationSetError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -564,15 +564,15 @@ pub async fn upsert_synonym_set(
     }
 }
 
-/// Create or update a synonym set item with the given id
-pub async fn upsert_synonym_set_item(
+/// Create or update a curation set item with the given id
+pub async fn upsert_curation_set_item(
     configuration: &configuration::Configuration,
-    params: &UpsertSynonymSetItemParams,
-) -> Result<models::SynonymItemSchema, Error<UpsertSynonymSetItemError>> {
+    params: &UpsertCurationSetItemParams,
+) -> Result<models::CurationItemSchema, Error<UpsertCurationSetItemError>> {
     let uri_str = format!(
-        "{}/synonym_sets/{synonymSetName}/items/{itemId}",
+        "{}/curation_sets/{curationSetName}/items/{itemId}",
         configuration.base_path,
-        synonymSetName = crate::apis::urlencode(&params.synonym_set_name),
+        curationSetName = crate::apis::urlencode(&params.curation_set_name),
         itemId = crate::apis::urlencode(&params.item_id)
     );
     let mut req_builder = configuration.client.request(reqwest::Method::PUT, &uri_str);
@@ -588,7 +588,7 @@ pub async fn upsert_synonym_set_item(
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&params.synonym_item_schema);
+    req_builder = req_builder.json(&params.curation_item_create_schema);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -607,18 +607,18 @@ pub async fn upsert_synonym_set_item(
             ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SynonymItemSchema`",
+                    "Received `text/plain` content type response that cannot be converted to `models::CurationItemSchema`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SynonymItemSchema`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::CurationItemSchema`"
                 ))));
             }
         }
     } else {
         let content = resp.text().await?;
-        let entity: Option<UpsertSynonymSetItemError> = serde_json::from_str(&content).ok();
+        let entity: Option<UpsertCurationSetItemError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(ResponseContent {
             status,
             content,

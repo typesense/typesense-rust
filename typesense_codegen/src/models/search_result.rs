@@ -47,6 +47,9 @@ pub struct SearchResult<D> {
         skip_serializing_if = "Option::is_none"
     )]
     pub union_request_params: Option<Vec<models::SearchRequestParams>>,
+    /// Custom JSON object that can be returned in the search response
+    #[serde(rename = "metadata", skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<std::collections::HashMap<String, serde_json::Value>>,
 }
 
 impl<D> SearchResult<D> {
@@ -64,6 +67,7 @@ impl<D> SearchResult<D> {
             request_params: None,
             conversation: None,
             union_request_params: None,
+            metadata: None,
         }
     }
 }

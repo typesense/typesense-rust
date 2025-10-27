@@ -98,6 +98,7 @@ fn multi_search_item_to_search_result<D: DeserializeOwned>(
         request_params: item.request_params.clone(),
         conversation: item.conversation.clone(),
         union_request_params: item.union_request_params.clone(),
+        metadata: item.metadata.clone(),
     })
 }
 
