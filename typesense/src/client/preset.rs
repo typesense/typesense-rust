@@ -15,6 +15,7 @@ pub struct Preset<'a> {
 
 impl<'a> Preset<'a> {
     /// Creates a new `Preset` instance.
+    #[inline]
     pub(super) fn new(client: &'a Client, preset_id: &'a str) -> Self {
         Self { client, preset_id }
     }

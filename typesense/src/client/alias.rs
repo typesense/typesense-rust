@@ -15,6 +15,7 @@ pub struct Alias<'a> {
 
 impl<'a> Alias<'a> {
     /// Creates a new `Alias` instance.
+    #[inline]
     pub(super) fn new(client: &'a Client, alias_name: &'a str) -> Self {
         Self { client, alias_name }
     }

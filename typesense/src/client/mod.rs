@@ -382,6 +382,7 @@ impl Client {
     /// # }
     /// # }
     /// ```
+    #[inline]
     pub fn aliases(&self) -> Aliases<'_> {
         Aliases::new(self)
     }
@@ -405,6 +406,7 @@ impl Client {
     /// # }
     /// # }
     /// ```
+    #[inline]
     pub fn alias<'a>(&'a self, alias_name: &'a str) -> Alias<'a> {
         Alias::new(self, alias_name)
     }
@@ -700,6 +702,7 @@ impl Client {
     /// # }
     /// # }
     /// ```
+    #[inline]
     pub fn presets(&self) -> Presets<'_> {
         Presets::new(self)
     }
@@ -727,6 +730,7 @@ impl Client {
     /// # }
     /// # }
     /// ```
+    #[inline]
     pub fn preset<'a>(&'a self, preset_id: &'a str) -> Preset<'a> {
         Preset::new(self, preset_id)
     }
