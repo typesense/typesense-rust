@@ -106,17 +106,31 @@
 //! }
 //! }
 //! ```
+mod alias;
+mod aliases;
 mod collection;
 mod collections;
 mod key;
 mod keys;
 mod multi_search;
+mod operations;
+mod preset;
+mod presets;
+mod stopword;
+mod stopwords;
 
 use crate::{Error, traits::Document};
+use alias::Alias;
+use aliases::Aliases;
 use collection::Collection;
 use collections::Collections;
 use key::Key;
 use keys::Keys;
+use operations::Operations;
+use preset::Preset;
+use presets::Presets;
+use stopword::Stopword;
+use stopwords::Stopwords;
 
 #[cfg(not(target_arch = "wasm32"))]
 use reqwest_middleware::ClientBuilder as ReqwestMiddlewareClientBuilder;
@@ -346,6 +360,55 @@ impl Client {
             source: last_api_error
                 .expect("No nodes were available to try, or all errors were non-retriable."),
         })
+    }
+
+    /// Provides access to the collection aliases-related API endpoints.
+    ///
+    /// # Example
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec!["http://localhost:8108"])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let all_aliases = client.aliases().retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    #[inline]
+    pub fn aliases(&self) -> Aliases<'_> {
+        Aliases::new(self)
+    }
+
+    /// Provides access to a specific collection alias's-related API endpoints.
+    /// # Example
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec!["http://localhost:8108"])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let specific_alias = client.alias("books_alias").retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    #[inline]
+    pub fn alias<'a>(&'a self, alias_name: &'a str) -> Alias<'a> {
+        Alias::new(self, alias_name)
     }
 
     /// Provides access to API endpoints for managing collections like `create()` and `retrieve()`.
@@ -593,6 +656,136 @@ impl Client {
     #[inline]
     pub fn multi_search(&self) -> multi_search::MultiSearch<'_> {
         multi_search::MultiSearch::new(self)
+    }
+
+    /// Provides access to top-level, non-namespaced API endpoints like `health` and `debug`.
+    /// # Example
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec!["http://localhost:8108"])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let health = client.operations().health().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    #[inline]
+    pub fn operations(&self) -> Operations<'_> {
+        Operations::new(self)
+    }
+
+    /// Provides access to endpoints for managing all of your presets.
+    ///
+    /// # Example
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec!["http://localhost:8108"])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let list_of_presets = client.presets().retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    #[inline]
+    pub fn presets(&self) -> Presets<'_> {
+        Presets::new(self)
+    }
+
+    /// Provides access to endpoints for managing a single preset.
+    ///
+    /// # Arguments
+    /// * `preset_id` - The ID of the preset to manage.
+    ///
+    /// # Example
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec!["http://localhost:8108"])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let preset = client.preset("my-preset").retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    #[inline]
+    pub fn preset<'a>(&'a self, preset_id: &'a str) -> Preset<'a> {
+        Preset::new(self, preset_id)
+    }
+
+    /// Provides access to endpoints for managing the collection of stopwords sets.
+    ///
+    /// # Example
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec!["http://localhost:8108"])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let all_stopwords = client.stopwords().retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    #[inline]
+    pub fn stopwords(&self) -> Stopwords<'_> {
+        Stopwords::new(self)
+    }
+
+    /// Provides access to endpoints for managing a single stopwords set.
+    ///
+    /// # Arguments
+    /// * `set_id` - The ID of the stopwords set to manage.
+    ///
+    /// # Example
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec!["http://localhost:8108"])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let my_stopword_set = client.stopword("common_words").retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    #[inline]
+    pub fn stopword<'a>(&'a self, set_id: &'a str) -> Stopword<'a> {
+        Stopword::new(self, set_id)
     }
 }
 

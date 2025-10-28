@@ -33,15 +33,6 @@ pub struct DeleteDocumentsParams {
     pub truncate: Option<bool>,
 }
 
-/// struct for passing parameters to the method [`delete_search_override`]
-#[derive(Clone, Debug)]
-pub struct DeleteSearchOverrideParams {
-    /// The name of the collection
-    pub collection_name: String,
-    /// The ID of the search override to delete
-    pub override_id: String,
-}
-
 /// struct for passing parameters to the method [`export_documents`]
 #[derive(Clone, Debug)]
 pub struct ExportDocumentsParams {
@@ -59,22 +50,6 @@ pub struct GetDocumentParams {
     pub collection_name: String,
     /// The Document ID
     pub document_id: String,
-}
-
-/// struct for passing parameters to the method [`get_search_override`]
-#[derive(Clone, Debug)]
-pub struct GetSearchOverrideParams {
-    /// The name of the collection
-    pub collection_name: String,
-    /// The id of the search override
-    pub override_id: String,
-}
-
-/// struct for passing parameters to the method [`get_search_overrides`]
-#[derive(Clone, Debug)]
-pub struct GetSearchOverridesParams {
-    /// The name of the collection
-    pub collection_name: String,
 }
 
 /// struct for passing parameters to the method [`import_documents`]
@@ -276,17 +251,6 @@ pub struct UpdateDocumentsParams<B> {
     pub filter_by: Option<String>,
 }
 
-/// struct for passing parameters to the method [`upsert_search_override`]
-#[derive(Clone, Debug)]
-pub struct UpsertSearchOverrideParams {
-    /// The name of the collection
-    pub collection_name: String,
-    /// The ID of the search override to create/update
-    pub override_id: String,
-    /// The search override object to be created/updated
-    pub search_override_schema: models::SearchOverrideSchema,
-}
-
 /// struct for typed errors of method [`delete_document`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -299,14 +263,6 @@ pub enum DeleteDocumentError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum DeleteDocumentsError {
-    Status404(models::ApiResponse),
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method [`delete_search_override`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum DeleteSearchOverrideError {
     Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
@@ -324,20 +280,6 @@ pub enum ExportDocumentsError {
 #[serde(untagged)]
 pub enum GetDocumentError {
     Status404(models::ApiResponse),
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method [`get_search_override`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum GetSearchOverrideError {
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method [`get_search_overrides`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum GetSearchOverridesError {
     UnknownValue(serde_json::Value),
 }
 
@@ -388,14 +330,6 @@ pub enum UpdateDocumentError {
 #[serde(untagged)]
 pub enum UpdateDocumentsError {
     Status400(models::ApiResponse),
-    Status404(models::ApiResponse),
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method [`upsert_search_override`]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum UpsertSearchOverrideError {
     Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
@@ -539,69 +473,6 @@ pub async fn delete_documents(
     }
 }
 
-pub async fn delete_search_override(
-    configuration: &configuration::Configuration,
-    params: &DeleteSearchOverrideParams,
-) -> Result<models::SearchOverrideDeleteResponse, Error<DeleteSearchOverrideError>> {
-    let uri_str = format!(
-        "{}/collections/{collectionName}/overrides/{overrideId}",
-        configuration.base_path,
-        collectionName = crate::apis::urlencode(&params.collection_name),
-        overrideId = crate::apis::urlencode(&params.override_id)
-    );
-    let mut req_builder = configuration
-        .client
-        .request(reqwest::Method::DELETE, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref apikey) = configuration.api_key {
-        let key = &apikey.key;
-        let value = match apikey.prefix {
-            Some(ref prefix) => &format!("{prefix} {key}"),
-            None => key,
-        };
-        req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SearchOverrideDeleteResponse`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SearchOverrideDeleteResponse`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<DeleteSearchOverrideError> = serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(ResponseContent {
-            status,
-            content,
-            entity,
-        }))
-    }
-}
-
 /// Export all documents in a collection in JSON lines format.
 pub async fn export_documents(
     configuration: &configuration::Configuration,
@@ -721,128 +592,6 @@ pub async fn get_document(
     } else {
         let content = resp.text().await?;
         let entity: Option<GetDocumentError> = serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(ResponseContent {
-            status,
-            content,
-            entity,
-        }))
-    }
-}
-
-/// Retrieve the details of a search override, given its id.
-pub async fn get_search_override(
-    configuration: &configuration::Configuration,
-    params: &GetSearchOverrideParams,
-) -> Result<models::SearchOverride, Error<GetSearchOverrideError>> {
-    let uri_str = format!(
-        "{}/collections/{collectionName}/overrides/{overrideId}",
-        configuration.base_path,
-        collectionName = crate::apis::urlencode(&params.collection_name),
-        overrideId = crate::apis::urlencode(&params.override_id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref apikey) = configuration.api_key {
-        let key = &apikey.key;
-        let value = match apikey.prefix {
-            Some(ref prefix) => &format!("{prefix} {key}"),
-            None => key,
-        };
-        req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SearchOverride`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SearchOverride`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<GetSearchOverrideError> = serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(ResponseContent {
-            status,
-            content,
-            entity,
-        }))
-    }
-}
-
-pub async fn get_search_overrides(
-    configuration: &configuration::Configuration,
-    params: &GetSearchOverridesParams,
-) -> Result<models::SearchOverridesResponse, Error<GetSearchOverridesError>> {
-    let uri_str = format!(
-        "{}/collections/{collectionName}/overrides",
-        configuration.base_path,
-        collectionName = crate::apis::urlencode(&params.collection_name)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref apikey) = configuration.api_key {
-        let key = &apikey.key;
-        let value = match apikey.prefix {
-            Some(ref prefix) => &format!("{prefix} {key}"),
-            None => key,
-        };
-        req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
-    };
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SearchOverridesResponse`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SearchOverridesResponse`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<GetSearchOverridesError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(ResponseContent {
             status,
             content,
@@ -1674,69 +1423,6 @@ pub async fn update_documents<B: Serialize>(
     } else {
         let content = resp.text().await?;
         let entity: Option<UpdateDocumentsError> = serde_json::from_str(&content).ok();
-        Err(Error::ResponseError(ResponseContent {
-            status,
-            content,
-            entity,
-        }))
-    }
-}
-
-/// Create or update an override to promote certain documents over others. Using overrides, you can include or exclude specific documents for a given query.
-pub async fn upsert_search_override(
-    configuration: &configuration::Configuration,
-    params: &UpsertSearchOverrideParams,
-) -> Result<models::SearchOverride, Error<UpsertSearchOverrideError>> {
-    let uri_str = format!(
-        "{}/collections/{collectionName}/overrides/{overrideId}",
-        configuration.base_path,
-        collectionName = crate::apis::urlencode(&params.collection_name),
-        overrideId = crate::apis::urlencode(&params.override_id)
-    );
-    let mut req_builder = configuration.client.request(reqwest::Method::PUT, &uri_str);
-
-    if let Some(ref user_agent) = configuration.user_agent {
-        req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
-    }
-    if let Some(ref apikey) = configuration.api_key {
-        let key = &apikey.key;
-        let value = match apikey.prefix {
-            Some(ref prefix) => &format!("{prefix} {key}"),
-            None => key,
-        };
-        req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
-    };
-    req_builder = req_builder.json(&params.search_override_schema);
-
-    let req = req_builder.build()?;
-    let resp = configuration.client.execute(req).await?;
-
-    let status = resp.status();
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("application/octet-stream");
-    let content_type = super::ContentType::from(content_type);
-
-    if !status.is_client_error() && !status.is_server_error() {
-        let content = resp.text().await?;
-        match content_type {
-            ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SearchOverride`",
-                )));
-            }
-            ContentType::Unsupported(unknown_type) => {
-                return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SearchOverride`"
-                ))));
-            }
-        }
-    } else {
-        let content = resp.text().await?;
-        let entity: Option<UpsertSearchOverrideError> = serde_json::from_str(&content).ok();
         Err(Error::ResponseError(ResponseContent {
             status,
             content,

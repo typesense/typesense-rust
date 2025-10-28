@@ -1,6 +1,6 @@
 services:
   typesense:
-    image: typesense/typesense:30.0.rc10
+    image: typesense/typesense:30.0.rc26
     restart: on-failure
     ports:
       - '8108:8108'

@@ -1,9 +1,12 @@
+mod aliases_test;
 mod client_test;
 mod collections_test;
-
 mod documents_test;
 mod keys_test;
 mod multi_search_test;
+mod operations_test;
+mod presets_test;
+mod stopwords_test;
 
 use reqwest_retry::policies::ExponentialBackoff;
 use std::time::Duration;
@@ -16,7 +19,7 @@ pub fn get_client() -> Client {
         .nodes(vec!["http://localhost:8108"])
         .api_key("xyz")
         .healthcheck_interval(Duration::from_secs(5))
-        .retry_policy(ExponentialBackoff::builder().build_with_max_retries(0))
+        .retry_policy(ExponentialBackoff::builder().build_with_max_retries(3))
         .connection_timeout(Duration::from_secs(3))
         .build()
         .expect("Failed to create Typesense client")

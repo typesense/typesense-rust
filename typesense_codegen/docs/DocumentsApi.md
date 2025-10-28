@@ -6,18 +6,14 @@ Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**delete_document**](DocumentsApi.md#delete_document) | **DELETE** /collections/{collectionName}/documents/{documentId} | Delete a document
 [**delete_documents**](DocumentsApi.md#delete_documents) | **DELETE** /collections/{collectionName}/documents | Delete a bunch of documents
-[**delete_search_override**](DocumentsApi.md#delete_search_override) | **DELETE** /collections/{collectionName}/overrides/{overrideId} | Delete an override associated with a collection
 [**export_documents**](DocumentsApi.md#export_documents) | **GET** /collections/{collectionName}/documents/export | Export all documents in a collection
 [**get_document**](DocumentsApi.md#get_document) | **GET** /collections/{collectionName}/documents/{documentId} | Retrieve a document
-[**get_search_override**](DocumentsApi.md#get_search_override) | **GET** /collections/{collectionName}/overrides/{overrideId} | Retrieve a single search override
-[**get_search_overrides**](DocumentsApi.md#get_search_overrides) | **GET** /collections/{collectionName}/overrides | List all collection overrides
 [**import_documents**](DocumentsApi.md#import_documents) | **POST** /collections/{collectionName}/documents/import | Import documents into a collection
 [**index_document**](DocumentsApi.md#index_document) | **POST** /collections/{collectionName}/documents | Index a document
 [**multi_search**](DocumentsApi.md#multi_search) | **POST** /multi_search | send multiple search requests in a single HTTP request
 [**search_collection**](DocumentsApi.md#search_collection) | **GET** /collections/{collectionName}/documents/search | Search for documents in a collection
 [**update_document**](DocumentsApi.md#update_document) | **PATCH** /collections/{collectionName}/documents/{documentId} | Update a document
 [**update_documents**](DocumentsApi.md#update_documents) | **PATCH** /collections/{collectionName}/documents | Update documents with conditional query
-[**upsert_search_override**](DocumentsApi.md#upsert_search_override) | **PUT** /collections/{collectionName}/overrides/{overrideId} | Create or update an override to promote certain documents over others
 
 
 
@@ -86,35 +82,6 @@ Name | Type | Description  | Required | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
-## delete_search_override
-
-> models::SearchOverrideDeleteResponse delete_search_override(collection_name, override_id)
-Delete an override associated with a collection
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**collection_name** | **String** | The name of the collection | [required] |
-**override_id** | **String** | The ID of the search override to delete | [required] |
-
-### Return type
-
-[**models::SearchOverrideDeleteResponse**](SearchOverrideDeleteResponse.md)
-
-### Authorization
-
-[api_key_header](../README.md#api_key_header)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
 ## export_documents
 
 > String export_documents(collection_name, filter_by, include_fields, exclude_fields)
@@ -166,65 +133,6 @@ Name | Type | Description  | Required | Notes
 ### Return type
 
 [**serde_json::Value**](serde_json::Value.md)
-
-### Authorization
-
-[api_key_header](../README.md#api_key_header)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
-## get_search_override
-
-> models::SearchOverride get_search_override(collection_name, override_id)
-Retrieve a single search override
-
-Retrieve the details of a search override, given its id.
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**collection_name** | **String** | The name of the collection | [required] |
-**override_id** | **String** | The id of the search override | [required] |
-
-### Return type
-
-[**models::SearchOverride**](SearchOverride.md)
-
-### Authorization
-
-[api_key_header](../README.md#api_key_header)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
-## get_search_overrides
-
-> models::SearchOverridesResponse get_search_overrides(collection_name)
-List all collection overrides
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**collection_name** | **String** | The name of the collection | [required] |
-
-### Return type
-
-[**models::SearchOverridesResponse**](SearchOverridesResponse.md)
 
 ### Authorization
 
@@ -555,38 +463,6 @@ Name | Type | Description  | Required | Notes
 ### Return type
 
 [**models::UpdateDocuments200Response**](updateDocuments_200_response.md)
-
-### Authorization
-
-[api_key_header](../README.md#api_key_header)
-
-### HTTP request headers
-
-- **Content-Type**: application/json
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
-## upsert_search_override
-
-> models::SearchOverride upsert_search_override(collection_name, override_id, search_override_schema)
-Create or update an override to promote certain documents over others
-
-Create or update an override to promote certain documents over others. Using overrides, you can include or exclude specific documents for a given query.
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**collection_name** | **String** | The name of the collection | [required] |
-**override_id** | **String** | The ID of the search override to create/update | [required] |
-**search_override_schema** | [**SearchOverrideSchema**](SearchOverrideSchema.md) | The search override object to be created/updated | [required] |
-
-### Return type
-
-[**models::SearchOverride**](SearchOverride.md)
 
 ### Authorization
 
