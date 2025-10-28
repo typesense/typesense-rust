@@ -6,7 +6,7 @@ mod documents_test;
 mod keys_test;
 mod multi_search_test;
 mod presets_test;
-
+mod stopwords_test;
 use reqwest_retry::policies::ExponentialBackoff;
 use std::time::Duration;
 use typesense::Client;

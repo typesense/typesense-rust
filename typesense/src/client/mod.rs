@@ -115,6 +115,8 @@ mod keys;
 mod multi_search;
 mod preset;
 mod presets;
+mod stopword;
+mod stopwords;
 
 use crate::{Error, traits::Document};
 use alias::Alias;
@@ -125,6 +127,8 @@ use key::Key;
 use keys::Keys;
 use preset::Preset;
 use presets::Presets;
+use stopword::Stopword;
+use stopwords::Stopwords;
 
 #[cfg(not(target_arch = "wasm32"))]
 use reqwest_middleware::ClientBuilder as ReqwestMiddlewareClientBuilder;
@@ -699,6 +703,57 @@ impl Client {
     /// ```
     pub fn preset<'a>(&'a self, preset_id: &'a str) -> Preset<'a> {
         Preset::new(self, preset_id)
+    }
+
+    /// Provides access to endpoints for managing the collection of stopwords sets.
+    ///
+    /// # Example
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec!["http://localhost:8108"])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let all_stopwords = client.stopwords().retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    pub fn stopwords(&self) -> Stopwords<'_> {
+        Stopwords::new(self)
+    }
+
+    /// Provides access to endpoints for managing a single stopwords set.
+    ///
+    /// # Arguments
+    /// * `set_id` - The ID of the stopwords set to manage.
+    ///
+    /// # Example
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec!["http://localhost:8108"])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let my_stopword_set = client.stopword("common_words").retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    pub fn stopword<'a>(&'a self, set_id: &'a str) -> Stopword<'a> {
+        Stopword::new(self, set_id)
     }
 }
 
