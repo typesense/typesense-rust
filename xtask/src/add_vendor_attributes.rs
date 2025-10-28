@@ -51,6 +51,12 @@ pub fn add_vendor_attributes(doc_root: &mut Mapping) -> Result<(), String> {
         .return_type("serde_json::Value")
         .done()?;
 
+    // The endpoint return `null` if no schema changes are in progress
+    attrs
+        .operation("/operations/schema_changes", "get")
+        .return_type("Option<Vec<models::SchemaChangeStatus>>")
+        .done()?;
+
     attrs
         .operation("/collections/{collectionName}/documents/import", "post")
         .body_is_raw_text()

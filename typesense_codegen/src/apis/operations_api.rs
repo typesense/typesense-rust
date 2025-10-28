@@ -201,7 +201,7 @@ pub async fn compact_db(
 /// Returns the status of any ongoing schema change operations. If no schema changes are in progress, returns an empty response.
 pub async fn get_schema_changes(
     configuration: &configuration::Configuration,
-) -> Result<Vec<models::SchemaChangeStatus>, Error<GetSchemaChangesError>> {
+) -> Result<Option<Vec<models::SchemaChangeStatus>>, Error<GetSchemaChangesError>> {
     let uri_str = format!("{}/operations/schema_changes", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -234,12 +234,12 @@ pub async fn get_schema_changes(
             ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `Vec<models::SchemaChangeStatus>`",
+                    "Received `text/plain` content type response that cannot be converted to `Option<Vec<models::SchemaChangeStatus>>`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `Vec<models::SchemaChangeStatus>`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `Option<Vec<models::SchemaChangeStatus>>`"
                 ))));
             }
         }

@@ -123,7 +123,8 @@ impl<'a> Operations<'a> {
     /// Docs: <https://typesense.org/docs/latest/api/collections.html#get-schema-change-status>
     pub async fn get_schema_changes(
         &self,
-    ) -> Result<Vec<models::SchemaChangeStatus>, Error<operations_api::GetSchemaChangesError>> {
+    ) -> Result<Option<Vec<models::SchemaChangeStatus>>, Error<operations_api::GetSchemaChangesError>>
+    {
         execute_wrapper!(self, operations_api::get_schema_changes)
     }
 

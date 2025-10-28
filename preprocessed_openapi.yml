@@ -1914,6 +1914,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/SchemaChangeStatus'
+      x-rust-return-type: Option<Vec<models::SchemaChangeStatus>>
   /operations/snapshot:
     post:
       tags:
