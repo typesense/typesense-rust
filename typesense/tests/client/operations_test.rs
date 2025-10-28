@@ -91,6 +91,7 @@ async fn run_test_get_schema_changes() {
     let client = get_client();
     let schema_changes_result = client.operations().get_schema_changes().await;
 
+    println!("{:?}", schema_changes_result);
     assert!(
         schema_changes_result.is_ok(),
         "Failed to get schema changes"
