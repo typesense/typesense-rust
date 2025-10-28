@@ -26,11 +26,11 @@ impl<'a> Stopwords<'a> {
     /// * `schema` - A `StopwordsSetUpsertSchema` object with the stopwords to upsert.
     pub async fn upsert(
         &self,
-        set_id: &str,
+        set_id: impl Into<String>,
         schema: models::StopwordsSetUpsertSchema,
     ) -> Result<models::StopwordsSetSchema, Error<stopwords_api::UpsertStopwordsSetError>> {
         let params = stopwords_api::UpsertStopwordsSetParams {
-            set_id: set_id.to_owned(),
+            set_id: set_id.into(),
             stopwords_set_upsert_schema: schema,
         };
         execute_wrapper!(self, stopwords_api::upsert_stopwords_set, params)

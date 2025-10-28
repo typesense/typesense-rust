@@ -30,11 +30,11 @@ impl<'a> Aliases<'a> {
     /// * `schema` - A `CollectionAliasSchema` pointing to the target collection.
     pub async fn upsert(
         &self,
-        alias_name: &str,
+        alias_name: impl Into<String>,
         schema: models::CollectionAliasSchema,
     ) -> Result<models::CollectionAlias, Error<collections_api::UpsertAliasError>> {
         let params = collections_api::UpsertAliasParams {
-            alias_name: alias_name.to_owned(),
+            alias_name: alias_name.into(),
             collection_alias_schema: Some(schema),
         };
         execute_wrapper!(self, collections_api::upsert_alias, params)
