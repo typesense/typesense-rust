@@ -15,6 +15,7 @@ pub struct Stopword<'a> {
 
 impl<'a> Stopword<'a> {
     /// Creates a new `Stopword` instance for a specific set ID.
+    #[inline]
     pub(super) fn new(client: &'a Client, set_id: &'a str) -> Self {
         Self { client, set_id }
     }

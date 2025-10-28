@@ -14,6 +14,7 @@ pub struct Stopwords<'a> {
 
 impl<'a> Stopwords<'a> {
     /// Creates a new `Stopwords` instance.
+    #[inline]
     pub(super) fn new(client: &'a Client) -> Self {
         Self { client }
     }

@@ -113,6 +113,7 @@ mod collections;
 mod key;
 mod keys;
 mod multi_search;
+mod operations;
 mod preset;
 mod presets;
 mod stopword;
@@ -125,6 +126,7 @@ use collection::Collection;
 use collections::Collections;
 use key::Key;
 use keys::Keys;
+use operations::Operations;
 use preset::Preset;
 use presets::Presets;
 use stopword::Stopword;
@@ -654,6 +656,30 @@ impl Client {
         multi_search::MultiSearch::new(self)
     }
 
+    /// Provides access to top-level, non-namespaced API endpoints like `health` and `debug`.
+    /// # Example
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec!["http://localhost:8108"])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let health = client.operations().health().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    #[inline]
+    pub fn operations(&self) -> Operations<'_> {
+        Operations::new(self)
+    }
+
     /// Provides access to endpoints for managing all of your presets.
     ///
     /// # Example
@@ -725,6 +751,7 @@ impl Client {
     /// # }
     /// # }
     /// ```
+    #[inline]
     pub fn stopwords(&self) -> Stopwords<'_> {
         Stopwords::new(self)
     }
@@ -752,6 +779,7 @@ impl Client {
     /// # }
     /// # }
     /// ```
+    #[inline]
     pub fn stopword<'a>(&'a self, set_id: &'a str) -> Stopword<'a> {
         Stopword::new(self, set_id)
     }
