@@ -135,7 +135,9 @@ pub async fn import_stemming_dictionary(
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&params.body);
+    req_builder = req_builder
+        .header(reqwest::header::CONTENT_TYPE, "text/plain")
+        .body(params.body.to_owned());
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -151,12 +153,7 @@ pub async fn import_stemming_dictionary(
     if !status.is_client_error() && !status.is_server_error() {
         let content = resp.text().await?;
         match content_type {
-            ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
-            ContentType::Text => {
-                return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `String`",
-                )));
-            }
+            ContentType::Json | ContentType::Text => return Ok(content),
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
                     "Received `{unknown_type}` content type response that cannot be converted to `String`"

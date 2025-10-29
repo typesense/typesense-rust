@@ -6,6 +6,7 @@ mod keys_test;
 mod multi_search_test;
 mod operations_test;
 mod presets_test;
+mod stemming_dictionaries_test;
 mod stopwords_test;
 
 use reqwest_retry::policies::ExponentialBackoff;

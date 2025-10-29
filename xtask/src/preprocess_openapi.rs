@@ -23,6 +23,7 @@ pub fn preprocess_openapi_file(
     // --- Step 2: Apply all the required transformations ---
     println!("Preprocessing the spec...");
 
+    println!("Adding custom x-* vendor attributes...");
     add_vendor_attributes(doc_root)?;
 
     println!("Unwrapping parameters...");

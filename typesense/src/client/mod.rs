@@ -116,6 +116,7 @@ mod multi_search;
 mod operations;
 mod preset;
 mod presets;
+mod stemming;
 mod stopword;
 mod stopwords;
 
@@ -129,6 +130,7 @@ use keys::Keys;
 use operations::Operations;
 use preset::Preset;
 use presets::Presets;
+use stemming::Stemming;
 use stopword::Stopword;
 use stopwords::Stopwords;
 
@@ -733,6 +735,32 @@ impl Client {
     #[inline]
     pub fn preset<'a>(&'a self, preset_id: &'a str) -> Preset<'a> {
         Preset::new(self, preset_id)
+    }
+
+    /// Provides access to the stemming-related API endpoints.
+    ///
+    /// # Example
+    ///
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec!["http://localhost:8108"])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let response = client.stemming().dictionaries().retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    #[inline]
+    pub fn stemming(&self) -> Stemming<'_> {
+        Stemming::new(self)
     }
 
     /// Provides access to endpoints for managing the collection of stopwords sets.
