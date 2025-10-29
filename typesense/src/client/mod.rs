@@ -110,6 +110,7 @@ mod alias;
 mod aliases;
 mod collection;
 mod collections;
+mod conversations;
 mod key;
 mod keys;
 mod multi_search;
@@ -125,6 +126,7 @@ use alias::Alias;
 use aliases::Aliases;
 use collection::Collection;
 use collections::Collections;
+use conversations::Conversations;
 use key::Key;
 use keys::Keys;
 use operations::Operations;
@@ -564,6 +566,30 @@ impl Client {
         collection_name: &'n str,
     ) -> Collection<'c, 'n, serde_json::Value> {
         Collection::new(self, collection_name)
+    }
+
+    /// Returns a `Conversations` instance for managing conversation models.
+    /// # Example
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec!["http://localhost:8108"])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let conversation = client.conversations().models().retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    #[inline]
+    pub fn conversations(&self) -> Conversations<'_> {
+        Conversations::new(self)
     }
 
     /// Provides access to endpoints for managing the collection of API keys.
