@@ -1,11 +1,13 @@
 mod aliases_test;
 mod client_test;
 mod collections_test;
+mod conversation_models_test;
 mod documents_test;
 mod keys_test;
 mod multi_search_test;
 mod operations_test;
 mod presets_test;
+mod stemming_dictionaries_test;
 mod stopwords_test;
 
 use reqwest_retry::policies::ExponentialBackoff;

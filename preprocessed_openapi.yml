@@ -2974,6 +2974,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-body-is-raw-text: true
+      x-supports-plain-text: true
   /nl_search_models:
     get:
       tags:

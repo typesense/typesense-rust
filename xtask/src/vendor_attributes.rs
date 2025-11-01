@@ -236,6 +236,7 @@ impl<'a, 'b> OperationContext<'a, 'b> {
         self
     }
 
+    /// Indicate that the response supports plain text besides JSON
     pub fn supports_plain_text(mut self) -> Self {
         self.try_set("x-supports-plain-text", Value::Bool(true));
         self

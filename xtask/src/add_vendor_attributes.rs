@@ -57,8 +57,16 @@ pub fn add_vendor_attributes(doc_root: &mut Mapping) -> Result<(), String> {
         .return_type("Option<Vec<models::SchemaChangeStatus>>")
         .done()?;
 
+    // The documents /import endpoint expects a text/plain body and response
     attrs
         .operation("/collections/{collectionName}/documents/import", "post")
+        .body_is_raw_text()
+        .supports_plain_text()
+        .done()?;
+
+    // The stemming /import endpoint also expects a text/plain body and response
+    attrs
+        .operation("/stemming/dictionaries/import", "post")
         .body_is_raw_text()
         .supports_plain_text()
         .done()?;
