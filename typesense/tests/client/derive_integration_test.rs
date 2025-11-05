@@ -6,6 +6,27 @@ use typesense::prelude::*;
 
 use crate::{get_client, new_id};
 
+/// A nested struct for deep nesting test.
+#[derive(Typesense, Serialize, Deserialize, Debug, PartialEq, Clone)]
+struct ExtraDetails {
+    model_year: i32,
+    #[typesense(facet)]
+    color: String,
+}
+
+#[derive(Typesense, Serialize, Deserialize, Debug, PartialEq, Clone)]
+struct SupplierInfo {
+    name: String,
+    contact: String,
+}
+
+#[derive(Typesense, Serialize, Deserialize, Debug, PartialEq, Clone)]
+struct Part {
+    part_id: String,
+    #[typesense(flatten)]
+    supplier: SupplierInfo,
+}
+
 /// A nested struct that will be flattened into the parent.
 #[derive(Typesense, Serialize, Deserialize, Debug, PartialEq, Clone)]
 struct ProductDetails {
@@ -15,6 +36,8 @@ struct ProductDetails {
     weight_kg: f32,
     #[typesense(skip)]
     desc: String,
+    #[typesense(flatten)]
+    extra_details: ExtraDetails,
 }
 /// A nested struct that will be flattened and renamed.
 #[derive(Typesense, Serialize, Deserialize, Debug, PartialEq, Clone)]
@@ -75,6 +98,9 @@ struct MegaProduct {
     logistics: Logistics,
 
     manufacturer: Manufacturer,
+
+    #[typesense(flatten)]
+    parts: Vec<Part>,
 
     tags: Option<Vec<String>>,
 
@@ -233,6 +259,29 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
                     "Flattened field 'details.weight_kg' should have sort: false"
                 );
             }
+            "details.extra_details" => {
+                assert_eq!(
+                    actual_field.r#type, "object",
+                    "Field 'details.extra_details' should have type: 'object'"
+                );
+            }
+            "details.extra_details.model_year" => {
+                assert_eq!(
+                    actual_field.r#type, "int32",
+                    "Field 'details.extra_details.model_year' should have type: 'int32'"
+                );
+            }
+            "details.extra_details.color" => {
+                assert_eq!(
+                    actual_field.r#type, "string",
+                    "Field 'details.extra_details.color' should have type: 'string'"
+                );
+                assert_eq!(
+                    actual_field.facet,
+                    Some(true),
+                    "Field 'details.extra_details.color' should have facet: true"
+                );
+            }
             "details.desc" => {
                 assert!(
                     false,
@@ -254,6 +303,36 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
 
             "primary_address.city" => {
                 assert_eq!(actual_field.r#type, "string")
+            }
+            "parts" => {
+                assert_eq!(
+                    actual_field.r#type, "object[]",
+                    "Field 'parts' should have type 'object[]'"
+                );
+            }
+            "parts.part_id" => {
+                assert_eq!(
+                    actual_field.r#type, "string[]",
+                    "Field 'parts.part_id' should have type 'string[]'"
+                );
+            }
+            "parts.supplier" => {
+                assert_eq!(
+                    actual_field.r#type, "object[]",
+                    "Field 'parts.supplier' should have type 'object[]'"
+                );
+            }
+            "parts.supplier.name" => {
+                assert_eq!(
+                    actual_field.r#type, "string[]",
+                    "Field 'parts.supplier.name' should have type 'string[]'"
+                );
+            }
+            "parts.supplier.contact" => {
+                assert_eq!(
+                    actual_field.r#type, "string[]",
+                    "Field 'parts.supplier.contact' should have type 'string[]'"
+                );
             }
             _ => {
                 // If we add a new field to MegaProduct, this panic will remind us to add a check for it.
@@ -283,6 +362,10 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
             part_number: "MT-WM-3000".to_owned(),
             weight_kg: 1.5,
             desc: "A high-quality wrench for all your needs.".to_owned(),
+            extra_details: ExtraDetails {
+                model_year: 2023,
+                color: "Red".to_string(),
+            },
         },
         logistics: Logistics {
             warehouse_code: "WH-US-WEST-05".to_owned(),
@@ -292,6 +375,22 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
             name: "MegaTools Inc.".to_owned(),
             city: "Toolsville".to_owned(),
         },
+        parts: vec![
+            Part {
+                part_id: "p-01".to_string(),
+                supplier: SupplierInfo {
+                    name: "Supplier A".to_string(),
+                    contact: "contact@supplier-a.com".to_string(),
+                },
+            },
+            Part {
+                part_id: "p-02".to_string(),
+                supplier: SupplierInfo {
+                    name: "Supplier B".to_string(),
+                    contact: "contact@supplier-b.com".to_string(),
+                },
+            },
+        ],
         tags: Some(vec!["steel".to_owned(), "heavy-duty".to_owned()]),
         primary_city: "City".to_owned(),
     };
@@ -364,6 +463,20 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
     let search_res5 = documents_client.search(search_params5).await;
     assert_eq!(search_res5.unwrap().found, Some(1));
 
+    // F. Filter by a deep nested field
+    let search_params_deep = SearchParameters {
+        q: Some("*".to_owned()),
+        query_by: Some("title".to_owned()),
+        filter_by: Some("details.extra_details.color:='Red'".to_owned()),
+        ..Default::default()
+    };
+    let search_res_deep = documents_client.search(search_params_deep).await;
+    assert_eq!(
+        search_res_deep.unwrap().found,
+        Some(1),
+        "Should find by deep nested field"
+    );
+
     let search_params6 = SearchParameters {
         q: Some("WH-US-WEST-05".to_owned()),
         query_by: Some("logistics_data.warehouse_code".to_owned()),
@@ -374,6 +487,32 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
         search_res6.unwrap().found,
         Some(1),
         "Should find by flattened field with a custom prefix"
+    );
+
+    // G. Search a field in a nested object array
+    let search_params7 = SearchParameters {
+        q: Some("p-01".to_owned()),
+        query_by: Some("parts.part_id".to_owned()),
+        ..Default::default()
+    };
+    let search_res7 = documents_client.search(search_params7).await;
+    assert_eq!(
+        search_res7.unwrap().found,
+        Some(1),
+        "Should find by field in nested object array"
+    );
+
+    // H. Search a field in a flattened nested object array
+    let search_params8 = SearchParameters {
+        q: Some("Supplier A".to_owned()),
+        query_by: Some("parts.supplier.name".to_owned()),
+        ..Default::default()
+    };
+    let search_res8 = documents_client.search(search_params8).await;
+    assert_eq!(
+        search_res8.unwrap().found,
+        Some(1),
+        "Should find by field in flattened nested object array"
     );
 
     //  Update Document (with a partial struct)
