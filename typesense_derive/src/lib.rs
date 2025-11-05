@@ -122,23 +122,9 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
         let vis = &f.vis;
         let ty = &f.ty;
 
-        let is_option = matches!(ty, syn::Type::Path(tp)
-            if tp.path.segments.last()
-                .map(|seg| seg.ident == "Option")
-                .unwrap_or(false)
-        );
-
-        let field_ty = if is_option {
-            // already Option<...>, keep as-is
-            quote! { #ty }
-        } else {
-            // wrap non-Option types
-            quote! { Option<#ty> }
-        };
-
         Some(quote! {
             #[serde(skip_serializing_if = "Option::is_none")]
-            #vis #ident: #field_ty,
+            #vis #ident: Option<#ty>,
         })
     });
 

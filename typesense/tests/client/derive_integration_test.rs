@@ -518,7 +518,7 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
     //  Update Document (with a partial struct)
     let update_payload = MegaProductPartial {
         price: Some(25.99),
-        tags: Some(vec!["steel".to_owned(), "sale".to_owned()]),
+        tags: Some(Some(vec!["steel".to_owned(), "sale".to_owned()])),
         ..Default::default()
     };
 
