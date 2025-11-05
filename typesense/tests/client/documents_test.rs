@@ -255,7 +255,7 @@ async fn run_test_generic_document_lifecycle() {
     // --- 6. Update a single document with a partial payload ---
     let partial_update_struct = BookPartial {
         publication_year: Some(1966),
-        in_stock: Some(Some(false)),
+        in_stock: Some(false),
         ..Default::default()
     };
     let index_params = DocumentIndexParameters {

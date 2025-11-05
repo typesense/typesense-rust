@@ -1,5 +1,5 @@
-error: Unexpected token facets. Did you mean `facet`?
- --> $DIR/unknown_attribute.rs:8:17
+error: Unexpected field attribute "facets"
+ --> tests/derive/ui/unknown_attribute.rs:8:17
   |
 8 |     #[typesense(facets)]
   |                 ^^^^^^
