@@ -143,7 +143,9 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
 
             fn collection_schema() -> ::typesense::models::CollectionSchema {
                 let name = Self::COLLECTION_NAME.to_owned();
-                let fields = vec![#(#typesense_fields,)*].into_iter().flatten().collect();
+
+                let mut fields = Vec::new();
+                #(fields.extend(#typesense_fields);)*
 
                 let builder = ::typesense::models::CollectionSchema::builder().name(name).fields(fields);
 
