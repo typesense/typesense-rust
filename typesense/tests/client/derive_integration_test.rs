@@ -107,6 +107,12 @@ struct MegaProduct {
     #[typesense(rename = "primary_address.city")]
     #[serde(rename = "primary_address.city")]
     primary_city: String,
+
+    #[typesense(locale = "vi")]
+    locale: String,
+
+    #[typesense(optional)]
+    qty: i32,
 }
 
 async fn logic_test_derive_macro_with_generic_client_lifecycle() {
@@ -334,6 +340,20 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
                     "Field 'parts.supplier.contact' should have type 'string[]'"
                 );
             }
+            "locale" => {
+                assert_eq!(
+                    actual_field.locale,
+                    Some("vi".to_owned()),
+                    "Field 'locale' should have locale of 'vi'"
+                );
+            }
+            "qty" => {
+                assert_eq!(
+                    actual_field.optional,
+                    Some(true),
+                    "Field 'qty' should have been optional"
+                );
+            }
             _ => {
                 // If we add a new field to MegaProduct, this panic will remind us to add a check for it.
                 panic!(
@@ -393,6 +413,8 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
         ],
         tags: Some(vec!["steel".to_owned(), "heavy-duty".to_owned()]),
         primary_city: "City".to_owned(),
+        locale: "Xin chào!".to_owned(),
+        qty: 123,
     };
 
     let create_res = documents_client.create(&product1, None).await;
