@@ -165,6 +165,13 @@ struct AddressData {
     work_zips: Vec<String>,
 }
 
+#[derive(Typesense, Serialize, Deserialize)]
+struct NestedStruct {
+    name: String,
+    #[typesense(flatten)]
+    address: AddressData,
+}
+
 #[allow(dead_code)]
 #[derive(Typesense, Serialize, Deserialize)]
 #[typesense(collection_name = "nested_users", enable_nested_fields = true)]
@@ -181,6 +188,11 @@ struct User {
     previous_addresses: Vec<Address>,
     #[typesense(flatten, skip)]
     sub_fields_only: Profile,
+
+    #[typesense(flatten, skip)]
+    nested_struct: NestedStruct,
+    #[typesense(flatten)]
+    nested_struct_vec: Vec<NestedStruct>,
 
     // --- Manually flattened object ---
     #[typesense(skip)]
@@ -217,6 +229,17 @@ fn derived_document_handles_nested_and_flattened_fields() {
 
         { "name": "sub_fields_only.name", "type": "string", "facet": true, "sort": true},
         { "name": "sub_fields_only.email", "type": "string", "optional": true },
+
+        { "name": "nested_struct.name", "type": "string"},
+        { "name": "nested_struct.address", "type": "object" },
+        { "name": "nested_struct.address.primary_city", "type": "string" },
+        { "name": "nested_struct.address.work_zips", "type": "string[]" },
+
+        { "name": "nested_struct_vec", "type": "object[]"},
+        { "name": "nested_struct_vec.name", "type": "string[]"},
+        { "name": "nested_struct_vec.address", "type": "object[]" },
+        { "name": "nested_struct_vec.address.primary_city", "type": "string[]" },
+        { "name": "nested_struct_vec.address.work_zips", "type": "string[]" },
 
         // --- Manually flattened object ---
         // correctly skipped `data`
