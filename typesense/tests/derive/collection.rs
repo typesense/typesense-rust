@@ -1,10 +1,7 @@
-use std::collections::BTreeMap;
-use std::collections::HashMap;
-
+use ::std::collections::{BTreeMap, HashMap};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use typesense::Typesense;
-use typesense::prelude::*;
+use typesense::{Typesense, prelude::*};
 
 // Test 1: Basic Schema Generation (keeping the old test to ensure backward compatibility)
 #[allow(dead_code)]

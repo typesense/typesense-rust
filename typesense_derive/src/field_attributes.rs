@@ -257,17 +257,17 @@ fn build_regular_field(field: &Field, field_attrs: &FieldAttributes) -> proc_mac
         (&field.ty, false)
     };
 
-    let name_ident = &field.ident;
     let field_name = if let Some(rename) = &field_attrs.rename {
-        quote! { #rename.to_string() }
+        quote! { #rename }
     } else {
-        quote! { std::string::String::from(stringify!(#name_ident)) }
+        let name_ident = field.ident.as_ref().unwrap().to_string();
+        quote! { #name_ident }
     };
 
     let typesense_field_type = if let Some(override_str) = &field_attrs.type_override {
-        quote! { #override_str.to_owned() }
+        quote! { #override_str }
     } else {
-        quote! { <#ty as typesense::prelude::ToTypesenseField>::to_typesense_type().to_owned() }
+        quote! { <#ty as ::typesense::prelude::TypesenseField>::TYPESENSE_TYPE }
     };
 
     let optional = field_attrs
@@ -286,17 +286,20 @@ fn build_regular_field(field: &Field, field_attrs: &FieldAttributes) -> proc_mac
     let num_dim = field_attrs.num_dim.map(|v| quote!(.num_dim(#v)));
 
     quote! {
-        vec![
-            typesense::models::Field::builder().name(#field_name).r#type(#typesense_field_type)
-                #optional #facet #index #store #sort #infix #stem #range_index #locale #vec_dist #num_dim
-                .build()
-        ]
+        typesense::models::Field::builder().name(#field_name).r#type(#typesense_field_type)
+            #optional #facet #index #store #sort #infix #stem #range_index #locale #vec_dist #num_dim
+            .build()
     }
 }
 
 /// Processes a single struct field.
 /// Returns a TokenStream which evaluates to a `Vec<typesense::Field>`.
-pub(crate) fn process_field(field: &Field) -> syn::Result<proc_macro2::TokenStream> {
+pub(crate) fn process_field(
+    field: &Field,
+) -> syn::Result<(
+    Option<proc_macro2::TokenStream>,
+    Option<proc_macro2::TokenStream>,
+)> {
     let field_attrs = extract_field_attrs(field)?;
 
     if field_attrs.flatten {
@@ -304,8 +307,8 @@ pub(crate) fn process_field(field: &Field) -> syn::Result<proc_macro2::TokenStre
         let prefix = if let Some(rename_prefix) = &field_attrs.rename {
             quote! { #rename_prefix }
         } else {
-            let name_ident = &field.ident;
-            quote! { stringify!(#name_ident) }
+            let name_ident = field.ident.as_ref().unwrap().to_string();
+            quote! { #name_ident }
         };
 
         let inner_type = get_inner_type(&field.ty);
@@ -314,45 +317,35 @@ pub(crate) fn process_field(field: &Field) -> syn::Result<proc_macro2::TokenStre
                 .is_some_and(|t| ty_inner_type(t, "Vec").is_some());
 
         let flattened_fields = quote! {
-            <#inner_type as typesense::prelude::Document>::collection_schema().fields
+            <#inner_type as ::typesense::prelude::Document>::collection_schema().fields
                 .into_iter()
                 .map(|mut f| {
                     // Use the dynamically determined prefix here
-                    f.name = format!("{}.{}", #prefix, f.name);
+                    f.name = ::std::borrow::Cow::Owned(format!("{}.{}", #prefix, f.name));
                     if #is_vec && !f.r#type.ends_with("[]") {
-                        f.r#type.push_str("[]");
+                        f.r#type.to_mut().push_str("[]");
                     }
                     f
                 })
-                .collect::<Vec<_>>()
         };
 
         if field_attrs.skip {
             // `#[typesense(flatten, skip)]` -> Only flattened fields
-            return Ok(quote! {
-                {
-                    #flattened_fields
-                }
-            });
+            return Ok((None, Some(quote! { #flattened_fields })));
         }
 
         // `#[typesense(flatten)]` -> Flattened fields + object field
         let regular_field = build_regular_field(field, &field_attrs);
 
-        Ok(quote! {
-            {
-                let mut fields = #regular_field;
-                fields.extend(#flattened_fields);
-                fields
-            }
-        })
+        Ok((
+            Some(quote! { #regular_field }),
+            Some(quote! { #flattened_fields }),
+        ))
     } else {
         // --- REGULAR FIELD LOGIC ---
         if field_attrs.skip {
-            return Ok(quote! {
-                vec![]
-            });
+            return Ok((None, None));
         }
-        Ok(build_regular_field(field, &field_attrs))
+        Ok((Some(build_regular_field(field, &field_attrs)), None))
     }
 }

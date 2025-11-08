@@ -6,8 +6,8 @@ use helpers::*;
 
 use proc_macro::TokenStream;
 use proc_macro2::{Ident, TokenTree};
-use quote::{ToTokens, quote};
-use syn::{Attribute, ItemStruct, spanned::Spanned};
+use quote::{quote, ToTokens};
+use syn::{spanned::Spanned, Attribute, ItemStruct};
 
 #[proc_macro_derive(Typesense, attributes(typesense))]
 pub fn typesense_collection_derive(input: TokenStream) -> TokenStream {
@@ -76,10 +76,18 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
         }
     }
 
-    let typesense_fields = fields
+    let (regular_fields, flattened_fields) = fields
         .iter()
         .map(process_field)
-        .collect::<syn::Result<Vec<_>>>()?;
+        .collect::<syn::Result<(Vec<_>,Vec<_>)>>()?;
+    let regular_fields = regular_fields
+        .into_iter()
+        .filter_map(|v| v)
+        .collect::<Vec<_>>();
+    let flattened_fields = flattened_fields
+        .into_iter()
+        .filter_map(|v| v)
+        .collect::<Vec<_>>();
 
     let default_sorting_field = if let Some(v) = default_sorting_field {
         quote! {
@@ -139,15 +147,15 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
 
         impl #impl_generics ::typesense::prelude::Document for #ident #ty_generics #where_clause {
             const COLLECTION_NAME: &str = #collection_name;
+
             type Partial = #name_partial;
 
             fn collection_schema() -> ::typesense::models::CollectionSchema {
-                let name = Self::COLLECTION_NAME.to_owned();
+                let fields = [#(#regular_fields,)*].into_iter()
+                    #(.chain(#flattened_fields))*
+                    .collect::<Vec<_>>();
 
-                let mut fields = Vec::new();
-                #(fields.extend(#typesense_fields);)*
-
-                let builder = ::typesense::models::CollectionSchema::builder().name(name).fields(fields);
+                let builder = ::typesense::models::CollectionSchema::builder().name(Self::COLLECTION_NAME).fields(fields);
 
                 #default_sorting_field
                 #enable_nested_fields
@@ -161,13 +169,13 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
     Ok(generated_code.into())
 }
 
-// Add a bound `T: ToTypesenseField` to every type parameter T.
+// Add a bound `T: TypesenseField` to every type parameter T.
 fn add_trait_bounds(mut generics: syn::Generics) -> syn::Generics {
     for param in &mut generics.params {
         if let syn::GenericParam::Type(ref mut type_param) = *param {
             type_param
                 .bounds
-                .push(syn::parse_quote!(::typesense::field::ToTypesenseField));
+                .push(syn::parse_quote!(::typesense::field::TypesenseField));
         }
     }
     generics

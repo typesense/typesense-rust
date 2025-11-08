@@ -9,16 +9,17 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(bon::Builder)]
-#[builder(on(String, into))]
+#[builder(on(Cow<'_, str>, into))]
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Field {
     #[serde(rename = "name")]
-    pub name: String,
+    pub name: Cow<'static, str>,
     #[serde(rename = "type")]
-    pub r#type: String,
+    pub r#type: Cow<'static, str>,
     #[serde(rename = "optional", skip_serializing_if = "Option::is_none")]
     pub optional: Option<bool>,
     #[serde(rename = "facet", skip_serializing_if = "Option::is_none")]
@@ -26,14 +27,14 @@ pub struct Field {
     #[serde(rename = "index", skip_serializing_if = "Option::is_none")]
     pub index: Option<bool>,
     #[serde(rename = "locale", skip_serializing_if = "Option::is_none")]
-    pub locale: Option<String>,
+    pub locale: Option<Cow<'static, str>>,
     #[serde(rename = "sort", skip_serializing_if = "Option::is_none")]
     pub sort: Option<bool>,
     #[serde(rename = "infix", skip_serializing_if = "Option::is_none")]
     pub infix: Option<bool>,
     /// Name of a field in another collection that should be linked to this collection so that it can be joined during query.
     #[serde(rename = "reference", skip_serializing_if = "Option::is_none")]
-    pub reference: Option<String>,
+    pub reference: Option<Cow<'static, str>>,
     #[serde(rename = "num_dim", skip_serializing_if = "Option::is_none")]
     pub num_dim: Option<i32>,
     #[serde(rename = "drop", skip_serializing_if = "Option::is_none")]
@@ -43,7 +44,7 @@ pub struct Field {
     pub store: Option<bool>,
     /// The distance metric to be used for vector search. Default: `cosine`. You can also use `ip` for inner product.
     #[serde(rename = "vec_dist", skip_serializing_if = "Option::is_none")]
-    pub vec_dist: Option<String>,
+    pub vec_dist: Option<Cow<'static, str>>,
     /// Enables an index optimized for range filtering on numerical fields (e.g. rating:>3.5). Default: false.
     #[serde(rename = "range_index", skip_serializing_if = "Option::is_none")]
     pub range_index: Option<bool>,
@@ -52,22 +53,22 @@ pub struct Field {
     pub stem: Option<bool>,
     /// Name of the stemming dictionary to use for this field
     #[serde(rename = "stem_dictionary", skip_serializing_if = "Option::is_none")]
-    pub stem_dictionary: Option<String>,
+    pub stem_dictionary: Option<Cow<'static, str>>,
     /// List of symbols or special characters to be used for splitting the text into individual words in addition to space and new-line characters.
     #[serde(rename = "token_separators", skip_serializing_if = "Option::is_none")]
-    pub token_separators: Option<Vec<String>>,
+    pub token_separators: Option<Vec<Cow<'static, str>>>,
     /// List of symbols or special characters to be indexed.
     #[serde(rename = "symbols_to_index", skip_serializing_if = "Option::is_none")]
-    pub symbols_to_index: Option<Vec<String>>,
+    pub symbols_to_index: Option<Vec<Cow<'static, str>>>,
     #[serde(rename = "embed", skip_serializing_if = "Option::is_none")]
     pub embed: Option<Box<models::FieldEmbed>>,
 }
 
 impl Field {
-    pub fn new(name: String, r#type: String) -> Field {
+    pub fn new(name: impl Into<Cow<'static, str>>, r#type: impl Into<Cow<'static, str>>) -> Field {
         Field {
-            name,
-            r#type,
+            name: name.into(),
+            r#type: r#type.into(),
             optional: None,
             facet: None,
             index: None,

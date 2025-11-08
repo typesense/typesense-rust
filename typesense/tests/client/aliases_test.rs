@@ -9,10 +9,10 @@ async fn logic_test_aliases_and_alias_lifecycle() {
 
     // --- 1. Create a collection to alias to ---
     let collection_schema = CollectionSchema {
-        name: collection_name.clone(),
+        name: collection_name.clone().into(),
         fields: vec![Field {
-            name: "name".to_owned(),
-            r#type: "string".to_owned(),
+            name: "name".into(),
+            r#type: "string".into(),
             ..Default::default()
         }],
         ..Default::default()

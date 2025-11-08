@@ -14,6 +14,7 @@ pub trait DocumentPartial: Serialize {}
 pub trait Document: DeserializeOwned + Serialize {
     /// Collection name
     const COLLECTION_NAME: &'static str;
+
     /// A struct for partial updates
     type Partial: DocumentPartial;
 

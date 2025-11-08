@@ -16,20 +16,17 @@ async fn setup_multi_search_tests(
 ) {
     // --- Create collections ---
     let products_schema = CollectionSchema {
-        name: products_collection_name.to_owned(),
-        fields: vec![
-            Field::new("name".to_owned(), "string".to_owned()),
-            Field::new("price".to_owned(), "int32".to_owned()),
-        ],
+        name: products_collection_name.to_owned().into(),
+        fields: vec![Field::new("name", "string"), Field::new("price", "int32")],
         ..Default::default()
     };
     client.collections().create(products_schema).await.unwrap();
 
     let brands_schema = CollectionSchema {
-        name: brands_collection_name.to_owned(),
+        name: brands_collection_name.to_owned().into(),
         fields: vec![
-            Field::new("company_name".to_owned(), "string".to_owned()),
-            Field::new("country".to_owned(), "string".to_owned()),
+            Field::new("company_name", "string"),
+            Field::new("country", "string"),
         ],
         ..Default::default()
     };

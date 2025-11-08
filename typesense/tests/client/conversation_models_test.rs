@@ -19,32 +19,32 @@ async fn test_create_model_with_invalid_key_fails_as_expected() {
 
     // --- 1. Setup: Create the prerequisite collection for history ---
     let schema = CollectionSchema {
-        name: collection_name.clone(),
+        name: collection_name.clone().into(),
         fields: vec![
             Field {
-                name: "conversation_id".to_owned(),
-                r#type: "string".to_owned(),
+                name: "conversation_id".into(),
+                r#type: "string".into(),
                 ..Default::default()
             },
             Field {
-                name: "model_id".to_owned(),
-                r#type: "string".to_owned(),
+                name: "model_id".into(),
+                r#type: "string".into(),
                 ..Default::default()
             },
             Field {
-                name: "timestamp".to_owned(),
-                r#type: "int32".to_owned(),
+                name: "timestamp".into(),
+                r#type: "int32".into(),
                 ..Default::default()
             },
             Field {
-                name: "role".to_owned(),
-                r#type: "string".to_owned(),
+                name: "role".into(),
+                r#type: "string".into(),
                 index: Some(false),
                 ..Default::default()
             },
             Field {
-                name: "message".to_owned(),
-                r#type: "string".to_owned(),
+                name: "message".into(),
+                r#type: "string".into(),
                 index: Some(false),
                 ..Default::default()
             },

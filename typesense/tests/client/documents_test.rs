@@ -14,22 +14,22 @@ async fn run_test_schemaless_document_lifecycle() {
 
     // ---  Setup: Create a Collection ---
     let schema = CollectionSchema {
-        name: collection_name.clone(),
+        name: collection_name.clone().into(),
         fields: vec![
             Field {
-                name: "title".to_owned(),
-                r#type: "string".to_owned(),
+                name: "title".into(),
+                r#type: "string".into(),
                 ..Default::default()
             },
             Field {
-                name: "author".to_owned(),
-                r#type: "string".to_owned(),
+                name: "author".into(),
+                r#type: "string".into(),
                 facet: Some(true),
                 ..Default::default()
             },
             Field {
-                name: "publication_year".to_owned(),
-                r#type: "int32".to_owned(),
+                name: "publication_year".into(),
+                r#type: "int32".into(),
                 ..Default::default()
             },
         ],
@@ -152,27 +152,27 @@ async fn run_test_generic_document_lifecycle() {
 
     // --- 1. Setup: Create a Collection matching the Book struct ---
     let schema = CollectionSchema {
-        name: collection_name.clone(),
+        name: collection_name.clone().into(),
         fields: vec![
             Field {
-                name: "title".to_owned(),
-                r#type: "string".to_owned(),
+                name: "title".into(),
+                r#type: "string".into(),
                 ..Default::default()
             },
             Field {
-                name: "author".to_owned(),
-                r#type: "string".to_owned(),
+                name: "author".into(),
+                r#type: "string".into(),
                 facet: Some(true),
                 ..Default::default()
             },
             Field {
-                name: "publication_year".to_owned(),
-                r#type: "int32".to_owned(),
+                name: "publication_year".into(),
+                r#type: "int32".into(),
                 ..Default::default()
             },
             Field {
-                name: "in_stock".to_owned(),
-                r#type: "bool".to_owned(),
+                name: "in_stock".into(),
+                r#type: "bool".into(),
                 optional: Some(true),
                 ..Default::default()
             },

@@ -122,7 +122,7 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
     // Create Collection using the schema from the derive macro
     let schema = MegaProduct::collection_schema();
     let mut schema_for_creation = schema.clone();
-    schema_for_creation.name = collection_name.clone(); // Use the unique name
+    schema_for_creation.name = collection_name.clone().into(); // Use the unique name
 
     let create_res = client.collections().create(schema_for_creation).await;
     assert!(
@@ -142,12 +142,12 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
     let actual_fields_map: std::collections::HashMap<String, Field> = retrieved_schema
         .fields
         .into_iter()
-        .map(|f| (f.name.clone(), f))
+        .map(|f| (f.name.clone().into(), f))
         .collect();
 
     // Iterate through our *expected* fields and assert only the attributes we set.
-    for expected_field in schema.fields {
-        let field_name = &expected_field.name;
+    for expected_field in schema.fields.into_iter() {
+        let field_name = &expected_field.name as &str;
         // The 'id' field is a special primary key and not listed in the schema's "fields" array.
         if field_name == "id" {
             continue;
@@ -160,7 +160,7 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
         });
 
         // Perform targeted checks based on the attributes set in MegaProduct struct
-        match field_name.as_str() {
+        match field_name {
             "title" => {
                 assert_eq!(
                     actual_field.infix,
@@ -343,7 +343,7 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
             "locale" => {
                 assert_eq!(
                     actual_field.locale,
-                    Some("vi".to_owned()),
+                    Some("vi".into()),
                     "Field 'locale' should have locale of 'vi'"
                 );
             }
@@ -617,10 +617,10 @@ async fn logic_test_manual_flattening_lifecycle() {
 
     // 1. Create collection from the schema derived from `ManualFlattenedProduct`
     let mut schema = ManualFlattenedProduct::collection_schema();
-    schema.name = collection_name.clone();
+    schema.name = collection_name.clone().into();
 
     // Verify the generated schema is correct *before* creating it
-    let schema_fields: Vec<_> = schema.fields.iter().map(|f| f.name.as_str()).collect();
+    let schema_fields: Vec<_> = schema.fields.iter().map(|f| &f.name as &str).collect();
     assert!(
         !schema_fields.contains(&"details"),
         "Schema should not contain the skipped 'details' field"

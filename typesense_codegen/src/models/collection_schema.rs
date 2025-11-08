@@ -9,15 +9,17 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(bon::Builder)]
+#[builder(on(Cow<'_, str>, into))]
 #[builder(on(String, into))]
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct CollectionSchema {
     /// Name of the collection
     #[serde(rename = "name")]
-    pub name: String,
+    pub name: Cow<'static, str>,
     /// A list of fields for querying, filtering and faceting
     #[serde(rename = "fields")]
     pub fields: Vec<models::Field>,
@@ -50,9 +52,9 @@ pub struct CollectionSchema {
 }
 
 impl CollectionSchema {
-    pub fn new(name: String, fields: Vec<models::Field>) -> CollectionSchema {
+    pub fn new(name: impl Into<Cow<'static, str>>, fields: Vec<models::Field>) -> CollectionSchema {
         CollectionSchema {
-            name,
+            name: name.into(),
             fields,
             default_sorting_field: None,
             token_separators: None,
