@@ -91,8 +91,8 @@
 //!
 //!         // Search for a document
 //!         let search_params = models::SearchParameters {
-//!             q: Some("phone".to_owned()),
-//!             query_by: Some("name".to_owned()),
+//!             q: Some("phone".into()),
+//!             query_by: Some("name".into()),
 //!             ..Default::default()
 //!         };
 //!

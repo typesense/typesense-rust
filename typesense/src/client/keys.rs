@@ -58,7 +58,7 @@ impl<'c> Keys<'c> {
     pub fn generate_scoped_search_key(
         &self,
         key: impl AsRef<str>,
-        params: &ScopedKeyParameters,
+        params: &ScopedKeyParameters<'_>,
     ) -> anyhow::Result<String> {
         let params = serde_json::to_string(params)?;
 

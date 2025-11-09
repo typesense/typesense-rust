@@ -47,7 +47,7 @@ fn convert_hit_ref<'a, D: DeserializeOwned>(
 }
 
 fn convert_group_ref<'a, D: DeserializeOwned>(
-    raw_group: &'a SearchGroupedHit<Value>,
+    raw_group: &'a SearchGroupedHit<'_, Value>,
 ) -> Result<SearchGroupedHit<'a, D>, serde_json::Error> {
     let hits = raw_group
         .hits
@@ -65,7 +65,7 @@ fn convert_group_ref<'a, D: DeserializeOwned>(
 
 /// Convert a single `MultiSearchResultItem<Value>` into a strongly-typed `SearchResult<D>`.
 fn multi_search_item_to_search_result<'a, D: DeserializeOwned>(
-    item: &'a MultiSearchResultItem<Value>,
+    item: &'a MultiSearchResultItem<'_, Value>,
 ) -> Result<SearchResult<'a, D>, serde_json::Error> {
     let typed_hits = match &item.hits {
         Some(raw_hits) => Some(
