@@ -9,16 +9,17 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateAnalyticsRule200Response {
-    AnalyticsRule(Box<models::AnalyticsRule>),
-    Array(Vec<models::CreateAnalyticsRule200ResponseOneOfInner>),
+pub enum CreateAnalyticsRule200Response<'a> {
+    AnalyticsRule(Box<models::AnalyticsRule<'a>>),
+    Array(Vec<models::CreateAnalyticsRule200ResponseOneOfInner<'a>>),
 }
 
-impl Default for CreateAnalyticsRule200Response {
+impl Default for CreateAnalyticsRule200Response<'_> {
     fn default() -> Self {
         Self::AnalyticsRule(Default::default())
     }

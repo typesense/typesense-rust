@@ -9,16 +9,22 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct AnalyticsEventsResponse {
+pub struct AnalyticsEventsResponse<'a> {
     #[serde(rename = "events")]
-    pub events: Vec<models::AnalyticsEventsResponseEventsInner>,
+    pub events: Vec<models::AnalyticsEventsResponseEventsInner<'a>>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl AnalyticsEventsResponse {
-    pub fn new(events: Vec<models::AnalyticsEventsResponseEventsInner>) -> AnalyticsEventsResponse {
-        AnalyticsEventsResponse { events }
+impl<'a> AnalyticsEventsResponse<'a> {
+    pub fn new(events: Vec<models::AnalyticsEventsResponseEventsInner<'a>>) -> Self {
+        Self {
+            events,
+            _phantom: PhantomData,
+        }
     }
 }

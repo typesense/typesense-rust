@@ -9,16 +9,22 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct AnalyticsEventCreateResponse {
+pub struct AnalyticsEventCreateResponse<'a> {
     #[serde(rename = "ok")]
     pub ok: bool,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl AnalyticsEventCreateResponse {
-    pub fn new(ok: bool) -> AnalyticsEventCreateResponse {
-        AnalyticsEventCreateResponse { ok }
+impl<'a> AnalyticsEventCreateResponse<'a> {
+    pub fn new(ok: bool) -> Self {
+        Self {
+            ok,
+            _phantom: PhantomData,
+        }
     }
 }

@@ -1,5 +1,7 @@
 {{>partial_header}}
 use crate::models;
+use ::std::borrow::Cow;
+use ::std::marker::PhantomData;
 use serde::{Deserialize, Serialize};
 {{#models}}
 {{#model}}
@@ -123,11 +125,12 @@ impl Default for {{classname}} {
 {{^discriminator}}
 {{#vendorExtensions.x-rust-builder}}
 #[derive(bon::Builder)]
+#[builder(on(Cow<'_, str>, into))]
 #[builder(on(String, into))]
 {{/vendorExtensions.x-rust-builder}}
 {{#vendorExtensions.x-rust-has-byte-array}}#[serde_as]
 {{/vendorExtensions.x-rust-has-byte-array}}{{#oneOf.isEmpty}}#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct {{{classname}}}{{{vendorExtensions.x-rust-generic-parameter}}} {
+pub struct {{{classname}}}<'a{{#vendorExtensions.x-rust-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-generic-parameter}}> {
 {{#vars}}
     {{#description}}
     /// {{{.}}}
@@ -145,21 +148,34 @@ pub struct {{{classname}}}{{{vendorExtensions.x-rust-generic-parameter}}} {
     }}{{#isNullable}}Option<{{/isNullable}}{{^required}}Option<{{/required}}{{!
     ### Enums
     }}{{#isEnum}}{{#isArray}}{{#uniqueItems}}std::collections::HashSet<{{/uniqueItems}}{{^uniqueItems}}Vec<{{/uniqueItems}}{{/isArray}}{{{enumName}}}{{#isArray}}>{{/isArray}}{{/isEnum}}{{!
-    ### Non-Enums Start
-    }}{{^isEnum}}{{!
     ### Models
-    }}{{#isModel}}{{^avoidBoxedModels}}Box<{{/avoidBoxedModels}}{{{dataType}}}{{^avoidBoxedModels}}>{{/avoidBoxedModels}}{{/isModel}}{{!
-    ### Primative datatypes
-    }}{{^isModel}}{{#isByteArray}}Vec<u8>{{/isByteArray}}{{^isByteArray}}{{{dataType}}}{{/isByteArray}}{{/isModel}}{{!
-    ### Non-Enums End
-    }}{{/isEnum}}{{!
+    }}{{^isEnum}}{{#isModel}}{{^avoidBoxedModels}}Box<{{/avoidBoxedModels}}{{{dataType}}}<'a>{{^avoidBoxedModels}}>{{/avoidBoxedModels}}{{/isModel}}{{!
+    ### ByteArray
+    }}{{^isModel}}{{#isByteArray}}Vec<u8>{{/isByteArray}}{{!
+    ### String
+    }}{{^isByteArray}}{{#isString}}Cow<'a, str>{{/isString}}{{!
+    ### Arrays
+    }}{{^isString}}{{#isArray}}Vec<{{#items}}{{!
+    ### Array Models
+    }}{{#isModel}}{{{dataType}}}<'a>{{/isModel}}{{!
+    ### Array other datatypes
+    }}{{^isModel}}{{{dataType}}}{{/isModel}}{{/items}}>{{/isArray}}{{!
+    ### Primitive datatypes
+    }}{{^isArray}}{{#isPrimitiveType}}{{{dataType}}}{{/isPrimitiveType}}{{!
+    ### Any other Non-Primitive datatypes
+    }}{{^isPrimitiveType}}{{{dataType}}}{{!
+    ### Closing tags
+    }}{{/isPrimitiveType}}{{/isArray}}{{/isString}}{{/isByteArray}}{{/isModel}}{{/isEnum}}{{!
     ### Option End (and trailing comma)
     }}{{#isNullable}}>{{/isNullable}}{{^required}}>{{/required}},
     {{/vendorExtensions.x-rust-type}}
 {{/vars}}
+    #[serde(skip)]
+    {{#vendorExtensions.x-rust-builder}}#[builder(default)]{{/vendorExtensions.x-rust-builder}}
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl{{{vendorExtensions.x-rust-generic-parameter}}} {{{classname}}}{{{vendorExtensions.x-rust-generic-parameter}}} {
+impl<'a{{#vendorExtensions.x-rust-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-generic-parameter}}> {{{classname}}}<'a{{#vendorExtensions.x-rust-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-generic-parameter}}> {
     {{#description}}
     /// {{{.}}}
     {{/description}}
@@ -167,10 +183,19 @@ impl{{{vendorExtensions.x-rust-generic-parameter}}} {{{classname}}}{{{vendorExte
     ### CHANGE 1: If x-rust-type is available for a required var, use it for the parameter type.
     }}{{#vendorExtensions.x-rust-type}}{{{.}}}{{/vendorExtensions.x-rust-type}}{{!
     ### Fallback to original logic if x-rust-type is not present.
-    }}{{^vendorExtensions.x-rust-type}}{{#isNullable}}Option<{{/isNullable}}{{#isEnum}}{{#isArray}}{{#uniqueItems}}std::collections::HashSet<{{/uniqueItems}}{{^uniqueItems}}Vec<{{/uniqueItems}}{{/isArray}}{{{enumName}}}{{#isArray}}>{{/isArray}}{{/isEnum}}{{^isEnum}}{{#isByteArray}}Vec<u8>{{/isByteArray}}{{^isByteArray}}{{{dataType}}}{{/isByteArray}}{{/isEnum}}{{#isNullable}}>{{/isNullable}}{{/vendorExtensions.x-rust-type}}{{!
+    }}{{^vendorExtensions.x-rust-type}}{{#isNullable}}Option<{{/isNullable}}{{!
+    }}{{#isEnum}}{{#isArray}}{{#uniqueItems}}std::collections::HashSet<{{/uniqueItems}}{{^uniqueItems}}Vec<{{/uniqueItems}}{{/isArray}}{{{enumName}}}{{#isArray}}>{{/isArray}}{{/isEnum}}{{!
+    }}{{^isEnum}}{{#isByteArray}}Vec<u8>{{/isByteArray}}{{!
+    }}{{^isByteArray}}{{#isString}}Cow<'a, str>{{/isString}}{{!
+    }}{{^isString}}{{#isArray}}Vec<{{#items}}{{!
+    }}{{#isModel}}{{{dataType}}}<'a>{{/isModel}}{{!
+    }}{{^isModel}}{{{dataType}}}{{/isModel}}{{/items}}>{{/isArray}}{{!
+    }}{{^isArray}}{{{dataType}}}{{#isModel}}<'a>{{/isModel}}{{!
+    }}{{/isArray}}{{/isString}}{{/isByteArray}}{{/isEnum}}{{!
+    }}{{#isNullable}}>{{/isNullable}}{{/vendorExtensions.x-rust-type}}{{!
     ### Comma for next arguement
-    }}{{^-last}}, {{/-last}}{{/requiredVars}}) -> {{{classname}}}{{{vendorExtensions.x-rust-generic-parameter}}}{
-        {{{classname}}} {
+    }}{{^-last}}, {{/-last}}{{/requiredVars}}) -> Self {
+        Self {
             {{#vars}}
             {{#vendorExtensions.x-rust-type}}
             {{! Differentiate between required and optional fields with x-rust-type.}}
@@ -185,6 +210,7 @@ impl{{{vendorExtensions.x-rust-generic-parameter}}} {{{classname}}}{{{vendorExte
             {{{name}}}{{^required}}: None{{/required}}{{#required}}{{#isModel}}{{^avoidBoxedModels}}: {{^isNullable}}Box::new({{{name}}}){{/isNullable}}{{#isNullable}}if let Some(x) = {{{name}}} {Some(Box::new(x))} else {None}{{/isNullable}}{{/avoidBoxedModels}}{{/isModel}}{{/required}},
             {{/vendorExtensions.x-rust-type}}
             {{/vars}}
+            _phantom: PhantomData,
         }
     }
 }
@@ -196,16 +222,16 @@ impl{{{vendorExtensions.x-rust-generic-parameter}}} {{{classname}}}{{{vendorExte
 {{/description}}
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum {{classname}} {
+pub enum {{classname}}<'a> {
 {{#composedSchemas.oneOf}}
     {{#description}}
     /// {{{.}}}
     {{/description}}
-    {{{name}}}({{#isModel}}{{^avoidBoxedModels}}Box<{{/avoidBoxedModels}}{{/isModel}}{{{dataType}}}{{#isModel}}{{^avoidBoxedModels}}>{{/avoidBoxedModels}}{{/isModel}}),
+    {{{name}}}({{#isModel}}{{^avoidBoxedModels}}Box<{{/avoidBoxedModels}}{{/isModel}}{{#isArray}}Vec<{{{items.dataType}}}<'a>>{{/isArray}}{{^isArray}}{{{dataType}}}<'a>{{/isArray}}{{#isModel}}{{^avoidBoxedModels}}>{{/avoidBoxedModels}}{{/isModel}}),
 {{/composedSchemas.oneOf}}
 }
 
-impl Default for {{classname}} {
+impl Default for {{classname}}<'_> {
     fn default() -> Self {
         {{#composedSchemas.oneOf}}{{#-first}}Self::{{{name}}}(Default::default()){{/-first}}{{/composedSchemas.oneOf}}
     }

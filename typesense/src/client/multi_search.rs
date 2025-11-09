@@ -69,16 +69,16 @@ impl<'c> MultiSearch<'c> {
     ///     searches: vec![
     ///         // Search #0 targets the 'products' collection
     ///         models::MultiSearchCollectionParameters {
-    ///             collection: Some("products".to_owned()),
-    ///             q: Some("shoe".to_owned()),
-    ///             query_by: Some("name".to_owned()),
+    ///             collection: Some("products".into()),
+    ///             q: Some("shoe".into()),
+    ///             query_by: Some("name".into()),
     ///             ..Default::default()
     ///         },
     ///         // Search #1 targets the 'brands' collection
     ///         models::MultiSearchCollectionParameters {
-    ///             collection: Some("brands".to_owned()),
-    ///             q: Some("nike".to_owned()),
-    ///             query_by: Some("company_name".to_owned()),
+    ///             collection: Some("brands".into()),
+    ///             q: Some("nike".into()),
+    ///             query_by: Some("company_name".into()),
     ///             ..Default::default()
     ///         },
     ///     ],
@@ -112,11 +112,11 @@ impl<'c> MultiSearch<'c> {
     /// * `common_search_params` - A `MultiSearchParameters` struct describing search parameters that are common to all searches.
     pub async fn perform(
         &self,
-        search_requests: MultiSearchBody,
-        common_search_params: raw_models::MultiSearchParameters,
+        search_requests: MultiSearchBody<'_>,
+        common_search_params: raw_models::MultiSearchParameters<'_>,
     ) -> Result<
-        raw_models::MultiSearchResult<serde_json::Value>,
-        Error<documents_api::MultiSearchError>,
+        raw_models::MultiSearchResult<'static, serde_json::Value>,
+        Error<documents_api::MultiSearchError<'static>>,
     > {
         let request_body = raw_models::MultiSearchSearchesParameter {
             searches: search_requests.searches,
@@ -164,16 +164,16 @@ impl<'c> MultiSearch<'c> {
     ///     searches: vec![
     ///         // Search #0 targets the 'products' collection
     ///         models::MultiSearchCollectionParameters {
-    ///             collection: Some("products".to_owned()),
-    ///             q: Some("shoe".to_owned()),
-    ///             query_by: Some("name".to_owned()),
+    ///             collection: Some("products".into()),
+    ///             q: Some("shoe".into()),
+    ///             query_by: Some("name".into()),
     ///             ..Default::default()
     ///         },
     ///         // Search #1 targets the 'brands' collection
     ///         models::MultiSearchCollectionParameters {
-    ///             collection: Some("brands".to_owned()),
-    ///             q: Some("nike".to_owned()),
-    ///             query_by: Some("company_name".to_owned()),
+    ///             collection: Some("brands".into()),
+    ///             q: Some("nike".into()),
+    ///             query_by: Some("company_name".into()),
     ///             ..Default::default()
     ///         },
     ///     ],
@@ -216,15 +216,15 @@ impl<'c> MultiSearch<'c> {
     /// let search_requests = models::MultiSearchBody {
     ///     searches: vec![
     ///         models::MultiSearchCollectionParameters {
-    ///             collection: Some("products".to_owned()),
-    ///             q: Some("shoe".to_owned()),
-    ///             query_by: Some("name".to_owned()),
+    ///             collection: Some("products".into()),
+    ///             q: Some("shoe".into()),
+    ///             query_by: Some("name".into()),
     ///             ..Default::default()
     ///         },
     ///         models::MultiSearchCollectionParameters {
-    ///             collection: Some("products".to_owned()),
-    ///             q: Some("sock".to_owned()),
-    ///             query_by: Some("name".to_owned()),
+    ///             collection: Some("products".into()),
+    ///             q: Some("sock".into()),
+    ///             query_by: Some("name".into()),
     ///             ..Default::default()
     ///         },
     ///     ],
@@ -251,13 +251,14 @@ impl<'c> MultiSearch<'c> {
     /// A `Result` containing a `SearchResult<D>` on success, or an `Error` on failure.
     pub async fn perform_union<D: for<'de> serde::Deserialize<'de>>(
         &self,
-        search_requests: MultiSearchBody,
-        common_search_params: raw_models::MultiSearchParameters,
-    ) -> Result<SearchResult<D>, Error<documents_api::MultiSearchError>> {
+        search_requests: MultiSearchBody<'_>,
+        common_search_params: raw_models::MultiSearchParameters<'_>,
+    ) -> Result<SearchResult<'static, D>, Error<documents_api::MultiSearchError<'static>>> {
         // Explicitly set `union: true` for the request body
         let request_body = raw_models::MultiSearchSearchesParameter {
             union: Some(true),
             searches: search_requests.searches,
+            _phantom: core::marker::PhantomData,
         };
 
         let multi_search_params = build_multi_search_params(request_body, common_search_params);
@@ -273,10 +274,10 @@ impl<'c> MultiSearch<'c> {
 }
 // Private helper function to construct the final search parameters object.
 // This encapsulates the repetitive mapping logic.
-fn build_multi_search_params(
-    request_body: raw_models::MultiSearchSearchesParameter,
-    params: raw_models::MultiSearchParameters,
-) -> MultiSearchParams {
+fn build_multi_search_params<'a>(
+    request_body: raw_models::MultiSearchSearchesParameter<'a>,
+    params: raw_models::MultiSearchParameters<'a>,
+) -> MultiSearchParams<'a> {
     MultiSearchParams {
         multi_search_searches_parameter: Some(request_body),
         // Common URL search params
@@ -344,6 +345,7 @@ fn build_multi_search_params(
         vector_query: params.vector_query,
         voice_query: params.voice_query,
         enable_analytics: params.enable_analytics,
+        _phantom: core::marker::PhantomData,
         // enable_highlight_v1: None,
         // max_candidates: None,
         // max_filter_by_candidates: None,

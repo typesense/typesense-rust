@@ -9,17 +9,23 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct CurationSetDeleteSchema {
+pub struct CurationSetDeleteSchema<'a> {
     /// Name of the deleted curation set
     #[serde(rename = "name")]
-    pub name: String,
+    pub name: Cow<'a, str>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl CurationSetDeleteSchema {
-    pub fn new(name: String) -> CurationSetDeleteSchema {
-        CurationSetDeleteSchema { name }
+impl<'a> CurationSetDeleteSchema<'a> {
+    pub fn new(name: Cow<'a, str>) -> Self {
+        Self {
+            name,
+            _phantom: PhantomData,
+        }
     }
 }

@@ -9,10 +9,11 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct AnalyticsStatus {
+pub struct AnalyticsStatus<'a> {
     #[serde(
         rename = "popular_prefix_queries",
         skip_serializing_if = "Option::is_none"
@@ -36,11 +37,13 @@ pub struct AnalyticsStatus {
     pub doc_log_events: Option<i32>,
     #[serde(rename = "doc_counter_events", skip_serializing_if = "Option::is_none")]
     pub doc_counter_events: Option<i32>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl AnalyticsStatus {
-    pub fn new() -> AnalyticsStatus {
-        AnalyticsStatus {
+impl<'a> AnalyticsStatus<'a> {
+    pub fn new() -> Self {
+        Self {
             popular_prefix_queries: None,
             nohits_prefix_queries: None,
             log_prefix_queries: None,
@@ -48,6 +51,7 @@ impl AnalyticsStatus {
             query_counter_events: None,
             doc_log_events: None,
             doc_counter_events: None,
+            _phantom: PhantomData,
         }
     }
 }

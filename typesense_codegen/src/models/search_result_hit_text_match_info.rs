@@ -9,12 +9,13 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchResultHitTextMatchInfo {
+pub struct SearchResultHitTextMatchInfo<'a> {
     #[serde(rename = "best_field_score", skip_serializing_if = "Option::is_none")]
-    pub best_field_score: Option<String>,
+    pub best_field_score: Option<Cow<'a, str>>,
     #[serde(rename = "best_field_weight", skip_serializing_if = "Option::is_none")]
     pub best_field_weight: Option<i32>,
     #[serde(rename = "fields_matched", skip_serializing_if = "Option::is_none")]
@@ -22,16 +23,18 @@ pub struct SearchResultHitTextMatchInfo {
     #[serde(rename = "num_tokens_dropped", skip_serializing_if = "Option::is_none")]
     pub num_tokens_dropped: Option<i64>,
     #[serde(rename = "score", skip_serializing_if = "Option::is_none")]
-    pub score: Option<String>,
+    pub score: Option<Cow<'a, str>>,
     #[serde(rename = "tokens_matched", skip_serializing_if = "Option::is_none")]
     pub tokens_matched: Option<i32>,
     #[serde(rename = "typo_prefix_score", skip_serializing_if = "Option::is_none")]
     pub typo_prefix_score: Option<i32>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl SearchResultHitTextMatchInfo {
-    pub fn new() -> SearchResultHitTextMatchInfo {
-        SearchResultHitTextMatchInfo {
+impl<'a> SearchResultHitTextMatchInfo<'a> {
+    pub fn new() -> Self {
+        Self {
             best_field_score: None,
             best_field_weight: None,
             fields_matched: None,
@@ -39,6 +42,7 @@ impl SearchResultHitTextMatchInfo {
             score: None,
             tokens_matched: None,
             typo_prefix_score: None,
+            _phantom: PhantomData,
         }
     }
 }

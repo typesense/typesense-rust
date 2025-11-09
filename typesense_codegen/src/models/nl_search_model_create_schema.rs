@@ -9,19 +9,20 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct NlSearchModelCreateSchema {
+pub struct NlSearchModelCreateSchema<'a> {
     /// Name of the NL model to use
     #[serde(rename = "model_name", skip_serializing_if = "Option::is_none")]
-    pub model_name: Option<String>,
+    pub model_name: Option<Cow<'a, str>>,
     /// API key for the NL model service
     #[serde(rename = "api_key", skip_serializing_if = "Option::is_none")]
-    pub api_key: Option<String>,
+    pub api_key: Option<Cow<'a, str>>,
     /// Custom API URL for the NL model service
     #[serde(rename = "api_url", skip_serializing_if = "Option::is_none")]
-    pub api_url: Option<String>,
+    pub api_url: Option<Cow<'a, str>>,
     /// Maximum number of bytes to process
     #[serde(rename = "max_bytes", skip_serializing_if = "Option::is_none")]
     pub max_bytes: Option<i32>,
@@ -30,7 +31,7 @@ pub struct NlSearchModelCreateSchema {
     pub temperature: Option<f64>,
     /// System prompt for the NL model
     #[serde(rename = "system_prompt", skip_serializing_if = "Option::is_none")]
-    pub system_prompt: Option<String>,
+    pub system_prompt: Option<Cow<'a, str>>,
     /// Top-p parameter for the NL model (Google-specific)
     #[serde(rename = "top_p", skip_serializing_if = "Option::is_none")]
     pub top_p: Option<f64>,
@@ -42,39 +43,41 @@ pub struct NlSearchModelCreateSchema {
     pub stop_sequences: Option<Vec<String>>,
     /// API version for the NL model service
     #[serde(rename = "api_version", skip_serializing_if = "Option::is_none")]
-    pub api_version: Option<String>,
+    pub api_version: Option<Cow<'a, str>>,
     /// Project ID for GCP Vertex AI
     #[serde(rename = "project_id", skip_serializing_if = "Option::is_none")]
-    pub project_id: Option<String>,
+    pub project_id: Option<Cow<'a, str>>,
     /// Access token for GCP Vertex AI
     #[serde(rename = "access_token", skip_serializing_if = "Option::is_none")]
-    pub access_token: Option<String>,
+    pub access_token: Option<Cow<'a, str>>,
     /// Refresh token for GCP Vertex AI
     #[serde(rename = "refresh_token", skip_serializing_if = "Option::is_none")]
-    pub refresh_token: Option<String>,
+    pub refresh_token: Option<Cow<'a, str>>,
     /// Client ID for GCP Vertex AI
     #[serde(rename = "client_id", skip_serializing_if = "Option::is_none")]
-    pub client_id: Option<String>,
+    pub client_id: Option<Cow<'a, str>>,
     /// Client secret for GCP Vertex AI
     #[serde(rename = "client_secret", skip_serializing_if = "Option::is_none")]
-    pub client_secret: Option<String>,
+    pub client_secret: Option<Cow<'a, str>>,
     /// Region for GCP Vertex AI
     #[serde(rename = "region", skip_serializing_if = "Option::is_none")]
-    pub region: Option<String>,
+    pub region: Option<Cow<'a, str>>,
     /// Maximum output tokens for GCP Vertex AI
     #[serde(rename = "max_output_tokens", skip_serializing_if = "Option::is_none")]
     pub max_output_tokens: Option<i32>,
     /// Account ID for Cloudflare-specific models
     #[serde(rename = "account_id", skip_serializing_if = "Option::is_none")]
-    pub account_id: Option<String>,
+    pub account_id: Option<Cow<'a, str>>,
     /// Optional ID for the NL search model
     #[serde(rename = "id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<String>,
+    pub id: Option<Cow<'a, str>>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl NlSearchModelCreateSchema {
-    pub fn new() -> NlSearchModelCreateSchema {
-        NlSearchModelCreateSchema {
+impl<'a> NlSearchModelCreateSchema<'a> {
+    pub fn new() -> Self {
+        Self {
             model_name: None,
             api_key: None,
             api_url: None,
@@ -94,6 +97,7 @@ impl NlSearchModelCreateSchema {
             max_output_tokens: None,
             account_id: None,
             id: None,
+            _phantom: PhantomData,
         }
     }
 }

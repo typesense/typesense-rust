@@ -10,82 +10,117 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
+use ::std::{borrow::Cow, marker::PhantomData};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
 /// struct for passing parameters to the method [`take_snapshot`]
 #[derive(Clone, Debug)]
-pub struct TakeSnapshotParams {
+pub struct TakeSnapshotParams<'p> {
     /// The directory on the server where the snapshot should be saved.
-    pub snapshot_path: String,
+    pub snapshot_path: Cow<'p, str>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`toggle_slow_request_log`]
 #[derive(Clone, Debug)]
-pub struct ToggleSlowRequestLogParams {
-    pub toggle_slow_request_log_request: Option<models::ToggleSlowRequestLogRequest>,
+pub struct ToggleSlowRequestLogParams<'p> {
+    pub toggle_slow_request_log_request: Option<models::ToggleSlowRequestLogRequest<'p>>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for typed errors of method [`clear_cache`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ClearCacheError {
-    UnknownValue(serde_json::Value),
+pub enum ClearCacheError<'a> {
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`compact_db`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CompactDbError {
-    UnknownValue(serde_json::Value),
+pub enum CompactDbError<'a> {
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`get_schema_changes`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetSchemaChangesError {
-    UnknownValue(serde_json::Value),
+pub enum GetSchemaChangesError<'a> {
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`retrieve_api_stats`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RetrieveApiStatsError {
-    UnknownValue(serde_json::Value),
+pub enum RetrieveApiStatsError<'a> {
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`retrieve_metrics`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RetrieveMetricsError {
-    UnknownValue(serde_json::Value),
+pub enum RetrieveMetricsError<'a> {
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`take_snapshot`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum TakeSnapshotError {
-    UnknownValue(serde_json::Value),
+pub enum TakeSnapshotError<'a> {
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`toggle_slow_request_log`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ToggleSlowRequestLogError {
-    UnknownValue(serde_json::Value),
+pub enum ToggleSlowRequestLogError<'a> {
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`vote`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum VoteError {
-    UnknownValue(serde_json::Value),
+pub enum VoteError<'a> {
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// Clear the cached responses of search requests that are sent with `use_cache` parameter in the LRU cache.
 pub async fn clear_cache(
     configuration: &configuration::Configuration,
-) -> Result<models::SuccessStatus, Error<ClearCacheError>> {
+) -> Result<models::SuccessStatus<'static>, Error<ClearCacheError<'static>>> {
     let uri_str = format!("{}/operations/cache/clear", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -143,7 +178,7 @@ pub async fn clear_cache(
 /// Typesense uses RocksDB to store your documents on the disk. If you do frequent writes or updates, you could benefit from running a compaction of the underlying RocksDB database. This could reduce the size of the database and decrease read latency. While the database will not block during this operation, we recommend running it during off-peak hours.
 pub async fn compact_db(
     configuration: &configuration::Configuration,
-) -> Result<models::SuccessStatus, Error<CompactDbError>> {
+) -> Result<models::SuccessStatus<'static>, Error<CompactDbError<'static>>> {
     let uri_str = format!("{}/operations/db/compact", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -201,7 +236,8 @@ pub async fn compact_db(
 /// Returns the status of any ongoing schema change operations. If no schema changes are in progress, returns an empty response.
 pub async fn get_schema_changes(
     configuration: &configuration::Configuration,
-) -> Result<Option<Vec<models::SchemaChangeStatus>>, Error<GetSchemaChangesError>> {
+) -> Result<Option<Vec<models::SchemaChangeStatus<'static>>>, Error<GetSchemaChangesError<'static>>>
+{
     let uri_str = format!("{}/operations/schema_changes", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -234,12 +270,12 @@ pub async fn get_schema_changes(
             ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `Option<Vec<models::SchemaChangeStatus>>`",
+                    "Received `text/plain` content type response that cannot be converted to `Option<Vec<models::SchemaChangeStatus<'static>>>`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `Option<Vec<models::SchemaChangeStatus>>`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `Option<Vec<models::SchemaChangeStatus<'static>>>`"
                 ))));
             }
         }
@@ -257,7 +293,7 @@ pub async fn get_schema_changes(
 /// Retrieve the stats about API endpoints.
 pub async fn retrieve_api_stats(
     configuration: &configuration::Configuration,
-) -> Result<models::ApiStatsResponse, Error<RetrieveApiStatsError>> {
+) -> Result<models::ApiStatsResponse<'static>, Error<RetrieveApiStatsError<'static>>> {
     let uri_str = format!("{}/stats.json", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -313,7 +349,7 @@ pub async fn retrieve_api_stats(
 /// Retrieve the metrics.
 pub async fn retrieve_metrics(
     configuration: &configuration::Configuration,
-) -> Result<serde_json::Value, Error<RetrieveMetricsError>> {
+) -> Result<serde_json::Value, Error<RetrieveMetricsError<'static>>> {
     let uri_str = format!("{}/metrics.json", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -369,8 +405,8 @@ pub async fn retrieve_metrics(
 /// Creates a point-in-time snapshot of a Typesense node's state and data in the specified directory. You can then backup the snapshot directory that gets created and later restore it as a data directory, as needed.
 pub async fn take_snapshot(
     configuration: &configuration::Configuration,
-    params: &TakeSnapshotParams,
-) -> Result<models::SuccessStatus, Error<TakeSnapshotError>> {
+    params: &TakeSnapshotParams<'_>,
+) -> Result<models::SuccessStatus<'static>, Error<TakeSnapshotError<'static>>> {
     let uri_str = format!("{}/operations/snapshot", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -429,8 +465,8 @@ pub async fn take_snapshot(
 /// Enable logging of requests that take over a defined threshold of time. Default is `-1` which disables slow request logging. Slow requests are logged to the primary log file, with the prefix SLOW REQUEST.
 pub async fn toggle_slow_request_log(
     configuration: &configuration::Configuration,
-    params: &ToggleSlowRequestLogParams,
-) -> Result<models::SuccessStatus, Error<ToggleSlowRequestLogError>> {
+    params: &ToggleSlowRequestLogParams<'_>,
+) -> Result<models::SuccessStatus<'static>, Error<ToggleSlowRequestLogError<'static>>> {
     let uri_str = format!("{}/config", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -489,7 +525,7 @@ pub async fn toggle_slow_request_log(
 /// Triggers a follower node to initiate the raft voting process, which triggers leader re-election. The follower node that you run this operation against will become the new leader, once this command succeeds.
 pub async fn vote(
     configuration: &configuration::Configuration,
-) -> Result<models::SuccessStatus, Error<VoteError>> {
+) -> Result<models::SuccessStatus<'static>, Error<VoteError<'static>>> {
     let uri_str = format!("{}/operations/vote", configuration.base_path);
     let mut req_builder = configuration
         .client

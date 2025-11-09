@@ -9,31 +9,34 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct AnalyticsEventsResponseEventsInner {
+pub struct AnalyticsEventsResponseEventsInner<'a> {
     #[serde(rename = "name", skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
+    pub name: Option<Cow<'a, str>>,
     #[serde(rename = "event_type", skip_serializing_if = "Option::is_none")]
-    pub event_type: Option<String>,
+    pub event_type: Option<Cow<'a, str>>,
     #[serde(rename = "collection", skip_serializing_if = "Option::is_none")]
-    pub collection: Option<String>,
+    pub collection: Option<Cow<'a, str>>,
     #[serde(rename = "timestamp", skip_serializing_if = "Option::is_none")]
     pub timestamp: Option<i64>,
     #[serde(rename = "user_id", skip_serializing_if = "Option::is_none")]
-    pub user_id: Option<String>,
+    pub user_id: Option<Cow<'a, str>>,
     #[serde(rename = "doc_id", skip_serializing_if = "Option::is_none")]
-    pub doc_id: Option<String>,
+    pub doc_id: Option<Cow<'a, str>>,
     #[serde(rename = "doc_ids", skip_serializing_if = "Option::is_none")]
     pub doc_ids: Option<Vec<String>>,
     #[serde(rename = "query", skip_serializing_if = "Option::is_none")]
-    pub query: Option<String>,
+    pub query: Option<Cow<'a, str>>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl AnalyticsEventsResponseEventsInner {
-    pub fn new() -> AnalyticsEventsResponseEventsInner {
-        AnalyticsEventsResponseEventsInner {
+impl<'a> AnalyticsEventsResponseEventsInner<'a> {
+    pub fn new() -> Self {
+        Self {
             name: None,
             event_type: None,
             collection: None,
@@ -42,6 +45,7 @@ impl AnalyticsEventsResponseEventsInner {
             doc_id: None,
             doc_ids: None,
             query: None,
+            _phantom: PhantomData,
         }
     }
 }

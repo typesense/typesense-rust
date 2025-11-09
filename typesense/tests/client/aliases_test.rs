@@ -9,7 +9,7 @@ async fn logic_test_aliases_and_alias_lifecycle() {
 
     // --- 1. Create a collection to alias to ---
     let collection_schema = CollectionSchema {
-        name: collection_name.clone().into(),
+        name: collection_name.as_str().into(),
         fields: vec![Field {
             name: "name".into(),
             r#type: "string".into(),
@@ -26,7 +26,8 @@ async fn logic_test_aliases_and_alias_lifecycle() {
 
     // --- 2. Create (Upsert) an alias ---
     let alias_schema = CollectionAliasSchema {
-        collection_name: collection_name.clone(),
+        collection_name: collection_name.as_str().into(),
+        _phantom: core::marker::PhantomData,
     };
 
     let upsert_result = client.aliases().upsert(&alias_name, alias_schema).await;

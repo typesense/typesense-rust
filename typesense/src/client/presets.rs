@@ -5,6 +5,7 @@
 //! A `Presets` instance is created via the main `client.presets()` method.
 
 use crate::{Client, Error, execute_wrapper};
+use ::std::borrow::Cow;
 use typesense_codegen::{apis::presets_api, models};
 
 /// Provides methods for managing all of your Typesense presets.
@@ -24,7 +25,10 @@ impl<'a> Presets<'a> {
     /// Retrieves the details of all presets.
     pub async fn retrieve(
         &self,
-    ) -> Result<models::PresetsRetrieveSchema, Error<presets_api::RetrieveAllPresetsError>> {
+    ) -> Result<
+        models::PresetsRetrieveSchema<'static>,
+        Error<presets_api::RetrieveAllPresetsError<'static>>,
+    > {
         execute_wrapper!(self, presets_api::retrieve_all_presets)
     }
 
@@ -35,12 +39,13 @@ impl<'a> Presets<'a> {
     /// * `schema` - A `PresetUpsertSchema` object with the preset's value.
     pub async fn upsert(
         &self,
-        preset_id: impl Into<String>,
-        schema: models::PresetUpsertSchema,
-    ) -> Result<models::PresetSchema, Error<presets_api::UpsertPresetError>> {
+        preset_id: impl Into<Cow<'_, str>>,
+        schema: models::PresetUpsertSchema<'_>,
+    ) -> Result<models::PresetSchema<'static>, Error<presets_api::UpsertPresetError<'static>>> {
         let params = presets_api::UpsertPresetParams {
             preset_id: preset_id.into(),
             preset_upsert_schema: schema,
+            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, presets_api::upsert_preset, params)
     }

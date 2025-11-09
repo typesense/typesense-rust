@@ -9,10 +9,11 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ApiStatsResponse {
+pub struct ApiStatsResponse<'a> {
     #[serde(rename = "delete_latency_ms", skip_serializing_if = "Option::is_none")]
     pub delete_latency_ms: Option<f64>,
     #[serde(
@@ -63,11 +64,13 @@ pub struct ApiStatsResponse {
         skip_serializing_if = "Option::is_none"
     )]
     pub write_requests_per_second: Option<f64>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl ApiStatsResponse {
-    pub fn new() -> ApiStatsResponse {
-        ApiStatsResponse {
+impl<'a> ApiStatsResponse<'a> {
+    pub fn new() -> Self {
+        Self {
             delete_latency_ms: None,
             delete_requests_per_second: None,
             import_latency_ms: None,
@@ -81,6 +84,7 @@ impl ApiStatsResponse {
             total_requests_per_second: None,
             write_latency_ms: None,
             write_requests_per_second: None,
+            _phantom: PhantomData,
         }
     }
 }

@@ -9,16 +9,22 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct DeleteDocuments200Response {
+pub struct DeleteDocuments200Response<'a> {
     #[serde(rename = "num_deleted")]
     pub num_deleted: i32,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl DeleteDocuments200Response {
-    pub fn new(num_deleted: i32) -> DeleteDocuments200Response {
-        DeleteDocuments200Response { num_deleted }
+impl<'a> DeleteDocuments200Response<'a> {
+    pub fn new(num_deleted: i32) -> Self {
+        Self {
+            num_deleted,
+            _phantom: PhantomData,
+        }
     }
 }

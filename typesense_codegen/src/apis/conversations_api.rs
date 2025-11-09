@@ -10,78 +10,104 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
+use ::std::{borrow::Cow, marker::PhantomData};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
 /// struct for passing parameters to the method [`create_conversation_model`]
 #[derive(Clone, Debug)]
-pub struct CreateConversationModelParams {
-    pub conversation_model_create_schema: models::ConversationModelCreateSchema,
+pub struct CreateConversationModelParams<'p> {
+    pub conversation_model_create_schema: models::ConversationModelCreateSchema<'p>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`delete_conversation_model`]
 #[derive(Clone, Debug)]
-pub struct DeleteConversationModelParams {
+pub struct DeleteConversationModelParams<'p> {
     /// The id of the conversation model to delete
-    pub model_id: String,
+    pub model_id: Cow<'p, str>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`retrieve_conversation_model`]
 #[derive(Clone, Debug)]
-pub struct RetrieveConversationModelParams {
+pub struct RetrieveConversationModelParams<'p> {
     /// The id of the conversation model to retrieve
-    pub model_id: String,
+    pub model_id: Cow<'p, str>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`update_conversation_model`]
 #[derive(Clone, Debug)]
-pub struct UpdateConversationModelParams {
+pub struct UpdateConversationModelParams<'p> {
     /// The id of the conversation model to update
-    pub model_id: String,
-    pub conversation_model_update_schema: models::ConversationModelUpdateSchema,
+    pub model_id: Cow<'p, str>,
+    pub conversation_model_update_schema: models::ConversationModelUpdateSchema<'p>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for typed errors of method [`create_conversation_model`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateConversationModelError {
-    Status400(models::ApiResponse),
-    UnknownValue(serde_json::Value),
+pub enum CreateConversationModelError<'a> {
+    Status400(models::ApiResponse<'a>),
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`delete_conversation_model`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteConversationModelError {
-    UnknownValue(serde_json::Value),
+pub enum DeleteConversationModelError<'a> {
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`retrieve_all_conversation_models`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RetrieveAllConversationModelsError {
-    UnknownValue(serde_json::Value),
+pub enum RetrieveAllConversationModelsError<'a> {
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`retrieve_conversation_model`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RetrieveConversationModelError {
-    UnknownValue(serde_json::Value),
+pub enum RetrieveConversationModelError<'a> {
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`update_conversation_model`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateConversationModelError {
-    UnknownValue(serde_json::Value),
+pub enum UpdateConversationModelError<'a> {
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// Create a Conversation Model
 pub async fn create_conversation_model(
     configuration: &configuration::Configuration,
-    params: &CreateConversationModelParams,
-) -> Result<models::ConversationModelSchema, Error<CreateConversationModelError>> {
+    params: &CreateConversationModelParams<'_>,
+) -> Result<models::ConversationModelSchema<'static>, Error<CreateConversationModelError<'static>>>
+{
     let uri_str = format!("{}/conversations/models", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -140,8 +166,9 @@ pub async fn create_conversation_model(
 /// Delete a conversation model
 pub async fn delete_conversation_model(
     configuration: &configuration::Configuration,
-    params: &DeleteConversationModelParams,
-) -> Result<models::ConversationModelSchema, Error<DeleteConversationModelError>> {
+    params: &DeleteConversationModelParams<'_>,
+) -> Result<models::ConversationModelSchema<'static>, Error<DeleteConversationModelError<'static>>>
+{
     let uri_str = format!(
         "{}/conversations/models/{modelId}",
         configuration.base_path,
@@ -203,7 +230,10 @@ pub async fn delete_conversation_model(
 /// Retrieve all conversation models
 pub async fn retrieve_all_conversation_models(
     configuration: &configuration::Configuration,
-) -> Result<Vec<models::ConversationModelSchema>, Error<RetrieveAllConversationModelsError>> {
+) -> Result<
+    Vec<models::ConversationModelSchema<'static>>,
+    Error<RetrieveAllConversationModelsError<'static>>,
+> {
     let uri_str = format!("{}/conversations/models", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -260,8 +290,9 @@ pub async fn retrieve_all_conversation_models(
 /// Retrieve a conversation model
 pub async fn retrieve_conversation_model(
     configuration: &configuration::Configuration,
-    params: &RetrieveConversationModelParams,
-) -> Result<models::ConversationModelSchema, Error<RetrieveConversationModelError>> {
+    params: &RetrieveConversationModelParams<'_>,
+) -> Result<models::ConversationModelSchema<'static>, Error<RetrieveConversationModelError<'static>>>
+{
     let uri_str = format!(
         "{}/conversations/models/{modelId}",
         configuration.base_path,
@@ -321,8 +352,9 @@ pub async fn retrieve_conversation_model(
 /// Update a conversation model
 pub async fn update_conversation_model(
     configuration: &configuration::Configuration,
-    params: &UpdateConversationModelParams,
-) -> Result<models::ConversationModelSchema, Error<UpdateConversationModelError>> {
+    params: &UpdateConversationModelParams<'_>,
+) -> Result<models::ConversationModelSchema<'static>, Error<UpdateConversationModelError<'static>>>
+{
     let uri_str = format!(
         "{}/conversations/models/{modelId}",
         configuration.base_path,

@@ -9,31 +9,35 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct CurationRule {
+pub struct CurationRule<'a> {
     /// List of tag values to associate with this curation rule.
     #[serde(rename = "tags", skip_serializing_if = "Option::is_none")]
     pub tags: Option<Vec<String>>,
     /// Indicates what search queries should be curated
     #[serde(rename = "query", skip_serializing_if = "Option::is_none")]
-    pub query: Option<String>,
+    pub query: Option<Cow<'a, str>>,
     /// Indicates whether the match on the query term should be `exact` or `contains`. If we want to match all queries that contained the word `apple`, we will use the `contains` match instead.
     #[serde(rename = "match", skip_serializing_if = "Option::is_none")]
     pub r#match: Option<Match>,
     /// Indicates that the curation should apply when the filter_by parameter in a search query exactly matches the string specified here (including backticks, spaces, brackets, etc).
     #[serde(rename = "filter_by", skip_serializing_if = "Option::is_none")]
-    pub filter_by: Option<String>,
+    pub filter_by: Option<Cow<'a, str>>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl CurationRule {
-    pub fn new() -> CurationRule {
-        CurationRule {
+impl<'a> CurationRule<'a> {
+    pub fn new() -> Self {
+        Self {
             tags: None,
             query: None,
             r#match: None,
             filter_by: None,
+            _phantom: PhantomData,
         }
     }
 }

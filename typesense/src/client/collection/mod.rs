@@ -18,7 +18,7 @@ where
 {
     client: &'c Client,
     collection_name: &'n str,
-    _phantom: std::marker::PhantomData<D>,
+    _phantom: core::marker::PhantomData<D>,
 }
 
 impl<'c, 'n, D> Collection<'c, 'n, D>
@@ -31,7 +31,7 @@ where
         Self {
             client,
             collection_name,
-            _phantom: std::marker::PhantomData,
+            _phantom: core::marker::PhantomData,
         }
     }
 
@@ -51,9 +51,13 @@ where
     #[inline]
     pub async fn retrieve(
         &self,
-    ) -> Result<models::CollectionResponse, Error<collections_api::GetCollectionError>> {
+    ) -> Result<
+        models::CollectionResponse<'static>,
+        Error<collections_api::GetCollectionError<'static>>,
+    > {
         let params = collections_api::GetCollectionParams {
-            collection_name: self.collection_name.to_owned(),
+            collection_name: self.collection_name.into(),
+            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, collections_api::get_collection, params)
     }
@@ -62,9 +66,13 @@ where
     #[inline]
     pub async fn delete(
         &self,
-    ) -> Result<models::CollectionResponse, Error<collections_api::DeleteCollectionError>> {
+    ) -> Result<
+        models::CollectionResponse<'static>,
+        Error<collections_api::DeleteCollectionError<'static>>,
+    > {
         let params = collections_api::DeleteCollectionParams {
-            collection_name: self.collection_name.to_owned(),
+            collection_name: self.collection_name.into(),
+            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, collections_api::delete_collection, params)
     }
@@ -76,11 +84,15 @@ where
     #[inline]
     pub async fn update(
         &self,
-        update_schema: models::CollectionUpdateSchema,
-    ) -> Result<models::CollectionUpdateSchema, Error<collections_api::UpdateCollectionError>> {
+        update_schema: models::CollectionUpdateSchema<'_>,
+    ) -> Result<
+        models::CollectionUpdateSchema<'static>,
+        Error<collections_api::UpdateCollectionError<'static>>,
+    > {
         let params = collections_api::UpdateCollectionParams {
-            collection_name: self.collection_name.to_owned(),
+            collection_name: self.collection_name.into(),
             collection_update_schema: update_schema,
+            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, collections_api::update_collection, params)
     }

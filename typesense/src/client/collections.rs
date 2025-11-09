@@ -28,10 +28,14 @@ impl<'c> Collections<'c> {
     /// * `schema` - A `CollectionSchema` object describing the collection to be created.
     pub async fn create(
         &self,
-        schema: models::CollectionSchema,
-    ) -> Result<models::CollectionResponse, Error<collections_api::CreateCollectionError>> {
+        schema: models::CollectionSchema<'_>,
+    ) -> Result<
+        models::CollectionResponse<'static>,
+        Error<collections_api::CreateCollectionError<'static>>,
+    > {
         let params = collections_api::CreateCollectionParams {
             collection_schema: schema,
+            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, collections_api::create_collection, params)
     }
@@ -39,12 +43,16 @@ impl<'c> Collections<'c> {
     /// List the existing Typesense collections.
     pub async fn retrieve(
         &self,
-        params: GetCollectionsParameters,
-    ) -> Result<Vec<models::CollectionResponse>, Error<collections_api::GetCollectionsError>> {
+        params: GetCollectionsParameters<'_>,
+    ) -> Result<
+        Vec<models::CollectionResponse<'static>>,
+        Error<collections_api::GetCollectionsError<'static>>,
+    > {
         let params = GetCollectionsParams {
             exclude_fields: params.exclude_fields,
             limit: params.limit,
             offset: params.offset,
+            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, collections_api::get_collections, params)
     }

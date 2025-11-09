@@ -9,20 +9,27 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct StemmingDictionaryWordsInner {
+pub struct StemmingDictionaryWordsInner<'a> {
     /// The word form to be stemmed
     #[serde(rename = "word")]
-    pub word: String,
+    pub word: Cow<'a, str>,
     /// The root form of the word
     #[serde(rename = "root")]
-    pub root: String,
+    pub root: Cow<'a, str>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl StemmingDictionaryWordsInner {
-    pub fn new(word: String, root: String) -> StemmingDictionaryWordsInner {
-        StemmingDictionaryWordsInner { word, root }
+impl<'a> StemmingDictionaryWordsInner<'a> {
+    pub fn new(word: Cow<'a, str>, root: Cow<'a, str>) -> Self {
+        Self {
+            word,
+            root,
+            _phantom: PhantomData,
+        }
     }
 }

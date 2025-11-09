@@ -9,18 +9,24 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 /// VoiceQueryModelCollectionConfig : Configuration for the voice query model
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct VoiceQueryModelCollectionConfig {
+pub struct VoiceQueryModelCollectionConfig<'a> {
     #[serde(rename = "model_name", skip_serializing_if = "Option::is_none")]
-    pub model_name: Option<String>,
+    pub model_name: Option<Cow<'a, str>>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl VoiceQueryModelCollectionConfig {
+impl<'a> VoiceQueryModelCollectionConfig<'a> {
     /// Configuration for the voice query model
-    pub fn new() -> VoiceQueryModelCollectionConfig {
-        VoiceQueryModelCollectionConfig { model_name: None }
+    pub fn new() -> Self {
+        Self {
+            model_name: None,
+            _phantom: PhantomData,
+        }
     }
 }

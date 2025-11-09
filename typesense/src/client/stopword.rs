@@ -23,10 +23,13 @@ impl<'a> Stopword<'a> {
     /// Retrieves the details of this specific stopwords set.
     pub async fn retrieve(
         &self,
-    ) -> Result<models::StopwordsSetRetrieveSchema, Error<stopwords_api::RetrieveStopwordsSetError>>
-    {
+    ) -> Result<
+        models::StopwordsSetRetrieveSchema<'static>,
+        Error<stopwords_api::RetrieveStopwordsSetError<'static>>,
+    > {
         let params = stopwords_api::RetrieveStopwordsSetParams {
-            set_id: self.set_id.to_owned(),
+            set_id: self.set_id.into(),
+            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, stopwords_api::retrieve_stopwords_set, params)
     }
@@ -34,10 +37,13 @@ impl<'a> Stopword<'a> {
     /// Permanently deletes this specific stopwords set.
     pub async fn delete(
         &self,
-    ) -> Result<models::DeleteStopwordsSet200Response, Error<stopwords_api::DeleteStopwordsSetError>>
-    {
+    ) -> Result<
+        models::DeleteStopwordsSet200Response<'static>,
+        Error<stopwords_api::DeleteStopwordsSetError<'static>>,
+    > {
         let params = stopwords_api::DeleteStopwordsSetParams {
-            set_id: self.set_id.to_owned(),
+            set_id: self.set_id.into(),
+            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, stopwords_api::delete_stopwords_set, params)
     }

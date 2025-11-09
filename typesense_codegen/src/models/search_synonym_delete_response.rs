@@ -9,17 +9,23 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchSynonymDeleteResponse {
+pub struct SearchSynonymDeleteResponse<'a> {
     /// The id of the synonym that was deleted
     #[serde(rename = "id")]
-    pub id: String,
+    pub id: Cow<'a, str>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl SearchSynonymDeleteResponse {
-    pub fn new(id: String) -> SearchSynonymDeleteResponse {
-        SearchSynonymDeleteResponse { id }
+impl<'a> SearchSynonymDeleteResponse<'a> {
+    pub fn new(id: Cow<'a, str>) -> Self {
+        Self {
+            id,
+            _phantom: PhantomData,
+        }
     }
 }

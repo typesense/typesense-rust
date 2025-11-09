@@ -9,21 +9,25 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct MultiSearchResult<D> {
+pub struct MultiSearchResult<'a, D> {
     #[serde(rename = "results")]
-    pub results: Vec<models::MultiSearchResultItem<D>>,
+    pub results: Vec<models::MultiSearchResultItem<'a, D>>,
     #[serde(rename = "conversation", skip_serializing_if = "Option::is_none")]
-    pub conversation: Option<Box<models::SearchResultConversation>>,
+    pub conversation: Option<Box<models::SearchResultConversation<'a>>>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<D> MultiSearchResult<D> {
-    pub fn new(results: Vec<models::MultiSearchResultItem<D>>) -> MultiSearchResult<D> {
-        MultiSearchResult {
+impl<'a, D> MultiSearchResult<'a, D> {
+    pub fn new(results: Vec<models::MultiSearchResultItem<'a, D>>) -> Self {
+        Self {
             results,
             conversation: None,
+            _phantom: PhantomData,
         }
     }
 }

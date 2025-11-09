@@ -10,148 +10,193 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
+use ::std::{borrow::Cow, marker::PhantomData};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
 /// struct for passing parameters to the method [`create_collection`]
 #[derive(Clone, Debug)]
-pub struct CreateCollectionParams {
+pub struct CreateCollectionParams<'p> {
     /// The collection object to be created
-    pub collection_schema: models::CollectionSchema,
+    pub collection_schema: models::CollectionSchema<'p>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`delete_alias`]
 #[derive(Clone, Debug)]
-pub struct DeleteAliasParams {
+pub struct DeleteAliasParams<'p> {
     /// The name of the alias to delete
-    pub alias_name: String,
+    pub alias_name: Cow<'p, str>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`delete_collection`]
 #[derive(Clone, Debug)]
-pub struct DeleteCollectionParams {
+pub struct DeleteCollectionParams<'p> {
     /// The name of the collection to delete
-    pub collection_name: String,
+    pub collection_name: Cow<'p, str>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`get_alias`]
 #[derive(Clone, Debug)]
-pub struct GetAliasParams {
+pub struct GetAliasParams<'p> {
     /// The name of the alias to retrieve
-    pub alias_name: String,
+    pub alias_name: Cow<'p, str>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`get_collection`]
 #[derive(Clone, Debug)]
-pub struct GetCollectionParams {
+pub struct GetCollectionParams<'p> {
     /// The name of the collection to retrieve
-    pub collection_name: String,
+    pub collection_name: Cow<'p, str>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`get_collections`]
 #[derive(Clone, Debug)]
-pub struct GetCollectionsParams {
-    pub exclude_fields: Option<String>,
+pub struct GetCollectionsParams<'p> {
+    pub exclude_fields: Option<Cow<'p, str>>,
     pub limit: Option<i32>,
     pub offset: Option<i32>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`update_collection`]
 #[derive(Clone, Debug)]
-pub struct UpdateCollectionParams {
+pub struct UpdateCollectionParams<'p> {
     /// The name of the collection to update
-    pub collection_name: String,
+    pub collection_name: Cow<'p, str>,
     /// The document object with fields to be updated
-    pub collection_update_schema: models::CollectionUpdateSchema,
+    pub collection_update_schema: models::CollectionUpdateSchema<'p>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`upsert_alias`]
 #[derive(Clone, Debug)]
-pub struct UpsertAliasParams {
+pub struct UpsertAliasParams<'p> {
     /// The name of the alias to create/update
-    pub alias_name: String,
+    pub alias_name: Cow<'p, str>,
     /// Collection alias to be created/updated
-    pub collection_alias_schema: Option<models::CollectionAliasSchema>,
+    pub collection_alias_schema: Option<models::CollectionAliasSchema<'p>>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for typed errors of method [`create_collection`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateCollectionError {
-    Status400(models::ApiResponse),
-    Status409(models::ApiResponse),
-    UnknownValue(serde_json::Value),
+pub enum CreateCollectionError<'a> {
+    Status400(models::ApiResponse<'a>),
+    Status409(models::ApiResponse<'a>),
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`delete_alias`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteAliasError {
-    Status404(models::ApiResponse),
-    UnknownValue(serde_json::Value),
+pub enum DeleteAliasError<'a> {
+    Status404(models::ApiResponse<'a>),
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`delete_collection`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteCollectionError {
-    Status404(models::ApiResponse),
-    UnknownValue(serde_json::Value),
+pub enum DeleteCollectionError<'a> {
+    Status404(models::ApiResponse<'a>),
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`get_alias`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetAliasError {
-    Status404(models::ApiResponse),
-    UnknownValue(serde_json::Value),
+pub enum GetAliasError<'a> {
+    Status404(models::ApiResponse<'a>),
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`get_aliases`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetAliasesError {
-    UnknownValue(serde_json::Value),
+pub enum GetAliasesError<'a> {
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`get_collection`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetCollectionError {
-    Status404(models::ApiResponse),
-    UnknownValue(serde_json::Value),
+pub enum GetCollectionError<'a> {
+    Status404(models::ApiResponse<'a>),
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`get_collections`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetCollectionsError {
-    UnknownValue(serde_json::Value),
+pub enum GetCollectionsError<'a> {
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`update_collection`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateCollectionError {
-    Status400(models::ApiResponse),
-    Status404(models::ApiResponse),
-    UnknownValue(serde_json::Value),
+pub enum UpdateCollectionError<'a> {
+    Status400(models::ApiResponse<'a>),
+    Status404(models::ApiResponse<'a>),
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`upsert_alias`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpsertAliasError {
-    Status400(models::ApiResponse),
-    Status404(models::ApiResponse),
-    UnknownValue(serde_json::Value),
+pub enum UpsertAliasError<'a> {
+    Status400(models::ApiResponse<'a>),
+    Status404(models::ApiResponse<'a>),
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// When a collection is created, we give it a name and describe the fields that will be indexed from the documents added to the collection.
 pub async fn create_collection(
     configuration: &configuration::Configuration,
-    params: &CreateCollectionParams,
-) -> Result<models::CollectionResponse, Error<CreateCollectionError>> {
+    params: &CreateCollectionParams<'_>,
+) -> Result<models::CollectionResponse<'static>, Error<CreateCollectionError<'static>>> {
     let uri_str = format!("{}/collections", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -209,8 +254,8 @@ pub async fn create_collection(
 
 pub async fn delete_alias(
     configuration: &configuration::Configuration,
-    params: &DeleteAliasParams,
-) -> Result<models::CollectionAlias, Error<DeleteAliasError>> {
+    params: &DeleteAliasParams<'_>,
+) -> Result<models::CollectionAlias<'static>, Error<DeleteAliasError<'static>>> {
     let uri_str = format!(
         "{}/aliases/{aliasName}",
         configuration.base_path,
@@ -272,8 +317,8 @@ pub async fn delete_alias(
 /// Permanently drops a collection. This action cannot be undone. For large collections, this might have an impact on read latencies.
 pub async fn delete_collection(
     configuration: &configuration::Configuration,
-    params: &DeleteCollectionParams,
-) -> Result<models::CollectionResponse, Error<DeleteCollectionError>> {
+    params: &DeleteCollectionParams<'_>,
+) -> Result<models::CollectionResponse<'static>, Error<DeleteCollectionError<'static>>> {
     let uri_str = format!(
         "{}/collections/{collectionName}",
         configuration.base_path,
@@ -335,8 +380,8 @@ pub async fn delete_collection(
 /// Find out which collection an alias points to by fetching it
 pub async fn get_alias(
     configuration: &configuration::Configuration,
-    params: &GetAliasParams,
-) -> Result<models::CollectionAlias, Error<GetAliasError>> {
+    params: &GetAliasParams<'_>,
+) -> Result<models::CollectionAlias<'static>, Error<GetAliasError<'static>>> {
     let uri_str = format!(
         "{}/aliases/{aliasName}",
         configuration.base_path,
@@ -396,7 +441,7 @@ pub async fn get_alias(
 /// List all aliases and the corresponding collections that they map to.
 pub async fn get_aliases(
     configuration: &configuration::Configuration,
-) -> Result<models::CollectionAliasesResponse, Error<GetAliasesError>> {
+) -> Result<models::CollectionAliasesResponse<'static>, Error<GetAliasesError<'static>>> {
     let uri_str = format!("{}/aliases", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -452,8 +497,8 @@ pub async fn get_aliases(
 /// Retrieve the details of a collection, given its name.
 pub async fn get_collection(
     configuration: &configuration::Configuration,
-    params: &GetCollectionParams,
-) -> Result<models::CollectionResponse, Error<GetCollectionError>> {
+    params: &GetCollectionParams<'_>,
+) -> Result<models::CollectionResponse<'static>, Error<GetCollectionError<'static>>> {
     let uri_str = format!(
         "{}/collections/{collectionName}",
         configuration.base_path,
@@ -513,8 +558,8 @@ pub async fn get_collection(
 /// Returns a summary of all your collections. The collections are returned sorted by creation date, with the most recent collections appearing first.
 pub async fn get_collections(
     configuration: &configuration::Configuration,
-    params: &GetCollectionsParams,
-) -> Result<Vec<models::CollectionResponse>, Error<GetCollectionsError>> {
+    params: &GetCollectionsParams<'_>,
+) -> Result<Vec<models::CollectionResponse<'static>>, Error<GetCollectionsError<'static>>> {
     let uri_str = format!("{}/collections", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -579,8 +624,8 @@ pub async fn get_collections(
 /// Update a collection's schema to modify the fields and their types.
 pub async fn update_collection(
     configuration: &configuration::Configuration,
-    params: &UpdateCollectionParams,
-) -> Result<models::CollectionUpdateSchema, Error<UpdateCollectionError>> {
+    params: &UpdateCollectionParams<'_>,
+) -> Result<models::CollectionUpdateSchema<'static>, Error<UpdateCollectionError<'static>>> {
     let uri_str = format!(
         "{}/collections/{collectionName}",
         configuration.base_path,
@@ -643,8 +688,8 @@ pub async fn update_collection(
 /// Create or update a collection alias. An alias is a virtual collection name that points to a real collection. If you're familiar with symbolic links on Linux, it's very similar to that. Aliases are useful when you want to reindex your data in the background on a new collection and switch your application to it without any changes to your code.
 pub async fn upsert_alias(
     configuration: &configuration::Configuration,
-    params: &UpsertAliasParams,
-) -> Result<models::CollectionAlias, Error<UpsertAliasError>> {
+    params: &UpsertAliasParams<'_>,
+) -> Result<models::CollectionAlias<'static>, Error<UpsertAliasError<'static>>> {
     let uri_str = format!(
         "{}/aliases/{aliasName}",
         configuration.base_path,

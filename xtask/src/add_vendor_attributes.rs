@@ -15,35 +15,38 @@ pub fn add_vendor_attributes(doc_root: &mut Mapping) -> Result<(), String> {
     ])?;
 
     attrs.schema_generic_parameter([
-        ("SearchResult", "<D>"),
-        ("SearchGroupedHit", "<D>"),
-        ("SearchResultHit", "<D>"),
-        ("MultiSearchResult", "<D>"),
-        ("MultiSearchResultItem", "<D>"),
+        ("SearchResult", "D"),
+        ("SearchGroupedHit", "D"),
+        ("SearchResultHit", "D"),
+        ("MultiSearchResult", "D"),
+        ("MultiSearchResultItem", "D"),
     ])?;
 
     attrs.schema_field_type_overrides(
         "SearchResult",
         [
-            ("hits", "Option<Vec<models::SearchResultHit<D>>>"),
-            ("grouped_hits", "Option<Vec<models::SearchGroupedHit<D>>>"),
+            ("hits", "Option<Vec<models::SearchResultHit<'a, D>>>"),
+            (
+                "grouped_hits",
+                "Option<Vec<models::SearchGroupedHit<'a, D>>>",
+            ),
         ],
     )?;
     attrs.schema_field_type_overrides(
         "SearchGroupedHit",
-        [("hits", "Vec<models::SearchResultHit<D>>")],
+        [("hits", "Vec<models::SearchResultHit<'a, D>>")],
     )?;
     attrs.schema_field_type_overrides("SearchResultHit", [("document", "Option<D>")])?;
     attrs.schema_field_type_overrides(
         "MultiSearchResult",
-        [("results", "Vec<models::MultiSearchResultItem<D>>")],
+        [("results", "Vec<models::MultiSearchResultItem<'a, D>>")],
     )?;
 
     // Operations
     attrs
         .operation("/collections/{collectionName}/documents/search", "get")
-        .generic_parameter("<D: for<'de> serde::Deserialize<'de> + Serialize>")
-        .return_type("models::SearchResult<D>")
+        .generic_parameter("D: for<'de> serde::Deserialize<'de> + Serialize")
+        .return_type("models::SearchResult<'static, D>")
         .done()?;
 
     attrs
@@ -54,7 +57,7 @@ pub fn add_vendor_attributes(doc_root: &mut Mapping) -> Result<(), String> {
     // The endpoint return `null` if no schema changes are in progress
     attrs
         .operation("/operations/schema_changes", "get")
-        .return_type("Option<Vec<models::SchemaChangeStatus>>")
+        .return_type("Option<Vec<models::SchemaChangeStatus<'static>>>")
         .done()?;
 
     // The documents /import endpoint expects a text/plain body and response
@@ -78,8 +81,8 @@ pub fn add_vendor_attributes(doc_root: &mut Mapping) -> Result<(), String> {
 
     attrs
         .operation("/collections/{collectionName}/documents", "patch")
-        .generic_parameter("<B: Serialize>")
-        .params_generic_parameter("<B>")
+        .generic_parameter("B: Serialize")
+        .params_generic_parameter("B")
         .request_type("B")
         .done()?;
 
@@ -88,8 +91,8 @@ pub fn add_vendor_attributes(doc_root: &mut Mapping) -> Result<(), String> {
             "/collections/{collectionName}/documents/{documentId}",
             "patch",
         )
-        .generic_parameter("<B: Serialize>")
-        .params_generic_parameter("<B>")
+        .generic_parameter("B: Serialize")
+        .params_generic_parameter("B")
         .request_type("B")
         .done()?;
 

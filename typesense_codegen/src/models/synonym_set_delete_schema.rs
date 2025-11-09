@@ -9,17 +9,23 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SynonymSetDeleteSchema {
+pub struct SynonymSetDeleteSchema<'a> {
     /// Name of the deleted synonym set
     #[serde(rename = "name")]
-    pub name: String,
+    pub name: Cow<'a, str>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl SynonymSetDeleteSchema {
-    pub fn new(name: String) -> SynonymSetDeleteSchema {
-        SynonymSetDeleteSchema { name }
+impl<'a> SynonymSetDeleteSchema<'a> {
+    pub fn new(name: Cow<'a, str>) -> Self {
+        Self {
+            name,
+            _phantom: PhantomData,
+        }
     }
 }

@@ -9,24 +9,28 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct StopwordsSetSchema {
+pub struct StopwordsSetSchema<'a> {
     #[serde(rename = "id")]
-    pub id: String,
+    pub id: Cow<'a, str>,
     #[serde(rename = "stopwords")]
     pub stopwords: Vec<String>,
     #[serde(rename = "locale", skip_serializing_if = "Option::is_none")]
-    pub locale: Option<String>,
+    pub locale: Option<Cow<'a, str>>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl StopwordsSetSchema {
-    pub fn new(id: String, stopwords: Vec<String>) -> StopwordsSetSchema {
-        StopwordsSetSchema {
+impl<'a> StopwordsSetSchema<'a> {
+    pub fn new(id: Cow<'a, str>, stopwords: Vec<String>) -> Self {
+        Self {
             id,
             stopwords,
             locale: None,
+            _phantom: PhantomData,
         }
     }
 }

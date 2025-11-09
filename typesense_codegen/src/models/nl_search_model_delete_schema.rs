@@ -9,17 +9,23 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct NlSearchModelDeleteSchema {
+pub struct NlSearchModelDeleteSchema<'a> {
     /// ID of the deleted NL search model
     #[serde(rename = "id")]
-    pub id: String,
+    pub id: Cow<'a, str>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl NlSearchModelDeleteSchema {
-    pub fn new(id: String) -> NlSearchModelDeleteSchema {
-        NlSearchModelDeleteSchema { id }
+impl<'a> NlSearchModelDeleteSchema<'a> {
+    pub fn new(id: Cow<'a, str>) -> Self {
+        Self {
+            id,
+            _phantom: PhantomData,
+        }
     }
 }

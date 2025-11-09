@@ -1,8 +1,9 @@
 use serde::{Deserialize, Serialize};
-use typesense::Typesense;
-use typesense::models::Field;
-use typesense::models::SearchParameters;
-use typesense::prelude::*;
+use typesense::{
+    Typesense,
+    models::{Field, SearchParameters},
+    prelude::*,
+};
 
 use crate::{get_client, new_id};
 
@@ -122,7 +123,7 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
     // Create Collection using the schema from the derive macro
     let schema = MegaProduct::collection_schema();
     let mut schema_for_creation = schema.clone();
-    schema_for_creation.name = collection_name.clone().into(); // Use the unique name
+    schema_for_creation.name = collection_name.as_str().into(); // Use the unique name
 
     let create_res = client.collections().create(schema_for_creation).await;
     assert!(
@@ -439,8 +440,8 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
         typesense::Error<typesense_codegen::apis::documents_api::SearchCollectionError>,
     > = documents_client
         .search(SearchParameters {
-            q: Some("Wrench".to_owned()),
-            query_by: Some("title".to_owned()),
+            q: Some("Wrench".into()),
+            query_by: Some("title".into()),
             ..Default::default()
         })
         .await;
@@ -449,8 +450,8 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
     // B. Search a renamed field
     let search_res2 = documents_client
         .search(SearchParameters {
-            q: Some("Wrenchmaster".to_owned()),
-            query_by: Some("product_name".to_owned()),
+            q: Some("Wrenchmaster".into()),
+            query_by: Some("product_name".into()),
             ..Default::default()
         })
         .await;
@@ -458,9 +459,9 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
 
     // C. Filter by a facet
     let search_params3 = SearchParameters {
-        q: Some("*".to_owned()),
-        query_by: Some("title".to_owned()),
-        filter_by: Some("brand:='MegaTools'".to_owned()),
+        q: Some("*".into()),
+        query_by: Some("title".into()),
+        filter_by: Some("brand:='MegaTools'".into()),
         ..Default::default()
     };
     let search_res3 = documents_client.search(search_params3).await;
@@ -468,9 +469,9 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
 
     // D. Filter by a range_index
     let search_params4 = SearchParameters {
-        q: Some("*".to_owned()),
-        query_by: Some("title".to_owned()),
-        filter_by: Some("review_score:>4.5".to_owned()),
+        q: Some("*".into()),
+        query_by: Some("title".into()),
+        filter_by: Some("review_score:>4.5".into()),
         ..Default::default()
     };
     let search_res4 = documents_client.search(search_params4).await;
@@ -478,8 +479,8 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
 
     // E. Search a flattened field
     let search_params5 = SearchParameters {
-        q: Some("MT-WM-3000".to_owned()),
-        query_by: Some("details.part_number".to_owned()),
+        q: Some("MT-WM-3000".into()),
+        query_by: Some("details.part_number".into()),
         ..Default::default()
     };
     let search_res5 = documents_client.search(search_params5).await;
@@ -487,9 +488,9 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
 
     // F. Filter by a deep nested field
     let search_params_deep = SearchParameters {
-        q: Some("*".to_owned()),
-        query_by: Some("title".to_owned()),
-        filter_by: Some("details.extra_details.color:='Red'".to_owned()),
+        q: Some("*".into()),
+        query_by: Some("title".into()),
+        filter_by: Some("details.extra_details.color:='Red'".into()),
         ..Default::default()
     };
     let search_res_deep = documents_client.search(search_params_deep).await;
@@ -500,8 +501,8 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
     );
 
     let search_params6 = SearchParameters {
-        q: Some("WH-US-WEST-05".to_owned()),
-        query_by: Some("logistics_data.warehouse_code".to_owned()),
+        q: Some("WH-US-WEST-05".into()),
+        query_by: Some("logistics_data.warehouse_code".into()),
         ..Default::default()
     };
     let search_res6 = documents_client.search(search_params6).await;
@@ -513,8 +514,8 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
 
     // G. Search a field in a nested object array
     let search_params7 = SearchParameters {
-        q: Some("p-01".to_owned()),
-        query_by: Some("parts.part_id".to_owned()),
+        q: Some("p-01".into()),
+        query_by: Some("parts.part_id".into()),
         ..Default::default()
     };
     let search_res7 = documents_client.search(search_params7).await;
@@ -526,8 +527,8 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
 
     // H. Search a field in a flattened nested object array
     let search_params8 = SearchParameters {
-        q: Some("Supplier A".to_owned()),
-        query_by: Some("parts.supplier.name".to_owned()),
+        q: Some("Supplier A".into()),
+        query_by: Some("parts.supplier.name".into()),
         ..Default::default()
     };
     let search_res8 = documents_client.search(search_params8).await;
@@ -617,7 +618,7 @@ async fn logic_test_manual_flattening_lifecycle() {
 
     // 1. Create collection from the schema derived from `ManualFlattenedProduct`
     let mut schema = ManualFlattenedProduct::collection_schema();
-    schema.name = collection_name.clone().into();
+    schema.name = collection_name.as_str().into();
 
     // Verify the generated schema is correct *before* creating it
     let schema_fields: Vec<_> = schema.fields.iter().map(|f| &f.name as &str).collect();
@@ -674,8 +675,8 @@ async fn logic_test_manual_flattening_lifecycle() {
     let search_res_indexed = typed_collection
         .documents()
         .search(SearchParameters {
-            q: Some("PG-123".to_owned()),
-            query_by: Some("details.part_number".to_owned()),
+            q: Some("PG-123".into()),
+            query_by: Some("details.part_number".into()),
             ..Default::default()
         })
         .await

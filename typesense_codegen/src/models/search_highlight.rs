@@ -9,21 +9,22 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchHighlight {
+pub struct SearchHighlight<'a> {
     #[serde(rename = "field", skip_serializing_if = "Option::is_none")]
-    pub field: Option<String>,
+    pub field: Option<Cow<'a, str>>,
     /// Present only for (non-array) string fields
     #[serde(rename = "snippet", skip_serializing_if = "Option::is_none")]
-    pub snippet: Option<String>,
+    pub snippet: Option<Cow<'a, str>>,
     /// Present only for (array) string[] fields
     #[serde(rename = "snippets", skip_serializing_if = "Option::is_none")]
     pub snippets: Option<Vec<String>>,
     /// Full field value with highlighting, present only for (non-array) string fields
     #[serde(rename = "value", skip_serializing_if = "Option::is_none")]
-    pub value: Option<String>,
+    pub value: Option<Cow<'a, str>>,
     /// Full field value with highlighting, present only for (array) string[] fields
     #[serde(rename = "values", skip_serializing_if = "Option::is_none")]
     pub values: Option<Vec<String>>,
@@ -32,11 +33,13 @@ pub struct SearchHighlight {
     pub indices: Option<Vec<i32>>,
     #[serde(rename = "matched_tokens", skip_serializing_if = "Option::is_none")]
     pub matched_tokens: Option<Vec<serde_json::Value>>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl SearchHighlight {
-    pub fn new() -> SearchHighlight {
-        SearchHighlight {
+impl<'a> SearchHighlight<'a> {
+    pub fn new() -> Self {
+        Self {
             field: None,
             snippet: None,
             snippets: None,
@@ -44,6 +47,7 @@ impl SearchHighlight {
             values: None,
             indices: None,
             matched_tokens: None,
+            _phantom: PhantomData,
         }
     }
 }

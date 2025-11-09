@@ -9,27 +9,31 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchRequestParams {
+pub struct SearchRequestParams<'a> {
     #[serde(rename = "collection_name")]
-    pub collection_name: String,
+    pub collection_name: Cow<'a, str>,
     #[serde(rename = "q")]
-    pub q: String,
+    pub q: Cow<'a, str>,
     #[serde(rename = "per_page")]
     pub per_page: i32,
     #[serde(rename = "voice_query", skip_serializing_if = "Option::is_none")]
-    pub voice_query: Option<Box<models::SearchRequestParamsVoiceQuery>>,
+    pub voice_query: Option<Box<models::SearchRequestParamsVoiceQuery<'a>>>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl SearchRequestParams {
-    pub fn new(collection_name: String, q: String, per_page: i32) -> SearchRequestParams {
-        SearchRequestParams {
+impl<'a> SearchRequestParams<'a> {
+    pub fn new(collection_name: Cow<'a, str>, q: Cow<'a, str>, per_page: i32) -> Self {
+        Self {
             collection_name,
             q,
             per_page,
             voice_query: None,
+            _phantom: PhantomData,
         }
     }
 }

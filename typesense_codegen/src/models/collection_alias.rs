@@ -9,23 +9,27 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct CollectionAlias {
+pub struct CollectionAlias<'a> {
     /// Name of the collection alias
     #[serde(rename = "name")]
-    pub name: String,
+    pub name: Cow<'a, str>,
     /// Name of the collection the alias mapped to
     #[serde(rename = "collection_name")]
-    pub collection_name: String,
+    pub collection_name: Cow<'a, str>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl CollectionAlias {
-    pub fn new(name: String, collection_name: String) -> CollectionAlias {
-        CollectionAlias {
+impl<'a> CollectionAlias<'a> {
+    pub fn new(name: Cow<'a, str>, collection_name: Cow<'a, str>) -> Self {
+        Self {
             name,
             collection_name,
+            _phantom: PhantomData,
         }
     }
 }

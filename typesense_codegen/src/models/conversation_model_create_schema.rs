@@ -9,28 +9,29 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ConversationModelCreateSchema {
+pub struct ConversationModelCreateSchema<'a> {
     /// An explicit id for the model, otherwise the API will return a response with an auto-generated conversation model id.
     #[serde(rename = "id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<String>,
+    pub id: Option<Cow<'a, str>>,
     /// Name of the LLM model offered by OpenAI, Cloudflare or vLLM
     #[serde(rename = "model_name")]
-    pub model_name: String,
+    pub model_name: Cow<'a, str>,
     /// The LLM service's API Key
     #[serde(rename = "api_key", skip_serializing_if = "Option::is_none")]
-    pub api_key: Option<String>,
+    pub api_key: Option<Cow<'a, str>>,
     /// Typesense collection that stores the historical conversations
     #[serde(rename = "history_collection")]
-    pub history_collection: String,
+    pub history_collection: Cow<'a, str>,
     /// LLM service's account ID (only applicable for Cloudflare)
     #[serde(rename = "account_id", skip_serializing_if = "Option::is_none")]
-    pub account_id: Option<String>,
+    pub account_id: Option<Cow<'a, str>>,
     /// The system prompt that contains special instructions to the LLM
     #[serde(rename = "system_prompt", skip_serializing_if = "Option::is_none")]
-    pub system_prompt: Option<String>,
+    pub system_prompt: Option<Cow<'a, str>>,
     /// Time interval in seconds after which the messages would be deleted. Default: 86400 (24 hours)
     #[serde(rename = "ttl", skip_serializing_if = "Option::is_none")]
     pub ttl: Option<i32>,
@@ -39,16 +40,14 @@ pub struct ConversationModelCreateSchema {
     pub max_bytes: i32,
     /// URL of vLLM service
     #[serde(rename = "vllm_url", skip_serializing_if = "Option::is_none")]
-    pub vllm_url: Option<String>,
+    pub vllm_url: Option<Cow<'a, str>>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl ConversationModelCreateSchema {
-    pub fn new(
-        model_name: String,
-        history_collection: String,
-        max_bytes: i32,
-    ) -> ConversationModelCreateSchema {
-        ConversationModelCreateSchema {
+impl<'a> ConversationModelCreateSchema<'a> {
+    pub fn new(model_name: Cow<'a, str>, history_collection: Cow<'a, str>, max_bytes: i32) -> Self {
+        Self {
             id: None,
             model_name,
             api_key: None,
@@ -58,6 +57,7 @@ impl ConversationModelCreateSchema {
             ttl: None,
             max_bytes,
             vllm_url: None,
+            _phantom: PhantomData,
         }
     }
 }

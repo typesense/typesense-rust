@@ -9,27 +9,31 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SchemaChangeStatus {
+pub struct SchemaChangeStatus<'a> {
     /// Name of the collection being modified
     #[serde(rename = "collection", skip_serializing_if = "Option::is_none")]
-    pub collection: Option<String>,
+    pub collection: Option<Cow<'a, str>>,
     /// Number of documents that have been validated
     #[serde(rename = "validated_docs", skip_serializing_if = "Option::is_none")]
     pub validated_docs: Option<i32>,
     /// Number of documents that have been altered
     #[serde(rename = "altered_docs", skip_serializing_if = "Option::is_none")]
     pub altered_docs: Option<i32>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl SchemaChangeStatus {
-    pub fn new() -> SchemaChangeStatus {
-        SchemaChangeStatus {
+impl<'a> SchemaChangeStatus<'a> {
+    pub fn new() -> Self {
+        Self {
             collection: None,
             validated_docs: None,
             altered_docs: None,
+            _phantom: PhantomData,
         }
     }
 }

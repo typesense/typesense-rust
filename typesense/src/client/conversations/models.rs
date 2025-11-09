@@ -25,13 +25,14 @@ impl<'a> Models<'a> {
     /// * `schema` - A `ConversationModelCreateSchema` object describing the model.
     pub async fn create(
         &self,
-        schema: models::ConversationModelCreateSchema,
+        schema: models::ConversationModelCreateSchema<'_>,
     ) -> Result<
-        models::ConversationModelSchema,
-        Error<conversations_api::CreateConversationModelError>,
+        models::ConversationModelSchema<'static>,
+        Error<conversations_api::CreateConversationModelError<'static>>,
     > {
         let params = conversations_api::CreateConversationModelParams {
             conversation_model_create_schema: schema,
+            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, conversations_api::create_conversation_model, params)
     }
@@ -40,8 +41,8 @@ impl<'a> Models<'a> {
     pub async fn retrieve(
         &self,
     ) -> Result<
-        Vec<models::ConversationModelSchema>,
-        Error<conversations_api::RetrieveAllConversationModelsError>,
+        Vec<models::ConversationModelSchema<'static>>,
+        Error<conversations_api::RetrieveAllConversationModelsError<'static>>,
     > {
         execute_wrapper!(self, conversations_api::retrieve_all_conversation_models)
     }

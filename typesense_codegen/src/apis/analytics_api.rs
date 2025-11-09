@@ -10,137 +10,182 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
+use ::std::{borrow::Cow, marker::PhantomData};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
 /// struct for passing parameters to the method [`create_analytics_event`]
 #[derive(Clone, Debug)]
-pub struct CreateAnalyticsEventParams {
+pub struct CreateAnalyticsEventParams<'p> {
     /// The analytics event to be created
-    pub analytics_event: models::AnalyticsEvent,
+    pub analytics_event: models::AnalyticsEvent<'p>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`create_analytics_rule`]
 #[derive(Clone, Debug)]
-pub struct CreateAnalyticsRuleParams {
+pub struct CreateAnalyticsRuleParams<'p> {
     /// The analytics rule(s) to be created
-    pub create_analytics_rule_request: models::CreateAnalyticsRuleRequest,
+    pub create_analytics_rule_request: models::CreateAnalyticsRuleRequest<'p>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`delete_analytics_rule`]
 #[derive(Clone, Debug)]
-pub struct DeleteAnalyticsRuleParams {
+pub struct DeleteAnalyticsRuleParams<'p> {
     /// The name of the analytics rule to delete
-    pub rule_name: String,
+    pub rule_name: Cow<'p, str>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`get_analytics_events`]
 #[derive(Clone, Debug)]
-pub struct GetAnalyticsEventsParams {
-    pub user_id: String,
+pub struct GetAnalyticsEventsParams<'p> {
+    pub user_id: Cow<'p, str>,
     /// Analytics rule name
-    pub name: String,
+    pub name: Cow<'p, str>,
     /// Number of events to return (max 1000)
     pub n: i32,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`retrieve_analytics_rule`]
 #[derive(Clone, Debug)]
-pub struct RetrieveAnalyticsRuleParams {
+pub struct RetrieveAnalyticsRuleParams<'p> {
     /// The name of the analytics rule to retrieve
-    pub rule_name: String,
+    pub rule_name: Cow<'p, str>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`retrieve_analytics_rules`]
 #[derive(Clone, Debug)]
-pub struct RetrieveAnalyticsRulesParams {
+pub struct RetrieveAnalyticsRulesParams<'p> {
     /// Filter rules by rule_tag
-    pub rule_tag: Option<String>,
+    pub rule_tag: Option<Cow<'p, str>>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`upsert_analytics_rule`]
 #[derive(Clone, Debug)]
-pub struct UpsertAnalyticsRuleParams {
+pub struct UpsertAnalyticsRuleParams<'p> {
     /// The name of the analytics rule to upsert
-    pub rule_name: String,
+    pub rule_name: Cow<'p, str>,
     /// The Analytics rule to be upserted
-    pub analytics_rule_update: models::AnalyticsRuleUpdate,
+    pub analytics_rule_update: models::AnalyticsRuleUpdate<'p>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for typed errors of method [`create_analytics_event`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateAnalyticsEventError {
-    Status400(models::ApiResponse),
-    UnknownValue(serde_json::Value),
+pub enum CreateAnalyticsEventError<'a> {
+    Status400(models::ApiResponse<'a>),
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`create_analytics_rule`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateAnalyticsRuleError {
-    Status400(models::ApiResponse),
-    UnknownValue(serde_json::Value),
+pub enum CreateAnalyticsRuleError<'a> {
+    Status400(models::ApiResponse<'a>),
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`delete_analytics_rule`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteAnalyticsRuleError {
-    Status404(models::ApiResponse),
-    UnknownValue(serde_json::Value),
+pub enum DeleteAnalyticsRuleError<'a> {
+    Status404(models::ApiResponse<'a>),
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`flush_analytics`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum FlushAnalyticsError {
-    UnknownValue(serde_json::Value),
+pub enum FlushAnalyticsError<'a> {
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`get_analytics_events`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetAnalyticsEventsError {
-    Status400(models::ApiResponse),
-    UnknownValue(serde_json::Value),
+pub enum GetAnalyticsEventsError<'a> {
+    Status400(models::ApiResponse<'a>),
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`get_analytics_status`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetAnalyticsStatusError {
-    UnknownValue(serde_json::Value),
+pub enum GetAnalyticsStatusError<'a> {
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`retrieve_analytics_rule`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RetrieveAnalyticsRuleError {
-    Status404(models::ApiResponse),
-    UnknownValue(serde_json::Value),
+pub enum RetrieveAnalyticsRuleError<'a> {
+    Status404(models::ApiResponse<'a>),
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`retrieve_analytics_rules`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RetrieveAnalyticsRulesError {
-    UnknownValue(serde_json::Value),
+pub enum RetrieveAnalyticsRulesError<'a> {
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`upsert_analytics_rule`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpsertAnalyticsRuleError {
-    Status400(models::ApiResponse),
-    UnknownValue(serde_json::Value),
+pub enum UpsertAnalyticsRuleError<'a> {
+    Status400(models::ApiResponse<'a>),
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// Submit a single analytics event. The event must correspond to an existing analytics rule by name.
 pub async fn create_analytics_event(
     configuration: &configuration::Configuration,
-    params: &CreateAnalyticsEventParams,
-) -> Result<models::AnalyticsEventCreateResponse, Error<CreateAnalyticsEventError>> {
+    params: &CreateAnalyticsEventParams<'_>,
+) -> Result<models::AnalyticsEventCreateResponse<'static>, Error<CreateAnalyticsEventError<'static>>>
+{
     let uri_str = format!("{}/analytics/events", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -199,8 +244,9 @@ pub async fn create_analytics_event(
 /// Create one or more analytics rules. You can send a single rule object or an array of rule objects.
 pub async fn create_analytics_rule(
     configuration: &configuration::Configuration,
-    params: &CreateAnalyticsRuleParams,
-) -> Result<models::CreateAnalyticsRule200Response, Error<CreateAnalyticsRuleError>> {
+    params: &CreateAnalyticsRuleParams<'_>,
+) -> Result<models::CreateAnalyticsRule200Response<'static>, Error<CreateAnalyticsRuleError<'static>>>
+{
     let uri_str = format!("{}/analytics/rules", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -259,8 +305,8 @@ pub async fn create_analytics_rule(
 /// Permanently deletes an analytics rule, given it's name
 pub async fn delete_analytics_rule(
     configuration: &configuration::Configuration,
-    params: &DeleteAnalyticsRuleParams,
-) -> Result<models::AnalyticsRule, Error<DeleteAnalyticsRuleError>> {
+    params: &DeleteAnalyticsRuleParams<'_>,
+) -> Result<models::AnalyticsRule<'static>, Error<DeleteAnalyticsRuleError<'static>>> {
     let uri_str = format!(
         "{}/analytics/rules/{ruleName}",
         configuration.base_path,
@@ -322,7 +368,7 @@ pub async fn delete_analytics_rule(
 /// Triggers a flush of analytics data to persistent storage.
 pub async fn flush_analytics(
     configuration: &configuration::Configuration,
-) -> Result<models::AnalyticsEventCreateResponse, Error<FlushAnalyticsError>> {
+) -> Result<models::AnalyticsEventCreateResponse<'static>, Error<FlushAnalyticsError<'static>>> {
     let uri_str = format!("{}/analytics/flush", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -380,8 +426,8 @@ pub async fn flush_analytics(
 /// Retrieve the most recent events for a user and rule.
 pub async fn get_analytics_events(
     configuration: &configuration::Configuration,
-    params: &GetAnalyticsEventsParams,
-) -> Result<models::AnalyticsEventsResponse, Error<GetAnalyticsEventsError>> {
+    params: &GetAnalyticsEventsParams<'_>,
+) -> Result<models::AnalyticsEventsResponse<'static>, Error<GetAnalyticsEventsError<'static>>> {
     let uri_str = format!("{}/analytics/events", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -440,7 +486,7 @@ pub async fn get_analytics_events(
 /// Returns sizes of internal analytics buffers and queues.
 pub async fn get_analytics_status(
     configuration: &configuration::Configuration,
-) -> Result<models::AnalyticsStatus, Error<GetAnalyticsStatusError>> {
+) -> Result<models::AnalyticsStatus<'static>, Error<GetAnalyticsStatusError<'static>>> {
     let uri_str = format!("{}/analytics/status", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -496,8 +542,8 @@ pub async fn get_analytics_status(
 /// Retrieve the details of an analytics rule, given it's name
 pub async fn retrieve_analytics_rule(
     configuration: &configuration::Configuration,
-    params: &RetrieveAnalyticsRuleParams,
-) -> Result<models::AnalyticsRule, Error<RetrieveAnalyticsRuleError>> {
+    params: &RetrieveAnalyticsRuleParams<'_>,
+) -> Result<models::AnalyticsRule<'static>, Error<RetrieveAnalyticsRuleError<'static>>> {
     let uri_str = format!(
         "{}/analytics/rules/{ruleName}",
         configuration.base_path,
@@ -557,8 +603,8 @@ pub async fn retrieve_analytics_rule(
 /// Retrieve all analytics rules. Use the optional rule_tag filter to narrow down results.
 pub async fn retrieve_analytics_rules(
     configuration: &configuration::Configuration,
-    params: &RetrieveAnalyticsRulesParams,
-) -> Result<Vec<models::AnalyticsRule>, Error<RetrieveAnalyticsRulesError>> {
+    params: &RetrieveAnalyticsRulesParams<'_>,
+) -> Result<Vec<models::AnalyticsRule<'static>>, Error<RetrieveAnalyticsRulesError<'static>>> {
     let uri_str = format!("{}/analytics/rules", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -617,8 +663,8 @@ pub async fn retrieve_analytics_rules(
 /// Upserts an analytics rule with the given name.
 pub async fn upsert_analytics_rule(
     configuration: &configuration::Configuration,
-    params: &UpsertAnalyticsRuleParams,
-) -> Result<models::AnalyticsRule, Error<UpsertAnalyticsRuleError>> {
+    params: &UpsertAnalyticsRuleParams<'_>,
+) -> Result<models::AnalyticsRule<'static>, Error<UpsertAnalyticsRuleError<'static>>> {
     let uri_str = format!(
         "{}/analytics/rules/{ruleName}",
         configuration.base_path,

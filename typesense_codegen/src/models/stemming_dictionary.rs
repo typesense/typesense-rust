@@ -9,20 +9,27 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct StemmingDictionary {
+pub struct StemmingDictionary<'a> {
     /// Unique identifier for the dictionary
     #[serde(rename = "id")]
-    pub id: String,
+    pub id: Cow<'a, str>,
     /// List of word mappings in the dictionary
     #[serde(rename = "words")]
-    pub words: Vec<models::StemmingDictionaryWordsInner>,
+    pub words: Vec<models::StemmingDictionaryWordsInner<'a>>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl StemmingDictionary {
-    pub fn new(id: String, words: Vec<models::StemmingDictionaryWordsInner>) -> StemmingDictionary {
-        StemmingDictionary { id, words }
+impl<'a> StemmingDictionary<'a> {
+    pub fn new(id: Cow<'a, str>, words: Vec<models::StemmingDictionaryWordsInner<'a>>) -> Self {
+        Self {
+            id,
+            words,
+            _phantom: PhantomData,
+        }
     }
 }

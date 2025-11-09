@@ -9,22 +9,23 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct CollectionResponse {
+pub struct CollectionResponse<'a> {
     /// Name of the collection
     #[serde(rename = "name")]
-    pub name: String,
+    pub name: Cow<'a, str>,
     /// A list of fields for querying, filtering and faceting
     #[serde(rename = "fields")]
-    pub fields: Vec<models::Field>,
+    pub fields: Vec<models::Field<'a>>,
     /// The name of an int32 / float field that determines the order in which the search results are ranked when a sort_by clause is not provided during searching. This field must indicate some kind of popularity.
     #[serde(
         rename = "default_sorting_field",
         skip_serializing_if = "Option::is_none"
     )]
-    pub default_sorting_field: Option<String>,
+    pub default_sorting_field: Option<Cow<'a, str>>,
     /// List of symbols or special characters to be used for splitting the text into individual words in addition to space and new-line characters.
     #[serde(rename = "token_separators", skip_serializing_if = "Option::is_none")]
     pub token_separators: Option<Vec<String>>,
@@ -41,7 +42,7 @@ pub struct CollectionResponse {
     #[serde(rename = "symbols_to_index", skip_serializing_if = "Option::is_none")]
     pub symbols_to_index: Option<Vec<String>>,
     #[serde(rename = "voice_query_model", skip_serializing_if = "Option::is_none")]
-    pub voice_query_model: Option<Box<models::VoiceQueryModelCollectionConfig>>,
+    pub voice_query_model: Option<Box<models::VoiceQueryModelCollectionConfig<'a>>>,
     /// Optional details about the collection, e.g., when it was created, who created it etc.
     #[serde(rename = "metadata", skip_serializing_if = "Option::is_none")]
     pub metadata: Option<serde_json::Value>,
@@ -51,16 +52,18 @@ pub struct CollectionResponse {
     /// Timestamp of when the collection was created (Unix epoch in seconds)
     #[serde(rename = "created_at")]
     pub created_at: i64,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl CollectionResponse {
+impl<'a> CollectionResponse<'a> {
     pub fn new(
-        name: String,
-        fields: Vec<models::Field>,
+        name: Cow<'a, str>,
+        fields: Vec<models::Field<'a>>,
         num_documents: i64,
         created_at: i64,
-    ) -> CollectionResponse {
-        CollectionResponse {
+    ) -> Self {
+        Self {
             name,
             fields,
             default_sorting_field: None,
@@ -72,6 +75,7 @@ impl CollectionResponse {
             metadata: None,
             num_documents,
             created_at,
+            _phantom: PhantomData,
         }
     }
 }

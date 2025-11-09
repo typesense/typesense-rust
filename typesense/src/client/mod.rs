@@ -38,8 +38,8 @@
 //!
 //!     // Search for a document
 //!     let search_params = models::SearchParameters {
-//!         q: Some("phone".to_owned()),
-//!         query_by: Some("name".to_owned()),
+//!         q: Some("phone".into()),
+//!         query_by: Some("name".into()),
 //!         ..Default::default()
 //!     };
 //!
@@ -608,7 +608,7 @@ impl Client {
     /// #    .build()
     /// #    .unwrap();
     /// # let schema = models::ApiKeySchema {
-    /// #     description: "Search-only key.".to_owned(),
+    /// #     description: "Search-only key.".into(),
     /// #     actions: vec!["documents:search".to_owned()],
     /// #     collections: vec!["*".to_owned()],
     /// #     ..Default::default()
@@ -668,9 +668,9 @@ impl Client {
     /// #    .unwrap();
     /// # let search_requests = models::MultiSearchBody {
     /// #     searches: vec![models::MultiSearchCollectionParameters {
-    /// #         collection: Some("products".to_owned()),
-    /// #         q: Some("phone".to_owned()),
-    /// #         query_by: Some("name".to_owned()),
+    /// #         collection: Some("products".into()),
+    /// #         q: Some("phone".into()),
+    /// #         query_by: Some("name".into()),
     /// #         ..Default::default()
     /// #     }],
     /// #     ..Default::default()

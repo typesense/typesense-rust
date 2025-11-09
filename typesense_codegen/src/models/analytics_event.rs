@@ -9,30 +9,34 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct AnalyticsEvent {
+pub struct AnalyticsEvent<'a> {
     /// Name of the analytics rule this event corresponds to
     #[serde(rename = "name")]
-    pub name: String,
+    pub name: Cow<'a, str>,
     /// Type of event (e.g., click, conversion, query, visit)
     #[serde(rename = "event_type")]
-    pub event_type: String,
+    pub event_type: Cow<'a, str>,
     #[serde(rename = "data")]
-    pub data: Box<models::AnalyticsEventData>,
+    pub data: Box<models::AnalyticsEventData<'a>>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl AnalyticsEvent {
+impl<'a> AnalyticsEvent<'a> {
     pub fn new(
-        name: String,
-        event_type: String,
-        data: models::AnalyticsEventData,
-    ) -> AnalyticsEvent {
-        AnalyticsEvent {
+        name: Cow<'a, str>,
+        event_type: Cow<'a, str>,
+        data: models::AnalyticsEventData<'a>,
+    ) -> Self {
+        Self {
             name,
             event_type,
             data: Box::new(data),
+            _phantom: PhantomData,
         }
     }
 }

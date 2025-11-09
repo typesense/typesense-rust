@@ -9,16 +9,22 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchSynonymsResponse {
+pub struct SearchSynonymsResponse<'a> {
     #[serde(rename = "synonyms")]
-    pub synonyms: Vec<models::SearchSynonym>,
+    pub synonyms: Vec<models::SearchSynonym<'a>>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl SearchSynonymsResponse {
-    pub fn new(synonyms: Vec<models::SearchSynonym>) -> SearchSynonymsResponse {
-        SearchSynonymsResponse { synonyms }
+impl<'a> SearchSynonymsResponse<'a> {
+    pub fn new(synonyms: Vec<models::SearchSynonym<'a>>) -> Self {
+        Self {
+            synonyms,
+            _phantom: PhantomData,
+        }
     }
 }

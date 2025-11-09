@@ -9,14 +9,15 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ApiKey {
+pub struct ApiKey<'a> {
     #[serde(rename = "value", skip_serializing_if = "Option::is_none")]
-    pub value: Option<String>,
+    pub value: Option<Cow<'a, str>>,
     #[serde(rename = "description")]
-    pub description: String,
+    pub description: Cow<'a, str>,
     #[serde(rename = "actions")]
     pub actions: Vec<String>,
     #[serde(rename = "collections")]
@@ -26,12 +27,14 @@ pub struct ApiKey {
     #[serde(rename = "id", skip_serializing_if = "Option::is_none")]
     pub id: Option<i64>,
     #[serde(rename = "value_prefix", skip_serializing_if = "Option::is_none")]
-    pub value_prefix: Option<String>,
+    pub value_prefix: Option<Cow<'a, str>>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl ApiKey {
-    pub fn new(description: String, actions: Vec<String>, collections: Vec<String>) -> ApiKey {
-        ApiKey {
+impl<'a> ApiKey<'a> {
+    pub fn new(description: Cow<'a, str>, actions: Vec<String>, collections: Vec<String>) -> Self {
+        Self {
             value: None,
             description,
             actions,
@@ -39,6 +42,7 @@ impl ApiKey {
             expires_at: None,
             id: None,
             value_prefix: None,
+            _phantom: PhantomData,
         }
     }
 }

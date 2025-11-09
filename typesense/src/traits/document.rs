@@ -19,5 +19,5 @@ pub trait Document: DeserializeOwned + Serialize {
     type Partial: DocumentPartial;
 
     /// Collection schema associated with the document.
-    fn collection_schema() -> CollectionSchema;
+    fn collection_schema() -> CollectionSchema<'static>;
 }

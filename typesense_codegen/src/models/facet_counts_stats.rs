@@ -9,10 +9,11 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct FacetCountsStats {
+pub struct FacetCountsStats<'a> {
     #[serde(rename = "max", skip_serializing_if = "Option::is_none")]
     pub max: Option<f64>,
     #[serde(rename = "min", skip_serializing_if = "Option::is_none")]
@@ -23,16 +24,19 @@ pub struct FacetCountsStats {
     pub total_values: Option<i32>,
     #[serde(rename = "avg", skip_serializing_if = "Option::is_none")]
     pub avg: Option<f64>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl FacetCountsStats {
-    pub fn new() -> FacetCountsStats {
-        FacetCountsStats {
+impl<'a> FacetCountsStats<'a> {
+    pub fn new() -> Self {
+        Self {
             max: None,
             min: None,
             sum: None,
             total_values: None,
             avg: None,
+            _phantom: PhantomData,
         }
     }
 }

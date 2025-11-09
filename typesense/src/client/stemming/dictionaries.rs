@@ -6,6 +6,7 @@ use crate::{
     client::{Client, Error},
     execute_wrapper,
 };
+use ::std::borrow::Cow;
 use typesense_codegen::{apis::stemming_api, models};
 
 /// Provides methods for interacting with the collection of stemming dictionaries.
@@ -31,12 +32,13 @@ impl<'a> Dictionaries<'a> {
     /// * `dictionary_jsonl` - A string containing the word mappings in JSONL format.
     pub async fn import(
         &self,
-        dictionary_id: impl Into<String>,
-        dictionary_jsonl: String,
-    ) -> Result<String, Error<stemming_api::ImportStemmingDictionaryError>> {
+        dictionary_id: impl Into<Cow<'_, str>>,
+        dictionary_jsonl: impl Into<Cow<'_, str>>,
+    ) -> Result<String, Error<stemming_api::ImportStemmingDictionaryError<'static>>> {
         let params = stemming_api::ImportStemmingDictionaryParams {
             id: dictionary_id.into(),
-            body: dictionary_jsonl,
+            body: dictionary_jsonl.into(),
+            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, stemming_api::import_stemming_dictionary, params)
     }
@@ -45,8 +47,8 @@ impl<'a> Dictionaries<'a> {
     pub async fn retrieve(
         &self,
     ) -> Result<
-        models::ListStemmingDictionaries200Response,
-        Error<stemming_api::ListStemmingDictionariesError>,
+        models::ListStemmingDictionaries200Response<'static>,
+        Error<stemming_api::ListStemmingDictionariesError<'static>>,
     > {
         execute_wrapper!(self, stemming_api::list_stemming_dictionaries)
     }

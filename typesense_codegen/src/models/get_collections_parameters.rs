@@ -9,27 +9,31 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct GetCollectionsParameters {
+pub struct GetCollectionsParameters<'a> {
     /// Comma-separated list of fields from the collection to exclude from the response
     #[serde(rename = "exclude_fields", skip_serializing_if = "Option::is_none")]
-    pub exclude_fields: Option<String>,
+    pub exclude_fields: Option<Cow<'a, str>>,
     /// Number of collections to fetch. Default: returns all collections.
     #[serde(rename = "limit", skip_serializing_if = "Option::is_none")]
     pub limit: Option<i32>,
     /// Identifies the starting point to return collections when paginating.
     #[serde(rename = "offset", skip_serializing_if = "Option::is_none")]
     pub offset: Option<i32>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl GetCollectionsParameters {
-    pub fn new() -> GetCollectionsParameters {
-        GetCollectionsParameters {
+impl<'a> GetCollectionsParameters<'a> {
+    pub fn new() -> Self {
+        Self {
             exclude_fields: None,
             limit: None,
             offset: None,
+            _phantom: PhantomData,
         }
     }
 }

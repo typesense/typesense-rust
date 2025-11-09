@@ -1,9 +1,11 @@
 {{>partial_header}}
 
+use super::{Error, configuration, ContentType};
+use crate::{apis::ResponseContent, models};
+use ::std::borrow::Cow;
+use ::std::marker::PhantomData;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
-use crate::{apis::ResponseContent, models};
-use super::{Error, configuration, ContentType};
 
 {{#operations}}
 {{#operation}}
@@ -12,15 +14,15 @@ use super::{Error, configuration, ContentType};
 {{#-first}}
 /// struct for passing parameters to the method [`{{operationId}}`]
 #[derive(Clone, Debug)]
-pub struct {{{operationIdCamelCase}}}Params{{!
+pub struct {{{operationIdCamelCase}}}Params<'p{{!
   Iterate through ALL parameters in the operation.
   Only the requestBody has this extension defined, so it will print "<B>".
   The other parameters have nothing, so they will print nothing.
   This effectively extract the generic parameter from the requestBody
   and places it on the struct definition line.
 }}{{#allParams}}
-{{{vendorExtensions.x-rust-params-generic-parameter}}}
-{{/allParams}} {
+{{#vendorExtensions.x-rust-params-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-params-generic-parameter}}
+{{/allParams}}> {
 {{/-first}}
     {{#description}}
     /// {{{.}}}
@@ -33,17 +35,18 @@ pub struct {{{operationIdCamelCase}}}Params{{!
     ### Option Start
     }}{{^required}}Option<{{/required}}{{#required}}{{#isNullable}}Option<{{/isNullable}}{{/required}}{{!
     ### &str and Vec<&str>
-    }}{{^isUuid}}{{#isString}}{{#isArray}}Vec<{{/isArray}}String{{#isArray}}>{{/isArray}}{{/isString}}{{/isUuid}}{{!
+    }}{{^isUuid}}{{#isString}}{{#isArray}}Vec<{{/isArray}}Cow<'p, str>{{#isArray}}>{{/isArray}}{{/isString}}{{/isUuid}}{{!
     ### UUIDs
     }}{{#isUuid}}{{#isArray}}Vec<{{/isArray}}String{{#isArray}}>{{/isArray}}{{/isUuid}}{{!
     ### Models and primative types
-    }}{{^isString}}{{^isUuid}}{{^isPrimitiveType}}{{^isContainer}}models::{{/isContainer}}{{/isPrimitiveType}}{{{dataType}}}{{/isUuid}}{{/isString}}{{!
+    }}{{^isString}}{{^isUuid}}{{^isPrimitiveType}}{{^isContainer}}models::{{/isContainer}}{{/isPrimitiveType}}{{{dataType}}}{{#isModel}}<'p>{{/isModel}}{{/isUuid}}{{/isString}}{{!
     ### Option End
     }}{{^required}}>{{/required}}{{#required}}{{#isNullable}}>{{/isNullable}}{{/required}}{{!
     ### Comma for next arguement
-    }}{{^-last}},{{/-last}}
+    }},
     {{/vendorExtensions.x-rust-type}}
 {{#-last}}
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 {{/-last}}
@@ -58,16 +61,20 @@ pub struct {{{operationIdCamelCase}}}Params{{!
 /// struct for typed successes of method [`{{operationId}}`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum {{{operationIdCamelCase}}}Success {
+pub enum {{{operationIdCamelCase}}}Success<'a> {
     {{#responses}}
     {{#is2xx}}
-    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}),
+    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}<'a>{{/isEnum}}),
     {{/is2xx}}
     {{#is3xx}}
-    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}),
+    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}<'a>{{/isEnum}}),
     {{/is3xx}}
     {{/responses}}
-    UnknownValue(serde_json::Value),
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 {{/operation}}
@@ -78,19 +85,23 @@ pub enum {{{operationIdCamelCase}}}Success {
 /// struct for typed errors of method [`{{operationId}}`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum {{{operationIdCamelCase}}}Error {
+pub enum {{{operationIdCamelCase}}}Error<'a> {
     {{#responses}}
     {{#is4xx}}
-    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}),
+    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}<'a>{{/isEnum}}),
     {{/is4xx}}
     {{#is5xx}}
-    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}),
+    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}<'a>{{/isEnum}}),
     {{/is5xx}}
     {{#isDefault}}
-    DefaultResponse({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}),
+    DefaultResponse({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}<'a>{{/isEnum}}),
     {{/isDefault}}
     {{/responses}}
-    UnknownValue(serde_json::Value),
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 {{/operation}}
@@ -105,11 +116,17 @@ pub enum {{{operationIdCamelCase}}}Error {
 /// {{{.}}}
 {{/notes}}
 {{#vendorExtensions.x-group-parameters}}
-pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}{{{vendorExtensions.x-rust-generic-parameter}}}(configuration: &configuration::Configuration{{#allParams}}{{#-first}}, {{!
+pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}{{#vendorExtensions.x-rust-generic-parameter}}<{{{.}}}>{{/vendorExtensions.x-rust-generic-parameter}}(configuration: &configuration::Configuration{{#allParams}}{{#-first}}, {{!
 ### Params
-}}params: &{{{operationIdCamelCase}}}Params{{#allParams}}{{{vendorExtensions.x-rust-params-generic-parameter}}}{{/allParams}}{{/-first}}{{/allParams}}{{!
+}}params: &{{{operationIdCamelCase}}}Params<'_{{#allParams}}{{#vendorExtensions.x-rust-params-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-params-generic-parameter}}{{/allParams}}>{{/-first}}{{/allParams}}{{!
 ### Function return type
-}}) -> Result<{{#vendorExtensions.x-rust-return-type}}{{{.}}}{{/vendorExtensions.x-rust-return-type}}{{^vendorExtensions.x-rust-return-type}}{{#isResponseFile}}{{#supportAsync}}reqwest::Response{{/supportAsync}}{{^supportAsync}}reqwest::blocking::Response{{/supportAsync}}{{/isResponseFile}}{{^isResponseFile}}{{#supportMultipleResponses}}ResponseContent<{{{operationIdCamelCase}}}Success>{{/supportMultipleResponses}}{{^supportMultipleResponses}}{{^returnType}}(){{/returnType}}{{{returnType}}}{{/supportMultipleResponses}}{{/isResponseFile}}{{/vendorExtensions.x-rust-return-type}}, Error<{{{operationIdCamelCase}}}Error>> {
+}}) -> Result<{{#vendorExtensions.x-rust-return-type}}{{{.}}}{{/vendorExtensions.x-rust-return-type}}{{^vendorExtensions.x-rust-return-type}}{{!
+}}{{#isResponseFile}}{{#supportAsync}}reqwest::Response{{/supportAsync}}{{^supportAsync}}reqwest::blocking::Response{{/supportAsync}}{{/isResponseFile}}{{!
+}}{{^isResponseFile}}{{#supportMultipleResponses}}ResponseContent<{{{operationIdCamelCase}}}Success>{{/supportMultipleResponses}}{{^supportMultipleResponses}}{{!
+}}{{^returnType}}(){{/returnType}}{{!
+}}{{#isArray}}Vec<{{#returnProperty.items}}{{{dataType}}}{{#isModel}}<'static>{{/isModel}}{{/returnProperty.items}}>{{/isArray}}{{!
+}}{{^isArray}}{{#returnProperty}}{{{dataType}}}{{#isModel}}<'static>{{/isModel}}{{/returnProperty}}{{!
+}}{{/isArray}}{{/supportMultipleResponses}}{{/isResponseFile}}{{/vendorExtensions.x-rust-return-type}}, Error<{{{operationIdCamelCase}}}Error<'static>>> {
 {{/vendorExtensions.x-group-parameters}}
     let uri_str = format!("{}{{{path}}}", configuration.base_path{{#pathParams}}, {{{baseName}}}={{#isString}}crate::apis::urlencode(&{{/isString}}{{{vendorExtensions.x-rust-param-identifier}}}{{^required}}.unwrap(){{/required}}{{#required}}{{#isNullable}}.unwrap(){{/isNullable}}{{/required}}{{#isArray}}.join(",").as_ref(){{/isArray}}{{^isString}}{{^isUuid}}{{^isPrimitiveType}}{{^isContainer}}.to_string(){{/isContainer}}{{/isPrimitiveType}}{{/isUuid}}{{/isString}}{{#isString}}){{/isString}}{{/pathParams}});
     let mut req_builder = configuration.client.request(reqwest::Method::{{{httpMethod}}}, &uri_str);
@@ -416,7 +433,7 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}{{{vendorExtensi
     {{#vendorExtensions.x-rust-body-is-raw-text}}
     {{! If the flag is true, we generate only the raw text body logic }}
     {{#bodyParams}}
-    req_builder = req_builder.header(reqwest::header::CONTENT_TYPE, "text/plain").body({{{vendorExtensions.x-rust-param-identifier}}}.to_owned());
+    req_builder = req_builder.header(reqwest::header::CONTENT_TYPE, "text/plain").body({{{vendorExtensions.x-rust-param-identifier}}}.clone().into_owned());
     {{/bodyParams}}
     {{/vendorExtensions.x-rust-body-is-raw-text}}
     {{! Now, handle the case where the extension is NOT present. This is the "else" block }}

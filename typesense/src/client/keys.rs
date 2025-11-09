@@ -35,17 +35,20 @@ impl<'c> Keys<'c> {
     #[inline]
     pub async fn create(
         &self,
-        schema: models::ApiKeySchema,
-    ) -> Result<models::ApiKey, Error<keys_api::CreateKeyError>> {
+        schema: models::ApiKeySchema<'_>,
+    ) -> Result<models::ApiKey<'static>, Error<keys_api::CreateKeyError<'static>>> {
         let params = keys_api::CreateKeyParams {
             api_key_schema: Some(schema),
+            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, keys_api::create_key, params)
     }
 
     /// Lists all API keys and their metadata.
     #[inline]
-    pub async fn retrieve(&self) -> Result<models::ApiKeysResponse, Error<keys_api::GetKeysError>> {
+    pub async fn retrieve(
+        &self,
+    ) -> Result<models::ApiKeysResponse<'static>, Error<keys_api::GetKeysError<'static>>> {
         execute_wrapper!(self, keys_api::get_keys)
     }
 

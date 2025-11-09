@@ -9,16 +9,22 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct CreateAnalyticsRule200ResponseOneOfInnerAnyOf {
+pub struct CreateAnalyticsRule200ResponseOneOfInnerAnyOf<'a> {
     #[serde(rename = "error", skip_serializing_if = "Option::is_none")]
-    pub error: Option<String>,
+    pub error: Option<Cow<'a, str>>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl CreateAnalyticsRule200ResponseOneOfInnerAnyOf {
-    pub fn new() -> CreateAnalyticsRule200ResponseOneOfInnerAnyOf {
-        CreateAnalyticsRule200ResponseOneOfInnerAnyOf { error: None }
+impl<'a> CreateAnalyticsRule200ResponseOneOfInnerAnyOf<'a> {
+    pub fn new() -> Self {
+        Self {
+            error: None,
+            _phantom: PhantomData,
+        }
     }
 }

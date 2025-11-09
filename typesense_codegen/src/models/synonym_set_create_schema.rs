@@ -9,17 +9,23 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SynonymSetCreateSchema {
+pub struct SynonymSetCreateSchema<'a> {
     /// Array of synonym items
     #[serde(rename = "items")]
-    pub items: Vec<models::SynonymItemSchema>,
+    pub items: Vec<models::SynonymItemSchema<'a>>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl SynonymSetCreateSchema {
-    pub fn new(items: Vec<models::SynonymItemSchema>) -> SynonymSetCreateSchema {
-        SynonymSetCreateSchema { items }
+impl<'a> SynonymSetCreateSchema<'a> {
+    pub fn new(items: Vec<models::SynonymItemSchema<'a>>) -> Self {
+        Self {
+            items,
+            _phantom: PhantomData,
+        }
     }
 }

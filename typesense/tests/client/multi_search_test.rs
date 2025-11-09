@@ -17,7 +17,10 @@ async fn setup_multi_search_tests(
     // --- Create collections ---
     let products_schema = CollectionSchema {
         name: products_collection_name.to_owned().into(),
-        fields: vec![Field::new("name", "string"), Field::new("price", "int32")],
+        fields: vec![
+            Field::new("name".into(), "string".into()),
+            Field::new("price".into(), "int32".into()),
+        ],
         ..Default::default()
     };
     client.collections().create(products_schema).await.unwrap();
@@ -25,8 +28,8 @@ async fn setup_multi_search_tests(
     let brands_schema = CollectionSchema {
         name: brands_collection_name.to_owned().into(),
         fields: vec![
-            Field::new("company_name", "string"),
-            Field::new("country", "string"),
+            Field::new("company_name".into(), "string".into()),
+            Field::new("country".into(), "string".into()),
         ],
         ..Default::default()
     };
@@ -91,13 +94,13 @@ async fn run_test_multi_search_federated() {
             MultiSearchCollectionParameters {
                 q: Some("pro".into()),
                 query_by: Some("name".into()),
-                collection: Some(products_collection_name.clone()),
+                collection: Some(products_collection_name.into()),
                 ..Default::default()
             },
             MultiSearchCollectionParameters {
                 q: Some("USA".into()),
                 query_by: Some("country".into()),
-                collection: Some(brands_collection_name.clone()),
+                collection: Some(brands_collection_name.into()),
                 ..Default::default()
             },
         ],
@@ -158,13 +161,13 @@ async fn run_test_multi_search_with_common_params() {
     let search_requests = MultiSearchBody {
         searches: vec![
             MultiSearchCollectionParameters {
-                collection: Some(products_collection_name.clone()),
+                collection: Some(products_collection_name.into()),
                 q: Some("pro".into()),         // This should find "Macbook Pro"
                 query_by: Some("name".into()), // Specific to the products schema
                 ..Default::default()
             },
             MultiSearchCollectionParameters {
-                collection: Some(brands_collection_name.clone()),
+                collection: Some(brands_collection_name.into()),
                 q: Some("inc".into()), // This should find "Apple Inc."
                 query_by: Some("company_name".into()), // Specific to the brands schema
                 ..Default::default()
@@ -246,14 +249,14 @@ async fn run_test_multi_search_generic_parsing() {
             MultiSearchCollectionParameters {
                 q: Some("pro".into()),
                 query_by: Some("name".into()),
-                collection: Some(products_collection_name.clone()),
+                collection: Some(products_collection_name.into()),
                 ..Default::default()
             },
             // Search #1 for brands
             MultiSearchCollectionParameters {
                 q: Some("USA".into()),
                 query_by: Some("country".into()),
-                collection: Some(brands_collection_name.clone()),
+                collection: Some(brands_collection_name.into()),
                 ..Default::default()
             },
         ],
@@ -342,13 +345,13 @@ async fn run_test_multi_search_union_heterogeneous() {
             MultiSearchCollectionParameters {
                 q: Some("pro".into()),
                 query_by: Some("name".into()),
-                collection: Some(products_collection_name.clone()),
+                collection: Some(products_collection_name.into()),
                 ..Default::default()
             },
             MultiSearchCollectionParameters {
                 q: Some("samsung".into()),
                 query_by: Some("company_name".into()),
-                collection: Some(brands_collection_name.clone()),
+                collection: Some(brands_collection_name.into()),
                 ..Default::default()
             },
         ],
@@ -424,14 +427,14 @@ async fn run_test_multi_search_union_homogeneous_and_typed_conversion() {
             MultiSearchCollectionParameters {
                 q: Some("iphone".into()),
                 query_by: Some("name".into()),
-                collection: Some(products_collection_name.clone()),
+                collection: Some(products_collection_name.as_str().into()),
                 ..Default::default()
             },
             // This query should find "MacBook Pro"
             MultiSearchCollectionParameters {
                 q: Some("macbook".into()),
                 query_by: Some("name".into()),
-                collection: Some(products_collection_name.clone()),
+                collection: Some(products_collection_name.as_str().into()),
                 ..Default::default()
             },
         ],

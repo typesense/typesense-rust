@@ -9,17 +9,23 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct UpdateDocuments200Response {
+pub struct UpdateDocuments200Response<'a> {
     /// The number of documents that have been updated
     #[serde(rename = "num_updated")]
     pub num_updated: i32,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl UpdateDocuments200Response {
-    pub fn new(num_updated: i32) -> UpdateDocuments200Response {
-        UpdateDocuments200Response { num_updated }
+impl<'a> UpdateDocuments200Response<'a> {
+    pub fn new(num_updated: i32) -> Self {
+        Self {
+            num_updated,
+            _phantom: PhantomData,
+        }
     }
 }

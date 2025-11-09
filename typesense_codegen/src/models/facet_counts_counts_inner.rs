@@ -9,27 +9,31 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct FacetCountsCountsInner {
+pub struct FacetCountsCountsInner<'a> {
     #[serde(rename = "count", skip_serializing_if = "Option::is_none")]
     pub count: Option<i32>,
     #[serde(rename = "highlighted", skip_serializing_if = "Option::is_none")]
-    pub highlighted: Option<String>,
+    pub highlighted: Option<Cow<'a, str>>,
     #[serde(rename = "value", skip_serializing_if = "Option::is_none")]
-    pub value: Option<String>,
+    pub value: Option<Cow<'a, str>>,
     #[serde(rename = "parent", skip_serializing_if = "Option::is_none")]
     pub parent: Option<serde_json::Value>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl FacetCountsCountsInner {
-    pub fn new() -> FacetCountsCountsInner {
-        FacetCountsCountsInner {
+impl<'a> FacetCountsCountsInner<'a> {
+    pub fn new() -> Self {
+        Self {
             count: None,
             highlighted: None,
             value: None,
             parent: None,
+            _phantom: PhantomData,
         }
     }
 }

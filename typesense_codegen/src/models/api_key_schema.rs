@@ -9,34 +9,34 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ApiKeySchema {
+pub struct ApiKeySchema<'a> {
     #[serde(rename = "value", skip_serializing_if = "Option::is_none")]
-    pub value: Option<String>,
+    pub value: Option<Cow<'a, str>>,
     #[serde(rename = "description")]
-    pub description: String,
+    pub description: Cow<'a, str>,
     #[serde(rename = "actions")]
     pub actions: Vec<String>,
     #[serde(rename = "collections")]
     pub collections: Vec<String>,
     #[serde(rename = "expires_at", skip_serializing_if = "Option::is_none")]
     pub expires_at: Option<i64>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl ApiKeySchema {
-    pub fn new(
-        description: String,
-        actions: Vec<String>,
-        collections: Vec<String>,
-    ) -> ApiKeySchema {
-        ApiKeySchema {
+impl<'a> ApiKeySchema<'a> {
+    pub fn new(description: Cow<'a, str>, actions: Vec<String>, collections: Vec<String>) -> Self {
+        Self {
             value: None,
             description,
             actions,
             collections,
             expires_at: None,
+            _phantom: PhantomData,
         }
     }
 }

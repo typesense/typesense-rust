@@ -25,9 +25,12 @@ impl<'c> Key<'c> {
     /// For security reasons, this endpoint only returns the key prefix and metadata,
     /// not the full key value.
     #[inline]
-    pub async fn retrieve(&self) -> Result<models::ApiKey, Error<keys_api::GetKeyError>> {
+    pub async fn retrieve(
+        &self,
+    ) -> Result<models::ApiKey<'static>, Error<keys_api::GetKeyError<'static>>> {
         let params = keys_api::GetKeyParams {
             key_id: self.key_id,
+            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, keys_api::get_key, params)
     }
@@ -36,9 +39,11 @@ impl<'c> Key<'c> {
     #[inline]
     pub async fn delete(
         &self,
-    ) -> Result<models::ApiKeyDeleteResponse, Error<keys_api::DeleteKeyError>> {
+    ) -> Result<models::ApiKeyDeleteResponse<'static>, Error<keys_api::DeleteKeyError<'static>>>
+    {
         let params = keys_api::DeleteKeyParams {
             key_id: self.key_id,
+            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, keys_api::delete_key, params)
     }

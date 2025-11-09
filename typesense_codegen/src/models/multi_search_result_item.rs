@@ -9,12 +9,13 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct MultiSearchResultItem<D> {
+pub struct MultiSearchResultItem<'a, D> {
     #[serde(rename = "facet_counts", skip_serializing_if = "Option::is_none")]
-    pub facet_counts: Option<Vec<models::FacetCounts>>,
+    pub facet_counts: Option<Vec<models::FacetCounts<'a>>>,
     /// The number of documents found
     #[serde(rename = "found", skip_serializing_if = "Option::is_none")]
     pub found: Option<i32>,
@@ -33,20 +34,20 @@ pub struct MultiSearchResultItem<D> {
     #[serde(rename = "page", skip_serializing_if = "Option::is_none")]
     pub page: Option<i32>,
     #[serde(rename = "grouped_hits", skip_serializing_if = "Option::is_none")]
-    pub grouped_hits: Option<Vec<models::SearchGroupedHit<D>>>,
+    pub grouped_hits: Option<Vec<models::SearchGroupedHit<'a, D>>>,
     /// The documents that matched the search query
     #[serde(rename = "hits", skip_serializing_if = "Option::is_none")]
-    pub hits: Option<Vec<models::SearchResultHit<D>>>,
+    pub hits: Option<Vec<models::SearchResultHit<'a, D>>>,
     #[serde(rename = "request_params", skip_serializing_if = "Option::is_none")]
-    pub request_params: Option<Box<models::SearchRequestParams>>,
+    pub request_params: Option<Box<models::SearchRequestParams<'a>>>,
     #[serde(rename = "conversation", skip_serializing_if = "Option::is_none")]
-    pub conversation: Option<Box<models::SearchResultConversation>>,
+    pub conversation: Option<Box<models::SearchResultConversation<'a>>>,
     /// Returned only for union query response.
     #[serde(
         rename = "union_request_params",
         skip_serializing_if = "Option::is_none"
     )]
-    pub union_request_params: Option<Vec<models::SearchRequestParams>>,
+    pub union_request_params: Option<Vec<models::SearchRequestParams<'a>>>,
     /// Custom JSON object that can be returned in the search response
     #[serde(rename = "metadata", skip_serializing_if = "Option::is_none")]
     pub metadata: Option<std::collections::HashMap<String, serde_json::Value>>,
@@ -55,12 +56,14 @@ pub struct MultiSearchResultItem<D> {
     pub code: Option<i64>,
     /// Error description
     #[serde(rename = "error", skip_serializing_if = "Option::is_none")]
-    pub error: Option<String>,
+    pub error: Option<Cow<'a, str>>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<D> MultiSearchResultItem<D> {
-    pub fn new() -> MultiSearchResultItem<D> {
-        MultiSearchResultItem {
+impl<'a, D> MultiSearchResultItem<'a, D> {
+    pub fn new() -> Self {
+        Self {
             facet_counts: None,
             found: None,
             found_docs: None,
@@ -76,6 +79,7 @@ impl<D> MultiSearchResultItem<D> {
             metadata: None,
             code: None,
             error: None,
+            _phantom: PhantomData,
         }
     }
 }

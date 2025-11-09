@@ -9,18 +9,22 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchRequestParamsVoiceQuery {
+pub struct SearchRequestParamsVoiceQuery<'a> {
     #[serde(rename = "transcribed_query", skip_serializing_if = "Option::is_none")]
-    pub transcribed_query: Option<String>,
+    pub transcribed_query: Option<Cow<'a, str>>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl SearchRequestParamsVoiceQuery {
-    pub fn new() -> SearchRequestParamsVoiceQuery {
-        SearchRequestParamsVoiceQuery {
+impl<'a> SearchRequestParamsVoiceQuery<'a> {
+    pub fn new() -> Self {
+        Self {
             transcribed_query: None,
+            _phantom: PhantomData,
         }
     }
 }

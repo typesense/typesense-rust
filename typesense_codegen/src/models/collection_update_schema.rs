@@ -9,27 +9,31 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct CollectionUpdateSchema {
+pub struct CollectionUpdateSchema<'a> {
     /// A list of fields for querying, filtering and faceting
     #[serde(rename = "fields")]
-    pub fields: Vec<models::Field>,
+    pub fields: Vec<models::Field<'a>>,
     /// List of synonym set names to associate with this collection
     #[serde(rename = "synonym_sets", skip_serializing_if = "Option::is_none")]
     pub synonym_sets: Option<Vec<String>>,
     /// Optional details about the collection, e.g., when it was created, who created it etc.
     #[serde(rename = "metadata", skip_serializing_if = "Option::is_none")]
     pub metadata: Option<serde_json::Value>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl CollectionUpdateSchema {
-    pub fn new(fields: Vec<models::Field>) -> CollectionUpdateSchema {
-        CollectionUpdateSchema {
+impl<'a> CollectionUpdateSchema<'a> {
+    pub fn new(fields: Vec<models::Field<'a>>) -> Self {
+        Self {
             fields,
             synonym_sets: None,
             metadata: None,
+            _phantom: PhantomData,
         }
     }
 }

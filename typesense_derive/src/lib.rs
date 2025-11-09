@@ -6,8 +6,8 @@ use helpers::*;
 
 use proc_macro::TokenStream;
 use proc_macro2::{Ident, TokenTree};
-use quote::{quote, ToTokens};
-use syn::{spanned::Spanned, Attribute, ItemStruct};
+use quote::{ToTokens, quote};
+use syn::{Attribute, ItemStruct, spanned::Spanned};
 
 #[proc_macro_derive(Typesense, attributes(typesense))]
 pub fn typesense_collection_derive(input: TokenStream) -> TokenStream {
@@ -76,18 +76,17 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
         }
     }
 
-    let (regular_fields, flattened_fields) = fields
-        .iter()
-        .map(process_field)
-        .collect::<syn::Result<(Vec<_>,Vec<_>)>>()?;
-    let regular_fields = regular_fields
-        .into_iter()
-        .filter_map(|v| v)
-        .collect::<Vec<_>>();
-    let flattened_fields = flattened_fields
-        .into_iter()
-        .filter_map(|v| v)
-        .collect::<Vec<_>>();
+    let mut regular_fields = Vec::new();
+    let mut flattened_fields = Vec::new();
+    for field in &fields {
+        let (regular, flattened) = process_field(field)?;
+        if let Some(f) = regular {
+            regular_fields.push(f);
+        }
+        if let Some(f) = flattened {
+            flattened_fields.push(f);
+        }
+    }
 
     let default_sorting_field = if let Some(v) = default_sorting_field {
         quote! {
@@ -150,7 +149,7 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
 
             type Partial = #name_partial;
 
-            fn collection_schema() -> ::typesense::models::CollectionSchema {
+            fn collection_schema() -> ::typesense::models::CollectionSchema<'static> {
                 let fields = [#(#regular_fields,)*].into_iter()
                     #(.chain(#flattened_fields))*
                     .collect::<Vec<_>>();

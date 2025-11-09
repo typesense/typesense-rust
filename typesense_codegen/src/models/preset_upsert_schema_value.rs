@@ -9,16 +9,17 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum PresetUpsertSchemaValue {
-    SearchParameters(Box<models::SearchParameters>),
-    MultiSearchSearchesParameter(Box<models::MultiSearchSearchesParameter>),
+pub enum PresetUpsertSchemaValue<'a> {
+    SearchParameters(Box<models::SearchParameters<'a>>),
+    MultiSearchSearchesParameter(Box<models::MultiSearchSearchesParameter<'a>>),
 }
 
-impl Default for PresetUpsertSchemaValue {
+impl Default for PresetUpsertSchemaValue<'_> {
     fn default() -> Self {
         Self::SearchParameters(Default::default())
     }

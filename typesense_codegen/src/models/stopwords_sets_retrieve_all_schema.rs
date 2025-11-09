@@ -9,16 +9,22 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct StopwordsSetsRetrieveAllSchema {
+pub struct StopwordsSetsRetrieveAllSchema<'a> {
     #[serde(rename = "stopwords")]
-    pub stopwords: Vec<models::StopwordsSetSchema>,
+    pub stopwords: Vec<models::StopwordsSetSchema<'a>>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl StopwordsSetsRetrieveAllSchema {
-    pub fn new(stopwords: Vec<models::StopwordsSetSchema>) -> StopwordsSetsRetrieveAllSchema {
-        StopwordsSetsRetrieveAllSchema { stopwords }
+impl<'a> StopwordsSetsRetrieveAllSchema<'a> {
+    pub fn new(stopwords: Vec<models::StopwordsSetSchema<'a>>) -> Self {
+        Self {
+            stopwords,
+            _phantom: PhantomData,
+        }
     }
 }

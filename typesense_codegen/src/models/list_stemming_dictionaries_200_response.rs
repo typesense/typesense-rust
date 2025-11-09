@@ -9,16 +9,22 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ListStemmingDictionaries200Response {
+pub struct ListStemmingDictionaries200Response<'a> {
     #[serde(rename = "dictionaries", skip_serializing_if = "Option::is_none")]
     pub dictionaries: Option<Vec<String>>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl ListStemmingDictionaries200Response {
-    pub fn new() -> ListStemmingDictionaries200Response {
-        ListStemmingDictionaries200Response { dictionaries: None }
+impl<'a> ListStemmingDictionaries200Response<'a> {
+    pub fn new() -> Self {
+        Self {
+            dictionaries: None,
+            _phantom: PhantomData,
+        }
     }
 }

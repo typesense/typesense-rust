@@ -28,7 +28,7 @@ where
 {
     client: &'c Client,
     collection_name: &'n str,
-    _phantom: std::marker::PhantomData<D>,
+    _phantom: core::marker::PhantomData<D>,
 }
 
 impl<'c, 'n, D> Documents<'c, 'n, D>
@@ -41,7 +41,7 @@ where
         Self {
             client,
             collection_name,
-            _phantom: std::marker::PhantomData,
+            _phantom: core::marker::PhantomData,
         }
     }
 
@@ -54,12 +54,13 @@ where
         document: serde_json::Value,
         action: &str,
         params: Option<DocumentIndexParameters>,
-    ) -> Result<serde_json::Value, Error<documents_api::IndexDocumentError>> {
+    ) -> Result<serde_json::Value, Error<documents_api::IndexDocumentError<'static>>> {
         let params = documents_api::IndexDocumentParams {
-            collection_name: self.collection_name.to_owned(),
+            collection_name: self.collection_name.into(),
             body: document,
-            action: Some(action.to_owned()),
+            action: Some(action.into()),
             dirty_values: params.and_then(|d| d.dirty_values), // Or expose this as an argument if needed
+            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, documents_api::index_document, params)
     }
@@ -76,11 +77,11 @@ where
     pub async fn import_jsonl(
         &self,
         documents_jsonl: String,
-        params: ImportDocumentsParameters,
-    ) -> Result<String, Error<documents_api::ImportDocumentsError>> {
+        params: ImportDocumentsParameters<'_>,
+    ) -> Result<String, Error<documents_api::ImportDocumentsError<'static>>> {
         let params = documents_api::ImportDocumentsParams {
-            body: documents_jsonl,
-            collection_name: self.collection_name.to_owned(),
+            body: documents_jsonl.into(),
+            collection_name: self.collection_name.into(),
 
             action: params.action,
             batch_size: params.batch_size,
@@ -88,6 +89,7 @@ where
             remote_embedding_batch_size: params.remote_embedding_batch_size,
             return_doc: params.return_doc,
             return_id: params.return_id,
+            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, documents_api::import_documents, params)
     }
@@ -98,13 +100,14 @@ where
     /// * `params` - An `ExportDocumentsParameters` struct containing options like `filter_by` and `include_fields`.
     pub async fn export_jsonl(
         &self,
-        params: ExportDocumentsParameters,
-    ) -> Result<String, Error<documents_api::ExportDocumentsError>> {
+        params: ExportDocumentsParameters<'_>,
+    ) -> Result<String, Error<documents_api::ExportDocumentsError<'static>>> {
         let params = documents_api::ExportDocumentsParams {
-            collection_name: self.collection_name.to_owned(),
+            collection_name: self.collection_name.into(),
             exclude_fields: params.exclude_fields,
             filter_by: params.filter_by,
             include_fields: params.include_fields,
+            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, documents_api::export_documents, params)
     }
@@ -115,15 +118,18 @@ where
     /// * `params` - A `DeleteDocumentsParameters` describing the conditions for deleting documents.
     pub async fn delete(
         &self,
-        params: DeleteDocumentsParameters,
-    ) -> Result<raw_models::DeleteDocuments200Response, Error<documents_api::DeleteDocumentsError>>
-    {
+        params: DeleteDocumentsParameters<'_>,
+    ) -> Result<
+        raw_models::DeleteDocuments200Response<'_>,
+        Error<documents_api::DeleteDocumentsError<'static>>,
+    > {
         let params = documents_api::DeleteDocumentsParams {
-            collection_name: self.collection_name.to_owned(),
+            collection_name: self.collection_name.into(),
             filter_by: Some(params.filter_by),
             batch_size: params.batch_size,
             ignore_not_found: params.ignore_not_found,
             truncate: params.truncate,
+            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, documents_api::delete_documents, params)
     }
@@ -135,10 +141,11 @@ where
     /// * `params` - A `SearchParameters` struct containing all search parameters.
     pub async fn search(
         &self,
-        params: raw_models::SearchParameters,
-    ) -> Result<SearchResult<D>, Error<documents_api::SearchCollectionError>> {
+        params: raw_models::SearchParameters<'_>,
+    ) -> Result<SearchResult<'static, D>, Error<documents_api::SearchCollectionError<'static>>>
+    {
         let search_params = documents_api::SearchCollectionParams {
-            collection_name: self.collection_name.to_owned(),
+            collection_name: self.collection_name.into(),
 
             // Map all corresponding fields directly.
             cache_ttl: params.cache_ttl,
@@ -212,6 +219,7 @@ where
             nl_query: params.nl_query,
             enable_analytics: params.enable_analytics,
             synonym_sets: params.synonym_sets,
+            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, documents_api::search_collection, search_params)
     }
@@ -234,7 +242,7 @@ where
         &self,
         document: &D,
         params: Option<DocumentIndexParameters>,
-    ) -> Result<D, Error<documents_api::IndexDocumentError>> {
+    ) -> Result<D, Error<documents_api::IndexDocumentError<'static>>> {
         let doc_value = serde_json::to_value(document)?;
         let result_value = self.index(doc_value, "create", params).await?;
         serde_json::from_value(result_value).map_err(Error::from)
@@ -252,7 +260,7 @@ where
         &self,
         document: &D,
         params: Option<DocumentIndexParameters>,
-    ) -> Result<D, Error<documents_api::IndexDocumentError>> {
+    ) -> Result<D, Error<documents_api::IndexDocumentError<'static>>> {
         let doc_value = serde_json::to_value(document)?;
         let result_value = self.index(doc_value, "upsert", params).await?;
         serde_json::from_value(result_value).map_err(Error::from)
@@ -266,13 +274,16 @@ where
     pub async fn update(
         &self,
         document: &D::Partial,
-        params: UpdateDocumentsParameters,
-    ) -> Result<raw_models::UpdateDocuments200Response, Error<documents_api::UpdateDocumentsError>>
-    {
+        params: UpdateDocumentsParameters<'_>,
+    ) -> Result<
+        raw_models::UpdateDocuments200Response<'static>,
+        Error<documents_api::UpdateDocumentsError<'static>>,
+    > {
         let params = documents_api::UpdateDocumentsParams {
-            collection_name: self.collection_name.to_owned(),
+            collection_name: self.collection_name.into(),
             filter_by: params.filter_by,
             body: document,
+            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, documents_api::update_documents, params)
     }

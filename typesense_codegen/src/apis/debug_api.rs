@@ -10,20 +10,25 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
+use ::std::{borrow::Cow, marker::PhantomData};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
 /// struct for typed errors of method [`debug`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DebugError {
-    UnknownValue(serde_json::Value),
+pub enum DebugError<'a> {
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// Print debugging information
 pub async fn debug(
     configuration: &configuration::Configuration,
-) -> Result<models::Debug200Response, Error<DebugError>> {
+) -> Result<models::Debug200Response<'static>, Error<DebugError<'static>>> {
     let uri_str = format!("{}/debug", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 

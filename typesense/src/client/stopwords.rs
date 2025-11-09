@@ -3,6 +3,7 @@
 //! A `Stopwords` instance is created via the main `client.stopwords()` method.
 
 use crate::{Client, Error, execute_wrapper};
+use ::std::borrow::Cow;
 use typesense_codegen::{apis::stopwords_api, models};
 
 /// Provides methods for managing Typesense stopwords sets.
@@ -26,12 +27,16 @@ impl<'a> Stopwords<'a> {
     /// * `schema` - A `StopwordsSetUpsertSchema` object with the stopwords to upsert.
     pub async fn upsert(
         &self,
-        set_id: impl Into<String>,
-        schema: models::StopwordsSetUpsertSchema,
-    ) -> Result<models::StopwordsSetSchema, Error<stopwords_api::UpsertStopwordsSetError>> {
+        set_id: impl Into<Cow<'_, str>>,
+        schema: models::StopwordsSetUpsertSchema<'_>,
+    ) -> Result<
+        models::StopwordsSetSchema<'static>,
+        Error<stopwords_api::UpsertStopwordsSetError<'static>>,
+    > {
         let params = stopwords_api::UpsertStopwordsSetParams {
             set_id: set_id.into(),
             stopwords_set_upsert_schema: schema,
+            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, stopwords_api::upsert_stopwords_set, params)
     }
@@ -40,8 +45,8 @@ impl<'a> Stopwords<'a> {
     pub async fn retrieve(
         &self,
     ) -> Result<
-        models::StopwordsSetsRetrieveAllSchema,
-        Error<stopwords_api::RetrieveStopwordsSetsError>,
+        models::StopwordsSetsRetrieveAllSchema<'static>,
+        Error<stopwords_api::RetrieveStopwordsSetsError<'static>>,
     > {
         execute_wrapper!(self, stopwords_api::retrieve_stopwords_sets)
     }

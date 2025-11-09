@@ -9,16 +9,22 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ApiResponse {
+pub struct ApiResponse<'a> {
     #[serde(rename = "message")]
-    pub message: String,
+    pub message: Cow<'a, str>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl ApiResponse {
-    pub fn new(message: String) -> ApiResponse {
-        ApiResponse { message }
+impl<'a> ApiResponse<'a> {
+    pub fn new(message: Cow<'a, str>) -> Self {
+        Self {
+            message,
+            _phantom: PhantomData,
+        }
     }
 }

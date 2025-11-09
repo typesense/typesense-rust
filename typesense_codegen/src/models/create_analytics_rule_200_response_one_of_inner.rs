@@ -9,34 +9,37 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct CreateAnalyticsRule200ResponseOneOfInner {
+pub struct CreateAnalyticsRule200ResponseOneOfInner<'a> {
     #[serde(rename = "name")]
-    pub name: String,
+    pub name: Cow<'a, str>,
     #[serde(rename = "type")]
     pub r#type: Type,
     #[serde(rename = "collection")]
-    pub collection: String,
+    pub collection: Cow<'a, str>,
     #[serde(rename = "event_type")]
-    pub event_type: String,
+    pub event_type: Cow<'a, str>,
     #[serde(rename = "rule_tag", skip_serializing_if = "Option::is_none")]
-    pub rule_tag: Option<String>,
+    pub rule_tag: Option<Cow<'a, str>>,
     #[serde(rename = "params", skip_serializing_if = "Option::is_none")]
-    pub params: Option<Box<models::AnalyticsRuleCreateParams>>,
+    pub params: Option<Box<models::AnalyticsRuleCreateParams<'a>>>,
     #[serde(rename = "error", skip_serializing_if = "Option::is_none")]
-    pub error: Option<String>,
+    pub error: Option<Cow<'a, str>>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl CreateAnalyticsRule200ResponseOneOfInner {
+impl<'a> CreateAnalyticsRule200ResponseOneOfInner<'a> {
     pub fn new(
-        name: String,
+        name: Cow<'a, str>,
         r#type: Type,
-        collection: String,
-        event_type: String,
-    ) -> CreateAnalyticsRule200ResponseOneOfInner {
-        CreateAnalyticsRule200ResponseOneOfInner {
+        collection: Cow<'a, str>,
+        event_type: Cow<'a, str>,
+    ) -> Self {
+        Self {
             name,
             r#type,
             collection,
@@ -44,6 +47,7 @@ impl CreateAnalyticsRule200ResponseOneOfInner {
             rule_tag: None,
             params: None,
             error: None,
+            _phantom: PhantomData,
         }
     }
 }

@@ -9,16 +9,22 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct PresetDeleteSchema {
+pub struct PresetDeleteSchema<'a> {
     #[serde(rename = "name")]
-    pub name: String,
+    pub name: Cow<'a, str>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl PresetDeleteSchema {
-    pub fn new(name: String) -> PresetDeleteSchema {
-        PresetDeleteSchema { name }
+impl<'a> PresetDeleteSchema<'a> {
+    pub fn new(name: Cow<'a, str>) -> Self {
+        Self {
+            name,
+            _phantom: PhantomData,
+        }
     }
 }

@@ -9,18 +9,22 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct StopwordsSetRetrieveSchema {
+pub struct StopwordsSetRetrieveSchema<'a> {
     #[serde(rename = "stopwords")]
-    pub stopwords: Box<models::StopwordsSetSchema>,
+    pub stopwords: Box<models::StopwordsSetSchema<'a>>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl StopwordsSetRetrieveSchema {
-    pub fn new(stopwords: models::StopwordsSetSchema) -> StopwordsSetRetrieveSchema {
-        StopwordsSetRetrieveSchema {
+impl<'a> StopwordsSetRetrieveSchema<'a> {
+    pub fn new(stopwords: models::StopwordsSetSchema<'a>) -> Self {
+        Self {
             stopwords: Box::new(stopwords),
+            _phantom: PhantomData,
         }
     }
 }

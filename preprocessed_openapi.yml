@@ -345,9 +345,9 @@ paths:
               description: Can be any key-value pair
               x-go-type: interface{}
         required: true
-        x-rust-params-generic-parameter: <B>
+        x-rust-params-generic-parameter: B
         x-rust-type: B
-      x-rust-generic-parameter: '<B: Serialize>'
+      x-rust-generic-parameter: 'B: Serialize'
     delete:
       tags:
       - documents
@@ -843,8 +843,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-generic-parameter: '<D: for<''de> serde::Deserialize<''de> + Serialize>'
-      x-rust-return-type: models::SearchResult<D>
+      x-rust-generic-parameter: 'D: for<''de> serde::Deserialize<''de> + Serialize'
+      x-rust-return-type: models::SearchResult<'static, D>
   /synonym_sets:
     get:
       tags:
@@ -1500,7 +1500,7 @@ paths:
               description: Can be any key-value pair
               x-go-type: interface{}
         required: true
-        x-rust-params-generic-parameter: <B>
+        x-rust-params-generic-parameter: B
         x-rust-type: B
       responses:
         '200':
@@ -1516,7 +1516,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-generic-parameter: '<B: Serialize>'
+      x-rust-generic-parameter: 'B: Serialize'
     delete:
       tags:
       - documents
@@ -1914,7 +1914,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/SchemaChangeStatus'
-      x-rust-return-type: Option<Vec<models::SchemaChangeStatus>>
+      x-rust-return-type: Option<Vec<models::SchemaChangeStatus<'static>>>
   /operations/snapshot:
     post:
       tags:
@@ -3409,13 +3409,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SearchGroupedHit'
-          x-rust-type: Option<Vec<models::SearchGroupedHit<D>>>
+          x-rust-type: Option<Vec<models::SearchGroupedHit<'a, D>>>
         hits:
           type: array
           description: The documents that matched the search query
           items:
             $ref: '#/components/schemas/SearchResultHit'
-          x-rust-type: Option<Vec<models::SearchResultHit<D>>>
+          x-rust-type: Option<Vec<models::SearchResultHit<'a, D>>>
         request_params:
           $ref: '#/components/schemas/SearchRequestParams'
         conversation:
@@ -3429,7 +3429,7 @@ components:
           type: object
           description: Custom JSON object that can be returned in the search response
           additionalProperties: true
-      x-rust-generic-parameter: <D>
+      x-rust-generic-parameter: D
     SearchRequestParams:
       type: object
       required:
@@ -3482,8 +3482,8 @@ components:
           description: The documents that matched the search query
           items:
             $ref: '#/components/schemas/SearchResultHit'
-          x-rust-type: Vec<models::SearchResultHit<D>>
-      x-rust-generic-parameter: <D>
+          x-rust-type: Vec<models::SearchResultHit<'a, D>>
+      x-rust-generic-parameter: D
     SearchResultHit:
       type: object
       properties:
@@ -3555,7 +3555,7 @@ components:
           num_employees: 5215
           country: USA
         text_match: 1234556
-      x-rust-generic-parameter: <D>
+      x-rust-generic-parameter: D
     SearchHighlight:
       type: object
       properties:
@@ -3741,10 +3741,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MultiSearchResultItem'
-          x-rust-type: Vec<models::MultiSearchResultItem<D>>
+          x-rust-type: Vec<models::MultiSearchResultItem<'a, D>>
         conversation:
           $ref: '#/components/schemas/SearchResultConversation'
-      x-rust-generic-parameter: <D>
+      x-rust-generic-parameter: D
     MultiSearchResultItem:
       allOf:
       - $ref: '#/components/schemas/SearchResult'
@@ -3757,7 +3757,7 @@ components:
           error:
             type: string
             description: Error description
-      x-rust-generic-parameter: <D>
+      x-rust-generic-parameter: D
     SearchParameters:
       type: object
       properties:

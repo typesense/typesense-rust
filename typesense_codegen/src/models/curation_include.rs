@@ -9,20 +9,27 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct CurationInclude {
+pub struct CurationInclude<'a> {
     /// document id that should be included
     #[serde(rename = "id")]
-    pub id: String,
+    pub id: Cow<'a, str>,
     /// position number where document should be included in the search results
     #[serde(rename = "position")]
     pub position: i32,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl CurationInclude {
-    pub fn new(id: String, position: i32) -> CurationInclude {
-        CurationInclude { id, position }
+impl<'a> CurationInclude<'a> {
+    pub fn new(id: Cow<'a, str>, position: i32) -> Self {
+        Self {
+            id,
+            position,
+            _phantom: PhantomData,
+        }
     }
 }

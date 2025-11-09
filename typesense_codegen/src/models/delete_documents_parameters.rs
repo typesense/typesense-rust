@@ -9,12 +9,13 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct DeleteDocumentsParameters {
+pub struct DeleteDocumentsParameters<'a> {
     #[serde(rename = "filter_by")]
-    pub filter_by: String,
+    pub filter_by: Cow<'a, str>,
     /// Batch size parameter controls the number of documents that should be deleted at a time. A larger value will speed up deletions, but will impact performance of other operations running on the server.
     #[serde(rename = "batch_size", skip_serializing_if = "Option::is_none")]
     pub batch_size: Option<i32>,
@@ -23,15 +24,18 @@ pub struct DeleteDocumentsParameters {
     /// When true, removes all documents from the collection while preserving the collection and its schema.
     #[serde(rename = "truncate", skip_serializing_if = "Option::is_none")]
     pub truncate: Option<bool>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl DeleteDocumentsParameters {
-    pub fn new(filter_by: String) -> DeleteDocumentsParameters {
-        DeleteDocumentsParameters {
+impl<'a> DeleteDocumentsParameters<'a> {
+    pub fn new(filter_by: Cow<'a, str>) -> Self {
+        Self {
             filter_by,
             batch_size: None,
             ignore_not_found: None,
             truncate: None,
+            _phantom: PhantomData,
         }
     }
 }

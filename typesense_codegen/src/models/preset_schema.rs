@@ -9,21 +9,25 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct PresetSchema {
+pub struct PresetSchema<'a> {
     #[serde(rename = "value")]
-    pub value: Box<models::PresetUpsertSchemaValue>,
+    pub value: Box<models::PresetUpsertSchemaValue<'a>>,
     #[serde(rename = "name")]
-    pub name: String,
+    pub name: Cow<'a, str>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl PresetSchema {
-    pub fn new(value: models::PresetUpsertSchemaValue, name: String) -> PresetSchema {
-        PresetSchema {
+impl<'a> PresetSchema<'a> {
+    pub fn new(value: models::PresetUpsertSchemaValue<'a>, name: Cow<'a, str>) -> Self {
+        Self {
             value: Box::new(value),
             name,
+            _phantom: PhantomData,
         }
     }
 }

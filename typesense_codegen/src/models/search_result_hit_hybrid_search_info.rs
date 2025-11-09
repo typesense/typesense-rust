@@ -9,21 +9,25 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 /// SearchResultHitHybridSearchInfo : Information about hybrid search scoring
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchResultHitHybridSearchInfo {
+pub struct SearchResultHitHybridSearchInfo<'a> {
     /// Combined score from rank fusion of text and vector search
     #[serde(rename = "rank_fusion_score", skip_serializing_if = "Option::is_none")]
     pub rank_fusion_score: Option<f32>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl SearchResultHitHybridSearchInfo {
+impl<'a> SearchResultHitHybridSearchInfo<'a> {
     /// Information about hybrid search scoring
-    pub fn new() -> SearchResultHitHybridSearchInfo {
-        SearchResultHitHybridSearchInfo {
+    pub fn new() -> Self {
+        Self {
             rank_fusion_score: None,
+            _phantom: PhantomData,
         }
     }
 }

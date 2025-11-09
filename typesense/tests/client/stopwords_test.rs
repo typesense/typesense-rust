@@ -12,9 +12,11 @@ async fn run_test_stopwords_and_stopword_lifecycle() {
         ..Default::default()
     };
 
-    let upsert_result = client.stopwords().upsert(&set_id, schema).await;
-    assert!(upsert_result.is_ok(), "Failed to upsert stopwords set");
-    let upserted_set = upsert_result.unwrap();
+    let upserted_set = client
+        .stopwords()
+        .upsert(&set_id, schema)
+        .await
+        .expect("Failed to upsert stopwords set");
     assert_eq!(upserted_set.id, set_id);
     assert_eq!(upserted_set.stopwords, vec!["a", "the", "an"]);
 

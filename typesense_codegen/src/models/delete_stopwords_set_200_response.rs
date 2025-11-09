@@ -9,16 +9,22 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct DeleteStopwordsSet200Response {
+pub struct DeleteStopwordsSet200Response<'a> {
     #[serde(rename = "id")]
-    pub id: String,
+    pub id: Cow<'a, str>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl DeleteStopwordsSet200Response {
-    pub fn new(id: String) -> DeleteStopwordsSet200Response {
-        DeleteStopwordsSet200Response { id }
+impl<'a> DeleteStopwordsSet200Response<'a> {
+    pub fn new(id: Cow<'a, str>) -> Self {
+        Self {
+            id,
+            _phantom: PhantomData,
+        }
     }
 }

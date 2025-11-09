@@ -9,17 +9,23 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ApiKeyDeleteResponse {
+pub struct ApiKeyDeleteResponse<'a> {
     /// The id of the API key that was deleted
     #[serde(rename = "id")]
     pub id: i64,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl ApiKeyDeleteResponse {
-    pub fn new(id: i64) -> ApiKeyDeleteResponse {
-        ApiKeyDeleteResponse { id }
+impl<'a> ApiKeyDeleteResponse<'a> {
+    pub fn new(id: i64) -> Self {
+        Self {
+            id,
+            _phantom: PhantomData,
+        }
     }
 }

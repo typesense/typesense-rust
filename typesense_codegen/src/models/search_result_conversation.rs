@@ -9,32 +9,36 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchResultConversation {
+pub struct SearchResultConversation<'a> {
     #[serde(rename = "answer")]
-    pub answer: String,
+    pub answer: Cow<'a, str>,
     #[serde(rename = "conversation_history")]
     pub conversation_history: Vec<serde_json::Value>,
     #[serde(rename = "conversation_id")]
-    pub conversation_id: String,
+    pub conversation_id: Cow<'a, str>,
     #[serde(rename = "query")]
-    pub query: String,
+    pub query: Cow<'a, str>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl SearchResultConversation {
+impl<'a> SearchResultConversation<'a> {
     pub fn new(
-        answer: String,
+        answer: Cow<'a, str>,
         conversation_history: Vec<serde_json::Value>,
-        conversation_id: String,
-        query: String,
-    ) -> SearchResultConversation {
-        SearchResultConversation {
+        conversation_id: Cow<'a, str>,
+        query: Cow<'a, str>,
+    ) -> Self {
+        Self {
             answer,
             conversation_history,
             conversation_id,
             query,
+            _phantom: PhantomData,
         }
     }
 }

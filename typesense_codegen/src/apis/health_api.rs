@@ -10,20 +10,25 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
+use ::std::{borrow::Cow, marker::PhantomData};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
 /// struct for typed errors of method [`health`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum HealthError {
-    UnknownValue(serde_json::Value),
+pub enum HealthError<'a> {
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// Checks if Typesense server is ready to accept requests.
 pub async fn health(
     configuration: &configuration::Configuration,
-) -> Result<models::HealthStatus, Error<HealthError>> {
+) -> Result<models::HealthStatus<'static>, Error<HealthError<'static>>> {
     let uri_str = format!("{}/health", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 

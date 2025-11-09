@@ -21,7 +21,7 @@ where
     client: &'c Client,
     collection_name: &'n str,
     document_id: String,
-    _phantom: std::marker::PhantomData<D>,
+    _phantom: core::marker::PhantomData<D>,
 }
 
 impl<'c, 'n, D> Document<'c, 'n, D>
@@ -35,7 +35,7 @@ where
             client,
             collection_name,
             document_id,
-            _phantom: std::marker::PhantomData,
+            _phantom: core::marker::PhantomData,
         }
     }
 
@@ -43,10 +43,11 @@ where
     ///
     /// # Returns
     /// A `Result` containing the strongly-typed document `D` if successful.
-    pub async fn retrieve(&self) -> Result<D, Error<documents_api::GetDocumentError>> {
+    pub async fn retrieve(&self) -> Result<D, Error<documents_api::GetDocumentError<'static>>> {
         let params = documents_api::GetDocumentParams {
-            collection_name: self.collection_name.to_owned(),
-            document_id: self.document_id.to_owned(),
+            collection_name: self.collection_name.into(),
+            document_id: self.document_id.as_str().into(),
+            _phantom: core::marker::PhantomData,
         };
 
         let result_value = execute_wrapper!(self, documents_api::get_document, params)?;
@@ -60,10 +61,11 @@ where
     ///
     /// # Returns
     /// A `Result` containing the deleted document deserialized into `D`.
-    pub async fn delete(&self) -> Result<D, Error<documents_api::DeleteDocumentError>> {
+    pub async fn delete(&self) -> Result<D, Error<documents_api::DeleteDocumentError<'static>>> {
         let params = documents_api::DeleteDocumentParams {
-            collection_name: self.collection_name.to_owned(),
-            document_id: self.document_id.to_owned(),
+            collection_name: self.collection_name.into(),
+            document_id: self.document_id.as_str().into(),
+            _phantom: core::marker::PhantomData,
         };
 
         let result_value = execute_wrapper!(self, documents_api::delete_document, params)?;
@@ -123,12 +125,13 @@ where
         &self,
         partial_document: &D::Partial,
         params: Option<crate::models::DocumentIndexParameters>,
-    ) -> Result<D, Error<documents_api::UpdateDocumentError>> {
+    ) -> Result<D, Error<documents_api::UpdateDocumentError<'static>>> {
         let params = documents_api::UpdateDocumentParams {
-            collection_name: self.collection_name.to_owned(),
-            document_id: self.document_id.to_owned(),
+            collection_name: self.collection_name.into(),
+            document_id: self.document_id.as_str().into(),
             body: partial_document,
             dirty_values: params.and_then(|d| d.dirty_values),
+            _phantom: core::marker::PhantomData,
         };
 
         let result_value = execute_wrapper!(self, documents_api::update_document, params)?;

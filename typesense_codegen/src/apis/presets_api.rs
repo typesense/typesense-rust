@@ -10,68 +10,88 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
+use ::std::{borrow::Cow, marker::PhantomData};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
 /// struct for passing parameters to the method [`delete_preset`]
 #[derive(Clone, Debug)]
-pub struct DeletePresetParams {
+pub struct DeletePresetParams<'p> {
     /// The ID of the preset to delete.
-    pub preset_id: String,
+    pub preset_id: Cow<'p, str>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`retrieve_preset`]
 #[derive(Clone, Debug)]
-pub struct RetrievePresetParams {
+pub struct RetrievePresetParams<'p> {
     /// The ID of the preset to retrieve.
-    pub preset_id: String,
+    pub preset_id: Cow<'p, str>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`upsert_preset`]
 #[derive(Clone, Debug)]
-pub struct UpsertPresetParams {
+pub struct UpsertPresetParams<'p> {
     /// The name of the preset set to upsert.
-    pub preset_id: String,
+    pub preset_id: Cow<'p, str>,
     /// The stopwords set to upsert.
-    pub preset_upsert_schema: models::PresetUpsertSchema,
+    pub preset_upsert_schema: models::PresetUpsertSchema<'p>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for typed errors of method [`delete_preset`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeletePresetError {
-    Status404(models::ApiResponse),
-    UnknownValue(serde_json::Value),
+pub enum DeletePresetError<'a> {
+    Status404(models::ApiResponse<'a>),
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`retrieve_all_presets`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RetrieveAllPresetsError {
-    UnknownValue(serde_json::Value),
+pub enum RetrieveAllPresetsError<'a> {
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`retrieve_preset`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RetrievePresetError {
-    Status404(models::ApiResponse),
-    UnknownValue(serde_json::Value),
+pub enum RetrievePresetError<'a> {
+    Status404(models::ApiResponse<'a>),
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`upsert_preset`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpsertPresetError {
-    Status400(models::ApiResponse),
-    UnknownValue(serde_json::Value),
+pub enum UpsertPresetError<'a> {
+    Status400(models::ApiResponse<'a>),
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// Permanently deletes a preset, given it's name.
 pub async fn delete_preset(
     configuration: &configuration::Configuration,
-    params: &DeletePresetParams,
-) -> Result<models::PresetDeleteSchema, Error<DeletePresetError>> {
+    params: &DeletePresetParams<'_>,
+) -> Result<models::PresetDeleteSchema<'static>, Error<DeletePresetError<'static>>> {
     let uri_str = format!(
         "{}/presets/{presetId}",
         configuration.base_path,
@@ -133,7 +153,7 @@ pub async fn delete_preset(
 /// Retrieve the details of all presets
 pub async fn retrieve_all_presets(
     configuration: &configuration::Configuration,
-) -> Result<models::PresetsRetrieveSchema, Error<RetrieveAllPresetsError>> {
+) -> Result<models::PresetsRetrieveSchema<'static>, Error<RetrieveAllPresetsError<'static>>> {
     let uri_str = format!("{}/presets", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -189,8 +209,8 @@ pub async fn retrieve_all_presets(
 /// Retrieve the details of a preset, given it's name.
 pub async fn retrieve_preset(
     configuration: &configuration::Configuration,
-    params: &RetrievePresetParams,
-) -> Result<models::PresetSchema, Error<RetrievePresetError>> {
+    params: &RetrievePresetParams<'_>,
+) -> Result<models::PresetSchema<'static>, Error<RetrievePresetError<'static>>> {
     let uri_str = format!(
         "{}/presets/{presetId}",
         configuration.base_path,
@@ -250,8 +270,8 @@ pub async fn retrieve_preset(
 /// Create or update an existing preset.
 pub async fn upsert_preset(
     configuration: &configuration::Configuration,
-    params: &UpsertPresetParams,
-) -> Result<models::PresetSchema, Error<UpsertPresetError>> {
+    params: &UpsertPresetParams<'_>,
+) -> Result<models::PresetSchema<'static>, Error<UpsertPresetError<'static>>> {
     let uri_str = format!(
         "{}/presets/{presetId}",
         configuration.base_path,

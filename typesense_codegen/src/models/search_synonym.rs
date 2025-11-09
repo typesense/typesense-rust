@@ -9,34 +9,38 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchSynonym {
+pub struct SearchSynonym<'a> {
     /// For 1-way synonyms, indicates the root word that words in the `synonyms` parameter map to.
     #[serde(rename = "root", skip_serializing_if = "Option::is_none")]
-    pub root: Option<String>,
+    pub root: Option<Cow<'a, str>>,
     /// Array of words that should be considered as synonyms.
     #[serde(rename = "synonyms")]
     pub synonyms: Vec<String>,
     /// Locale for the synonym, leave blank to use the standard tokenizer.
     #[serde(rename = "locale", skip_serializing_if = "Option::is_none")]
-    pub locale: Option<String>,
+    pub locale: Option<Cow<'a, str>>,
     /// By default, special characters are dropped from synonyms. Use this attribute to specify which special characters should be indexed as is.
     #[serde(rename = "symbols_to_index", skip_serializing_if = "Option::is_none")]
     pub symbols_to_index: Option<Vec<String>>,
     #[serde(rename = "id")]
-    pub id: String,
+    pub id: Cow<'a, str>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl SearchSynonym {
-    pub fn new(synonyms: Vec<String>, id: String) -> SearchSynonym {
-        SearchSynonym {
+impl<'a> SearchSynonym<'a> {
+    pub fn new(synonyms: Vec<String>, id: Cow<'a, str>) -> Self {
+        Self {
             root: None,
             synonyms,
             locale: None,
             symbols_to_index: None,
             id,
+            _phantom: PhantomData,
         }
     }
 }

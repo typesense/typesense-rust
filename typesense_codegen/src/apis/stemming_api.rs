@@ -10,53 +10,68 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
+use ::std::{borrow::Cow, marker::PhantomData};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
 /// struct for passing parameters to the method [`get_stemming_dictionary`]
 #[derive(Clone, Debug)]
-pub struct GetStemmingDictionaryParams {
+pub struct GetStemmingDictionaryParams<'p> {
     /// The ID of the dictionary to retrieve
-    pub dictionary_id: String,
+    pub dictionary_id: Cow<'p, str>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`import_stemming_dictionary`]
 #[derive(Clone, Debug)]
-pub struct ImportStemmingDictionaryParams {
+pub struct ImportStemmingDictionaryParams<'p> {
     /// The ID to assign to the dictionary
-    pub id: String,
+    pub id: Cow<'p, str>,
     /// The JSONL file containing word mappings
-    pub body: String,
+    pub body: Cow<'p, str>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for typed errors of method [`get_stemming_dictionary`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetStemmingDictionaryError {
-    Status404(models::ApiResponse),
-    UnknownValue(serde_json::Value),
+pub enum GetStemmingDictionaryError<'a> {
+    Status404(models::ApiResponse<'a>),
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`import_stemming_dictionary`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ImportStemmingDictionaryError {
-    Status400(models::ApiResponse),
-    UnknownValue(serde_json::Value),
+pub enum ImportStemmingDictionaryError<'a> {
+    Status400(models::ApiResponse<'a>),
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`list_stemming_dictionaries`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListStemmingDictionariesError {
-    UnknownValue(serde_json::Value),
+pub enum ListStemmingDictionariesError<'a> {
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// Fetch details of a specific stemming dictionary.
 pub async fn get_stemming_dictionary(
     configuration: &configuration::Configuration,
-    params: &GetStemmingDictionaryParams,
-) -> Result<models::StemmingDictionary, Error<GetStemmingDictionaryError>> {
+    params: &GetStemmingDictionaryParams<'_>,
+) -> Result<models::StemmingDictionary<'static>, Error<GetStemmingDictionaryError<'static>>> {
     let uri_str = format!(
         "{}/stemming/dictionaries/{dictionaryId}",
         configuration.base_path,
@@ -116,8 +131,8 @@ pub async fn get_stemming_dictionary(
 /// Upload a JSONL file containing word mappings to create or update a stemming dictionary.
 pub async fn import_stemming_dictionary(
     configuration: &configuration::Configuration,
-    params: &ImportStemmingDictionaryParams,
-) -> Result<String, Error<ImportStemmingDictionaryError>> {
+    params: &ImportStemmingDictionaryParams<'_>,
+) -> Result<String, Error<ImportStemmingDictionaryError<'static>>> {
     let uri_str = format!("{}/stemming/dictionaries/import", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -137,7 +152,7 @@ pub async fn import_stemming_dictionary(
     };
     req_builder = req_builder
         .header(reqwest::header::CONTENT_TYPE, "text/plain")
-        .body(params.body.to_owned());
+        .body(params.body.clone().into_owned());
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -174,7 +189,10 @@ pub async fn import_stemming_dictionary(
 /// Retrieve a list of all available stemming dictionaries.
 pub async fn list_stemming_dictionaries(
     configuration: &configuration::Configuration,
-) -> Result<models::ListStemmingDictionaries200Response, Error<ListStemmingDictionariesError>> {
+) -> Result<
+    models::ListStemmingDictionaries200Response<'static>,
+    Error<ListStemmingDictionariesError<'static>>,
+> {
     let uri_str = format!("{}/stemming/dictionaries", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 

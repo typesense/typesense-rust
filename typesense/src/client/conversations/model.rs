@@ -24,11 +24,12 @@ impl<'a> Model<'a> {
     pub async fn retrieve(
         &self,
     ) -> Result<
-        models::ConversationModelSchema,
-        Error<conversations_api::RetrieveConversationModelError>,
+        models::ConversationModelSchema<'static>,
+        Error<conversations_api::RetrieveConversationModelError<'static>>,
     > {
         let params = conversations_api::RetrieveConversationModelParams {
-            model_id: self.model_id.to_owned(),
+            model_id: self.model_id.into(),
+            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, conversations_api::retrieve_conversation_model, params)
     }
@@ -39,14 +40,15 @@ impl<'a> Model<'a> {
     /// * `schema` - A `ConversationModelUpdateSchema` object with the fields to update.
     pub async fn update(
         &self,
-        schema: models::ConversationModelUpdateSchema,
+        schema: models::ConversationModelUpdateSchema<'_>,
     ) -> Result<
-        models::ConversationModelSchema,
-        Error<conversations_api::UpdateConversationModelError>,
+        models::ConversationModelSchema<'static>,
+        Error<conversations_api::UpdateConversationModelError<'static>>,
     > {
         let params = conversations_api::UpdateConversationModelParams {
-            model_id: self.model_id.to_owned(),
+            model_id: self.model_id.into(),
             conversation_model_update_schema: schema,
+            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, conversations_api::update_conversation_model, params)
     }
@@ -55,11 +57,12 @@ impl<'a> Model<'a> {
     pub async fn delete(
         &self,
     ) -> Result<
-        models::ConversationModelSchema,
-        Error<conversations_api::DeleteConversationModelError>,
+        models::ConversationModelSchema<'static>,
+        Error<conversations_api::DeleteConversationModelError<'static>>,
     > {
         let params = conversations_api::DeleteConversationModelParams {
-            model_id: self.model_id.to_owned(),
+            model_id: self.model_id.into(),
+            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, conversations_api::delete_conversation_model, params)
     }

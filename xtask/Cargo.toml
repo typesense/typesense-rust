@@ -10,5 +10,9 @@ clap = { workspace = true }
 reqwest = { version = "0.12", features = ["blocking"] } # "blocking" is simpler for scripts
 serde = { workspace = true }
 serde_yaml = { workspace = true }
-typesense = { path = "../typesense"}
+typesense = { path = "../typesense", optional = true}
 tokio = { workspace = true}
+
+[features]
+default = []
+typesense = ["dep:typesense"]

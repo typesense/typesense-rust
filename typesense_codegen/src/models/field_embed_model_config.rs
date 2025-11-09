@@ -9,35 +9,38 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct FieldEmbedModelConfig {
+pub struct FieldEmbedModelConfig<'a> {
     #[serde(rename = "model_name")]
-    pub model_name: String,
+    pub model_name: Cow<'a, str>,
     #[serde(rename = "api_key", skip_serializing_if = "Option::is_none")]
-    pub api_key: Option<String>,
+    pub api_key: Option<Cow<'a, str>>,
     #[serde(rename = "url", skip_serializing_if = "Option::is_none")]
-    pub url: Option<String>,
+    pub url: Option<Cow<'a, str>>,
     #[serde(rename = "access_token", skip_serializing_if = "Option::is_none")]
-    pub access_token: Option<String>,
+    pub access_token: Option<Cow<'a, str>>,
     #[serde(rename = "refresh_token", skip_serializing_if = "Option::is_none")]
-    pub refresh_token: Option<String>,
+    pub refresh_token: Option<Cow<'a, str>>,
     #[serde(rename = "client_id", skip_serializing_if = "Option::is_none")]
-    pub client_id: Option<String>,
+    pub client_id: Option<Cow<'a, str>>,
     #[serde(rename = "client_secret", skip_serializing_if = "Option::is_none")]
-    pub client_secret: Option<String>,
+    pub client_secret: Option<Cow<'a, str>>,
     #[serde(rename = "project_id", skip_serializing_if = "Option::is_none")]
-    pub project_id: Option<String>,
+    pub project_id: Option<Cow<'a, str>>,
     #[serde(rename = "indexing_prefix", skip_serializing_if = "Option::is_none")]
-    pub indexing_prefix: Option<String>,
+    pub indexing_prefix: Option<Cow<'a, str>>,
     #[serde(rename = "query_prefix", skip_serializing_if = "Option::is_none")]
-    pub query_prefix: Option<String>,
+    pub query_prefix: Option<Cow<'a, str>>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl FieldEmbedModelConfig {
-    pub fn new(model_name: String) -> FieldEmbedModelConfig {
-        FieldEmbedModelConfig {
+impl<'a> FieldEmbedModelConfig<'a> {
+    pub fn new(model_name: Cow<'a, str>) -> Self {
+        Self {
             model_name,
             api_key: None,
             url: None,
@@ -48,6 +51,7 @@ impl FieldEmbedModelConfig {
             project_id: None,
             indexing_prefix: None,
             query_prefix: None,
+            _phantom: PhantomData,
         }
     }
 }

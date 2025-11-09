@@ -9,21 +9,25 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct FieldEmbed {
+pub struct FieldEmbed<'a> {
     #[serde(rename = "from")]
     pub from: Vec<String>,
     #[serde(rename = "model_config")]
-    pub model_config: Box<models::FieldEmbedModelConfig>,
+    pub model_config: Box<models::FieldEmbedModelConfig<'a>>,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl FieldEmbed {
-    pub fn new(from: Vec<String>, model_config: models::FieldEmbedModelConfig) -> FieldEmbed {
-        FieldEmbed {
+impl<'a> FieldEmbed<'a> {
+    pub fn new(from: Vec<String>, model_config: models::FieldEmbedModelConfig<'a>) -> Self {
+        Self {
             from,
             model_config: Box::new(model_config),
+            _phantom: PhantomData,
         }
     }
 }

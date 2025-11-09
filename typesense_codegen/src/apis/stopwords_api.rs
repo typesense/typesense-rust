@@ -10,68 +10,89 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
+use ::std::{borrow::Cow, marker::PhantomData};
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
 /// struct for passing parameters to the method [`delete_stopwords_set`]
 #[derive(Clone, Debug)]
-pub struct DeleteStopwordsSetParams {
+pub struct DeleteStopwordsSetParams<'p> {
     /// The ID of the stopwords set to delete.
-    pub set_id: String,
+    pub set_id: Cow<'p, str>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`retrieve_stopwords_set`]
 #[derive(Clone, Debug)]
-pub struct RetrieveStopwordsSetParams {
+pub struct RetrieveStopwordsSetParams<'p> {
     /// The ID of the stopwords set to retrieve.
-    pub set_id: String,
+    pub set_id: Cow<'p, str>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`upsert_stopwords_set`]
 #[derive(Clone, Debug)]
-pub struct UpsertStopwordsSetParams {
+pub struct UpsertStopwordsSetParams<'p> {
     /// The ID of the stopwords set to upsert.
-    pub set_id: String,
+    pub set_id: Cow<'p, str>,
     /// The stopwords set to upsert.
-    pub stopwords_set_upsert_schema: models::StopwordsSetUpsertSchema,
+    pub stopwords_set_upsert_schema: models::StopwordsSetUpsertSchema<'p>,
+    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for typed errors of method [`delete_stopwords_set`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteStopwordsSetError {
-    Status404(models::ApiResponse),
-    UnknownValue(serde_json::Value),
+pub enum DeleteStopwordsSetError<'a> {
+    Status404(models::ApiResponse<'a>),
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`retrieve_stopwords_set`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RetrieveStopwordsSetError {
-    Status404(models::ApiResponse),
-    UnknownValue(serde_json::Value),
+pub enum RetrieveStopwordsSetError<'a> {
+    Status404(models::ApiResponse<'a>),
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`retrieve_stopwords_sets`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RetrieveStopwordsSetsError {
-    UnknownValue(serde_json::Value),
+pub enum RetrieveStopwordsSetsError<'a> {
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// struct for typed errors of method [`upsert_stopwords_set`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpsertStopwordsSetError {
-    Status400(models::ApiResponse),
-    UnknownValue(serde_json::Value),
+pub enum UpsertStopwordsSetError<'a> {
+    Status400(models::ApiResponse<'a>),
+    UnknownValue {
+        value: serde_json::Value,
+        #[serde(skip)]
+        _phantom: PhantomData<&'a ()>,
+    },
 }
 
 /// Permanently deletes a stopwords set, given it's name.
 pub async fn delete_stopwords_set(
     configuration: &configuration::Configuration,
-    params: &DeleteStopwordsSetParams,
-) -> Result<models::DeleteStopwordsSet200Response, Error<DeleteStopwordsSetError>> {
+    params: &DeleteStopwordsSetParams<'_>,
+) -> Result<models::DeleteStopwordsSet200Response<'static>, Error<DeleteStopwordsSetError<'static>>>
+{
     let uri_str = format!(
         "{}/stopwords/{setId}",
         configuration.base_path,
@@ -133,8 +154,9 @@ pub async fn delete_stopwords_set(
 /// Retrieve the details of a stopwords set, given it's name.
 pub async fn retrieve_stopwords_set(
     configuration: &configuration::Configuration,
-    params: &RetrieveStopwordsSetParams,
-) -> Result<models::StopwordsSetRetrieveSchema, Error<RetrieveStopwordsSetError>> {
+    params: &RetrieveStopwordsSetParams<'_>,
+) -> Result<models::StopwordsSetRetrieveSchema<'static>, Error<RetrieveStopwordsSetError<'static>>>
+{
     let uri_str = format!(
         "{}/stopwords/{setId}",
         configuration.base_path,
@@ -194,7 +216,10 @@ pub async fn retrieve_stopwords_set(
 /// Retrieve the details of all stopwords sets
 pub async fn retrieve_stopwords_sets(
     configuration: &configuration::Configuration,
-) -> Result<models::StopwordsSetsRetrieveAllSchema, Error<RetrieveStopwordsSetsError>> {
+) -> Result<
+    models::StopwordsSetsRetrieveAllSchema<'static>,
+    Error<RetrieveStopwordsSetsError<'static>>,
+> {
     let uri_str = format!("{}/stopwords", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -250,8 +275,8 @@ pub async fn retrieve_stopwords_sets(
 /// When an analytics rule is created, we give it a name and describe the type, the source collections and the destination collection.
 pub async fn upsert_stopwords_set(
     configuration: &configuration::Configuration,
-    params: &UpsertStopwordsSetParams,
-) -> Result<models::StopwordsSetSchema, Error<UpsertStopwordsSetError>> {
+    params: &UpsertStopwordsSetParams<'_>,
+) -> Result<models::StopwordsSetSchema<'static>, Error<UpsertStopwordsSetError<'static>>> {
     let uri_str = format!(
         "{}/stopwords/{setId}",
         configuration.base_path,

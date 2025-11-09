@@ -9,16 +9,22 @@
  */
 
 use crate::models;
+use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct HealthStatus {
+pub struct HealthStatus<'a> {
     #[serde(rename = "ok")]
     pub ok: bool,
+    #[serde(skip)]
+    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl HealthStatus {
-    pub fn new(ok: bool) -> HealthStatus {
-        HealthStatus { ok }
+impl<'a> HealthStatus<'a> {
+    pub fn new(ok: bool) -> Self {
+        Self {
+            ok,
+            _phantom: PhantomData,
+        }
     }
 }
