@@ -255,7 +255,7 @@ async fn run_test_generic_document_lifecycle() {
     // --- 6. Update a single document with a partial payload ---
     let partial_update_struct = BookPartial {
         publication_year: Some(1966),
-        in_stock: Some(Some(false)),
+        in_stock: Some(None),
         ..Default::default()
     };
     let index_params = DocumentIndexParameters {
@@ -269,7 +269,10 @@ async fn run_test_generic_document_lifecycle() {
 
     // The returned document should be the full, updated Book struct
     assert_eq!(updated_book.publication_year, 1966);
-    assert_eq!(updated_book.in_stock, Some(false));
+    assert_eq!(
+        updated_book.in_stock, None,
+        "The updated 'in_stock' must be null"
+    );
     assert_eq!(updated_book.title, book_1.title); // Other fields are preserved
 
     // --- 7. Bulk Update (via `documents().update()`) ---

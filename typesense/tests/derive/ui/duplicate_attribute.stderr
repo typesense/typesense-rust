@@ -1,0 +1,5 @@
+error: Attribute `facet` is duplicated
+ --> tests/derive/ui/duplicate_attribute.rs:7:30
+  |
+7 |     #[typesense(facet, sort, facet)]
+  |                              ^^^^^

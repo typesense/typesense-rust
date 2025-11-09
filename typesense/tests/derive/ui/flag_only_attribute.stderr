@@ -1,0 +1,5 @@
+error: `skip` is a flag and does not take a value. Use `#[typesense(skip)]`
+ --> tests/derive/ui/flag_only_attribute.rs:7:17
+  |
+7 |     #[typesense(skip = true)]
+  |                 ^^^^

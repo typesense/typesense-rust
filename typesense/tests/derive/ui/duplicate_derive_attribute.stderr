@@ -1,5 +1,5 @@
-error: #[typesense(facet)] repeated more than one time.
- --> $DIR/duplicated_attribute.rs:7:5
+error: #[typesense(...)] is repeated more than one time.
+ --> tests/derive/ui/duplicate_derive_attribute.rs:7:5
   |
 7 | /     #[typesense(facet)]
 8 | |     #[typesense(facet)]

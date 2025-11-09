@@ -1,3 +1,4 @@
+use crate::traits::Document;
 use std::collections::{BTreeMap, HashMap};
 /// Type for a field. Currently it is a wrapping to a `String` but it could be extended to a enum
 pub type FieldType = String;
@@ -7,6 +8,19 @@ pub type FieldType = String;
 pub trait ToTypesenseField {
     /// Static function that should implement the types of the typesense documents.
     fn to_typesense_type() -> &'static str;
+}
+/// Generic implementation for any type that is also a Typesense document.
+impl<T: Document> ToTypesenseField for T {
+    fn to_typesense_type() -> &'static str {
+        "object"
+    }
+}
+
+/// Generic implementation for a Vec of any type that is also a Typesense document.
+impl<T: Document> ToTypesenseField for Vec<T> {
+    fn to_typesense_type() -> &'static str {
+        "object[]"
+    }
 }
 
 /// macro used internally to add implementations of ToTypesenseField for several rust types.
