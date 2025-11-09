@@ -168,13 +168,13 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
     Ok(generated_code.into())
 }
 
-// Add a bound `T: TypesenseField` to every type parameter T.
+// Add a bound `T: ToTypesenseField` to every type parameter T.
 fn add_trait_bounds(mut generics: syn::Generics) -> syn::Generics {
     for param in &mut generics.params {
         if let syn::GenericParam::Type(ref mut type_param) = *param {
             type_param
                 .bounds
-                .push(syn::parse_quote!(::typesense::field::TypesenseField));
+                .push(syn::parse_quote!(::typesense::field::ToTypesenseField));
         }
     }
     generics

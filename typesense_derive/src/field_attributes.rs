@@ -267,7 +267,7 @@ fn build_regular_field(field: &Field, field_attrs: &FieldAttributes) -> proc_mac
     let typesense_field_type = if let Some(override_str) = &field_attrs.type_override {
         quote! { #override_str }
     } else {
-        quote! { <#ty as ::typesense::prelude::TypesenseField>::TYPESENSE_TYPE }
+        quote! { <#ty as ::typesense::prelude::ToTypesenseField>::to_typesense_type() }
     };
 
     let optional = field_attrs
