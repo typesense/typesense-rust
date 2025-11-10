@@ -286,7 +286,7 @@ fn build_regular_field(field: &Field, field_attrs: &FieldAttributes) -> proc_mac
     let num_dim = field_attrs.num_dim.map(|v| quote!(.num_dim(#v)));
 
     quote! {
-        typesense::models::Field::builder().name(#field_name).r#type(#typesense_field_type)
+        ::typesense::models::Field::builder().name(#field_name).r#type(#typesense_field_type)
             #optional #facet #index #store #sort #infix #stem #range_index #locale #vec_dist #num_dim
             .build()
     }
