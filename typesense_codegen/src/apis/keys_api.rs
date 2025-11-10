@@ -44,11 +44,7 @@ pub struct GetKeyParams<'p> {
 pub enum CreateKeyError<'a> {
     Status400(models::ApiResponse<'a>),
     Status409(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`delete_key`]
@@ -57,11 +53,7 @@ pub enum CreateKeyError<'a> {
 pub enum DeleteKeyError<'a> {
     Status400(models::ApiResponse<'a>),
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`get_key`]
@@ -69,22 +61,14 @@ pub enum DeleteKeyError<'a> {
 #[serde(untagged)]
 pub enum GetKeyError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`get_keys`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum GetKeysError<'a> {
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// Create an API Key with fine-grain access control. You can restrict access on both a per-collection and per-action level. The generated key is returned only during creation. You want to store this key carefully in a secure place.

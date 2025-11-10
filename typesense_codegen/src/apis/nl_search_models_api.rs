@@ -53,11 +53,7 @@ pub struct UpdateNlSearchModelParams<'p> {
 #[serde(untagged)]
 pub enum CreateNlSearchModelError<'a> {
     Status400(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`delete_nl_search_model`]
@@ -65,22 +61,14 @@ pub enum CreateNlSearchModelError<'a> {
 #[serde(untagged)]
 pub enum DeleteNlSearchModelError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`retrieve_all_nl_search_models`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum RetrieveAllNlSearchModelsError<'a> {
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`retrieve_nl_search_model`]
@@ -88,11 +76,7 @@ pub enum RetrieveAllNlSearchModelsError<'a> {
 #[serde(untagged)]
 pub enum RetrieveNlSearchModelError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`update_nl_search_model`]
@@ -101,11 +85,7 @@ pub enum RetrieveNlSearchModelError<'a> {
 pub enum UpdateNlSearchModelError<'a> {
     Status400(models::ApiResponse<'a>),
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// Create a new NL search model.

@@ -18,11 +18,7 @@ use serde::{Deserialize, Serialize, de::Error as _};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum HealthError<'a> {
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// Checks if Typesense server is ready to accept requests.

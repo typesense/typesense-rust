@@ -80,11 +80,7 @@ pub struct UpsertAnalyticsRuleParams<'p> {
 #[serde(untagged)]
 pub enum CreateAnalyticsEventError<'a> {
     Status400(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`create_analytics_rule`]
@@ -92,11 +88,7 @@ pub enum CreateAnalyticsEventError<'a> {
 #[serde(untagged)]
 pub enum CreateAnalyticsRuleError<'a> {
     Status400(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`delete_analytics_rule`]
@@ -104,22 +96,14 @@ pub enum CreateAnalyticsRuleError<'a> {
 #[serde(untagged)]
 pub enum DeleteAnalyticsRuleError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`flush_analytics`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum FlushAnalyticsError<'a> {
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`get_analytics_events`]
@@ -127,22 +111,14 @@ pub enum FlushAnalyticsError<'a> {
 #[serde(untagged)]
 pub enum GetAnalyticsEventsError<'a> {
     Status400(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`get_analytics_status`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum GetAnalyticsStatusError<'a> {
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`retrieve_analytics_rule`]
@@ -150,22 +126,14 @@ pub enum GetAnalyticsStatusError<'a> {
 #[serde(untagged)]
 pub enum RetrieveAnalyticsRuleError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`retrieve_analytics_rules`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum RetrieveAnalyticsRulesError<'a> {
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`upsert_analytics_rule`]
@@ -173,11 +141,7 @@ pub enum RetrieveAnalyticsRulesError<'a> {
 #[serde(untagged)]
 pub enum UpsertAnalyticsRuleError<'a> {
     Status400(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// Submit a single analytics event. The event must correspond to an existing analytics rule by name.

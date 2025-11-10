@@ -267,11 +267,7 @@ pub struct UpdateDocumentsParams<'p, B> {
 #[serde(untagged)]
 pub enum DeleteDocumentError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`delete_documents`]
@@ -279,11 +275,7 @@ pub enum DeleteDocumentError<'a> {
 #[serde(untagged)]
 pub enum DeleteDocumentsError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`export_documents`]
@@ -291,11 +283,7 @@ pub enum DeleteDocumentsError<'a> {
 #[serde(untagged)]
 pub enum ExportDocumentsError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`get_document`]
@@ -303,11 +291,7 @@ pub enum ExportDocumentsError<'a> {
 #[serde(untagged)]
 pub enum GetDocumentError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`import_documents`]
@@ -316,11 +300,7 @@ pub enum GetDocumentError<'a> {
 pub enum ImportDocumentsError<'a> {
     Status400(models::ApiResponse<'a>),
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`index_document`]
@@ -328,11 +308,7 @@ pub enum ImportDocumentsError<'a> {
 #[serde(untagged)]
 pub enum IndexDocumentError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`multi_search`]
@@ -340,11 +316,7 @@ pub enum IndexDocumentError<'a> {
 #[serde(untagged)]
 pub enum MultiSearchError<'a> {
     Status400(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`search_collection`]
@@ -353,11 +325,7 @@ pub enum MultiSearchError<'a> {
 pub enum SearchCollectionError<'a> {
     Status400(models::ApiResponse<'a>),
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`update_document`]
@@ -365,11 +333,7 @@ pub enum SearchCollectionError<'a> {
 #[serde(untagged)]
 pub enum UpdateDocumentError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`update_documents`]
@@ -378,11 +342,7 @@ pub enum UpdateDocumentError<'a> {
 pub enum UpdateDocumentsError<'a> {
     Status400(models::ApiResponse<'a>),
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// Delete an individual document from a collection by using its ID.

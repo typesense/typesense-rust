@@ -70,11 +70,7 @@ pub enum {{{operationIdCamelCase}}}Success<'a> {
     Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}<'a>{{/isEnum}}),
     {{/is3xx}}
     {{/responses}}
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 {{/operation}}
@@ -97,11 +93,7 @@ pub enum {{{operationIdCamelCase}}}Error<'a> {
     DefaultResponse({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}<'a>{{/isEnum}}),
     {{/isDefault}}
     {{/responses}}
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 {{/operation}}

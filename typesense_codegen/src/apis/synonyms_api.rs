@@ -85,11 +85,7 @@ pub struct UpsertSynonymSetItemParams<'p> {
 #[serde(untagged)]
 pub enum DeleteSynonymSetError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`delete_synonym_set_item`]
@@ -97,11 +93,7 @@ pub enum DeleteSynonymSetError<'a> {
 #[serde(untagged)]
 pub enum DeleteSynonymSetItemError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`retrieve_synonym_set`]
@@ -109,11 +101,7 @@ pub enum DeleteSynonymSetItemError<'a> {
 #[serde(untagged)]
 pub enum RetrieveSynonymSetError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`retrieve_synonym_set_item`]
@@ -121,11 +109,7 @@ pub enum RetrieveSynonymSetError<'a> {
 #[serde(untagged)]
 pub enum RetrieveSynonymSetItemError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`retrieve_synonym_set_items`]
@@ -133,22 +117,14 @@ pub enum RetrieveSynonymSetItemError<'a> {
 #[serde(untagged)]
 pub enum RetrieveSynonymSetItemsError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`retrieve_synonym_sets`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum RetrieveSynonymSetsError<'a> {
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`upsert_synonym_set`]
@@ -156,11 +132,7 @@ pub enum RetrieveSynonymSetsError<'a> {
 #[serde(untagged)]
 pub enum UpsertSynonymSetError<'a> {
     Status400(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`upsert_synonym_set_item`]
@@ -168,11 +140,7 @@ pub enum UpsertSynonymSetError<'a> {
 #[serde(untagged)]
 pub enum UpsertSynonymSetItemError<'a> {
     Status400(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// Delete a specific synonym set by its name

@@ -37,11 +37,7 @@ pub struct ImportStemmingDictionaryParams<'p> {
 #[serde(untagged)]
 pub enum GetStemmingDictionaryError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`import_stemming_dictionary`]
@@ -49,22 +45,14 @@ pub enum GetStemmingDictionaryError<'a> {
 #[serde(untagged)]
 pub enum ImportStemmingDictionaryError<'a> {
     Status400(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`list_stemming_dictionaries`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ListStemmingDictionariesError<'a> {
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// Fetch details of a specific stemming dictionary.

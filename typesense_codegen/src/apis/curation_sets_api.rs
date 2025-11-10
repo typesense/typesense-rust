@@ -85,11 +85,7 @@ pub struct UpsertCurationSetItemParams<'p> {
 #[serde(untagged)]
 pub enum DeleteCurationSetError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`delete_curation_set_item`]
@@ -97,11 +93,7 @@ pub enum DeleteCurationSetError<'a> {
 #[serde(untagged)]
 pub enum DeleteCurationSetItemError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`retrieve_curation_set`]
@@ -109,11 +101,7 @@ pub enum DeleteCurationSetItemError<'a> {
 #[serde(untagged)]
 pub enum RetrieveCurationSetError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`retrieve_curation_set_item`]
@@ -121,11 +109,7 @@ pub enum RetrieveCurationSetError<'a> {
 #[serde(untagged)]
 pub enum RetrieveCurationSetItemError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`retrieve_curation_set_items`]
@@ -133,22 +117,14 @@ pub enum RetrieveCurationSetItemError<'a> {
 #[serde(untagged)]
 pub enum RetrieveCurationSetItemsError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`retrieve_curation_sets`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum RetrieveCurationSetsError<'a> {
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`upsert_curation_set`]
@@ -156,11 +132,7 @@ pub enum RetrieveCurationSetsError<'a> {
 #[serde(untagged)]
 pub enum UpsertCurationSetError<'a> {
     Status400(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`upsert_curation_set_item`]
@@ -168,11 +140,7 @@ pub enum UpsertCurationSetError<'a> {
 #[serde(untagged)]
 pub enum UpsertCurationSetItemError<'a> {
     Status400(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// Delete a specific curation set by its name

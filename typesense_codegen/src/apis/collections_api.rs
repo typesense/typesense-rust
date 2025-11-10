@@ -89,11 +89,7 @@ pub struct UpsertAliasParams<'p> {
 pub enum CreateCollectionError<'a> {
     Status400(models::ApiResponse<'a>),
     Status409(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`delete_alias`]
@@ -101,11 +97,7 @@ pub enum CreateCollectionError<'a> {
 #[serde(untagged)]
 pub enum DeleteAliasError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`delete_collection`]
@@ -113,11 +105,7 @@ pub enum DeleteAliasError<'a> {
 #[serde(untagged)]
 pub enum DeleteCollectionError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`get_alias`]
@@ -125,22 +113,14 @@ pub enum DeleteCollectionError<'a> {
 #[serde(untagged)]
 pub enum GetAliasError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`get_aliases`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum GetAliasesError<'a> {
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`get_collection`]
@@ -148,22 +128,14 @@ pub enum GetAliasesError<'a> {
 #[serde(untagged)]
 pub enum GetCollectionError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`get_collections`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum GetCollectionsError<'a> {
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`update_collection`]
@@ -172,11 +144,7 @@ pub enum GetCollectionsError<'a> {
 pub enum UpdateCollectionError<'a> {
     Status400(models::ApiResponse<'a>),
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`upsert_alias`]
@@ -185,11 +153,7 @@ pub enum UpdateCollectionError<'a> {
 pub enum UpsertAliasError<'a> {
     Status400(models::ApiResponse<'a>),
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// When a collection is created, we give it a name and describe the fields that will be indexed from the documents added to the collection.

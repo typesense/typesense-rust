@@ -45,11 +45,7 @@ pub struct UpsertStopwordsSetParams<'p> {
 #[serde(untagged)]
 pub enum DeleteStopwordsSetError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`retrieve_stopwords_set`]
@@ -57,22 +53,14 @@ pub enum DeleteStopwordsSetError<'a> {
 #[serde(untagged)]
 pub enum RetrieveStopwordsSetError<'a> {
     Status404(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`retrieve_stopwords_sets`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum RetrieveStopwordsSetsError<'a> {
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// struct for typed errors of method [`upsert_stopwords_set`]
@@ -80,11 +68,7 @@ pub enum RetrieveStopwordsSetsError<'a> {
 #[serde(untagged)]
 pub enum UpsertStopwordsSetError<'a> {
     Status400(models::ApiResponse<'a>),
-    UnknownValue {
-        value: serde_json::Value,
-        #[serde(skip)]
-        _phantom: PhantomData<&'a ()>,
-    },
+    UnknownValue(super::Unknown<'a>),
 }
 
 /// Permanently deletes a stopwords set, given it's name.
