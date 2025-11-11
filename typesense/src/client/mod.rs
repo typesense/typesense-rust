@@ -142,15 +142,16 @@ use reqwest_middleware::ClientBuilder as ReqwestMiddlewareClientBuilder;
 use reqwest_retry::RetryTransientMiddleware;
 pub use reqwest_retry::policies::ExponentialBackoff;
 
-use debug_unsafe::{option::OptionUnwrapper, slice::SliceGetter};
-use serde::{Serialize, de::DeserializeOwned};
-use std::{
+use ::std::{
+    borrow::Cow,
     future::Future,
     sync::{
         RwLock,
         atomic::{AtomicBool, AtomicUsize, Ordering},
     },
 };
+use debug_unsafe::{option::OptionUnwrapper, slice::SliceGetter};
+use serde::{Serialize, de::DeserializeOwned};
 use typesense_codegen::apis::{self, configuration};
 use web_time::{Duration, Instant};
 
@@ -480,7 +481,10 @@ impl Client {
     /// # }
     /// ```
     #[inline]
-    pub fn collection_named<'c, 'n, D>(&'c self, collection_name: &'n str) -> Collection<'c, 'n, D>
+    pub fn collection_named<'c, D>(
+        &'c self,
+        collection_name: impl Into<Cow<'c, str>>,
+    ) -> Collection<'c, D>
     where
         D: DeserializeOwned + Serialize,
     {
@@ -525,7 +529,7 @@ impl Client {
     /// # }
     /// ```
     #[inline]
-    pub fn collection<'c, 'n, D>(&'c self) -> Collection<'c, 'n, D>
+    pub fn collection<'c, D>(&'c self) -> Collection<'c, D>
     where
         D: Document,
     {
@@ -561,10 +565,10 @@ impl Client {
     /// # }
     /// ```
     #[inline]
-    pub fn collection_schemaless<'c, 'n>(
+    pub fn collection_schemaless<'c>(
         &'c self,
-        collection_name: &'n str,
-    ) -> Collection<'c, 'n, serde_json::Value> {
+        collection_name: impl Into<Cow<'c, str>>,
+    ) -> Collection<'c, serde_json::Value> {
         Collection::new(self, collection_name)
     }
 

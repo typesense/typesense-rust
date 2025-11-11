@@ -9,6 +9,7 @@ use crate::{
     models::{DocumentIndexParameters, SearchResult},
     traits,
 };
+use ::std::borrow::Cow;
 use serde::{Serialize, de::DeserializeOwned};
 use typesense_codegen::{
     apis::documents_api,
@@ -22,22 +23,22 @@ use typesense_codegen::{
 /// This struct is generic over the document type `D`. If created via `client.collection_schemaless(...)`,
 /// `D` defaults to `serde_json::Value`. If created via `client.collection_named::<MyType>(...)`,
 /// `D` will be `MyType`.
-pub struct Documents<'c, 'n, D = serde_json::Value>
+pub struct Documents<'d, D = serde_json::Value>
 where
     D: DeserializeOwned + Serialize,
 {
-    client: &'c Client,
-    collection_name: &'n str,
+    client: &'d Client,
+    collection_name: &'d str,
     _phantom: core::marker::PhantomData<D>,
 }
 
-impl<'c, 'n, D> Documents<'c, 'n, D>
+impl<'d, D> Documents<'d, D>
 where
     D: DeserializeOwned + Serialize,
 {
     /// Creates a new `Documents` instance.
     #[inline]
-    pub(super) fn new(client: &'c Client, collection_name: &'n str) -> Self {
+    pub(super) fn new(client: &'d Client, collection_name: &'d str) -> Self {
         Self {
             client,
             collection_name,
@@ -76,7 +77,7 @@ where
     /// * `params` - An `ImportDocumentsParameters` struct containing options like `action` and `batch_size`.
     pub async fn import_jsonl(
         &self,
-        documents_jsonl: String,
+        documents_jsonl: impl Into<Cow<'_, str>>,
         params: ImportDocumentsParameters<'_>,
     ) -> Result<String, Error<documents_api::ImportDocumentsError<'static>>> {
         let params = documents_api::ImportDocumentsParams {
@@ -225,7 +226,7 @@ where
     }
 }
 
-impl<'c, 'n, D> Documents<'c, 'n, D>
+impl<'d, D> Documents<'d, D>
 where
     D: traits::Document,
 {

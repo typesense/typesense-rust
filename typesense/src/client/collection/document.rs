@@ -5,6 +5,7 @@
 //! `client.collection::<Book>().document("123")`
 
 use crate::{Client, Error, execute_wrapper, traits};
+use ::std::borrow::Cow;
 use serde::{Serialize, de::DeserializeOwned};
 use typesense_codegen::apis::documents_api;
 
@@ -14,27 +15,31 @@ use typesense_codegen::apis::documents_api;
 /// or `client.collection::<MyType>().document("document_id")`.
 /// The generic `D` represents the shape of the document and must implement `Serialize` and `DeserializeOwned`.
 /// If `D` is not specified, it defaults to `serde_json::Value` for schemaless interactions.
-pub struct Document<'c, 'n, D = serde_json::Value>
+pub struct Document<'d, D = serde_json::Value>
 where
     D: DeserializeOwned + Serialize,
 {
-    client: &'c Client,
-    collection_name: &'n str,
-    document_id: String,
+    client: &'d Client,
+    collection_name: &'d str,
+    document_id: Cow<'d, str>,
     _phantom: core::marker::PhantomData<D>,
 }
 
-impl<'c, 'n, D> Document<'c, 'n, D>
+impl<'d, D> Document<'d, D>
 where
     D: DeserializeOwned + Serialize,
 {
     /// Creates a new `Document` instance for a specific document ID.
     #[inline]
-    pub(super) fn new(client: &'c Client, collection_name: &'n str, document_id: String) -> Self {
+    pub(super) fn new(
+        client: &'d Client,
+        collection_name: &'d str,
+        document_id: impl Into<Cow<'d, str>>,
+    ) -> Self {
         Self {
             client,
             collection_name,
-            document_id,
+            document_id: document_id.into(),
             _phantom: core::marker::PhantomData,
         }
     }
@@ -46,7 +51,7 @@ where
     pub async fn retrieve(&self) -> Result<D, Error<documents_api::GetDocumentError<'static>>> {
         let params = documents_api::GetDocumentParams {
             collection_name: self.collection_name.into(),
-            document_id: self.document_id.as_str().into(),
+            document_id: self.document_id.as_ref().into(),
             _phantom: core::marker::PhantomData,
         };
 
@@ -64,7 +69,7 @@ where
     pub async fn delete(&self) -> Result<D, Error<documents_api::DeleteDocumentError<'static>>> {
         let params = documents_api::DeleteDocumentParams {
             collection_name: self.collection_name.into(),
-            document_id: self.document_id.as_str().into(),
+            document_id: self.document_id.as_ref().into(),
             _phantom: core::marker::PhantomData,
         };
 
@@ -75,7 +80,7 @@ where
     }
 }
 
-impl<'c, 'n, D> Document<'c, 'n, D>
+impl<'d, D> Document<'d, D>
 where
     D: traits::Document,
 {
@@ -128,7 +133,7 @@ where
     ) -> Result<D, Error<documents_api::UpdateDocumentError<'static>>> {
         let params = documents_api::UpdateDocumentParams {
             collection_name: self.collection_name.into(),
-            document_id: self.document_id.as_str().into(),
+            document_id: self.document_id.as_ref().into(),
             body: partial_document,
             dirty_values: params.and_then(|d| d.dirty_values),
             _phantom: core::marker::PhantomData,
