@@ -24,7 +24,7 @@ pub struct CurationItemSchema<'a> {
     pub excludes: Option<Vec<models::CurationExclude<'a>>>,
     /// A filter by clause that is applied to any search query that matches the curation rule.
     #[serde(rename = "filter_by", skip_serializing_if = "Option::is_none")]
-    pub filter_by: Option<Cow<'a, str>>,
+    pub filter_by: Option<String>,
     /// Indicates whether search query tokens that exist in the curation's rule should be removed from the search query.
     #[serde(
         rename = "remove_matched_tokens",
@@ -36,10 +36,10 @@ pub struct CurationItemSchema<'a> {
     pub metadata: Option<serde_json::Value>,
     /// A sort by clause that is applied to any search query that matches the curation rule.
     #[serde(rename = "sort_by", skip_serializing_if = "Option::is_none")]
-    pub sort_by: Option<Cow<'a, str>>,
+    pub sort_by: Option<String>,
     /// Replaces the current search query with this value, when the search query matches the curation rule.
     #[serde(rename = "replace_query", skip_serializing_if = "Option::is_none")]
-    pub replace_query: Option<Cow<'a, str>>,
+    pub replace_query: Option<String>,
     /// When set to true, the filter conditions of the query is applied to the curated records as well. Default: false.
     #[serde(
         rename = "filter_curated_hits",
@@ -56,13 +56,13 @@ pub struct CurationItemSchema<'a> {
     #[serde(rename = "stop_processing", skip_serializing_if = "Option::is_none")]
     pub stop_processing: Option<bool>,
     #[serde(rename = "id")]
-    pub id: Cow<'a, str>,
+    pub id: String,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> CurationItemSchema<'a> {
-    pub fn new(rule: models::CurationRule<'a>, id: Cow<'a, str>) -> Self {
+    pub fn new(rule: models::CurationRule<'a>, id: String) -> Self {
         Self {
             rule: Box::new(rule),
             includes: None,

@@ -16,13 +16,13 @@ use serde::{Deserialize, Serialize};
 pub struct CurationSetDeleteSchema<'a> {
     /// Name of the deleted curation set
     #[serde(rename = "name")]
-    pub name: Cow<'a, str>,
+    pub name: String,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> CurationSetDeleteSchema<'a> {
-    pub fn new(name: Cow<'a, str>) -> Self {
+    pub fn new(name: String) -> Self {
         Self {
             name,
             _phantom: PhantomData,

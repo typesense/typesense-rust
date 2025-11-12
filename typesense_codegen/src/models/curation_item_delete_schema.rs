@@ -16,13 +16,13 @@ use serde::{Deserialize, Serialize};
 pub struct CurationItemDeleteSchema<'a> {
     /// ID of the deleted curation item
     #[serde(rename = "id")]
-    pub id: Cow<'a, str>,
+    pub id: String,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> CurationItemDeleteSchema<'a> {
-    pub fn new(id: Cow<'a, str>) -> Self {
+    pub fn new(id: String) -> Self {
         Self {
             id,
             _phantom: PhantomData,

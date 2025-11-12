@@ -15,17 +15,17 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct StopwordsSetSchema<'a> {
     #[serde(rename = "id")]
-    pub id: Cow<'a, str>,
+    pub id: String,
     #[serde(rename = "stopwords")]
     pub stopwords: Vec<String>,
     #[serde(rename = "locale", skip_serializing_if = "Option::is_none")]
-    pub locale: Option<Cow<'a, str>>,
+    pub locale: Option<String>,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> StopwordsSetSchema<'a> {
-    pub fn new(id: Cow<'a, str>, stopwords: Vec<String>) -> Self {
+    pub fn new(id: String, stopwords: Vec<String>) -> Self {
         Self {
             id,
             stopwords,

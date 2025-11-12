@@ -15,9 +15,9 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ApiKey<'a> {
     #[serde(rename = "value", skip_serializing_if = "Option::is_none")]
-    pub value: Option<Cow<'a, str>>,
+    pub value: Option<String>,
     #[serde(rename = "description")]
-    pub description: Cow<'a, str>,
+    pub description: String,
     #[serde(rename = "actions")]
     pub actions: Vec<String>,
     #[serde(rename = "collections")]
@@ -27,13 +27,13 @@ pub struct ApiKey<'a> {
     #[serde(rename = "id", skip_serializing_if = "Option::is_none")]
     pub id: Option<i64>,
     #[serde(rename = "value_prefix", skip_serializing_if = "Option::is_none")]
-    pub value_prefix: Option<Cow<'a, str>>,
+    pub value_prefix: Option<String>,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> ApiKey<'a> {
-    pub fn new(description: Cow<'a, str>, actions: Vec<String>, collections: Vec<String>) -> Self {
+    pub fn new(description: String, actions: Vec<String>, collections: Vec<String>) -> Self {
         Self {
             value: None,
             description,

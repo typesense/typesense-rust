@@ -19,15 +19,15 @@ pub struct CurationSetSchema<'a> {
     pub items: Vec<models::CurationItemCreateSchema<'a>>,
     /// Optional description for the curation set
     #[serde(rename = "description", skip_serializing_if = "Option::is_none")]
-    pub description: Option<Cow<'a, str>>,
+    pub description: Option<String>,
     #[serde(rename = "name")]
-    pub name: Cow<'a, str>,
+    pub name: String,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> CurationSetSchema<'a> {
-    pub fn new(items: Vec<models::CurationItemCreateSchema<'a>>, name: Cow<'a, str>) -> Self {
+    pub fn new(items: Vec<models::CurationItemCreateSchema<'a>>, name: String) -> Self {
         Self {
             items,
             description: None,

@@ -16,13 +16,13 @@ use serde::{Deserialize, Serialize};
 pub struct NlSearchModelDeleteSchema<'a> {
     /// ID of the deleted NL search model
     #[serde(rename = "id")]
-    pub id: Cow<'a, str>,
+    pub id: String,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> NlSearchModelDeleteSchema<'a> {
-    pub fn new(id: Cow<'a, str>) -> Self {
+    pub fn new(id: String) -> Self {
         Self {
             id,
             _phantom: PhantomData,

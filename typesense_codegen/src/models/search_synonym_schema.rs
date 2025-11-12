@@ -16,13 +16,13 @@ use serde::{Deserialize, Serialize};
 pub struct SearchSynonymSchema<'a> {
     /// For 1-way synonyms, indicates the root word that words in the `synonyms` parameter map to.
     #[serde(rename = "root", skip_serializing_if = "Option::is_none")]
-    pub root: Option<Cow<'a, str>>,
+    pub root: Option<String>,
     /// Array of words that should be considered as synonyms.
     #[serde(rename = "synonyms")]
     pub synonyms: Vec<String>,
     /// Locale for the synonym, leave blank to use the standard tokenizer.
     #[serde(rename = "locale", skip_serializing_if = "Option::is_none")]
-    pub locale: Option<Cow<'a, str>>,
+    pub locale: Option<String>,
     /// By default, special characters are dropped from synonyms. Use this attribute to specify which special characters should be indexed as is.
     #[serde(rename = "symbols_to_index", skip_serializing_if = "Option::is_none")]
     pub symbols_to_index: Option<Vec<String>>,

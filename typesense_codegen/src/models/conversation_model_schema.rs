@@ -16,22 +16,22 @@ use serde::{Deserialize, Serialize};
 pub struct ConversationModelSchema<'a> {
     /// An explicit id for the model, otherwise the API will return a response with an auto-generated conversation model id.
     #[serde(rename = "id")]
-    pub id: Cow<'a, str>,
+    pub id: String,
     /// Name of the LLM model offered by OpenAI, Cloudflare or vLLM
     #[serde(rename = "model_name")]
-    pub model_name: Cow<'a, str>,
+    pub model_name: String,
     /// The LLM service's API Key
     #[serde(rename = "api_key", skip_serializing_if = "Option::is_none")]
-    pub api_key: Option<Cow<'a, str>>,
+    pub api_key: Option<String>,
     /// Typesense collection that stores the historical conversations
     #[serde(rename = "history_collection")]
-    pub history_collection: Cow<'a, str>,
+    pub history_collection: String,
     /// LLM service's account ID (only applicable for Cloudflare)
     #[serde(rename = "account_id", skip_serializing_if = "Option::is_none")]
-    pub account_id: Option<Cow<'a, str>>,
+    pub account_id: Option<String>,
     /// The system prompt that contains special instructions to the LLM
     #[serde(rename = "system_prompt", skip_serializing_if = "Option::is_none")]
-    pub system_prompt: Option<Cow<'a, str>>,
+    pub system_prompt: Option<String>,
     /// Time interval in seconds after which the messages would be deleted. Default: 86400 (24 hours)
     #[serde(rename = "ttl", skip_serializing_if = "Option::is_none")]
     pub ttl: Option<i32>,
@@ -40,18 +40,13 @@ pub struct ConversationModelSchema<'a> {
     pub max_bytes: i32,
     /// URL of vLLM service
     #[serde(rename = "vllm_url", skip_serializing_if = "Option::is_none")]
-    pub vllm_url: Option<Cow<'a, str>>,
+    pub vllm_url: Option<String>,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> ConversationModelSchema<'a> {
-    pub fn new(
-        id: Cow<'a, str>,
-        model_name: Cow<'a, str>,
-        history_collection: Cow<'a, str>,
-        max_bytes: i32,
-    ) -> Self {
+    pub fn new(id: String, model_name: String, history_collection: String, max_bytes: i32) -> Self {
         Self {
             id,
             model_name,

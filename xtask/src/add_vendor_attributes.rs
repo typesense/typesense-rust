@@ -1,9 +1,8 @@
-use crate::vendor_attributes::VendorAttributes;
-use serde_yaml::Mapping;
+use crate::{preprocess_openapi::OpenAPI, vendor_attributes::VendorAttributes};
 
-pub fn add_vendor_attributes(doc_root: &mut Mapping) -> Result<(), String> {
+pub fn add_vendor_attributes(doc: &mut OpenAPI) -> Result<(), String> {
     println!("Adding custom x-* vendor attributes...");
-    let mut attrs = VendorAttributes::new(doc_root);
+    let mut attrs = VendorAttributes::new(doc);
 
     // Schemas
     attrs.schema_builder([
@@ -45,58 +44,50 @@ pub fn add_vendor_attributes(doc_root: &mut Mapping) -> Result<(), String> {
     // Operations
     attrs
         .operation("/collections/{collectionName}/documents/search", "get")
-        .generic_parameter("D: for<'de> serde::Deserialize<'de> + Serialize")
-        .return_type("models::SearchResult<'static, D>")
-        .done()?;
+        .generic_parameter("D: for<'de> serde::Deserialize<'de> + Serialize")?
+        .return_type("models::SearchResult<'static, D>")?;
 
     attrs
         .operation("/multi_search", "post")
-        .return_type("serde_json::Value")
-        .done()?;
+        .return_type("serde_json::Value")?;
 
     // The endpoint return `null` if no schema changes are in progress
     attrs
         .operation("/operations/schema_changes", "get")
-        .return_type("Option<Vec<models::SchemaChangeStatus<'static>>>")
-        .done()?;
+        .return_type("Option<Vec<models::SchemaChangeStatus<'static>>>")?;
 
     // The documents /import endpoint expects a text/plain body and response
     attrs
         .operation("/collections/{collectionName}/documents/import", "post")
-        .body_is_raw_text()
-        .supports_plain_text()
-        .done()?;
+        .body_is_raw_text()?
+        .supports_plain_text()?;
 
     // The stemming /import endpoint also expects a text/plain body and response
     attrs
         .operation("/stemming/dictionaries/import", "post")
-        .body_is_raw_text()
-        .supports_plain_text()
-        .done()?;
+        .body_is_raw_text()?
+        .supports_plain_text()?;
 
     attrs
         .operation("/collections/{collectionName}/documents/export", "get")
-        .supports_plain_text()
-        .done()?;
+        .supports_plain_text()?;
 
     attrs
         .operation("/collections/{collectionName}/documents", "patch")
-        .generic_parameter("B: Serialize")
-        .params_generic_parameter("B")
-        .request_type("B")
-        .done()?;
+        .generic_parameter("B: Serialize")?
+        .params_generic_parameter("B")?
+        .request_type("B")?;
 
     attrs
         .operation(
             "/collections/{collectionName}/documents/{documentId}",
             "patch",
         )
-        .generic_parameter("B: Serialize")
-        .params_generic_parameter("B")
-        .request_type("B")
-        .done()?;
+        .generic_parameter("B: Serialize")?
+        .params_generic_parameter("B")?
+        .request_type("B")?;
 
-    attrs.schemas_mark_owned_data()?;
+    // attrs.schemas_mark_owned_data()?;
 
     Ok(())
 }

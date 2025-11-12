@@ -16,16 +16,16 @@ use serde::{Deserialize, Serialize};
 pub struct StemmingDictionaryWordsInner<'a> {
     /// The word form to be stemmed
     #[serde(rename = "word")]
-    pub word: Cow<'a, str>,
+    pub word: String,
     /// The root form of the word
     #[serde(rename = "root")]
-    pub root: Cow<'a, str>,
+    pub root: String,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> StemmingDictionaryWordsInner<'a> {
-    pub fn new(word: Cow<'a, str>, root: Cow<'a, str>) -> Self {
+    pub fn new(word: String, root: String) -> Self {
         Self {
             word,
             root,

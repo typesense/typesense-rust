@@ -17,13 +17,13 @@ pub struct PresetSchema<'a> {
     #[serde(rename = "value")]
     pub value: Box<models::PresetUpsertSchemaValue<'a>>,
     #[serde(rename = "name")]
-    pub name: Cow<'a, str>,
+    pub name: String,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> PresetSchema<'a> {
-    pub fn new(value: models::PresetUpsertSchemaValue<'a>, name: Cow<'a, str>) -> Self {
+    pub fn new(value: models::PresetUpsertSchemaValue<'a>, name: String) -> Self {
         Self {
             value: Box::new(value),
             name,

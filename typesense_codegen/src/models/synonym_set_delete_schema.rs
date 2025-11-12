@@ -16,13 +16,13 @@ use serde::{Deserialize, Serialize};
 pub struct SynonymSetDeleteSchema<'a> {
     /// Name of the deleted synonym set
     #[serde(rename = "name")]
-    pub name: Cow<'a, str>,
+    pub name: String,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> SynonymSetDeleteSchema<'a> {
-    pub fn new(name: Cow<'a, str>) -> Self {
+    pub fn new(name: String) -> Self {
         Self {
             name,
             _phantom: PhantomData,

@@ -15,15 +15,15 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct AnalyticsRule<'a> {
     #[serde(rename = "name")]
-    pub name: Cow<'a, str>,
+    pub name: String,
     #[serde(rename = "type")]
     pub r#type: Type,
     #[serde(rename = "collection")]
-    pub collection: Cow<'a, str>,
+    pub collection: String,
     #[serde(rename = "event_type")]
-    pub event_type: Cow<'a, str>,
+    pub event_type: String,
     #[serde(rename = "rule_tag", skip_serializing_if = "Option::is_none")]
-    pub rule_tag: Option<Cow<'a, str>>,
+    pub rule_tag: Option<String>,
     #[serde(rename = "params", skip_serializing_if = "Option::is_none")]
     pub params: Option<Box<models::AnalyticsRuleCreateParams<'a>>>,
     #[serde(skip)]
@@ -31,12 +31,7 @@ pub struct AnalyticsRule<'a> {
 }
 
 impl<'a> AnalyticsRule<'a> {
-    pub fn new(
-        name: Cow<'a, str>,
-        r#type: Type,
-        collection: Cow<'a, str>,
-        event_type: Cow<'a, str>,
-    ) -> Self {
+    pub fn new(name: String, r#type: Type, collection: String, event_type: String) -> Self {
         Self {
             name,
             r#type,

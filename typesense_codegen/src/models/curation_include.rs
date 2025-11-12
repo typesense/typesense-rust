@@ -16,7 +16,7 @@ use serde::{Deserialize, Serialize};
 pub struct CurationInclude<'a> {
     /// document id that should be included
     #[serde(rename = "id")]
-    pub id: Cow<'a, str>,
+    pub id: String,
     /// position number where document should be included in the search results
     #[serde(rename = "position")]
     pub position: i32,
@@ -25,7 +25,7 @@ pub struct CurationInclude<'a> {
 }
 
 impl<'a> CurationInclude<'a> {
-    pub fn new(id: Cow<'a, str>, position: i32) -> Self {
+    pub fn new(id: String, position: i32) -> Self {
         Self {
             id,
             position,

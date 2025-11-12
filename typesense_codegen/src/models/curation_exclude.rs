@@ -16,13 +16,13 @@ use serde::{Deserialize, Serialize};
 pub struct CurationExclude<'a> {
     /// document id that should be excluded from the search results.
     #[serde(rename = "id")]
-    pub id: Cow<'a, str>,
+    pub id: String,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> CurationExclude<'a> {
-    pub fn new(id: Cow<'a, str>) -> Self {
+    pub fn new(id: String) -> Self {
         Self {
             id,
             _phantom: PhantomData,

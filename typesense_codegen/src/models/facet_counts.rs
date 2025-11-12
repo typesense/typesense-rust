@@ -17,7 +17,7 @@ pub struct FacetCounts<'a> {
     #[serde(rename = "counts", skip_serializing_if = "Option::is_none")]
     pub counts: Option<Vec<models::FacetCountsCountsInner<'a>>>,
     #[serde(rename = "field_name", skip_serializing_if = "Option::is_none")]
-    pub field_name: Option<Cow<'a, str>>,
+    pub field_name: Option<String>,
     #[serde(rename = "stats", skip_serializing_if = "Option::is_none")]
     pub stats: Option<Box<models::FacetCountsStats<'a>>>,
     #[serde(skip)]

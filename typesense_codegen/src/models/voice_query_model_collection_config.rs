@@ -16,7 +16,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct VoiceQueryModelCollectionConfig<'a> {
     #[serde(rename = "model_name", skip_serializing_if = "Option::is_none")]
-    pub model_name: Option<Cow<'a, str>>,
+    pub model_name: Option<String>,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }

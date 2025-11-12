@@ -19,13 +19,13 @@ pub struct CurationRule<'a> {
     pub tags: Option<Vec<String>>,
     /// Indicates what search queries should be curated
     #[serde(rename = "query", skip_serializing_if = "Option::is_none")]
-    pub query: Option<Cow<'a, str>>,
+    pub query: Option<String>,
     /// Indicates whether the match on the query term should be `exact` or `contains`. If we want to match all queries that contained the word `apple`, we will use the `contains` match instead.
     #[serde(rename = "match", skip_serializing_if = "Option::is_none")]
     pub r#match: Option<Match>,
     /// Indicates that the curation should apply when the filter_by parameter in a search query exactly matches the string specified here (including backticks, spaces, brackets, etc).
     #[serde(rename = "filter_by", skip_serializing_if = "Option::is_none")]
-    pub filter_by: Option<Cow<'a, str>>,
+    pub filter_by: Option<String>,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }

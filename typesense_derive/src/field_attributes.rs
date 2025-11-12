@@ -321,9 +321,9 @@ pub(crate) fn process_field(
                 .into_iter()
                 .map(|mut f| {
                     // Use the dynamically determined prefix here
-                    f.name = ::std::borrow::Cow::Owned(format!("{}.{}", #prefix, f.name));
+                    f.name = format!("{}.{}", #prefix, f.name);
                     if #is_vec && !f.r#type.ends_with("[]") {
-                        f.r#type.to_mut().push_str("[]");
+                        f.r#type.push_str("[]");
                     }
                     f
                 })

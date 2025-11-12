@@ -17,9 +17,9 @@ pub struct FacetCountsCountsInner<'a> {
     #[serde(rename = "count", skip_serializing_if = "Option::is_none")]
     pub count: Option<i32>,
     #[serde(rename = "highlighted", skip_serializing_if = "Option::is_none")]
-    pub highlighted: Option<Cow<'a, str>>,
+    pub highlighted: Option<String>,
     #[serde(rename = "value", skip_serializing_if = "Option::is_none")]
-    pub value: Option<Cow<'a, str>>,
+    pub value: Option<String>,
     #[serde(rename = "parent", skip_serializing_if = "Option::is_none")]
     pub parent: Option<serde_json::Value>,
     #[serde(skip)]

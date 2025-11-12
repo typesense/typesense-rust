@@ -19,13 +19,13 @@ pub struct SynonymSetSchema<'a> {
     pub items: Vec<models::SynonymItemSchema<'a>>,
     /// Name of the synonym set
     #[serde(rename = "name")]
-    pub name: Cow<'a, str>,
+    pub name: String,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> SynonymSetSchema<'a> {
-    pub fn new(items: Vec<models::SynonymItemSchema<'a>>, name: Cow<'a, str>) -> Self {
+    pub fn new(items: Vec<models::SynonymItemSchema<'a>>, name: String) -> Self {
         Self {
             items,
             name,

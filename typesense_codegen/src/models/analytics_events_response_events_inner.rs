@@ -15,21 +15,21 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct AnalyticsEventsResponseEventsInner<'a> {
     #[serde(rename = "name", skip_serializing_if = "Option::is_none")]
-    pub name: Option<Cow<'a, str>>,
+    pub name: Option<String>,
     #[serde(rename = "event_type", skip_serializing_if = "Option::is_none")]
-    pub event_type: Option<Cow<'a, str>>,
+    pub event_type: Option<String>,
     #[serde(rename = "collection", skip_serializing_if = "Option::is_none")]
-    pub collection: Option<Cow<'a, str>>,
+    pub collection: Option<String>,
     #[serde(rename = "timestamp", skip_serializing_if = "Option::is_none")]
     pub timestamp: Option<i64>,
     #[serde(rename = "user_id", skip_serializing_if = "Option::is_none")]
-    pub user_id: Option<Cow<'a, str>>,
+    pub user_id: Option<String>,
     #[serde(rename = "doc_id", skip_serializing_if = "Option::is_none")]
-    pub doc_id: Option<Cow<'a, str>>,
+    pub doc_id: Option<String>,
     #[serde(rename = "doc_ids", skip_serializing_if = "Option::is_none")]
     pub doc_ids: Option<Vec<String>>,
     #[serde(rename = "query", skip_serializing_if = "Option::is_none")]
-    pub query: Option<Cow<'a, str>>,
+    pub query: Option<String>,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }

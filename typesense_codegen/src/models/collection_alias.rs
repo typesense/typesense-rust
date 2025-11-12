@@ -16,16 +16,16 @@ use serde::{Deserialize, Serialize};
 pub struct CollectionAlias<'a> {
     /// Name of the collection alias
     #[serde(rename = "name")]
-    pub name: Cow<'a, str>,
+    pub name: String,
     /// Name of the collection the alias mapped to
     #[serde(rename = "collection_name")]
-    pub collection_name: Cow<'a, str>,
+    pub collection_name: String,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> CollectionAlias<'a> {
-    pub fn new(name: Cow<'a, str>, collection_name: Cow<'a, str>) -> Self {
+    pub fn new(name: String, collection_name: String) -> Self {
         Self {
             name,
             collection_name,

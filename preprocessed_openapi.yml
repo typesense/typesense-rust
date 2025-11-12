@@ -116,9 +116,9 @@ paths:
             application/json:
               schema:
                 type: array
-                x-go-type: '[]*CollectionResponse'
                 items:
                   $ref: '#/components/schemas/CollectionResponse'
+                x-go-type: '[]*CollectionResponse'
     post:
       tags:
       - collections
@@ -127,11 +127,11 @@ paths:
       operationId: createCollection
       requestBody:
         description: The collection object to be created
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CollectionSchema'
-        required: true
       responses:
         '201':
           description: Collection successfully created
@@ -193,11 +193,11 @@ paths:
           type: string
       requestBody:
         description: The document object with fields to be updated
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CollectionUpdateSchema'
-        required: true
       responses:
         '200':
           description: The updated partial collection schema
@@ -271,21 +271,21 @@ paths:
           $ref: '#/components/schemas/DirtyValues'
       requestBody:
         description: The document object to be indexed
+        required: true
         content:
           application/json:
             schema:
-              type: object
               description: Can be any key-value pair
+              type: object
               x-go-type: interface{}
-        required: true
       responses:
         '201':
           description: Document successfully created/indexed
           content:
             application/json:
               schema:
-                type: object
                 description: Can be any key-value pair
+                type: object
         '404':
           description: Collection not found
           content:
@@ -310,6 +310,17 @@ paths:
         schema:
           type: string
           example: 'num_employees:>100 && country: [USA, UK]'
+      requestBody:
+        description: The document fields to be updated
+        required: true
+        content:
+          application/json:
+            schema:
+              description: Can be any key-value pair
+              type: object
+              x-go-type: interface{}
+        x-rust-params-generic-parameter: B
+        x-rust-type: B
       responses:
         '200':
           description: The response contains a single field, `num_updated`, indicating the number of documents affected.
@@ -321,8 +332,8 @@ paths:
                 - num_updated
                 properties:
                   num_updated:
-                    type: integer
                     description: The number of documents that have been updated
+                    type: integer
                     example: 1
         '400':
           description: Bad request, see error message for details
@@ -336,17 +347,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      requestBody:
-        description: The document fields to be updated
-        content:
-          application/json:
-            schema:
-              type: object
-              description: Can be any key-value pair
-              x-go-type: interface{}
-        required: true
-        x-rust-params-generic-parameter: B
-        x-rust-type: B
       x-rust-generic-parameter: 'B: Serialize'
     delete:
       tags:
@@ -594,8 +594,8 @@ paths:
       - name: synonym_sets
         in: query
         schema:
-          type: string
           description: List of synonym set names to associate with this search query
+          type: string
           example: synonym_set_1,synonym_set_2
       - name: drop_tokens_threshold
         in: query
@@ -616,33 +616,33 @@ paths:
       - name: enable_typos_for_alpha_numerical_tokens
         in: query
         schema:
-          type: boolean
           description: |
             Set this parameter to false to disable typos on alphanumerical query tokens. Default: true.
+          type: boolean
       - name: filter_curated_hits
         in: query
         schema:
-          type: boolean
           description: |
             Whether the filter_by condition of the search query should be applicable to curated results (override definitions, pinned hits, hidden hits, etc.). Default: false
+          type: boolean
       - name: enable_synonyms
         in: query
         schema:
-          type: boolean
           description: |
             If you have some synonyms defined but want to disable all of them for a particular search query, set enable_synonyms to false. Default: true
+          type: boolean
       - name: synonym_prefix
         in: query
         schema:
-          type: boolean
           description: |
             Allow synonym resolution on word prefixes in the query. Default: false
+          type: boolean
       - name: synonym_num_typos
         in: query
         schema:
-          type: integer
           description: |
             Allow synonym resolution on typo-corrected words in the query. Default: 0
+          type: integer
       - name: pinned_hits
         in: query
         schema:
@@ -903,11 +903,11 @@ paths:
           type: string
       requestBody:
         description: The synonym set to be created/updated
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/SynonymSetCreateSchema'
-        required: true
       responses:
         '200':
           description: Synonym set successfully created/updated
@@ -1030,11 +1030,11 @@ paths:
           type: string
       requestBody:
         description: The synonym item to be created/updated
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/SynonymItemSchema'
-        required: true
       responses:
         '200':
           description: Synonym item successfully created/updated
@@ -1138,11 +1138,11 @@ paths:
           type: string
       requestBody:
         description: The curation set to be created/updated
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CurationSetCreateSchema'
-        required: true
       responses:
         '200':
           description: Curation set successfully created/updated
@@ -1265,11 +1265,11 @@ paths:
           type: string
       requestBody:
         description: The curation item to be created/updated
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CurationItemCreateSchema'
-        required: true
       responses:
         '200':
           description: Curation item successfully created/updated
@@ -1383,8 +1383,8 @@ paths:
       - name: return_id
         in: query
         schema:
-          type: boolean
           description: Returning the id of the imported documents. If you want the import response to return the ingested document's id in the response, you can use the return_id parameter.
+          type: boolean
       - name: remote_embedding_batch_size
         in: query
         schema:
@@ -1403,12 +1403,12 @@ paths:
           $ref: '#/components/schemas/DirtyValues'
       requestBody:
         description: The json array of documents or the JSONL file to import
+        required: true
         content:
           application/octet-stream:
             schema:
-              type: string
               description: The JSONL file to import
-        required: true
+              type: string
       responses:
         '200':
           description: Result of the import operation. Each line of the response indicates the result of each document present in the request body (in the same order). If the import of a single document fails, it does not affect the other documents. If there is a failure, the response line will include a corresponding error message and as well as the actual document content.
@@ -1459,8 +1459,8 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 description: Can be any key-value pair
+                type: object
         '404':
           description: The document or collection was not found
           content:
@@ -1493,13 +1493,13 @@ paths:
           $ref: '#/components/schemas/DirtyValues'
       requestBody:
         description: The document object with fields to be updated
+        required: true
         content:
           application/json:
             schema:
-              type: object
               description: Can be any key-value pair
+              type: object
               x-go-type: interface{}
-        required: true
         x-rust-params-generic-parameter: B
         x-rust-type: B
       responses:
@@ -1508,8 +1508,8 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 description: Can be any key-value pair
+                type: object
         '404':
           description: The document or collection was not found
           content:
@@ -1542,8 +1542,8 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 description: Can be any key-value pair
+                type: object
         '404':
           description: The document or collection was not found
           content:
@@ -1552,48 +1552,51 @@ paths:
                 $ref: '#/components/schemas/ApiResponse'
   /conversations/models:
     get:
+      tags:
+      - conversations
+      summary: List all conversation models
       description: Retrieve all conversation models
       operationId: retrieveAllConversationModels
       responses:
         '200':
+          description: List of all conversation models
           content:
             application/json:
               schema:
+                type: array
                 items:
                   $ref: '#/components/schemas/ConversationModelSchema'
-                type: array
                 x-go-type: '[]*ConversationModelSchema'
-          description: List of all conversation models
-      summary: List all conversation models
+    post:
       tags:
       - conversations
-    post:
       summary: Create a conversation model
       description: Create a Conversation Model
       operationId: createConversationModel
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ConversationModelCreateSchema'
-        required: true
       responses:
         '201':
+          description: Created Conversation Model
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConversationModelSchema'
-          description: Created Conversation Model
         '400':
+          description: Bad request, see error message for details
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-          description: Bad request, see error message for details
-      tags:
-      - conversations
   /conversations/models/{modelId}:
     get:
+      tags:
+      - conversations
+      summary: Retrieve a conversation model
       description: Retrieve a conversation model
       operationId: retrieveConversationModel
       parameters:
@@ -1605,23 +1608,17 @@ paths:
           type: string
       responses:
         '200':
+          description: A conversation model
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConversationModelSchema'
-          description: A conversation model
-      summary: Retrieve a conversation model
+    put:
       tags:
       - conversations
-    put:
+      summary: Update a conversation model
       description: Update a conversation model
       operationId: updateConversationModel
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ConversationModelUpdateSchema'
-        required: true
       parameters:
       - name: modelId
         in: path
@@ -1629,17 +1626,23 @@ paths:
         required: true
         schema:
           type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConversationModelUpdateSchema'
       responses:
         '200':
+          description: The conversation model was successfully updated
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConversationModelSchema'
-          description: The conversation model was successfully updated
-      summary: Update a conversation model
+    delete:
       tags:
       - conversations
-    delete:
+      summary: Delete a conversation model
       description: Delete a conversation model
       operationId: deleteConversationModel
       parameters:
@@ -1651,14 +1654,11 @@ paths:
           type: string
       responses:
         '200':
+          description: The conversation model was successfully deleted
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConversationModelSchema'
-          description: The conversation model was successfully deleted
-      summary: Delete a conversation model
-      tags:
-      - conversations
   /keys:
     get:
       tags:
@@ -1990,13 +1990,13 @@ paths:
           application/json:
             schema:
               type: object
-              properties:
-                log-slow-requests-time-ms:
-                  type: integer
               required:
               - log-slow-requests-time-ms
               example: |
                 {"log-slow-requests-time-ms": 2000}
+              properties:
+                log-slow-requests-time-ms:
+                  type: integer
       responses:
         '200':
           description: Compacting the on-disk database succeeded.
@@ -2006,11 +2006,11 @@ paths:
                 $ref: '#/components/schemas/SuccessStatus'
   /multi_search:
     post:
-      operationId: multiSearch
       tags:
       - documents
       summary: send multiple search requests in a single HTTP request
       description: This is especially useful to avoid round-trip network latencies incurred otherwise if each of these requests are sent in separate HTTP requests. You can also use this feature to do a federated search across multiple collections in a single HTTP request.
+      operationId: multiSearch
       parameters:
       - name: q
         in: query
@@ -2180,21 +2180,21 @@ paths:
       - name: enable_typos_for_alpha_numerical_tokens
         in: query
         schema:
-          type: boolean
           description: |
             Set this parameter to false to disable typos on alphanumerical query tokens. Default: true.
+          type: boolean
       - name: filter_curated_hits
         in: query
         schema:
-          type: boolean
           description: |
             Whether the filter_by condition of the search query should be applicable to curated results (override definitions, pinned hits, hidden hits, etc.). Default: false
+          type: boolean
       - name: enable_synonyms
         in: query
         schema:
-          type: boolean
           description: |
             If you have some synonyms defined but want to disable all of them for a particular search query, set enable_synonyms to false. Default: true
+          type: boolean
       - name: enable_analytics
         in: query
         schema:
@@ -2205,15 +2205,15 @@ paths:
       - name: synonym_prefix
         in: query
         schema:
-          type: boolean
           description: |
             Allow synonym resolution on word prefixes in the query. Default: false
+          type: boolean
       - name: synonym_num_typos
         in: query
         schema:
-          type: integer
           description: |
             Allow synonym resolution on typo-corrected words in the query. Default: 0
+          type: integer
       - name: pinned_hits
         in: query
         schema:
@@ -2412,11 +2412,11 @@ paths:
       operationId: createAnalyticsEvent
       requestBody:
         description: The analytics event to be created
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/AnalyticsEvent'
-        required: true
       responses:
         '200':
           description: Analytics event successfully created
@@ -2504,6 +2504,7 @@ paths:
       operationId: createAnalyticsRule
       requestBody:
         description: The analytics rule(s) to be created
+        required: true
         content:
           application/json:
             schema:
@@ -2512,7 +2513,6 @@ paths:
               - type: array
                 items:
                   $ref: '#/components/schemas/AnalyticsRuleCreate'
-        required: true
       responses:
         '200':
           description: Analytics rule(s) successfully created
@@ -2542,12 +2542,12 @@ paths:
       description: Retrieve all analytics rules. Use the optional rule_tag filter to narrow down results.
       operationId: retrieveAnalyticsRules
       parameters:
-      - in: query
-        name: rule_tag
+      - name: rule_tag
+        in: query
+        description: Filter rules by rule_tag
+        required: false
         schema:
           type: string
-        required: false
-        description: Filter rules by rule_tag
       responses:
         '200':
           description: Analytics rules fetched
@@ -2565,19 +2565,19 @@ paths:
       description: Upserts an analytics rule with the given name.
       operationId: upsertAnalyticsRule
       parameters:
-      - in: path
-        name: ruleName
+      - name: ruleName
+        in: path
         description: The name of the analytics rule to upsert
+        required: true
         schema:
           type: string
-        required: true
       requestBody:
         description: The Analytics rule to be upserted
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/AnalyticsRuleUpdate'
-        required: true
       responses:
         '200':
           description: Analytics rule successfully upserted
@@ -2598,12 +2598,12 @@ paths:
       description: Retrieve the details of an analytics rule, given it's name
       operationId: retrieveAnalyticsRule
       parameters:
-      - in: path
-        name: ruleName
+      - name: ruleName
+        in: path
         description: The name of the analytics rule to retrieve
+        required: true
         schema:
           type: string
-        required: true
       responses:
         '200':
           description: Analytics rule fetched
@@ -2624,12 +2624,12 @@ paths:
       description: Permanently deletes an analytics rule, given it's name
       operationId: deleteAnalyticsRule
       parameters:
-      - in: path
-        name: ruleName
+      - name: ruleName
+        in: path
         description: The name of the analytics rule to delete
+        required: true
         schema:
           type: string
-        required: true
       responses:
         '200':
           description: Analytics rule deleted
@@ -2693,20 +2693,20 @@ paths:
       description: When an analytics rule is created, we give it a name and describe the type, the source collections and the destination collection.
       operationId: upsertStopwordsSet
       parameters:
-      - in: path
-        name: setId
+      - name: setId
+        in: path
         description: The ID of the stopwords set to upsert.
+        required: true
         schema:
           type: string
-        required: true
         example: countries
       requestBody:
         description: The stopwords set to upsert.
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/StopwordsSetUpsertSchema'
-        required: true
       responses:
         '200':
           description: Stopwords set successfully upserted.
@@ -2727,12 +2727,12 @@ paths:
       description: Retrieve the details of a stopwords set, given it's name.
       operationId: retrieveStopwordsSet
       parameters:
-      - in: path
-        name: setId
+      - name: setId
+        in: path
         description: The ID of the stopwords set to retrieve.
+        required: true
         schema:
           type: string
-        required: true
         example: countries
       responses:
         '200':
@@ -2754,12 +2754,12 @@ paths:
       description: Permanently deletes a stopwords set, given it's name.
       operationId: deleteStopwordsSet
       parameters:
-      - in: path
-        name: setId
+      - name: setId
+        in: path
         description: The ID of the stopwords set to delete.
+        required: true
         schema:
           type: string
-        required: true
         example: countries
       responses:
         '200':
@@ -2768,13 +2768,13 @@ paths:
             application/json:
               schema:
                 type: object
-                properties:
-                  id:
-                    type: string
                 required:
                 - id
                 example: |
                   {"id": "countries"}
+                properties:
+                  id:
+                    type: string
         '404':
           description: Stopwords set not found.
           content:
@@ -2803,12 +2803,12 @@ paths:
       description: Retrieve the details of a preset, given it's name.
       operationId: retrievePreset
       parameters:
-      - in: path
-        name: presetId
+      - name: presetId
+        in: path
         description: The ID of the preset to retrieve.
+        required: true
         schema:
           type: string
-        required: true
         example: listing_view
       responses:
         '200':
@@ -2830,20 +2830,20 @@ paths:
       description: Create or update an existing preset.
       operationId: upsertPreset
       parameters:
-      - in: path
-        name: presetId
+      - name: presetId
+        in: path
         description: The name of the preset set to upsert.
+        required: true
         schema:
           type: string
-        required: true
         example: listing_view
       requestBody:
         description: The stopwords set to upsert.
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/PresetUpsertSchema'
-        required: true
       responses:
         '200':
           description: Preset successfully upserted.
@@ -2864,12 +2864,12 @@ paths:
       description: Permanently deletes a preset, given it's name.
       operationId: deletePreset
       parameters:
-      - in: path
-        name: presetId
+      - name: presetId
+        in: path
         description: The ID of the preset to delete.
+        required: true
         schema:
           type: string
-        required: true
         example: listing_view
       responses:
         '200':
@@ -2901,11 +2901,11 @@ paths:
                 properties:
                   dictionaries:
                     type: array
-                    items:
-                      type: string
                     example:
                     - irregular-plurals
                     - company-terms
+                    items:
+                      type: string
   /stemming/dictionaries/{dictionaryId}:
     get:
       tags:
@@ -3000,11 +3000,11 @@ paths:
       operationId: createNLSearchModel
       requestBody:
         description: The NL search model to be created
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/NLSearchModelCreateSchema'
-        required: true
       responses:
         '201':
           description: NL search model successfully created
@@ -3060,11 +3060,11 @@ paths:
           type: string
       requestBody:
         description: The NL search model fields to update
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/NLSearchModelUpdateSchema'
-        required: true
       responses:
         '200':
           description: NL search model successfully updated
@@ -3113,18 +3113,18 @@ paths:
 components:
   schemas:
     CollectionSchema:
+      type: object
       required:
       - name
       - fields
-      type: object
       properties:
         name:
-          type: string
           description: Name of the collection
+          type: string
           example: companies
         fields:
-          type: array
           description: A list of fields for querying, filtering and faceting
+          type: array
           example:
           - name: num_employees
             type: int32
@@ -3138,34 +3138,34 @@ components:
           items:
             $ref: '#/components/schemas/Field'
         default_sorting_field:
-          type: string
           description: The name of an int32 / float field that determines the order in which the search results are ranked when a sort_by clause is not provided during searching. This field must indicate some kind of popularity.
+          type: string
           example: num_employees
           default: ''
         token_separators:
-          type: array
           description: |
             List of symbols or special characters to be used for splitting the text into individual words in addition to space and new-line characters.
+          type: array
           items:
             type: string
             minLength: 1
             maxLength: 1
           default: []
         synonym_sets:
-          type: array
           description: List of synonym set names to associate with this collection
+          type: array
           items:
             type: string
             example: synonym_set_1
         enable_nested_fields:
-          type: boolean
           description: Enables experimental support at a collection level for nested object or object array fields. This field is only available if the Typesense server is version `0.24.0.rcn34` or later.
-          default: false
+          type: boolean
           example: true
+          default: false
         symbols_to_index:
-          type: array
           description: |
             List of symbols or special characters to be indexed.
+          type: array
           items:
             type: string
             minLength: 1
@@ -3174,18 +3174,18 @@ components:
         voice_query_model:
           $ref: '#/components/schemas/VoiceQueryModelCollectionConfig'
         metadata:
-          type: object
           description: |
             Optional details about the collection, e.g., when it was created, who created it etc.
+          type: object
       x-rust-builder: true
     CollectionUpdateSchema:
+      type: object
       required:
       - fields
-      type: object
       properties:
         fields:
-          type: array
           description: A list of fields for querying, filtering and faceting
+          type: array
           example:
           - name: company_name
             type: string
@@ -3199,15 +3199,15 @@ components:
           items:
             $ref: '#/components/schemas/Field'
         synonym_sets:
-          type: array
           description: List of synonym set names to associate with this collection
+          type: array
           items:
             type: string
             example: synonym_set_1
         metadata:
-          type: object
           description: |
             Optional details about the collection, e.g., when it was created, who created it etc.
+          type: object
     CollectionResponse:
       allOf:
       - $ref: '#/components/schemas/CollectionSchema'
@@ -3228,10 +3228,10 @@ components:
             readOnly: true
       x-rust-is-owned-data: true
     Field:
+      type: object
       required:
       - name
       - type
-      type: object
       properties:
         name:
           type: string
@@ -3260,9 +3260,9 @@ components:
           example: true
           default: false
         reference:
-          type: string
           description: |
             Name of a field in another collection that should be linked to this collection so that it can be joined during query.
+          type: string
         num_dim:
           type: integer
           example: 256
@@ -3270,38 +3270,38 @@ components:
           type: boolean
           example: true
         store:
-          type: boolean
           description: |
             When set to false, the field value will not be stored on disk. Default: true.
+          type: boolean
         vec_dist:
-          type: string
           description: |
             The distance metric to be used for vector search. Default: `cosine`. You can also use `ip` for inner product.
+          type: string
         range_index:
-          type: boolean
           description: |
             Enables an index optimized for range filtering on numerical fields (e.g. rating:>3.5). Default: false.
-        stem:
           type: boolean
+        stem:
           description: |
             Values are stemmed before indexing in-memory. Default: false.
+          type: boolean
         stem_dictionary:
-          type: string
           description: Name of the stemming dictionary to use for this field
+          type: string
           example: irregular-plurals
         token_separators:
-          type: array
           description: |
             List of symbols or special characters to be used for splitting the text into individual words in addition to space and new-line characters.
+          type: array
           items:
             type: string
             minLength: 1
             maxLength: 1
           default: []
         symbols_to_index:
-          type: array
           description: |
             List of symbols or special characters to be indexed.
+          type: array
           items:
             type: string
             minLength: 1
@@ -3342,23 +3342,26 @@ components:
                   type: string
                 query_prefix:
                   type: string
+          x-rust-is-owned-data: true
       x-rust-builder: true
+      x-rust-is-owned-data: true
     VoiceQueryModelCollectionConfig:
-      type: object
       description: |
         Configuration for the voice query model
+      type: object
       properties:
         model_name:
           type: string
           example: ts/whisper/base.en
+      x-rust-is-owned-data: true
     CollectionAliasSchema:
       type: object
       required:
       - collection_name
       properties:
         collection_name:
-          type: string
           description: Name of the collection you wish to map the alias to
+          type: string
     CollectionAlias:
       type: object
       required:
@@ -3366,12 +3369,13 @@ components:
       - name
       properties:
         name:
+          description: Name of the collection alias
           type: string
           readOnly: true
-          description: Name of the collection alias
         collection_name:
-          type: string
           description: Name of the collection the alias mapped to
+          type: string
+      x-rust-is-owned-data: true
     CollectionAliasesResponse:
       type: object
       required:
@@ -3379,9 +3383,9 @@ components:
       properties:
         aliases:
           type: array
-          x-go-type: '[]*CollectionAlias'
           items:
             $ref: '#/components/schemas/CollectionAlias'
+          x-go-type: '[]*CollectionAlias'
       x-rust-is-owned-data: true
     SearchResult:
       type: object
@@ -3391,30 +3395,30 @@ components:
           items:
             $ref: '#/components/schemas/FacetCounts'
         found:
-          type: integer
           description: The number of documents found
+          type: integer
         found_docs:
           type: integer
         search_time_ms:
-          type: integer
           description: The number of milliseconds the search took
+          type: integer
         out_of:
-          type: integer
           description: The total number of documents in the collection
-        search_cutoff:
-          type: boolean
-          description: Whether the search was cut off
-        page:
           type: integer
+        search_cutoff:
+          description: Whether the search was cut off
+          type: boolean
+        page:
           description: The search result page number
+          type: integer
         grouped_hits:
           type: array
           items:
             $ref: '#/components/schemas/SearchGroupedHit'
           x-rust-type: Option<Vec<models::SearchGroupedHit<'a, D>>>
         hits:
-          type: array
           description: The documents that matched the search query
+          type: array
           items:
             $ref: '#/components/schemas/SearchResultHit'
           x-rust-type: Option<Vec<models::SearchResultHit<'a, D>>>
@@ -3423,13 +3427,13 @@ components:
         conversation:
           $ref: '#/components/schemas/SearchResultConversation'
         union_request_params:
-          type: array
           description: Returned only for union query response.
+          type: array
           items:
             $ref: '#/components/schemas/SearchRequestParams'
         metadata:
-          type: object
           description: Custom JSON object that can be returned in the search response
+          type: object
           additionalProperties: true
           x-rust-is-owned-data: true
       x-rust-generic-parameter: D
@@ -3468,6 +3472,7 @@ components:
           type: array
           items:
             type: object
+            x-rust-is-owned-data: true
         conversation_id:
           type: string
         query:
@@ -3485,8 +3490,8 @@ components:
           type: array
           items: {}
         hits:
-          type: array
           description: The documents that matched the search query
+          type: array
           items:
             $ref: '#/components/schemas/SearchResultHit'
           x-rust-type: Vec<models::SearchResultHit<'a, D>>
@@ -3494,20 +3499,31 @@ components:
       x-rust-is-owned-data: true
     SearchResultHit:
       type: object
+      example:
+        highlights:
+          company_name:
+            field: company_name
+            snippet: <mark>Stark</mark> Industries
+        document:
+          id: '124'
+          company_name: Stark Industries
+          num_employees: 5215
+          country: USA
+        text_match: 1234556
       properties:
         highlights:
-          type: array
           description: (Deprecated) Contains highlighted portions of the search fields
+          type: array
           items:
             $ref: '#/components/schemas/SearchHighlight'
         highlight:
-          type: object
           description: Highlighted version of the matching document
+          type: object
           additionalProperties: true
           x-rust-is-owned-data: true
         document:
-          type: object
           description: Can be any key-value pair
+          type: object
           additionalProperties:
             type: object
           x-rust-type: Option<D>
@@ -3536,38 +3552,27 @@ components:
               type: integer
           x-rust-is-owned-data: true
         geo_distance_meters:
-          type: object
           description: Can be any key-value pair
+          type: object
           additionalProperties:
             type: integer
           x-rust-is-owned-data: true
         vector_distance:
+          description: Distance between the query vector and matching document's vector value
           type: number
           format: float
-          description: Distance between the query vector and matching document's vector value
         hybrid_search_info:
-          type: object
           description: Information about hybrid search scoring
+          type: object
           properties:
             rank_fusion_score:
+              description: Combined score from rank fusion of text and vector search
               type: number
               format: float
-              description: Combined score from rank fusion of text and vector search
           x-rust-is-owned-data: true
         search_index:
-          type: integer
           description: Returned only for union query response. Indicates the index of the query which this document matched to.
-      example:
-        highlights:
-          company_name:
-            field: company_name
-            snippet: <mark>Stark</mark> Industries
-        document:
-          id: '124'
-          company_name: Stark Industries
-          num_employees: 5215
-          country: USA
-        text_match: 1234556
+          type: integer
       x-rust-generic-parameter: D
       x-rust-is-owned-data: true
     SearchHighlight:
@@ -3577,32 +3582,32 @@ components:
           type: string
           example: company_name
         snippet:
-          type: string
           description: Present only for (non-array) string fields
+          type: string
           example: <mark>Stark</mark> Industries
         snippets:
-          type: array
           description: Present only for (array) string[] fields
+          type: array
           example:
           - <mark>Stark</mark> Industries
           - <mark>Stark</mark> Corp
           items:
             type: string
         value:
-          type: string
           description: Full field value with highlighting, present only for (non-array) string fields
+          type: string
           example: <mark>Stark</mark> Industries is a major supplier of space equipment.
         values:
-          type: array
           description: Full field value with highlighting, present only for (array) string[] fields
+          type: array
           example:
           - <mark>Stark</mark> Industries
           - <mark>Stark</mark> Corp
           items:
             type: string
         indices:
-          type: array
           description: The indices property will be present only for string[] fields and will contain the corresponding indices of the snippets in the search field
+          type: array
           example: 1
           items:
             type: integer
@@ -3611,6 +3616,7 @@ components:
           items:
             type: object
             x-go-type: interface{}
+            x-rust-is-owned-data: true
       x-rust-is-owned-data: true
     SearchSynonymSchema:
       type: object
@@ -3618,21 +3624,22 @@ components:
       - synonyms
       properties:
         root:
-          type: string
           description: For 1-way synonyms, indicates the root word that words in the `synonyms` parameter map to.
+          type: string
         synonyms:
-          type: array
           description: Array of words that should be considered as synonyms.
+          type: array
           items:
             type: string
         locale:
-          type: string
           description: Locale for the synonym, leave blank to use the standard tokenizer.
+          type: string
         symbols_to_index:
-          type: array
           description: By default, special characters are dropped from synonyms. Use this attribute to specify which special characters should be indexed as is.
+          type: array
           items:
             type: string
+      x-rust-is-owned-data: true
     SearchSynonym:
       allOf:
       - $ref: '#/components/schemas/SearchSynonymSchema'
@@ -3643,14 +3650,15 @@ components:
           id:
             type: string
             readOnly: true
+      x-rust-is-owned-data: true
     SearchSynonymDeleteResponse:
       type: object
       required:
       - id
       properties:
         id:
-          type: string
           description: The id of the synonym that was deleted
+          type: string
       x-rust-is-owned-data: true
     SearchSynonymsResponse:
       type: object
@@ -3659,9 +3667,9 @@ components:
       properties:
         synonyms:
           type: array
-          x-go-type: '[]*SearchSynonym'
           items:
             $ref: '#/components/schemas/SearchSynonym'
+          x-go-type: '[]*SearchSynonym'
       x-rust-is-owned-data: true
     HealthStatus:
       type: object
@@ -3675,14 +3683,14 @@ components:
       type: object
       properties:
         collection:
-          type: string
           description: Name of the collection being modified
+          type: string
         validated_docs:
-          type: integer
           description: Number of documents that have been validated
-        altered_docs:
           type: integer
+        altered_docs:
           description: Number of documents that have been altered
+          type: integer
       x-rust-is-owned-data: true
     SuccessStatus:
       type: object
@@ -3734,15 +3742,16 @@ components:
           value_prefix:
             type: string
             readOnly: true
+      x-rust-is-owned-data: true
     ApiKeyDeleteResponse:
       type: object
       required:
       - id
       properties:
         id:
+          description: The id of the API key that was deleted
           type: integer
           format: int64
-          description: The id of the API key that was deleted
       x-rust-is-owned-data: true
     ApiKeysResponse:
       type: object
@@ -3751,9 +3760,9 @@ components:
       properties:
         keys:
           type: array
-          x-go-type: '[]*ApiKey'
           items:
             $ref: '#/components/schemas/ApiKey'
+          x-go-type: '[]*ApiKey'
       x-rust-is-owned-data: true
     MultiSearchResult:
       type: object
@@ -3900,8 +3909,8 @@ components:
             Field values under this length will be fully highlighted, instead of showing a snippet of relevant portion. Default: 30
           type: integer
         synonym_sets:
-          type: string
           description: List of synonym set names to associate with this search query
+          type: string
           example: synonym_set_1,synonym_set_2
         drop_tokens_threshold:
           description: |
@@ -3914,25 +3923,25 @@ components:
             If the number of results found for a specific query is less than this number, Typesense will attempt to look for tokens with more typos until enough results are found. Default: 100
           type: integer
         enable_typos_for_alpha_numerical_tokens:
-          type: boolean
           description: |
             Set this parameter to false to disable typos on alphanumerical query tokens. Default: true.
-        filter_curated_hits:
           type: boolean
+        filter_curated_hits:
           description: |
             Whether the filter_by condition of the search query should be applicable to curated results (override definitions, pinned hits, hidden hits, etc.). Default: false
-        enable_synonyms:
           type: boolean
+        enable_synonyms:
           description: |
             If you have some synonyms defined but want to disable all of them for a particular search query, set enable_synonyms to false. Default: true
-        synonym_prefix:
           type: boolean
+        synonym_prefix:
           description: |
             Allow synonym resolution on word prefixes in the query. Default: false
+          type: boolean
         synonym_num_typos:
-          type: integer
           description: |
             Allow synonym resolution on typo-corrected words in the query. Default: 0
+          type: integer
         pinned_hits:
           description: |
             A list of records to unconditionally include in the search results at specific positions. An example use case would be to feature or promote certain items on the top of search results. A list of `record_id:hit_position`. Eg: to include a record with ID 123 at Position 1 and another record with ID 456 at Position 5, you'd specify `123:1,456:5`.
@@ -4166,30 +4175,30 @@ components:
             If the number of results found for a specific query is less than this number, Typesense will attempt to look for tokens with more typos until enough results are found. Default: 100
           type: integer
         enable_typos_for_alpha_numerical_tokens:
-          type: boolean
           description: |
             Set this parameter to false to disable typos on alphanumerical query tokens. Default: true.
-        filter_curated_hits:
           type: boolean
+        filter_curated_hits:
           description: |
             Whether the filter_by condition of the search query should be applicable to curated results (override definitions, pinned hits, hidden hits, etc.). Default: false
-        enable_synonyms:
           type: boolean
+        enable_synonyms:
           description: |
             If you have some synonyms defined but want to disable all of them for a particular search query, set enable_synonyms to false. Default: true
+          type: boolean
         enable_analytics:
           description: |
             Flag for enabling/disabling analytics aggregation for specific search queries (for e.g. those originating from a test script).
           type: boolean
           default: true
         synonym_prefix:
-          type: boolean
           description: |
             Allow synonym resolution on word prefixes in the query. Default: false
+          type: boolean
         synonym_num_typos:
-          type: integer
           description: |
             Allow synonym resolution on typo-corrected words in the query. Default: 0
+          type: integer
         pinned_hits:
           description: |
             A list of records to unconditionally include in the search results at specific positions. An example use case would be to feature or promote certain items on the top of search results. A list of `record_id:hit_position`. Eg: to include a record with ID 123 at Position 1 and another record with ID 456 at Position 5, you'd specify `123:1,456:5`.
@@ -4313,9 +4322,9 @@ components:
       - searches
       properties:
         union:
+          description: When true, merges the search results from each search query into a single ordered set of hits.
           type: boolean
           default: false
-          description: When true, merges the search results from each search query into a single ordered set of hits.
         searches:
           type: array
           items:
@@ -4354,6 +4363,7 @@ components:
                 type: string
               parent:
                 type: object
+            x-rust-is-owned-data: true
         field_name:
           type: string
         stats:
@@ -4373,6 +4383,8 @@ components:
             avg:
               type: number
               format: double
+          x-rust-is-owned-data: true
+      x-rust-is-owned-data: true
     AnalyticsEventCreateResponse:
       type: object
       required:
@@ -4389,14 +4401,14 @@ components:
       - data
       properties:
         name:
-          type: string
           description: Name of the analytics rule this event corresponds to
-        event_type:
           type: string
+        event_type:
           description: Type of event (e.g., click, conversion, query, visit)
+          type: string
         data:
-          type: object
           description: Event payload
+          type: object
           properties:
             user_id:
               type: string
@@ -4439,6 +4451,7 @@ components:
                   type: string
               query:
                 type: string
+            x-rust-is-owned-data: true
       x-rust-is-owned-data: true
     AnalyticsRuleCreate:
       type: object
@@ -4483,8 +4496,8 @@ components:
             weight:
               type: integer
     AnalyticsRuleUpdate:
-      type: object
       description: Fields allowed to update on an analytics rule
+      type: object
       properties:
         name:
           type: string
@@ -4513,6 +4526,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/AnalyticsRuleCreate'
       - type: object
+      x-rust-is-owned-data: true
     AnalyticsStatus:
       type: object
       properties:
@@ -4578,6 +4592,10 @@ components:
       x-rust-is-owned-data: true
     StopwordsSetUpsertSchema:
       type: object
+      required:
+      - stopwords
+      example: |
+        {"stopwords": ["Germany", "France", "Italy"], "locale": "en"}
       properties:
         stopwords:
           type: array
@@ -4585,12 +4603,13 @@ components:
             type: string
         locale:
           type: string
-      required:
-      - stopwords
-      example: |
-        {"stopwords": ["Germany", "France", "Italy"], "locale": "en"}
     StopwordsSetSchema:
       type: object
+      required:
+      - id
+      - stopwords
+      example: |
+        {"id": "countries", "stopwords": ["Germany", "France", "Italy"], "locale": "en"}
       properties:
         id:
           type: string
@@ -4600,39 +4619,37 @@ components:
             type: string
         locale:
           type: string
-      required:
-      - id
-      - stopwords
-      example: |
-        {"id": "countries", "stopwords": ["Germany", "France", "Italy"], "locale": "en"}
+      x-rust-is-owned-data: true
     StopwordsSetRetrieveSchema:
       type: object
-      properties:
-        stopwords:
-          $ref: '#/components/schemas/StopwordsSetSchema'
       required:
       - stopwords
       example: |
         {"stopwords": {"id": "countries", "stopwords": ["Germany", "France", "Italy"], "locale": "en"}}
+      properties:
+        stopwords:
+          $ref: '#/components/schemas/StopwordsSetSchema'
+      x-rust-is-owned-data: true
     StopwordsSetsRetrieveAllSchema:
       type: object
+      required:
+      - stopwords
+      example: |
+        {"stopwords": [{"id": "countries", "stopwords": ["Germany", "France", "Italy"], "locale": "en"}]}
       properties:
         stopwords:
           type: array
           items:
             $ref: '#/components/schemas/StopwordsSetSchema'
-      required:
-      - stopwords
-      example: |
-        {"stopwords": [{"id": "countries", "stopwords": ["Germany", "France", "Italy"], "locale": "en"}]}
+      x-rust-is-owned-data: true
     PresetUpsertSchema:
+      required:
+      - value
       properties:
         value:
           oneOf:
           - $ref: '#/components/schemas/SearchParameters'
           - $ref: '#/components/schemas/MultiSearchSearchesParameter'
-      required:
-      - value
     PresetSchema:
       allOf:
       - $ref: '#/components/schemas/PresetUpsertSchema'
@@ -4642,6 +4659,7 @@ components:
         properties:
           name:
             type: string
+      x-rust-is-owned-data: true
     PresetsRetrieveSchema:
       type: object
       required:
@@ -4652,6 +4670,7 @@ components:
           items:
             $ref: '#/components/schemas/PresetSchema'
           x-go-type: '[]*PresetSchema'
+      x-rust-is-owned-data: true
     PresetDeleteSchema:
       type: object
       required:
@@ -4659,6 +4678,7 @@ components:
       properties:
         name:
           type: string
+      x-rust-is-owned-data: true
     DirtyValues:
       type: string
       enum:
@@ -4674,13 +4694,13 @@ components:
       - upsert
       - emplace
     DropTokensMode:
+      description: |
+        Dictates the direction in which the words in the query must be dropped when the original words in the query do not appear in any document. Values: right_to_left (default), left_to_right, both_sides:3 A note on both_sides:3 - for queries up to 3 tokens (words) in length, this mode will drop tokens from both sides and exhaustively rank all matching results. If query length is greater than 3 words, Typesense will just fallback to default behavior of right_to_left
       type: string
       enum:
       - right_to_left
       - left_to_right
       - both_sides:3
-      description: |
-        Dictates the direction in which the words in the query must be dropped when the original words in the query do not appear in any document. Values: right_to_left (default), left_to_right, both_sides:3 A note on both_sides:3 - for queries up to 3 tokens (words) in length, this mode will drop tokens from both sides and exhaustively rank all matching results. If query length is greater than 3 words, Typesense will just fallback to default behavior of right_to_left
     ConversationModelCreateSchema:
       required:
       - model_name
@@ -4707,8 +4727,8 @@ components:
       type: object
       properties:
         id:
-          type: string
           description: An explicit id for the model, otherwise the API will return a response with an auto-generated conversation model id.
+          type: string
         model_name:
           description: Name of the LLM model offered by OpenAI, Cloudflare or vLLM
           type: string
@@ -4716,8 +4736,8 @@ components:
           description: The LLM service's API Key
           type: string
         history_collection:
-          type: string
           description: Typesense collection that stores the historical conversations
+          type: string
         account_id:
           description: LLM service's account ID (only applicable for Cloudflare)
           type: string
@@ -4725,9 +4745,9 @@ components:
           description: The system prompt that contains special instructions to the LLM
           type: string
         ttl:
-          type: integer
           description: |
             Time interval in seconds after which the messages would be deleted. Default: 86400 (24 hours)
+          type: integer
         max_bytes:
           description: |
             The maximum number of bytes to send to the LLM in every API call. Consult the LLM's documentation on the number of bytes supported in the context window.
@@ -4745,6 +4765,7 @@ components:
           id:
             type: string
             description: An explicit id for the model, otherwise the API will return a response with an auto-generated conversation model id.
+      x-rust-is-owned-data: true
     StemmingDictionary:
       type: object
       required:
@@ -4752,12 +4773,12 @@ components:
       - words
       properties:
         id:
-          type: string
           description: Unique identifier for the dictionary
+          type: string
           example: irregular-plurals
         words:
-          type: array
           description: List of word mappings in the dictionary
+          type: array
           items:
             type: object
             required:
@@ -4765,72 +4786,75 @@ components:
             - root
             properties:
               word:
-                type: string
                 description: The word form to be stemmed
+                type: string
                 example: people
               root:
-                type: string
                 description: The root form of the word
+                type: string
                 example: person
+            x-rust-is-owned-data: true
+      x-rust-is-owned-data: true
     NLSearchModelBase:
       type: object
       properties:
         model_name:
-          type: string
           description: Name of the NL model to use
+          type: string
         api_key:
-          type: string
           description: API key for the NL model service
+          type: string
         api_url:
-          type: string
           description: Custom API URL for the NL model service
-        max_bytes:
-          type: integer
-          description: Maximum number of bytes to process
-        temperature:
-          type: number
-          description: Temperature parameter for the NL model
-        system_prompt:
           type: string
-          description: System prompt for the NL model
-        top_p:
-          type: number
-          description: Top-p parameter for the NL model (Google-specific)
-        top_k:
+        max_bytes:
+          description: Maximum number of bytes to process
           type: integer
+        temperature:
+          description: Temperature parameter for the NL model
+          type: number
+        system_prompt:
+          description: System prompt for the NL model
+          type: string
+        top_p:
+          description: Top-p parameter for the NL model (Google-specific)
+          type: number
+        top_k:
           description: Top-k parameter for the NL model (Google-specific)
+          type: integer
         stop_sequences:
+          description: Stop sequences for the NL model (Google-specific)
           type: array
           items:
             type: string
-          description: Stop sequences for the NL model (Google-specific)
         api_version:
-          type: string
           description: API version for the NL model service
+          type: string
         project_id:
-          type: string
           description: Project ID for GCP Vertex AI
+          type: string
         access_token:
-          type: string
           description: Access token for GCP Vertex AI
+          type: string
         refresh_token:
-          type: string
           description: Refresh token for GCP Vertex AI
+          type: string
         client_id:
-          type: string
           description: Client ID for GCP Vertex AI
+          type: string
         client_secret:
-          type: string
           description: Client secret for GCP Vertex AI
+          type: string
         region:
-          type: string
           description: Region for GCP Vertex AI
-        max_output_tokens:
-          type: integer
-          description: Maximum output tokens for GCP Vertex AI
-        account_id:
           type: string
+        max_output_tokens:
+          description: Maximum output tokens for GCP Vertex AI
+          type: integer
+        account_id:
           description: Account ID for Cloudflare-specific models
+          type: string
+      x-rust-is-owned-data: true
     NLSearchModelCreateSchema:
       allOf:
       - $ref: '#/components/schemas/NLSearchModelBase'
@@ -4849,6 +4873,7 @@ components:
           id:
             type: string
             description: ID of the NL search model
+      x-rust-is-owned-data: true
     NLSearchModelUpdateSchema:
       $ref: '#/components/schemas/NLSearchModelCreateSchema'
     NLSearchModelDeleteSchema:
@@ -4857,8 +4882,9 @@ components:
       - id
       properties:
         id:
-          type: string
           description: ID of the deleted NL search model
+          type: string
+      x-rust-is-owned-data: true
     SynonymItemSchema:
       type: object
       required:
@@ -4866,22 +4892,22 @@ components:
       - synonyms
       properties:
         id:
-          type: string
           description: Unique identifier for the synonym item
+          type: string
         synonyms:
-          type: array
           description: Array of words that should be considered as synonyms
+          type: array
           items:
             type: string
         root:
-          type: string
           description: For 1-way synonyms, indicates the root word that words in the synonyms parameter map to
-        locale:
           type: string
+        locale:
           description: Locale for the synonym, leave blank to use the standard tokenizer
+          type: string
         symbols_to_index:
-          type: array
           description: By default, special characters are dropped from synonyms. Use this attribute to specify which special characters should be indexed as is
+          type: array
           items:
             type: string
     SynonymSetCreateSchema:
@@ -4890,8 +4916,8 @@ components:
       - items
       properties:
         items:
-          type: array
           description: Array of synonym items
+          type: array
           items:
             $ref: '#/components/schemas/SynonymItemSchema'
     SynonymSetSchema:
@@ -4904,34 +4930,39 @@ components:
           name:
             type: string
             description: Name of the synonym set
+      x-rust-is-owned-data: true
     SynonymSetsRetrieveSchema:
       type: object
       required:
       - synonym_sets
       properties:
         synonym_sets:
-          type: array
           description: Array of synonym sets
+          type: array
           items:
             $ref: '#/components/schemas/SynonymSetSchema'
+      x-rust-is-owned-data: true
     SynonymSetRetrieveSchema:
       $ref: '#/components/schemas/SynonymSetCreateSchema'
+      x-rust-is-owned-data: true
     SynonymSetDeleteSchema:
       type: object
       required:
       - name
       properties:
         name:
-          type: string
           description: Name of the deleted synonym set
+          type: string
+      x-rust-is-owned-data: true
     SynonymItemDeleteSchema:
       type: object
       required:
       - id
       properties:
         id:
-          type: string
           description: ID of the deleted synonym item
+          type: string
+      x-rust-is-owned-data: true
     CurationItemCreateSchema:
       type: object
       required:
@@ -4940,54 +4971,54 @@ components:
         rule:
           $ref: '#/components/schemas/CurationRule'
         includes:
-          type: array
           description: List of document `id`s that should be included in the search results with their corresponding `position`s.
+          type: array
           items:
             $ref: '#/components/schemas/CurationInclude'
         excludes:
-          type: array
           description: List of document `id`s that should be excluded from the search results.
+          type: array
           items:
             $ref: '#/components/schemas/CurationExclude'
         filter_by:
-          type: string
           description: |
             A filter by clause that is applied to any search query that matches the curation rule.
+          type: string
         remove_matched_tokens:
-          type: boolean
           description: |
             Indicates whether search query tokens that exist in the curation's rule should be removed from the search query.
+          type: boolean
         metadata:
-          type: object
           description: |
             Return a custom JSON object in the Search API response, when this rule is triggered. This can can be used to display a pre-defined message (eg: a promotion banner) on the front-end when a particular rule is triggered.
+          type: object
         sort_by:
-          type: string
           description: |
             A sort by clause that is applied to any search query that matches the curation rule.
-        replace_query:
           type: string
+        replace_query:
           description: |
             Replaces the current search query with this value, when the search query matches the curation rule.
+          type: string
         filter_curated_hits:
-          type: boolean
           description: |
             When set to true, the filter conditions of the query is applied to the curated records as well. Default: false.
+          type: boolean
         effective_from_ts:
-          type: integer
           description: |
             A Unix timestamp that indicates the date/time from which the curation will be active. You can use this to create rules that start applying from a future point in time.
-        effective_to_ts:
           type: integer
+        effective_to_ts:
           description: |
             A Unix timestamp that indicates the date/time until which the curation will be active. You can use this to create rules that stop applying after a period of time.
+          type: integer
         stop_processing:
-          type: boolean
           description: |
             When set to true, curation processing will stop at the first matching rule. When set to false curation processing will continue and multiple curation actions will be triggered in sequence. Curations are processed in the lexical sort order of their id field.
+          type: boolean
         id:
-          type: string
           description: ID of the curation item
+          type: string
     CurationItemSchema:
       allOf:
       - $ref: '#/components/schemas/CurationItemCreateSchema'
@@ -4997,19 +5028,20 @@ components:
         properties:
           id:
             type: string
+      x-rust-is-owned-data: true
     CurationSetCreateSchema:
       type: object
       required:
       - items
       properties:
         items:
-          type: array
           description: Array of curation items
+          type: array
           items:
             $ref: '#/components/schemas/CurationItemCreateSchema'
         description:
-          type: string
           description: Optional description for the curation set
+          type: string
     CurationSetSchema:
       allOf:
       - $ref: '#/components/schemas/CurationSetCreateSchema'
@@ -5019,28 +5051,30 @@ components:
         properties:
           name:
             type: string
+      x-rust-is-owned-data: true
     CurationRule:
       type: object
       properties:
         tags:
-          type: array
           description: List of tag values to associate with this curation rule.
+          type: array
           items:
             type: string
         query:
-          type: string
           description: Indicates what search queries should be curated
-        match:
           type: string
+        match:
           description: |
             Indicates whether the match on the query term should be `exact` or `contains`. If we want to match all queries that contained the word `apple`, we will use the `contains` match instead.
+          type: string
           enum:
           - exact
           - contains
         filter_by:
-          type: string
           description: |
             Indicates that the curation should apply when the filter_by parameter in a search query exactly matches the string specified here (including backticks, spaces, brackets, etc).
+          type: string
+      x-rust-is-owned-data: true
     CurationInclude:
       type: object
       required:
@@ -5048,45 +5082,50 @@ components:
       - position
       properties:
         id:
-          type: string
           description: document id that should be included
+          type: string
         position:
-          type: integer
           description: position number where document should be included in the search results
+          type: integer
+      x-rust-is-owned-data: true
     CurationExclude:
       type: object
       required:
       - id
       properties:
         id:
-          type: string
           description: document id that should be excluded from the search results.
+          type: string
+      x-rust-is-owned-data: true
     CurationSetRetrieveSchema:
       $ref: '#/components/schemas/CurationSetCreateSchema'
+      x-rust-is-owned-data: true
     CurationSetDeleteSchema:
       type: object
       required:
       - name
       properties:
         name:
-          type: string
           description: Name of the deleted curation set
+          type: string
+      x-rust-is-owned-data: true
     CurationItemDeleteSchema:
       type: object
       required:
       - id
       properties:
         id:
-          type: string
           description: ID of the deleted curation item
+          type: string
+      x-rust-is-owned-data: true
     ImportDocumentsParameters:
       type: object
       properties:
         batch_size:
           type: integer
         return_id:
-          type: boolean
           description: Returning the id of the imported documents. If you want the import response to return the ingested document's id in the response, you can use the return_id parameter.
+          type: boolean
         remote_embedding_batch_size:
           type: integer
         return_doc:

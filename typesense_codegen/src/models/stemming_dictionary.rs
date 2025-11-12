@@ -16,7 +16,7 @@ use serde::{Deserialize, Serialize};
 pub struct StemmingDictionary<'a> {
     /// Unique identifier for the dictionary
     #[serde(rename = "id")]
-    pub id: Cow<'a, str>,
+    pub id: String,
     /// List of word mappings in the dictionary
     #[serde(rename = "words")]
     pub words: Vec<models::StemmingDictionaryWordsInner<'a>>,
@@ -25,7 +25,7 @@ pub struct StemmingDictionary<'a> {
 }
 
 impl<'a> StemmingDictionary<'a> {
-    pub fn new(id: Cow<'a, str>, words: Vec<models::StemmingDictionaryWordsInner<'a>>) -> Self {
+    pub fn new(id: String, words: Vec<models::StemmingDictionaryWordsInner<'a>>) -> Self {
         Self {
             id,
             words,

@@ -15,13 +15,13 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct PresetDeleteSchema<'a> {
     #[serde(rename = "name")]
-    pub name: Cow<'a, str>,
+    pub name: String,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> PresetDeleteSchema<'a> {
-    pub fn new(name: Cow<'a, str>) -> Self {
+    pub fn new(name: String) -> Self {
         Self {
             name,
             _phantom: PhantomData,
