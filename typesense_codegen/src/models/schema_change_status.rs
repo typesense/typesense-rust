@@ -16,7 +16,7 @@ use serde::{Deserialize, Serialize};
 pub struct SchemaChangeStatus<'a> {
     /// Name of the collection being modified
     #[serde(rename = "collection", skip_serializing_if = "Option::is_none")]
-    pub collection: Option<Cow<'a, str>>,
+    pub collection: Option<String>,
     /// Number of documents that have been validated
     #[serde(rename = "validated_docs", skip_serializing_if = "Option::is_none")]
     pub validated_docs: Option<i32>,

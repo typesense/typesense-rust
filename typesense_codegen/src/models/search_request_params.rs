@@ -15,9 +15,9 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SearchRequestParams<'a> {
     #[serde(rename = "collection_name")]
-    pub collection_name: Cow<'a, str>,
+    pub collection_name: String,
     #[serde(rename = "q")]
-    pub q: Cow<'a, str>,
+    pub q: String,
     #[serde(rename = "per_page")]
     pub per_page: i32,
     #[serde(rename = "voice_query", skip_serializing_if = "Option::is_none")]
@@ -27,7 +27,7 @@ pub struct SearchRequestParams<'a> {
 }
 
 impl<'a> SearchRequestParams<'a> {
-    pub fn new(collection_name: Cow<'a, str>, q: Cow<'a, str>, per_page: i32) -> Self {
+    pub fn new(collection_name: String, q: String, per_page: i32) -> Self {
         Self {
             collection_name,
             q,

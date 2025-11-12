@@ -119,7 +119,7 @@ impl<'a> MultiSearchResultExt<'a> for MultiSearchResult<'a, Value> {
         if let Some(error_msg) = &raw_item.error {
             return Err(MultiSearchParseError::ApiError {
                 index,
-                message: error_msg.clone().into_owned(),
+                message: error_msg.clone(),
             });
         }
 

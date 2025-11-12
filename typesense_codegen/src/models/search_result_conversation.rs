@@ -15,23 +15,23 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SearchResultConversation<'a> {
     #[serde(rename = "answer")]
-    pub answer: Cow<'a, str>,
+    pub answer: String,
     #[serde(rename = "conversation_history")]
     pub conversation_history: Vec<serde_json::Value>,
     #[serde(rename = "conversation_id")]
-    pub conversation_id: Cow<'a, str>,
+    pub conversation_id: String,
     #[serde(rename = "query")]
-    pub query: Cow<'a, str>,
+    pub query: String,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> SearchResultConversation<'a> {
     pub fn new(
-        answer: Cow<'a, str>,
+        answer: String,
         conversation_history: Vec<serde_json::Value>,
-        conversation_id: Cow<'a, str>,
-        query: Cow<'a, str>,
+        conversation_id: String,
+        query: String,
     ) -> Self {
         Self {
             answer,

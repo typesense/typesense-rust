@@ -96,5 +96,7 @@ pub fn add_vendor_attributes(doc_root: &mut Mapping) -> Result<(), String> {
         .request_type("B")
         .done()?;
 
+    attrs.schemas_mark_owned_data()?;
+
     Ok(())
 }

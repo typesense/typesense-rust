@@ -16,7 +16,7 @@ use serde::{Deserialize, Serialize};
 pub struct CollectionResponse<'a> {
     /// Name of the collection
     #[serde(rename = "name")]
-    pub name: Cow<'a, str>,
+    pub name: String,
     /// A list of fields for querying, filtering and faceting
     #[serde(rename = "fields")]
     pub fields: Vec<models::Field<'a>>,
@@ -25,7 +25,7 @@ pub struct CollectionResponse<'a> {
         rename = "default_sorting_field",
         skip_serializing_if = "Option::is_none"
     )]
-    pub default_sorting_field: Option<Cow<'a, str>>,
+    pub default_sorting_field: Option<String>,
     /// List of symbols or special characters to be used for splitting the text into individual words in addition to space and new-line characters.
     #[serde(rename = "token_separators", skip_serializing_if = "Option::is_none")]
     pub token_separators: Option<Vec<String>>,
@@ -58,7 +58,7 @@ pub struct CollectionResponse<'a> {
 
 impl<'a> CollectionResponse<'a> {
     pub fn new(
-        name: Cow<'a, str>,
+        name: String,
         fields: Vec<models::Field<'a>>,
         num_documents: i64,
         created_at: i64,

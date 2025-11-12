@@ -15,13 +15,13 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ApiResponse<'a> {
     #[serde(rename = "message")]
-    pub message: Cow<'a, str>,
+    pub message: String,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> ApiResponse<'a> {
-    pub fn new(message: Cow<'a, str>) -> Self {
+    pub fn new(message: String) -> Self {
         Self {
             message,
             _phantom: PhantomData,

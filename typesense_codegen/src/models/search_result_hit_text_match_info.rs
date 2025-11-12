@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SearchResultHitTextMatchInfo<'a> {
     #[serde(rename = "best_field_score", skip_serializing_if = "Option::is_none")]
-    pub best_field_score: Option<Cow<'a, str>>,
+    pub best_field_score: Option<String>,
     #[serde(rename = "best_field_weight", skip_serializing_if = "Option::is_none")]
     pub best_field_weight: Option<i32>,
     #[serde(rename = "fields_matched", skip_serializing_if = "Option::is_none")]
@@ -23,7 +23,7 @@ pub struct SearchResultHitTextMatchInfo<'a> {
     #[serde(rename = "num_tokens_dropped", skip_serializing_if = "Option::is_none")]
     pub num_tokens_dropped: Option<i64>,
     #[serde(rename = "score", skip_serializing_if = "Option::is_none")]
-    pub score: Option<Cow<'a, str>>,
+    pub score: Option<String>,
     #[serde(rename = "tokens_matched", skip_serializing_if = "Option::is_none")]
     pub tokens_matched: Option<i32>,
     #[serde(rename = "typo_prefix_score", skip_serializing_if = "Option::is_none")]

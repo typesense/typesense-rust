@@ -15,16 +15,16 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SearchHighlight<'a> {
     #[serde(rename = "field", skip_serializing_if = "Option::is_none")]
-    pub field: Option<Cow<'a, str>>,
+    pub field: Option<String>,
     /// Present only for (non-array) string fields
     #[serde(rename = "snippet", skip_serializing_if = "Option::is_none")]
-    pub snippet: Option<Cow<'a, str>>,
+    pub snippet: Option<String>,
     /// Present only for (array) string[] fields
     #[serde(rename = "snippets", skip_serializing_if = "Option::is_none")]
     pub snippets: Option<Vec<String>>,
     /// Full field value with highlighting, present only for (non-array) string fields
     #[serde(rename = "value", skip_serializing_if = "Option::is_none")]
-    pub value: Option<Cow<'a, str>>,
+    pub value: Option<String>,
     /// Full field value with highlighting, present only for (array) string[] fields
     #[serde(rename = "values", skip_serializing_if = "Option::is_none")]
     pub values: Option<Vec<String>>,

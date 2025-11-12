@@ -56,7 +56,7 @@ pub struct MultiSearchResultItem<'a, D> {
     pub code: Option<i64>,
     /// Error description
     #[serde(rename = "error", skip_serializing_if = "Option::is_none")]
-    pub error: Option<Cow<'a, str>>,
+    pub error: Option<String>,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }

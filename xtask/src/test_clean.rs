@@ -27,7 +27,7 @@ async fn clean_test_artifacts() {
         }
 
         if let Err(err) = client
-            .collection_schemaless(collection.name.as_ref())
+            .collection_schemaless(collection.name.as_str())
             .delete()
             .await
         {

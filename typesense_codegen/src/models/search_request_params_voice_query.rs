@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SearchRequestParamsVoiceQuery<'a> {
     #[serde(rename = "transcribed_query", skip_serializing_if = "Option::is_none")]
-    pub transcribed_query: Option<Cow<'a, str>>,
+    pub transcribed_query: Option<String>,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }

@@ -49,7 +49,7 @@ impl<'a> VendorAttributes<'a> {
 
     #[inline]
     fn insert_into_map(map: &mut Mapping, attr: &str, val: Value) {
-        map.insert(Value::String(attr.to_string()), val);
+        map.insert(Value::String(attr.to_owned()), val);
     }
 
     fn set_attr(
@@ -111,6 +111,39 @@ impl<'a> VendorAttributes<'a> {
                 Ok(self)
             }
         }
+    }
+
+    pub fn schemas_mark_owned_data(&mut self) -> Result<&mut Self, String> {
+        let map = self.get_map_mut(&["components", "schemas"])?;
+        for (schema_n, schema_m) in map {
+            let (Value::String(schema_name), Value::Mapping(schema_map)) = (schema_n, schema_m)
+            else {
+                continue;
+            };
+            if schema_name.ends_with("Response")
+                || schema_name.contains("Result")
+                || schema_name.ends_with("Status")
+                || schema_name.ends_with("Hit")
+                || ["SearchRequestParams", "SearchHighlight"].contains(&schema_name.as_str())
+            {
+                Self::insert_into_map(schema_map, "x-rust-is-owned-data", Value::Bool(true));
+                if let Some(Value::Mapping(props)) = schema_map.get_mut("properties") {
+                    for (_, prop_m) in props {
+                        let Value::Mapping(prop_map) = prop_m else {
+                            continue;
+                        };
+                        let Some(Value::String(typ)) = prop_map.get("type") else {
+                            continue;
+                        };
+                        if typ != "object" {
+                            continue;
+                        }
+                        Self::insert_into_map(prop_map, "x-rust-is-owned-data", Value::Bool(true));
+                    }
+                }
+            }
+        }
+        Ok(self)
     }
 
     pub fn schema_generic_parameter<const N: usize>(

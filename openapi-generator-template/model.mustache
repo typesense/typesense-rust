@@ -127,9 +127,9 @@ impl Default for {{classname}} {
 #[derive(bon::Builder)]
 #[builder(on(Cow<'_, str>, into))]
 #[builder(on(String, into))]
-{{/vendorExtensions.x-rust-builder}}
-{{#vendorExtensions.x-rust-has-byte-array}}#[serde_as]
-{{/vendorExtensions.x-rust-has-byte-array}}{{#oneOf.isEmpty}}#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+{{/vendorExtensions.x-rust-builder}}{{!
+}}{{#vendorExtensions.x-rust-has-byte-array}}#[serde_as]{{/vendorExtensions.x-rust-has-byte-array}}{{!
+}}{{#oneOf.isEmpty}}#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct {{{classname}}}<'a{{#vendorExtensions.x-rust-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-generic-parameter}}> {
 {{#vars}}
     {{#description}}
@@ -153,7 +153,7 @@ pub struct {{{classname}}}<'a{{#vendorExtensions.x-rust-generic-parameter}}, {{{
     ### ByteArray
     }}{{^isModel}}{{#isByteArray}}Vec<u8>{{/isByteArray}}{{!
     ### String
-    }}{{^isByteArray}}{{#isString}}Cow<'a, str>{{/isString}}{{!
+    }}{{^isByteArray}}{{#isString}}{{#model}}{{#vendorExtensions.x-rust-is-owned-data}}String{{/vendorExtensions.x-rust-is-owned-data}}{{^vendorExtensions.x-rust-is-owned-data}}Cow<'a, str>{{/vendorExtensions.x-rust-is-owned-data}}{{/model}}{{/isString}}{{!
     ### Arrays
     }}{{^isString}}{{#isArray}}Vec<{{#items}}{{!
     ### Array Models
@@ -186,7 +186,7 @@ impl<'a{{#vendorExtensions.x-rust-generic-parameter}}, {{{.}}}{{/vendorExtension
     }}{{^vendorExtensions.x-rust-type}}{{#isNullable}}Option<{{/isNullable}}{{!
     }}{{#isEnum}}{{#isArray}}{{#uniqueItems}}std::collections::HashSet<{{/uniqueItems}}{{^uniqueItems}}Vec<{{/uniqueItems}}{{/isArray}}{{{enumName}}}{{#isArray}}>{{/isArray}}{{/isEnum}}{{!
     }}{{^isEnum}}{{#isByteArray}}Vec<u8>{{/isByteArray}}{{!
-    }}{{^isByteArray}}{{#isString}}Cow<'a, str>{{/isString}}{{!
+    }}{{^isByteArray}}{{#isString}}{{#model}}{{#vendorExtensions.x-rust-is-owned-data}}String{{/vendorExtensions.x-rust-is-owned-data}}{{^vendorExtensions.x-rust-is-owned-data}}Cow<'a, str>{{/vendorExtensions.x-rust-is-owned-data}}{{/model}}{{/isString}}{{!
     }}{{^isString}}{{#isArray}}Vec<{{#items}}{{!
     }}{{#isModel}}{{{dataType}}}<'a>{{/isModel}}{{!
     }}{{^isModel}}{{{dataType}}}{{/isModel}}{{/items}}>{{/isArray}}{{!
