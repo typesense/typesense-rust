@@ -23,8 +23,7 @@ impl<'a> Preset<'a> {
     /// Retrieves the details of a preset, given its Id.
     pub async fn retrieve(
         &self,
-    ) -> Result<models::PresetSchema<'static>, Error<presets_api::RetrievePresetError<'static>>>
-    {
+    ) -> Result<models::PresetSchema<'static>, Error<presets_api::RetrievePresetError>> {
         let params = presets_api::RetrievePresetParams {
             preset_id: self.preset_id.into(),
             _phantom: core::marker::PhantomData,
@@ -35,8 +34,7 @@ impl<'a> Preset<'a> {
     /// Permanently deletes a preset, given its Id.
     pub async fn delete(
         &self,
-    ) -> Result<models::PresetDeleteSchema<'static>, Error<presets_api::DeletePresetError<'static>>>
-    {
+    ) -> Result<models::PresetDeleteSchema<'static>, Error<presets_api::DeletePresetError>> {
         let params = presets_api::DeletePresetParams {
             preset_id: self.preset_id.into(),
             _phantom: core::marker::PhantomData,

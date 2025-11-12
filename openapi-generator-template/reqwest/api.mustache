@@ -61,16 +61,16 @@ pub struct {{{operationIdCamelCase}}}Params<'p{{!
 /// struct for typed successes of method [`{{operationId}}`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum {{{operationIdCamelCase}}}Success<'a> {
+pub enum {{{operationIdCamelCase}}}Success {
     {{#responses}}
     {{#is2xx}}
-    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}<'a>{{/isEnum}}),
+    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}<'static>{{/isEnum}}),
     {{/is2xx}}
     {{#is3xx}}
-    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}<'a>{{/isEnum}}),
+    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}<'static>{{/isEnum}}),
     {{/is3xx}}
     {{/responses}}
-    UnknownValue(super::Unknown<'a>),
+    UnknownValue(serde_json::Value),
 }
 
 {{/operation}}
@@ -81,19 +81,19 @@ pub enum {{{operationIdCamelCase}}}Success<'a> {
 /// struct for typed errors of method [`{{operationId}}`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum {{{operationIdCamelCase}}}Error<'a> {
+pub enum {{{operationIdCamelCase}}}Error {
     {{#responses}}
     {{#is4xx}}
-    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}<'a>{{/isEnum}}),
+    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}<'static>{{/isEnum}}),
     {{/is4xx}}
     {{#is5xx}}
-    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}<'a>{{/isEnum}}),
+    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}<'static>{{/isEnum}}),
     {{/is5xx}}
     {{#isDefault}}
-    DefaultResponse({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}<'a>{{/isEnum}}),
+    DefaultResponse({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}<'static>{{/isEnum}}),
     {{/isDefault}}
     {{/responses}}
-    UnknownValue(super::Unknown<'a>),
+    UnknownValue(serde_json::Value),
 }
 
 {{/operation}}
@@ -118,7 +118,7 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}{{#vendorExtensi
 }}{{^returnType}}(){{/returnType}}{{!
 }}{{#isArray}}Vec<{{#returnProperty.items}}{{{dataType}}}{{#isModel}}<'static>{{/isModel}}{{/returnProperty.items}}>{{/isArray}}{{!
 }}{{^isArray}}{{#returnProperty}}{{{dataType}}}{{#isModel}}<'static>{{/isModel}}{{/returnProperty}}{{!
-}}{{/isArray}}{{/supportMultipleResponses}}{{/isResponseFile}}{{/vendorExtensions.x-rust-return-type}}, Error<{{{operationIdCamelCase}}}Error<'static>>> {
+}}{{/isArray}}{{/supportMultipleResponses}}{{/isResponseFile}}{{/vendorExtensions.x-rust-return-type}}, Error<{{{operationIdCamelCase}}}Error>> {
 {{/vendorExtensions.x-group-parameters}}
     let uri_str = format!("{}{{{path}}}", configuration.base_path{{#pathParams}}, {{{baseName}}}={{#isString}}crate::apis::urlencode(&{{/isString}}{{{vendorExtensions.x-rust-param-identifier}}}{{^required}}.unwrap(){{/required}}{{#required}}{{#isNullable}}.unwrap(){{/isNullable}}{{/required}}{{#isArray}}.join(",").as_ref(){{/isArray}}{{^isString}}{{^isUuid}}{{^isPrimitiveType}}{{^isContainer}}.to_string(){{/isContainer}}{{/isPrimitiveType}}{{/isUuid}}{{/isString}}{{#isString}}){{/isString}}{{/pathParams}});
     let mut req_builder = configuration.client.request(reqwest::Method::{{{httpMethod}}}, &uri_str);

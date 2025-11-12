@@ -83,71 +83,71 @@ pub struct UpsertCurationSetItemParams<'p> {
 /// struct for typed errors of method [`delete_curation_set`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteCurationSetError<'a> {
-    Status404(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum DeleteCurationSetError {
+    Status404(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`delete_curation_set_item`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteCurationSetItemError<'a> {
-    Status404(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum DeleteCurationSetItemError {
+    Status404(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`retrieve_curation_set`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RetrieveCurationSetError<'a> {
-    Status404(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum RetrieveCurationSetError {
+    Status404(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`retrieve_curation_set_item`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RetrieveCurationSetItemError<'a> {
-    Status404(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum RetrieveCurationSetItemError {
+    Status404(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`retrieve_curation_set_items`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RetrieveCurationSetItemsError<'a> {
-    Status404(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum RetrieveCurationSetItemsError {
+    Status404(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`retrieve_curation_sets`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RetrieveCurationSetsError<'a> {
-    UnknownValue(super::Unknown<'a>),
+pub enum RetrieveCurationSetsError {
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`upsert_curation_set`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpsertCurationSetError<'a> {
-    Status400(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum UpsertCurationSetError {
+    Status400(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`upsert_curation_set_item`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpsertCurationSetItemError<'a> {
-    Status400(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum UpsertCurationSetItemError {
+    Status400(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// Delete a specific curation set by its name
 pub async fn delete_curation_set(
     configuration: &configuration::Configuration,
     params: &DeleteCurationSetParams<'_>,
-) -> Result<models::CurationSetDeleteSchema<'static>, Error<DeleteCurationSetError<'static>>> {
+) -> Result<models::CurationSetDeleteSchema<'static>, Error<DeleteCurationSetError>> {
     let uri_str = format!(
         "{}/curation_sets/{curationSetName}",
         configuration.base_path,
@@ -210,7 +210,7 @@ pub async fn delete_curation_set(
 pub async fn delete_curation_set_item(
     configuration: &configuration::Configuration,
     params: &DeleteCurationSetItemParams<'_>,
-) -> Result<models::CurationItemDeleteSchema<'static>, Error<DeleteCurationSetItemError<'static>>> {
+) -> Result<models::CurationItemDeleteSchema<'static>, Error<DeleteCurationSetItemError>> {
     let uri_str = format!(
         "{}/curation_sets/{curationSetName}/items/{itemId}",
         configuration.base_path,
@@ -274,7 +274,7 @@ pub async fn delete_curation_set_item(
 pub async fn retrieve_curation_set(
     configuration: &configuration::Configuration,
     params: &RetrieveCurationSetParams<'_>,
-) -> Result<models::CurationSetCreateSchema<'static>, Error<RetrieveCurationSetError<'static>>> {
+) -> Result<models::CurationSetCreateSchema<'static>, Error<RetrieveCurationSetError>> {
     let uri_str = format!(
         "{}/curation_sets/{curationSetName}",
         configuration.base_path,
@@ -335,7 +335,7 @@ pub async fn retrieve_curation_set(
 pub async fn retrieve_curation_set_item(
     configuration: &configuration::Configuration,
     params: &RetrieveCurationSetItemParams<'_>,
-) -> Result<models::CurationItemSchema<'static>, Error<RetrieveCurationSetItemError<'static>>> {
+) -> Result<models::CurationItemSchema<'static>, Error<RetrieveCurationSetItemError>> {
     let uri_str = format!(
         "{}/curation_sets/{curationSetName}/items/{itemId}",
         configuration.base_path,
@@ -397,8 +397,7 @@ pub async fn retrieve_curation_set_item(
 pub async fn retrieve_curation_set_items(
     configuration: &configuration::Configuration,
     params: &RetrieveCurationSetItemsParams<'_>,
-) -> Result<Vec<models::CurationItemSchema<'static>>, Error<RetrieveCurationSetItemsError<'static>>>
-{
+) -> Result<Vec<models::CurationItemSchema<'static>>, Error<RetrieveCurationSetItemsError>> {
     let uri_str = format!(
         "{}/curation_sets/{curationSetName}/items",
         configuration.base_path,
@@ -458,7 +457,7 @@ pub async fn retrieve_curation_set_items(
 /// Retrieve all curation sets
 pub async fn retrieve_curation_sets(
     configuration: &configuration::Configuration,
-) -> Result<Vec<models::CurationSetSchema<'static>>, Error<RetrieveCurationSetsError<'static>>> {
+) -> Result<Vec<models::CurationSetSchema<'static>>, Error<RetrieveCurationSetsError>> {
     let uri_str = format!("{}/curation_sets", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -515,7 +514,7 @@ pub async fn retrieve_curation_sets(
 pub async fn upsert_curation_set(
     configuration: &configuration::Configuration,
     params: &UpsertCurationSetParams<'_>,
-) -> Result<models::CurationSetSchema<'static>, Error<UpsertCurationSetError<'static>>> {
+) -> Result<models::CurationSetSchema<'static>, Error<UpsertCurationSetError>> {
     let uri_str = format!(
         "{}/curation_sets/{curationSetName}",
         configuration.base_path,
@@ -577,7 +576,7 @@ pub async fn upsert_curation_set(
 pub async fn upsert_curation_set_item(
     configuration: &configuration::Configuration,
     params: &UpsertCurationSetItemParams<'_>,
-) -> Result<models::CurationItemSchema<'static>, Error<UpsertCurationSetItemError<'static>>> {
+) -> Result<models::CurationItemSchema<'static>, Error<UpsertCurationSetItemError>> {
     let uri_str = format!(
         "{}/curation_sets/{curationSetName}/items/{itemId}",
         configuration.base_path,

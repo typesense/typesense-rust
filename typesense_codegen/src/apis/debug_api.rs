@@ -17,14 +17,14 @@ use serde::{Deserialize, Serialize, de::Error as _};
 /// struct for typed errors of method [`debug`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DebugError<'a> {
-    UnknownValue(super::Unknown<'a>),
+pub enum DebugError {
+    UnknownValue(serde_json::Value),
 }
 
 /// Print debugging information
 pub async fn debug(
     configuration: &configuration::Configuration,
-) -> Result<models::Debug200Response<'static>, Error<DebugError<'static>>> {
+) -> Result<models::Debug200Response<'static>, Error<DebugError>> {
     let uri_str = format!("{}/debug", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 

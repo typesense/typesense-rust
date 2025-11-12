@@ -28,7 +28,7 @@ impl<'a> Models<'a> {
         schema: models::ConversationModelCreateSchema<'_>,
     ) -> Result<
         models::ConversationModelSchema<'static>,
-        Error<conversations_api::CreateConversationModelError<'static>>,
+        Error<conversations_api::CreateConversationModelError>,
     > {
         let params = conversations_api::CreateConversationModelParams {
             conversation_model_create_schema: schema,
@@ -42,7 +42,7 @@ impl<'a> Models<'a> {
         &self,
     ) -> Result<
         Vec<models::ConversationModelSchema<'static>>,
-        Error<conversations_api::RetrieveAllConversationModelsError<'static>>,
+        Error<conversations_api::RetrieveAllConversationModelsError>,
     > {
         execute_wrapper!(self, conversations_api::retrieve_all_conversation_models)
     }

@@ -36,7 +36,7 @@ impl<'c> Keys<'c> {
     pub async fn create(
         &self,
         schema: models::ApiKeySchema<'_>,
-    ) -> Result<models::ApiKey<'static>, Error<keys_api::CreateKeyError<'static>>> {
+    ) -> Result<models::ApiKey<'static>, Error<keys_api::CreateKeyError>> {
         let params = keys_api::CreateKeyParams {
             api_key_schema: Some(schema),
             _phantom: core::marker::PhantomData,
@@ -48,7 +48,7 @@ impl<'c> Keys<'c> {
     #[inline]
     pub async fn retrieve(
         &self,
-    ) -> Result<models::ApiKeysResponse<'static>, Error<keys_api::GetKeysError<'static>>> {
+    ) -> Result<models::ApiKeysResponse<'static>, Error<keys_api::GetKeysError>> {
         execute_wrapper!(self, keys_api::get_keys)
     }
 

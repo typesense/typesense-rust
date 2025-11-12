@@ -55,7 +55,7 @@ where
         document: serde_json::Value,
         action: &str,
         params: Option<DocumentIndexParameters>,
-    ) -> Result<serde_json::Value, Error<documents_api::IndexDocumentError<'static>>> {
+    ) -> Result<serde_json::Value, Error<documents_api::IndexDocumentError>> {
         let params = documents_api::IndexDocumentParams {
             collection_name: self.collection_name.into(),
             body: document,
@@ -79,7 +79,7 @@ where
         &self,
         documents_jsonl: impl Into<Cow<'_, str>>,
         params: ImportDocumentsParameters<'_>,
-    ) -> Result<String, Error<documents_api::ImportDocumentsError<'static>>> {
+    ) -> Result<String, Error<documents_api::ImportDocumentsError>> {
         let params = documents_api::ImportDocumentsParams {
             body: documents_jsonl.into(),
             collection_name: self.collection_name.into(),
@@ -102,7 +102,7 @@ where
     pub async fn export_jsonl(
         &self,
         params: ExportDocumentsParameters<'_>,
-    ) -> Result<String, Error<documents_api::ExportDocumentsError<'static>>> {
+    ) -> Result<String, Error<documents_api::ExportDocumentsError>> {
         let params = documents_api::ExportDocumentsParams {
             collection_name: self.collection_name.into(),
             exclude_fields: params.exclude_fields,
@@ -121,8 +121,8 @@ where
         &self,
         params: DeleteDocumentsParameters<'_>,
     ) -> Result<
-        raw_models::DeleteDocuments200Response<'_>,
-        Error<documents_api::DeleteDocumentsError<'static>>,
+        raw_models::DeleteDocuments200Response<'static>,
+        Error<documents_api::DeleteDocumentsError>,
     > {
         let params = documents_api::DeleteDocumentsParams {
             collection_name: self.collection_name.into(),
@@ -143,8 +143,7 @@ where
     pub async fn search(
         &self,
         params: raw_models::SearchParameters<'_>,
-    ) -> Result<SearchResult<'static, D>, Error<documents_api::SearchCollectionError<'static>>>
-    {
+    ) -> Result<SearchResult<'static, D>, Error<documents_api::SearchCollectionError>> {
         let search_params = documents_api::SearchCollectionParams {
             collection_name: self.collection_name.into(),
 
@@ -243,7 +242,7 @@ where
         &self,
         document: &D,
         params: Option<DocumentIndexParameters>,
-    ) -> Result<D, Error<documents_api::IndexDocumentError<'static>>> {
+    ) -> Result<D, Error<documents_api::IndexDocumentError>> {
         let doc_value = serde_json::to_value(document)?;
         let result_value = self.index(doc_value, "create", params).await?;
         serde_json::from_value(result_value).map_err(Error::from)
@@ -261,7 +260,7 @@ where
         &self,
         document: &D,
         params: Option<DocumentIndexParameters>,
-    ) -> Result<D, Error<documents_api::IndexDocumentError<'static>>> {
+    ) -> Result<D, Error<documents_api::IndexDocumentError>> {
         let doc_value = serde_json::to_value(document)?;
         let result_value = self.index(doc_value, "upsert", params).await?;
         serde_json::from_value(result_value).map_err(Error::from)
@@ -278,7 +277,7 @@ where
         params: UpdateDocumentsParameters<'_>,
     ) -> Result<
         raw_models::UpdateDocuments200Response<'static>,
-        Error<documents_api::UpdateDocumentsError<'static>>,
+        Error<documents_api::UpdateDocumentsError>,
     > {
         let params = documents_api::UpdateDocumentsParams {
             collection_name: self.collection_name.into(),

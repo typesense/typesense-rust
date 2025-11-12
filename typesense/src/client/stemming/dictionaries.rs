@@ -34,7 +34,7 @@ impl<'a> Dictionaries<'a> {
         &self,
         dictionary_id: impl Into<Cow<'_, str>>,
         dictionary_jsonl: impl Into<Cow<'_, str>>,
-    ) -> Result<String, Error<stemming_api::ImportStemmingDictionaryError<'static>>> {
+    ) -> Result<String, Error<stemming_api::ImportStemmingDictionaryError>> {
         let params = stemming_api::ImportStemmingDictionaryParams {
             id: dictionary_id.into(),
             body: dictionary_jsonl.into(),
@@ -48,7 +48,7 @@ impl<'a> Dictionaries<'a> {
         &self,
     ) -> Result<
         models::ListStemmingDictionaries200Response<'static>,
-        Error<stemming_api::ListStemmingDictionariesError<'static>>,
+        Error<stemming_api::ListStemmingDictionariesError>,
     > {
         execute_wrapper!(self, stemming_api::list_stemming_dictionaries)
     }

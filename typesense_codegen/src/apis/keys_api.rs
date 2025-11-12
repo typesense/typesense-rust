@@ -41,41 +41,41 @@ pub struct GetKeyParams<'p> {
 /// struct for typed errors of method [`create_key`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateKeyError<'a> {
-    Status400(models::ApiResponse<'a>),
-    Status409(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum CreateKeyError {
+    Status400(models::ApiResponse<'static>),
+    Status409(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`delete_key`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteKeyError<'a> {
-    Status400(models::ApiResponse<'a>),
-    Status404(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum DeleteKeyError {
+    Status400(models::ApiResponse<'static>),
+    Status404(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`get_key`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetKeyError<'a> {
-    Status404(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum GetKeyError {
+    Status404(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`get_keys`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetKeysError<'a> {
-    UnknownValue(super::Unknown<'a>),
+pub enum GetKeysError {
+    UnknownValue(serde_json::Value),
 }
 
 /// Create an API Key with fine-grain access control. You can restrict access on both a per-collection and per-action level. The generated key is returned only during creation. You want to store this key carefully in a secure place.
 pub async fn create_key(
     configuration: &configuration::Configuration,
     params: &CreateKeyParams<'_>,
-) -> Result<models::ApiKey<'static>, Error<CreateKeyError<'static>>> {
+) -> Result<models::ApiKey<'static>, Error<CreateKeyError>> {
     let uri_str = format!("{}/keys", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -134,7 +134,7 @@ pub async fn create_key(
 pub async fn delete_key(
     configuration: &configuration::Configuration,
     params: &DeleteKeyParams<'_>,
-) -> Result<models::ApiKeyDeleteResponse<'static>, Error<DeleteKeyError<'static>>> {
+) -> Result<models::ApiKeyDeleteResponse<'static>, Error<DeleteKeyError>> {
     let uri_str = format!(
         "{}/keys/{keyId}",
         configuration.base_path,
@@ -197,7 +197,7 @@ pub async fn delete_key(
 pub async fn get_key(
     configuration: &configuration::Configuration,
     params: &GetKeyParams<'_>,
-) -> Result<models::ApiKey<'static>, Error<GetKeyError<'static>>> {
+) -> Result<models::ApiKey<'static>, Error<GetKeyError>> {
     let uri_str = format!(
         "{}/keys/{keyId}",
         configuration.base_path,
@@ -256,7 +256,7 @@ pub async fn get_key(
 
 pub async fn get_keys(
     configuration: &configuration::Configuration,
-) -> Result<models::ApiKeysResponse<'static>, Error<GetKeysError<'static>>> {
+) -> Result<models::ApiKeysResponse<'static>, Error<GetKeysError>> {
     let uri_str = format!("{}/keys", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 

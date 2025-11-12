@@ -25,7 +25,7 @@ impl<'a> Model<'a> {
         &self,
     ) -> Result<
         models::ConversationModelSchema<'static>,
-        Error<conversations_api::RetrieveConversationModelError<'static>>,
+        Error<conversations_api::RetrieveConversationModelError>,
     > {
         let params = conversations_api::RetrieveConversationModelParams {
             model_id: self.model_id.into(),
@@ -43,7 +43,7 @@ impl<'a> Model<'a> {
         schema: models::ConversationModelUpdateSchema<'_>,
     ) -> Result<
         models::ConversationModelSchema<'static>,
-        Error<conversations_api::UpdateConversationModelError<'static>>,
+        Error<conversations_api::UpdateConversationModelError>,
     > {
         let params = conversations_api::UpdateConversationModelParams {
             model_id: self.model_id.into(),
@@ -58,7 +58,7 @@ impl<'a> Model<'a> {
         &self,
     ) -> Result<
         models::ConversationModelSchema<'static>,
-        Error<conversations_api::DeleteConversationModelError<'static>>,
+        Error<conversations_api::DeleteConversationModelError>,
     > {
         let params = conversations_api::DeleteConversationModelParams {
             model_id: self.model_id.into(),

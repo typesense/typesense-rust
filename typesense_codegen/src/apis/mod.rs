@@ -1,13 +1,5 @@
 use ::std::{error, fmt};
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-#[serde(transparent)]
-pub struct Unknown<'a> {
-    pub value: serde_json::Value,
-    #[serde(skip)]
-    pub _phantom: core::marker::PhantomData<&'a ()>,
-}
-
 #[derive(Debug, Clone)]
 pub struct ResponseContent<T> {
     pub status: reqwest::StatusCode,

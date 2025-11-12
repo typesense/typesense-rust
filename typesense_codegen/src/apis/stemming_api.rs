@@ -35,31 +35,31 @@ pub struct ImportStemmingDictionaryParams<'p> {
 /// struct for typed errors of method [`get_stemming_dictionary`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetStemmingDictionaryError<'a> {
-    Status404(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum GetStemmingDictionaryError {
+    Status404(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`import_stemming_dictionary`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ImportStemmingDictionaryError<'a> {
-    Status400(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum ImportStemmingDictionaryError {
+    Status400(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`list_stemming_dictionaries`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ListStemmingDictionariesError<'a> {
-    UnknownValue(super::Unknown<'a>),
+pub enum ListStemmingDictionariesError {
+    UnknownValue(serde_json::Value),
 }
 
 /// Fetch details of a specific stemming dictionary.
 pub async fn get_stemming_dictionary(
     configuration: &configuration::Configuration,
     params: &GetStemmingDictionaryParams<'_>,
-) -> Result<models::StemmingDictionary<'static>, Error<GetStemmingDictionaryError<'static>>> {
+) -> Result<models::StemmingDictionary<'static>, Error<GetStemmingDictionaryError>> {
     let uri_str = format!(
         "{}/stemming/dictionaries/{dictionaryId}",
         configuration.base_path,
@@ -120,7 +120,7 @@ pub async fn get_stemming_dictionary(
 pub async fn import_stemming_dictionary(
     configuration: &configuration::Configuration,
     params: &ImportStemmingDictionaryParams<'_>,
-) -> Result<String, Error<ImportStemmingDictionaryError<'static>>> {
+) -> Result<String, Error<ImportStemmingDictionaryError>> {
     let uri_str = format!("{}/stemming/dictionaries/import", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -179,7 +179,7 @@ pub async fn list_stemming_dictionaries(
     configuration: &configuration::Configuration,
 ) -> Result<
     models::ListStemmingDictionaries200Response<'static>,
-    Error<ListStemmingDictionariesError<'static>>,
+    Error<ListStemmingDictionariesError>,
 > {
     let uri_str = format!("{}/stemming/dictionaries", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);

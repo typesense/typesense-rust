@@ -116,7 +116,7 @@ impl<'c> MultiSearch<'c> {
         common_search_params: raw_models::MultiSearchParameters<'_>,
     ) -> Result<
         raw_models::MultiSearchResult<'static, serde_json::Value>,
-        Error<documents_api::MultiSearchError<'static>>,
+        Error<documents_api::MultiSearchError>,
     > {
         let request_body = raw_models::MultiSearchSearchesParameter {
             searches: search_requests.searches,
@@ -253,7 +253,7 @@ impl<'c> MultiSearch<'c> {
         &self,
         search_requests: MultiSearchBody<'_>,
         common_search_params: raw_models::MultiSearchParameters<'_>,
-    ) -> Result<SearchResult<'static, D>, Error<documents_api::MultiSearchError<'static>>> {
+    ) -> Result<SearchResult<'static, D>, Error<documents_api::MultiSearchError>> {
         // Explicitly set `union: true` for the request body
         let request_body = raw_models::MultiSearchSearchesParameter {
             union: Some(true),

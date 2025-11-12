@@ -48,7 +48,7 @@ where
     ///
     /// # Returns
     /// A `Result` containing the strongly-typed document `D` if successful.
-    pub async fn retrieve(&self) -> Result<D, Error<documents_api::GetDocumentError<'static>>> {
+    pub async fn retrieve(&self) -> Result<D, Error<documents_api::GetDocumentError>> {
         let params = documents_api::GetDocumentParams {
             collection_name: self.collection_name.into(),
             document_id: self.document_id.as_ref().into(),
@@ -66,7 +66,7 @@ where
     ///
     /// # Returns
     /// A `Result` containing the deleted document deserialized into `D`.
-    pub async fn delete(&self) -> Result<D, Error<documents_api::DeleteDocumentError<'static>>> {
+    pub async fn delete(&self) -> Result<D, Error<documents_api::DeleteDocumentError>> {
         let params = documents_api::DeleteDocumentParams {
             collection_name: self.collection_name.into(),
             document_id: self.document_id.as_ref().into(),
@@ -130,7 +130,7 @@ where
         &self,
         partial_document: &D::Partial,
         params: Option<crate::models::DocumentIndexParameters>,
-    ) -> Result<D, Error<documents_api::UpdateDocumentError<'static>>> {
+    ) -> Result<D, Error<documents_api::UpdateDocumentError>> {
         let params = documents_api::UpdateDocumentParams {
             collection_name: self.collection_name.into(),
             document_id: self.document_id.as_ref().into(),

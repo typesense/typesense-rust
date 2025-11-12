@@ -30,7 +30,7 @@ impl<'a> Operations<'a> {
     /// Docs: <https://typesense.org/docs/latest/api/cluster-operations.html#debug>
     pub async fn debug(
         &self,
-    ) -> Result<models::Debug200Response<'static>, Error<debug_api::DebugError<'static>>> {
+    ) -> Result<models::Debug200Response<'static>, Error<debug_api::DebugError>> {
         execute_wrapper!(self, debug_api::debug)
     }
 
@@ -40,7 +40,7 @@ impl<'a> Operations<'a> {
     /// Docs: <https://typesense.org/docs/latest/api/cluster-operations.html#health>
     pub async fn health(
         &self,
-    ) -> Result<models::HealthStatus<'static>, Error<health_api::HealthError<'static>>> {
+    ) -> Result<models::HealthStatus<'static>, Error<health_api::HealthError>> {
         execute_wrapper!(self, health_api::health)
     }
 
@@ -74,7 +74,7 @@ impl<'a> Operations<'a> {
     /// Docs: <https://typesense.org/docs/latest/api/cluster-operations.html#cluster-metrics>
     pub async fn retrieve_metrics(
         &self,
-    ) -> Result<serde_json::Value, Error<operations_api::RetrieveMetricsError<'static>>> {
+    ) -> Result<serde_json::Value, Error<operations_api::RetrieveMetricsError>> {
         execute_wrapper!(self, operations_api::retrieve_metrics)
     }
 
@@ -99,10 +99,8 @@ impl<'a> Operations<'a> {
     /// Docs: <https://typesense.org/docs/latest/api/cluster-operations.html#api-stats>
     pub async fn retrieve_api_stats(
         &self,
-    ) -> Result<
-        models::ApiStatsResponse<'static>,
-        Error<operations_api::RetrieveApiStatsError<'static>>,
-    > {
+    ) -> Result<models::ApiStatsResponse<'static>, Error<operations_api::RetrieveApiStatsError>>
+    {
         execute_wrapper!(self, operations_api::retrieve_api_stats)
     }
 
@@ -113,8 +111,7 @@ impl<'a> Operations<'a> {
     pub async fn take_snapshot(
         &self,
         params: operations_api::TakeSnapshotParams<'_>,
-    ) -> Result<models::SuccessStatus<'static>, Error<operations_api::TakeSnapshotError<'static>>>
-    {
+    ) -> Result<models::SuccessStatus<'static>, Error<operations_api::TakeSnapshotError>> {
         execute_wrapper!(self, operations_api::take_snapshot, params)
     }
 
@@ -124,7 +121,7 @@ impl<'a> Operations<'a> {
     /// Docs: <https://typesense.org/docs/latest/api/cluster-operations.html#re-elect-leader>
     pub async fn vote(
         &self,
-    ) -> Result<models::SuccessStatus<'static>, Error<operations_api::VoteError<'static>>> {
+    ) -> Result<models::SuccessStatus<'static>, Error<operations_api::VoteError>> {
         execute_wrapper!(self, operations_api::vote)
     }
 
@@ -135,7 +132,7 @@ impl<'a> Operations<'a> {
         &self,
     ) -> Result<
         Option<Vec<models::SchemaChangeStatus<'static>>>,
-        Error<operations_api::GetSchemaChangesError<'static>>,
+        Error<operations_api::GetSchemaChangesError>,
     > {
         execute_wrapper!(self, operations_api::get_schema_changes)
     }
@@ -146,8 +143,7 @@ impl<'a> Operations<'a> {
     /// Docs: <https://typesense.org/docs/latest/api/cluster-operations.html#compacting-the-on-disk-database>
     pub async fn compact_db(
         &self,
-    ) -> Result<models::SuccessStatus<'static>, Error<operations_api::CompactDbError<'static>>>
-    {
+    ) -> Result<models::SuccessStatus<'static>, Error<operations_api::CompactDbError>> {
         execute_wrapper!(self, operations_api::compact_db)
     }
 
@@ -156,8 +152,7 @@ impl<'a> Operations<'a> {
     /// Docs: <https://typesense.org/docs/latest/api/cluster-operations.html#clear-cache>
     pub async fn clear_cache(
         &self,
-    ) -> Result<models::SuccessStatus<'static>, Error<operations_api::ClearCacheError<'static>>>
-    {
+    ) -> Result<models::SuccessStatus<'static>, Error<operations_api::ClearCacheError>> {
         execute_wrapper!(self, operations_api::clear_cache)
     }
 
@@ -168,10 +163,8 @@ impl<'a> Operations<'a> {
     pub async fn toggle_slow_request_log(
         &self,
         slow_requests_threshold_ms: i32,
-    ) -> Result<
-        models::SuccessStatus<'static>,
-        Error<operations_api::ToggleSlowRequestLogError<'static>>,
-    > {
+    ) -> Result<models::SuccessStatus<'static>, Error<operations_api::ToggleSlowRequestLogError>>
+    {
         let params = operations_api::ToggleSlowRequestLogParams {
             toggle_slow_request_log_request: Some(models::ToggleSlowRequestLogRequest {
                 log_slow_requests_time_ms: slow_requests_threshold_ms,

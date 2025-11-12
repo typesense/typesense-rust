@@ -265,91 +265,91 @@ pub struct UpdateDocumentsParams<'p, B> {
 /// struct for typed errors of method [`delete_document`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteDocumentError<'a> {
-    Status404(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum DeleteDocumentError {
+    Status404(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`delete_documents`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteDocumentsError<'a> {
-    Status404(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum DeleteDocumentsError {
+    Status404(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`export_documents`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ExportDocumentsError<'a> {
-    Status404(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum ExportDocumentsError {
+    Status404(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`get_document`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum GetDocumentError<'a> {
-    Status404(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum GetDocumentError {
+    Status404(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`import_documents`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ImportDocumentsError<'a> {
-    Status400(models::ApiResponse<'a>),
-    Status404(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum ImportDocumentsError {
+    Status400(models::ApiResponse<'static>),
+    Status404(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`index_document`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum IndexDocumentError<'a> {
-    Status404(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum IndexDocumentError {
+    Status404(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`multi_search`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum MultiSearchError<'a> {
-    Status400(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum MultiSearchError {
+    Status400(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`search_collection`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum SearchCollectionError<'a> {
-    Status400(models::ApiResponse<'a>),
-    Status404(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum SearchCollectionError {
+    Status400(models::ApiResponse<'static>),
+    Status404(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`update_document`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateDocumentError<'a> {
-    Status404(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum UpdateDocumentError {
+    Status404(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`update_documents`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateDocumentsError<'a> {
-    Status400(models::ApiResponse<'a>),
-    Status404(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum UpdateDocumentsError {
+    Status400(models::ApiResponse<'static>),
+    Status404(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// Delete an individual document from a collection by using its ID.
 pub async fn delete_document(
     configuration: &configuration::Configuration,
     params: &DeleteDocumentParams<'_>,
-) -> Result<serde_json::Value, Error<DeleteDocumentError<'static>>> {
+) -> Result<serde_json::Value, Error<DeleteDocumentError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}/documents/{documentId}",
         configuration.base_path,
@@ -413,7 +413,7 @@ pub async fn delete_document(
 pub async fn delete_documents(
     configuration: &configuration::Configuration,
     params: &DeleteDocumentsParams<'_>,
-) -> Result<models::DeleteDocuments200Response<'static>, Error<DeleteDocumentsError<'static>>> {
+) -> Result<models::DeleteDocuments200Response<'static>, Error<DeleteDocumentsError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}/documents",
         configuration.base_path,
@@ -488,7 +488,7 @@ pub async fn delete_documents(
 pub async fn export_documents(
     configuration: &configuration::Configuration,
     params: &ExportDocumentsParams<'_>,
-) -> Result<String, Error<ExportDocumentsError<'static>>> {
+) -> Result<String, Error<ExportDocumentsError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}/documents/export",
         configuration.base_path,
@@ -553,7 +553,7 @@ pub async fn export_documents(
 pub async fn get_document(
     configuration: &configuration::Configuration,
     params: &GetDocumentParams<'_>,
-) -> Result<serde_json::Value, Error<GetDocumentError<'static>>> {
+) -> Result<serde_json::Value, Error<GetDocumentError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}/documents/{documentId}",
         configuration.base_path,
@@ -615,7 +615,7 @@ pub async fn get_document(
 pub async fn import_documents(
     configuration: &configuration::Configuration,
     params: &ImportDocumentsParams<'_>,
-) -> Result<String, Error<ImportDocumentsError<'static>>> {
+) -> Result<String, Error<ImportDocumentsError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}/documents/import",
         configuration.base_path,
@@ -695,7 +695,7 @@ pub async fn import_documents(
 pub async fn index_document(
     configuration: &configuration::Configuration,
     params: &IndexDocumentParams<'_>,
-) -> Result<serde_json::Value, Error<IndexDocumentError<'static>>> {
+) -> Result<serde_json::Value, Error<IndexDocumentError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}/documents",
         configuration.base_path,
@@ -765,7 +765,7 @@ pub async fn index_document(
 pub async fn multi_search(
     configuration: &configuration::Configuration,
     params: &MultiSearchParams<'_>,
-) -> Result<serde_json::Value, Error<MultiSearchError<'static>>> {
+) -> Result<serde_json::Value, Error<MultiSearchError>> {
     let uri_str = format!("{}/multi_search", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -1027,7 +1027,7 @@ pub async fn multi_search(
 pub async fn search_collection<D: for<'de> serde::Deserialize<'de> + Serialize>(
     configuration: &configuration::Configuration,
     params: &SearchCollectionParams<'_>,
-) -> Result<models::SearchResult<'static, D>, Error<SearchCollectionError<'static>>> {
+) -> Result<models::SearchResult<'static, D>, Error<SearchCollectionError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}/documents/search",
         configuration.base_path,
@@ -1311,7 +1311,7 @@ pub async fn search_collection<D: for<'de> serde::Deserialize<'de> + Serialize>(
 pub async fn update_document<B: Serialize>(
     configuration: &configuration::Configuration,
     params: &UpdateDocumentParams<'_, B>,
-) -> Result<serde_json::Value, Error<UpdateDocumentError<'static>>> {
+) -> Result<serde_json::Value, Error<UpdateDocumentError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}/documents/{documentId}",
         configuration.base_path,
@@ -1379,7 +1379,7 @@ pub async fn update_document<B: Serialize>(
 pub async fn update_documents<B: Serialize>(
     configuration: &configuration::Configuration,
     params: &UpdateDocumentsParams<'_, B>,
-) -> Result<models::UpdateDocuments200Response<'static>, Error<UpdateDocumentsError<'static>>> {
+) -> Result<models::UpdateDocuments200Response<'static>, Error<UpdateDocumentsError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}/documents",
         configuration.base_path,

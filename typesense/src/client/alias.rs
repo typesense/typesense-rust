@@ -23,8 +23,7 @@ impl<'a> Alias<'a> {
     /// Retrieves the details of a collection alias, including the collection it points to.
     pub async fn retrieve(
         &self,
-    ) -> Result<models::CollectionAlias<'static>, Error<collections_api::GetAliasError<'static>>>
-    {
+    ) -> Result<models::CollectionAlias<'static>, Error<collections_api::GetAliasError>> {
         let params = collections_api::GetAliasParams {
             alias_name: self.alias_name.into(),
             _phantom: core::marker::PhantomData,
@@ -36,8 +35,7 @@ impl<'a> Alias<'a> {
     /// Deletes a collection alias.
     pub async fn delete(
         &self,
-    ) -> Result<models::CollectionAlias<'static>, Error<collections_api::DeleteAliasError<'static>>>
-    {
+    ) -> Result<models::CollectionAlias<'static>, Error<collections_api::DeleteAliasError>> {
         let params = collections_api::DeleteAliasParams {
             alias_name: self.alias_name.into(),
             _phantom: core::marker::PhantomData,

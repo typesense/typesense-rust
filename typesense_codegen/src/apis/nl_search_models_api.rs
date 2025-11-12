@@ -51,48 +51,48 @@ pub struct UpdateNlSearchModelParams<'p> {
 /// struct for typed errors of method [`create_nl_search_model`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateNlSearchModelError<'a> {
-    Status400(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum CreateNlSearchModelError {
+    Status400(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`delete_nl_search_model`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteNlSearchModelError<'a> {
-    Status404(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum DeleteNlSearchModelError {
+    Status404(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`retrieve_all_nl_search_models`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RetrieveAllNlSearchModelsError<'a> {
-    UnknownValue(super::Unknown<'a>),
+pub enum RetrieveAllNlSearchModelsError {
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`retrieve_nl_search_model`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum RetrieveNlSearchModelError<'a> {
-    Status404(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum RetrieveNlSearchModelError {
+    Status404(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// struct for typed errors of method [`update_nl_search_model`]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateNlSearchModelError<'a> {
-    Status400(models::ApiResponse<'a>),
-    Status404(models::ApiResponse<'a>),
-    UnknownValue(super::Unknown<'a>),
+pub enum UpdateNlSearchModelError {
+    Status400(models::ApiResponse<'static>),
+    Status404(models::ApiResponse<'static>),
+    UnknownValue(serde_json::Value),
 }
 
 /// Create a new NL search model.
 pub async fn create_nl_search_model(
     configuration: &configuration::Configuration,
     params: &CreateNlSearchModelParams<'_>,
-) -> Result<models::NlSearchModelSchema<'static>, Error<CreateNlSearchModelError<'static>>> {
+) -> Result<models::NlSearchModelSchema<'static>, Error<CreateNlSearchModelError>> {
     let uri_str = format!("{}/nl_search_models", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -152,7 +152,7 @@ pub async fn create_nl_search_model(
 pub async fn delete_nl_search_model(
     configuration: &configuration::Configuration,
     params: &DeleteNlSearchModelParams<'_>,
-) -> Result<models::NlSearchModelDeleteSchema<'static>, Error<DeleteNlSearchModelError<'static>>> {
+) -> Result<models::NlSearchModelDeleteSchema<'static>, Error<DeleteNlSearchModelError>> {
     let uri_str = format!(
         "{}/nl_search_models/{modelId}",
         configuration.base_path,
@@ -214,8 +214,7 @@ pub async fn delete_nl_search_model(
 /// Retrieve all NL search models.
 pub async fn retrieve_all_nl_search_models(
     configuration: &configuration::Configuration,
-) -> Result<Vec<models::NlSearchModelSchema<'static>>, Error<RetrieveAllNlSearchModelsError<'static>>>
-{
+) -> Result<Vec<models::NlSearchModelSchema<'static>>, Error<RetrieveAllNlSearchModelsError>> {
     let uri_str = format!("{}/nl_search_models", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -272,7 +271,7 @@ pub async fn retrieve_all_nl_search_models(
 pub async fn retrieve_nl_search_model(
     configuration: &configuration::Configuration,
     params: &RetrieveNlSearchModelParams<'_>,
-) -> Result<models::NlSearchModelSchema<'static>, Error<RetrieveNlSearchModelError<'static>>> {
+) -> Result<models::NlSearchModelSchema<'static>, Error<RetrieveNlSearchModelError>> {
     let uri_str = format!(
         "{}/nl_search_models/{modelId}",
         configuration.base_path,
@@ -333,7 +332,7 @@ pub async fn retrieve_nl_search_model(
 pub async fn update_nl_search_model(
     configuration: &configuration::Configuration,
     params: &UpdateNlSearchModelParams<'_>,
-) -> Result<models::NlSearchModelSchema<'static>, Error<UpdateNlSearchModelError<'static>>> {
+) -> Result<models::NlSearchModelSchema<'static>, Error<UpdateNlSearchModelError>> {
     let uri_str = format!(
         "{}/nl_search_models/{modelId}",
         configuration.base_path,
