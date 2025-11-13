@@ -96,19 +96,19 @@ paths:
       - name: exclude_fields
         in: query
         schema:
-          description: Comma-separated list of fields from the collection to exclude from the response
           type: string
+          description: Comma-separated list of fields from the collection to exclude from the response
       - name: limit
         in: query
         schema:
+          type: integer
           description: |
             Number of collections to fetch. Default: returns all collections.
-          type: integer
       - name: offset
         in: query
         schema:
-          description: Identifies the starting point to return collections when paginating.
           type: integer
+          description: Identifies the starting point to return collections when paginating.
       responses:
         '200':
           description: List of all collections
@@ -126,8 +126,8 @@ paths:
       description: When a collection is created, we give it a name and describe the fields that will be indexed from the documents added to the collection.
       operationId: createCollection
       requestBody:
-        description: The collection object to be created
         required: true
+        description: The collection object to be created
         content:
           application/json:
             schema:
@@ -160,9 +160,9 @@ paths:
       operationId: getCollection
       parameters:
       - name: collectionName
+        required: true
         in: path
         description: The name of the collection to retrieve
-        required: true
         schema:
           type: string
       responses:
@@ -186,14 +186,14 @@ paths:
       operationId: updateCollection
       parameters:
       - name: collectionName
+        required: true
         in: path
         description: The name of the collection to update
-        required: true
         schema:
           type: string
       requestBody:
-        description: The document object with fields to be updated
         required: true
+        description: The document object with fields to be updated
         content:
           application/json:
             schema:
@@ -225,9 +225,9 @@ paths:
       operationId: deleteCollection
       parameters:
       - name: collectionName
+        required: true
         in: path
         description: The name of the collection to delete
-        required: true
         schema:
           type: string
       responses:
@@ -252,9 +252,9 @@ paths:
       operationId: indexDocument
       parameters:
       - name: collectionName
+        required: true
         in: path
         description: The name of the collection to add the document to
-        required: true
         schema:
           type: string
       - name: action
@@ -270,13 +270,13 @@ paths:
         schema:
           $ref: '#/components/schemas/DirtyValues'
       requestBody:
-        description: The document object to be indexed
         required: true
+        description: The document object to be indexed
         content:
           application/json:
             schema:
-              description: Can be any key-value pair
               type: object
+              description: Can be any key-value pair
               x-go-type: interface{}
               x-rust-is-used-as-input: true
       responses:
@@ -285,8 +285,8 @@ paths:
           content:
             application/json:
               schema:
-                description: Can be any key-value pair
                 type: object
+                description: Can be any key-value pair
         '404':
           description: Collection not found
           content:
@@ -301,9 +301,9 @@ paths:
       operationId: updateDocuments
       parameters:
       - name: collectionName
+        required: true
         in: path
         description: The name of the collection to update documents in
-        required: true
         schema:
           type: string
       - name: filter_by
@@ -312,13 +312,13 @@ paths:
           type: string
           example: 'num_employees:>100 && country: [USA, UK]'
       requestBody:
-        description: The document fields to be updated
         required: true
+        description: The document fields to be updated
         content:
           application/json:
             schema:
-              description: Can be any key-value pair
               type: object
+              description: Can be any key-value pair
               x-go-type: interface{}
               x-rust-is-used-as-input: true
         x-rust-params-generic-parameter: B
@@ -334,8 +334,8 @@ paths:
                 - num_updated
                 properties:
                   num_updated:
-                    description: The number of documents that have been updated
                     type: integer
+                    description: The number of documents that have been updated
                     example: 1
         '400':
           description: Bad request, see error message for details
@@ -358,9 +358,9 @@ paths:
       operationId: deleteDocuments
       parameters:
       - name: collectionName
+        required: true
         in: path
         description: The name of the collection to delete documents from
-        required: true
         schema:
           type: string
       - name: filter_by
@@ -371,8 +371,8 @@ paths:
       - name: batch_size
         in: query
         schema:
-          description: Batch size parameter controls the number of documents that should be deleted at a time. A larger value will speed up deletions, but will impact performance of other operations running on the server.
           type: integer
+          description: Batch size parameter controls the number of documents that should be deleted at a time. A larger value will speed up deletions, but will impact performance of other operations running on the server.
       - name: ignore_not_found
         in: query
         schema:
@@ -380,8 +380,8 @@ paths:
       - name: truncate
         in: query
         schema:
-          description: When true, removes all documents from the collection while preserving the collection and its schema.
           type: boolean
+          description: When true, removes all documents from the collection while preserving the collection and its schema.
       responses:
         '200':
           description: Documents successfully deleted
@@ -409,202 +409,202 @@ paths:
       operationId: searchCollection
       parameters:
       - name: collectionName
+        required: true
         in: path
         description: The name of the collection to search for the document under
-        required: true
         schema:
           type: string
       - name: q
         in: query
         schema:
-          description: The query text to search for in the collection. Use * as the search string to return all documents. This is typically useful when used in conjunction with filter_by.
           type: string
+          description: The query text to search for in the collection. Use * as the search string to return all documents. This is typically useful when used in conjunction with filter_by.
       - name: query_by
         in: query
         schema:
-          description: A list of `string` fields that should be queried against. Multiple fields are separated with a comma.
           type: string
+          description: A list of `string` fields that should be queried against. Multiple fields are separated with a comma.
       - name: nl_query
         in: query
         schema:
-          description: Whether to use natural language processing to parse the query.
           type: boolean
+          description: Whether to use natural language processing to parse the query.
       - name: nl_model_id
         in: query
         schema:
-          description: The ID of the natural language model to use.
           type: string
+          description: The ID of the natural language model to use.
       - name: query_by_weights
         in: query
         schema:
-          description: The relative weight to give each `query_by` field when ranking results. This can be used to boost fields in priority, when looking for matches. Multiple fields are separated with a comma.
           type: string
+          description: The relative weight to give each `query_by` field when ranking results. This can be used to boost fields in priority, when looking for matches. Multiple fields are separated with a comma.
       - name: text_match_type
         in: query
         schema:
-          description: In a multi-field matching context, this parameter determines how the representative text match score of a record is calculated. Possible values are max_score (default) or max_weight.
           type: string
+          description: In a multi-field matching context, this parameter determines how the representative text match score of a record is calculated. Possible values are max_score (default) or max_weight.
       - name: prefix
         in: query
         schema:
-          description: Boolean field to indicate that the last word in the query should be treated as a prefix, and not as a whole word. This is used for building autocomplete and instant search interfaces. Defaults to true.
           type: string
+          description: Boolean field to indicate that the last word in the query should be treated as a prefix, and not as a whole word. This is used for building autocomplete and instant search interfaces. Defaults to true.
       - name: infix
         in: query
         schema:
-          description: If infix index is enabled for this field, infix searching can be done on a per-field basis by sending a comma separated string parameter called infix to the search query. This parameter can have 3 values; `off` infix search is disabled, which is default `always` infix search is performed along with regular search `fallback` infix search is performed if regular search does not produce results
           type: string
+          description: If infix index is enabled for this field, infix searching can be done on a per-field basis by sending a comma separated string parameter called infix to the search query. This parameter can have 3 values; `off` infix search is disabled, which is default `always` infix search is performed along with regular search `fallback` infix search is performed if regular search does not produce results
       - name: max_extra_prefix
         in: query
         schema:
-          description: There are also 2 parameters that allow you to control the extent of infix searching max_extra_prefix and max_extra_suffix which specify the maximum number of symbols before or after the query that can be present in the token. For example query "K2100" has 2 extra symbols in "6PK2100". By default, any number of prefixes/suffixes can be present for a match.
           type: integer
+          description: There are also 2 parameters that allow you to control the extent of infix searching max_extra_prefix and max_extra_suffix which specify the maximum number of symbols before or after the query that can be present in the token. For example query "K2100" has 2 extra symbols in "6PK2100". By default, any number of prefixes/suffixes can be present for a match.
       - name: max_extra_suffix
         in: query
         schema:
-          description: There are also 2 parameters that allow you to control the extent of infix searching max_extra_prefix and max_extra_suffix which specify the maximum number of symbols before or after the query that can be present in the token. For example query "K2100" has 2 extra symbols in "6PK2100". By default, any number of prefixes/suffixes can be present for a match.
           type: integer
+          description: There are also 2 parameters that allow you to control the extent of infix searching max_extra_prefix and max_extra_suffix which specify the maximum number of symbols before or after the query that can be present in the token. For example query "K2100" has 2 extra symbols in "6PK2100". By default, any number of prefixes/suffixes can be present for a match.
       - name: filter_by
         in: query
         schema:
-          description: Filter conditions for refining your open api validator search results. Separate multiple conditions with &&.
           type: string
+          description: Filter conditions for refining your open api validator search results. Separate multiple conditions with &&.
           example: 'num_employees:>100 && country: [USA, UK]'
       - name: max_filter_by_candidates
         in: query
         schema:
-          description: Controls the number of similar words that Typesense considers during fuzzy search on filter_by values. Useful for controlling prefix matches like company_name:Acm*.
           type: integer
+          description: Controls the number of similar words that Typesense considers during fuzzy search on filter_by values. Useful for controlling prefix matches like company_name:Acm*.
       - name: sort_by
         in: query
         schema:
-          description: A list of numerical fields and their corresponding sort orders that will be used for ordering your results. Up to 3 sort fields can be specified. The text similarity score is exposed as a special `_text_match` field that you can use in the list of sorting fields. If no `sort_by` parameter is specified, results are sorted by `_text_match:desc,default_sorting_field:desc`
           type: string
+          description: A list of numerical fields and their corresponding sort orders that will be used for ordering your results. Up to 3 sort fields can be specified. The text similarity score is exposed as a special `_text_match` field that you can use in the list of sorting fields. If no `sort_by` parameter is specified, results are sorted by `_text_match:desc,default_sorting_field:desc`
           example: num_employees:desc
       - name: facet_by
         in: query
         schema:
-          description: A list of fields that will be used for faceting your results on. Separate multiple fields with a comma.
           type: string
+          description: A list of fields that will be used for faceting your results on. Separate multiple fields with a comma.
       - name: max_facet_values
         in: query
         schema:
-          description: Maximum number of facet values to be returned.
           type: integer
+          description: Maximum number of facet values to be returned.
       - name: facet_query
         in: query
         schema:
-          description: Facet values that are returned can now be filtered via this parameter. The matching facet text is also highlighted. For example, when faceting by `category`, you can set `facet_query=category:shoe` to return only facet values that contain the prefix "shoe".
           type: string
+          description: Facet values that are returned can now be filtered via this parameter. The matching facet text is also highlighted. For example, when faceting by `category`, you can set `facet_query=category:shoe` to return only facet values that contain the prefix "shoe".
       - name: num_typos
         in: query
         schema:
+          type: string
           description: |
             The number of typographical errors (1 or 2) that would be tolerated. Default: 2
-          type: string
       - name: page
         in: query
         schema:
-          description: Results from this specific page number would be fetched.
           type: integer
+          description: Results from this specific page number would be fetched.
       - name: per_page
         in: query
         schema:
-          description: 'Number of results to fetch per page. Default: 10'
           type: integer
+          description: 'Number of results to fetch per page. Default: 10'
       - name: limit
         in: query
         schema:
+          type: integer
           description: |
             Number of hits to fetch. Can be used as an alternative to the per_page parameter. Default: 10.
-          type: integer
       - name: offset
         in: query
         schema:
-          description: Identifies the starting point to return hits from a result set. Can be used as an alternative to the page parameter.
           type: integer
+          description: Identifies the starting point to return hits from a result set. Can be used as an alternative to the page parameter.
       - name: group_by
         in: query
         schema:
-          description: You can aggregate search results into groups or buckets by specify one or more `group_by` fields. Separate multiple fields with a comma. To group on a particular field, it must be a faceted field.
           type: string
+          description: You can aggregate search results into groups or buckets by specify one or more `group_by` fields. Separate multiple fields with a comma. To group on a particular field, it must be a faceted field.
       - name: group_limit
         in: query
         schema:
+          type: integer
           description: |
             Maximum number of hits to be returned for every group. If the `group_limit` is set as `K` then only the top K hits in each group are returned in the response. Default: 3
-          type: integer
       - name: group_missing_values
         in: query
         schema:
+          type: boolean
           description: |
             Setting this parameter to true will place all documents that have a null value in the group_by field, into a single group. Setting this parameter to false, will cause each document with a null value in the group_by field to not be grouped with other documents. Default: true
-          type: boolean
       - name: include_fields
         in: query
         schema:
-          description: List of fields from the document to include in the search result
           type: string
+          description: List of fields from the document to include in the search result
       - name: exclude_fields
         in: query
         schema:
-          description: List of fields from the document to exclude in the search result
           type: string
+          description: List of fields from the document to exclude in the search result
       - name: highlight_full_fields
         in: query
         schema:
-          description: List of fields which should be highlighted fully without snippeting
           type: string
+          description: List of fields which should be highlighted fully without snippeting
       - name: highlight_affix_num_tokens
         in: query
         schema:
+          type: integer
           description: |
             The number of tokens that should surround the highlighted text on each side. Default: 4
-          type: integer
       - name: highlight_start_tag
         in: query
         schema:
+          type: string
           description: |
             The start tag used for the highlighted snippets. Default: `<mark>`
-          type: string
       - name: highlight_end_tag
         in: query
         schema:
+          type: string
           description: |
             The end tag used for the highlighted snippets. Default: `</mark>`
-          type: string
       - name: enable_highlight_v1
         in: query
         schema:
-          description: |
-            Flag for enabling/disabling the deprecated, old highlight structure in the response. Default: true
           type: boolean
           default: true
+          description: |
+            Flag for enabling/disabling the deprecated, old highlight structure in the response. Default: true
       - name: enable_analytics
         in: query
         schema:
-          description: |
-            Flag for enabling/disabling analytics aggregation for specific search queries (for e.g. those originating from a test script).
           type: boolean
           default: true
+          description: |
+            Flag for enabling/disabling analytics aggregation for specific search queries (for e.g. those originating from a test script).
       - name: snippet_threshold
         in: query
         schema:
+          type: integer
           description: |
             Field values under this length will be fully highlighted, instead of showing a snippet of relevant portion. Default: 30
-          type: integer
       - name: synonym_sets
         in: query
         schema:
-          description: List of synonym set names to associate with this search query
           type: string
+          description: List of synonym set names to associate with this search query
           example: synonym_set_1,synonym_set_2
       - name: drop_tokens_threshold
         in: query
         schema:
+          type: integer
           description: |
             If the number of results found for a specific query is less than this number, Typesense will attempt to drop the tokens in the query until enough results are found. Tokens that have the least individual hits are dropped first. Set to 0 to disable. Default: 10
-          type: integer
       - name: drop_tokens_mode
         in: query
         schema:
@@ -612,220 +612,220 @@ paths:
       - name: typo_tokens_threshold
         in: query
         schema:
+          type: integer
           description: |
             If the number of results found for a specific query is less than this number, Typesense will attempt to look for tokens with more typos until enough results are found. Default: 100
-          type: integer
       - name: enable_typos_for_alpha_numerical_tokens
         in: query
         schema:
+          type: boolean
           description: |
             Set this parameter to false to disable typos on alphanumerical query tokens. Default: true.
-          type: boolean
       - name: filter_curated_hits
         in: query
         schema:
+          type: boolean
           description: |
             Whether the filter_by condition of the search query should be applicable to curated results (override definitions, pinned hits, hidden hits, etc.). Default: false
-          type: boolean
       - name: enable_synonyms
         in: query
         schema:
+          type: boolean
           description: |
             If you have some synonyms defined but want to disable all of them for a particular search query, set enable_synonyms to false. Default: true
-          type: boolean
       - name: synonym_prefix
         in: query
         schema:
+          type: boolean
           description: |
             Allow synonym resolution on word prefixes in the query. Default: false
-          type: boolean
       - name: synonym_num_typos
         in: query
         schema:
+          type: integer
           description: |
             Allow synonym resolution on typo-corrected words in the query. Default: 0
-          type: integer
       - name: pinned_hits
         in: query
         schema:
+          type: string
           description: |
             A list of records to unconditionally include in the search results at specific positions. An example use case would be to feature or promote certain items on the top of search results. A list of `record_id:hit_position`. Eg: to include a record with ID 123 at Position 1 and another record with ID 456 at Position 5, you'd specify `123:1,456:5`.
             You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
-          type: string
       - name: hidden_hits
         in: query
         schema:
+          type: string
           description: |
             A list of records to unconditionally hide from search results. A list of `record_id`s to hide. Eg: to hide records with IDs 123 and 456, you'd specify `123,456`.
             You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
-          type: string
       - name: override_tags
         in: query
         schema:
-          description: Comma separated list of tags to trigger the curations rules that match the tags.
           type: string
+          description: Comma separated list of tags to trigger the curations rules that match the tags.
       - name: highlight_fields
         in: query
         schema:
+          type: string
           description: |
             A list of custom fields that must be highlighted even if you don't query for them
-          type: string
       - name: split_join_tokens
         in: query
         schema:
+          type: string
           description: |
             Treat space as typo: search for q=basket ball if q=basketball is not found or vice-versa. Splitting/joining of tokens will only be attempted if the original query produces no results. To always trigger this behavior, set value to `always``. To disable, set value to `off`. Default is `fallback`.
-          type: string
       - name: pre_segmented_query
         in: query
         schema:
+          type: boolean
           description: |
             You can index content from any logographic language into Typesense if you are able to segment / split the text into space-separated words yourself before indexing and querying.
             Set this parameter to true to do the same
-          type: boolean
       - name: preset
         in: query
         schema:
+          type: string
           description: |
             Search using a bunch of search parameters by setting this parameter to the name of the existing Preset.
-          type: string
       - name: enable_overrides
         in: query
         schema:
-          description: |
-            If you have some overrides defined but want to disable all of them during query time, you can do that by setting this parameter to false
           type: boolean
           default: false
+          description: |
+            If you have some overrides defined but want to disable all of them during query time, you can do that by setting this parameter to false
       - name: prioritize_exact_match
         in: query
         schema:
-          description: |
-            Set this parameter to true to ensure that an exact match is ranked above the others
           type: boolean
           default: true
+          description: |
+            Set this parameter to true to ensure that an exact match is ranked above the others
       - name: max_candidates
         in: query
         schema:
+          type: integer
           description: |
             Control the number of words that Typesense considers for typo and prefix searching.
-          type: integer
       - name: prioritize_token_position
         in: query
         schema:
-          description: |
-            Make Typesense prioritize documents where the query words appear earlier in the text.
           type: boolean
           default: false
+          description: |
+            Make Typesense prioritize documents where the query words appear earlier in the text.
       - name: prioritize_num_matching_fields
         in: query
         schema:
-          description: |
-            Make Typesense prioritize documents where the query words appear in more number of fields.
           type: boolean
           default: true
+          description: |
+            Make Typesense prioritize documents where the query words appear in more number of fields.
       - name: enable_typos_for_numerical_tokens
         in: query
         schema:
-          description: |
-            Make Typesense disable typos for numerical tokens.
           type: boolean
           default: true
+          description: |
+            Make Typesense disable typos for numerical tokens.
       - name: exhaustive_search
         in: query
         schema:
+          type: boolean
           description: |
             Setting this to true will make Typesense consider all prefixes and typo corrections of the words in the query without stopping early when enough results are found (drop_tokens_threshold and typo_tokens_threshold configurations are ignored).
-          type: boolean
       - name: search_cutoff_ms
         in: query
         schema:
+          type: integer
           description: |
             Typesense will attempt to return results early if the cutoff time has elapsed. This is not a strict guarantee and facet computation is not bound by this parameter.
-          type: integer
       - name: use_cache
         in: query
         schema:
+          type: boolean
           description: |
             Enable server side caching of search query results. By default, caching is disabled.
-          type: boolean
       - name: cache_ttl
         in: query
         schema:
+          type: integer
           description: |
             The duration (in seconds) that determines how long the search query is cached. This value can be set on a per-query basis. Default: 60.
-          type: integer
       - name: min_len_1typo
         in: query
         schema:
+          type: integer
           description: |
             Minimum word length for 1-typo correction to be applied. The value of num_typos is still treated as the maximum allowed typos.
-          type: integer
       - name: min_len_2typo
         in: query
         schema:
+          type: integer
           description: |
             Minimum word length for 2-typo correction to be applied. The value of num_typos is still treated as the maximum allowed typos.
-          type: integer
       - name: vector_query
         in: query
         schema:
+          type: string
           description: |
             Vector query expression for fetching documents "closest" to a given query/document vector.
-          type: string
       - name: remote_embedding_timeout_ms
         in: query
         schema:
+          type: integer
           description: |
             Timeout (in milliseconds) for fetching remote embeddings.
-          type: integer
       - name: remote_embedding_num_tries
         in: query
         schema:
+          type: integer
           description: |
             Number of times to retry fetching remote embeddings.
-          type: integer
       - name: facet_strategy
         in: query
         schema:
+          type: string
           description: |
             Choose the underlying faceting strategy used. Comma separated string of allows values: exhaustive, top_values or automatic (default).
-          type: string
       - name: stopwords
         in: query
         schema:
+          type: string
           description: |
             Name of the stopwords set to apply for this search, the keywords present in the set will be removed from the search query.
-          type: string
       - name: facet_return_parent
         in: query
         schema:
+          type: string
           description: |
             Comma separated string of nested facet fields whose parent object should be returned in facet response.
-          type: string
       - name: voice_query
         in: query
         schema:
+          type: string
           description: |
             The base64 encoded audio file in 16 khz 16-bit WAV format.
-          type: string
       - name: conversation
         in: query
         schema:
+          type: boolean
           description: |
             Enable conversational search.
-          type: boolean
       - name: conversation_model_id
         in: query
         schema:
+          type: string
           description: |
             The Id of Conversation Model to be used.
-          type: string
       - name: conversation_id
         in: query
         schema:
+          type: string
           description: |
             The Id of a previous conversation to continue, this tells Typesense to include prior context when communicating with the LLM.
-          type: string
       responses:
         '200':
           description: Search results
@@ -872,9 +872,9 @@ paths:
       operationId: retrieveSynonymSet
       parameters:
       - name: synonymSetName
+        required: true
         in: path
         description: The name of the synonym set to retrieve
-        required: true
         schema:
           type: string
       responses:
@@ -898,14 +898,14 @@ paths:
       operationId: upsertSynonymSet
       parameters:
       - name: synonymSetName
+        required: true
         in: path
         description: The name of the synonym set to create/update
-        required: true
         schema:
           type: string
       requestBody:
-        description: The synonym set to be created/updated
         required: true
+        description: The synonym set to be created/updated
         content:
           application/json:
             schema:
@@ -931,9 +931,9 @@ paths:
       operationId: deleteSynonymSet
       parameters:
       - name: synonymSetName
+        required: true
         in: path
         description: The name of the synonym set to delete
-        required: true
         schema:
           type: string
       responses:
@@ -958,9 +958,9 @@ paths:
       operationId: retrieveSynonymSetItems
       parameters:
       - name: synonymSetName
+        required: true
         in: path
         description: The name of the synonym set to retrieve items for
-        required: true
         schema:
           type: string
       responses:
@@ -987,15 +987,15 @@ paths:
       operationId: retrieveSynonymSetItem
       parameters:
       - name: synonymSetName
+        required: true
         in: path
         description: The name of the synonym set
-        required: true
         schema:
           type: string
       - name: itemId
+        required: true
         in: path
         description: The id of the synonym item to retrieve
-        required: true
         schema:
           type: string
       responses:
@@ -1019,20 +1019,20 @@ paths:
       operationId: upsertSynonymSetItem
       parameters:
       - name: synonymSetName
+        required: true
         in: path
         description: The name of the synonym set
-        required: true
         schema:
           type: string
       - name: itemId
+        required: true
         in: path
         description: The id of the synonym item to upsert
-        required: true
         schema:
           type: string
       requestBody:
-        description: The synonym item to be created/updated
         required: true
+        description: The synonym item to be created/updated
         content:
           application/json:
             schema:
@@ -1058,15 +1058,15 @@ paths:
       operationId: deleteSynonymSetItem
       parameters:
       - name: synonymSetName
+        required: true
         in: path
         description: The name of the synonym set
-        required: true
         schema:
           type: string
       - name: itemId
+        required: true
         in: path
         description: The id of the synonym item to delete
-        required: true
         schema:
           type: string
       responses:
@@ -1107,9 +1107,9 @@ paths:
       operationId: retrieveCurationSet
       parameters:
       - name: curationSetName
+        required: true
         in: path
         description: The name of the curation set to retrieve
-        required: true
         schema:
           type: string
       responses:
@@ -1133,14 +1133,14 @@ paths:
       operationId: upsertCurationSet
       parameters:
       - name: curationSetName
+        required: true
         in: path
         description: The name of the curation set to create/update
-        required: true
         schema:
           type: string
       requestBody:
-        description: The curation set to be created/updated
         required: true
+        description: The curation set to be created/updated
         content:
           application/json:
             schema:
@@ -1166,9 +1166,9 @@ paths:
       operationId: deleteCurationSet
       parameters:
       - name: curationSetName
+        required: true
         in: path
         description: The name of the curation set to delete
-        required: true
         schema:
           type: string
       responses:
@@ -1193,9 +1193,9 @@ paths:
       operationId: retrieveCurationSetItems
       parameters:
       - name: curationSetName
+        required: true
         in: path
         description: The name of the curation set to retrieve items for
-        required: true
         schema:
           type: string
       responses:
@@ -1222,15 +1222,15 @@ paths:
       operationId: retrieveCurationSetItem
       parameters:
       - name: curationSetName
+        required: true
         in: path
         description: The name of the curation set
-        required: true
         schema:
           type: string
       - name: itemId
+        required: true
         in: path
         description: The id of the curation item to retrieve
-        required: true
         schema:
           type: string
       responses:
@@ -1254,20 +1254,20 @@ paths:
       operationId: upsertCurationSetItem
       parameters:
       - name: curationSetName
+        required: true
         in: path
         description: The name of the curation set
-        required: true
         schema:
           type: string
       - name: itemId
+        required: true
         in: path
         description: The id of the curation item to upsert
-        required: true
         schema:
           type: string
       requestBody:
-        description: The curation item to be created/updated
         required: true
+        description: The curation item to be created/updated
         content:
           application/json:
             schema:
@@ -1293,15 +1293,15 @@ paths:
       operationId: deleteCurationSetItem
       parameters:
       - name: curationSetName
+        required: true
         in: path
         description: The name of the curation set
-        required: true
         schema:
           type: string
       - name: itemId
+        required: true
         in: path
         description: The id of the curation item to delete
-        required: true
         schema:
           type: string
       responses:
@@ -1326,26 +1326,26 @@ paths:
       operationId: exportDocuments
       parameters:
       - name: collectionName
+        required: true
         in: path
         description: The name of the collection
-        required: true
         schema:
           type: string
       - name: filter_by
         in: query
         schema:
-          description: Filter conditions for refining your search results. Separate multiple conditions with &&.
           type: string
+          description: Filter conditions for refining your search results. Separate multiple conditions with &&.
       - name: include_fields
         in: query
         schema:
-          description: List of fields from the document to include in the search result
           type: string
+          description: List of fields from the document to include in the search result
       - name: exclude_fields
         in: query
         schema:
-          description: List of fields from the document to exclude in the search result
           type: string
+          description: List of fields from the document to exclude in the search result
       responses:
         '200':
           description: Exports all the documents in a given collection.
@@ -1373,9 +1373,9 @@ paths:
       operationId: importDocuments
       parameters:
       - name: collectionName
+        required: true
         in: path
         description: The name of the collection
-        required: true
         schema:
           type: string
       - name: batch_size
@@ -1385,8 +1385,8 @@ paths:
       - name: return_id
         in: query
         schema:
-          description: Returning the id of the imported documents. If you want the import response to return the ingested document's id in the response, you can use the return_id parameter.
           type: boolean
+          description: Returning the id of the imported documents. If you want the import response to return the ingested document's id in the response, you can use the return_id parameter.
       - name: remote_embedding_batch_size
         in: query
         schema:
@@ -1404,13 +1404,13 @@ paths:
         schema:
           $ref: '#/components/schemas/DirtyValues'
       requestBody:
-        description: The json array of documents or the JSONL file to import
         required: true
+        description: The json array of documents or the JSONL file to import
         content:
           application/octet-stream:
             schema:
-              description: The JSONL file to import
               type: string
+              description: The JSONL file to import
       responses:
         '200':
           description: Result of the import operation. Each line of the response indicates the result of each document present in the request body (in the same order). If the import of a single document fails, it does not affect the other documents. If there is a failure, the response line will include a corresponding error message and as well as the actual document content.
@@ -1444,15 +1444,15 @@ paths:
       operationId: getDocument
       parameters:
       - name: collectionName
+        required: true
         in: path
         description: The name of the collection to search for the document under
-        required: true
         schema:
           type: string
       - name: documentId
+        required: true
         in: path
         description: The Document ID
-        required: true
         schema:
           type: string
       responses:
@@ -1461,8 +1461,8 @@ paths:
           content:
             application/json:
               schema:
-                description: Can be any key-value pair
                 type: object
+                description: Can be any key-value pair
         '404':
           description: The document or collection was not found
           content:
@@ -1477,15 +1477,15 @@ paths:
       operationId: updateDocument
       parameters:
       - name: collectionName
+        required: true
         in: path
         description: The name of the collection to search for the document under
-        required: true
         schema:
           type: string
       - name: documentId
+        required: true
         in: path
         description: The Document ID
-        required: true
         schema:
           type: string
       - name: dirty_values
@@ -1494,13 +1494,13 @@ paths:
         schema:
           $ref: '#/components/schemas/DirtyValues'
       requestBody:
-        description: The document object with fields to be updated
         required: true
+        description: The document object with fields to be updated
         content:
           application/json:
             schema:
-              description: Can be any key-value pair
               type: object
+              description: Can be any key-value pair
               x-go-type: interface{}
               x-rust-is-used-as-input: true
         x-rust-params-generic-parameter: B
@@ -1511,8 +1511,8 @@ paths:
           content:
             application/json:
               schema:
-                description: Can be any key-value pair
                 type: object
+                description: Can be any key-value pair
         '404':
           description: The document or collection was not found
           content:
@@ -1528,15 +1528,15 @@ paths:
       operationId: deleteDocument
       parameters:
       - name: collectionName
+        required: true
         in: path
         description: The name of the collection to search for the document under
-        required: true
         schema:
           type: string
       - name: documentId
+        required: true
         in: path
         description: The Document ID
-        required: true
         schema:
           type: string
       responses:
@@ -1545,8 +1545,8 @@ paths:
           content:
             application/json:
               schema:
-                description: Can be any key-value pair
                 type: object
+                description: Can be any key-value pair
         '404':
           description: The document or collection was not found
           content:
@@ -1604,9 +1604,9 @@ paths:
       operationId: retrieveConversationModel
       parameters:
       - name: modelId
+        required: true
         in: path
         description: The id of the conversation model to retrieve
-        required: true
         schema:
           type: string
       responses:
@@ -1624,9 +1624,9 @@ paths:
       operationId: updateConversationModel
       parameters:
       - name: modelId
+        required: true
         in: path
         description: The id of the conversation model to update
-        required: true
         schema:
           type: string
       requestBody:
@@ -1650,9 +1650,9 @@ paths:
       operationId: deleteConversationModel
       parameters:
       - name: modelId
+        required: true
         in: path
         description: The id of the conversation model to delete
-        required: true
         schema:
           type: string
       responses:
@@ -1715,9 +1715,9 @@ paths:
       operationId: getKey
       parameters:
       - name: keyId
+        required: true
         in: path
         description: The ID of the key to retrieve
-        required: true
         schema:
           type: integer
           format: int64
@@ -1741,9 +1741,9 @@ paths:
       operationId: deleteKey
       parameters:
       - name: keyId
+        required: true
         in: path
         description: The ID of the key to delete
-        required: true
         schema:
           type: integer
           format: int64
@@ -1789,9 +1789,9 @@ paths:
       operationId: upsertAlias
       parameters:
       - name: aliasName
+        required: true
         in: path
         description: The name of the alias to create/update
-        required: true
         schema:
           type: string
       requestBody:
@@ -1827,9 +1827,9 @@ paths:
       operationId: getAlias
       parameters:
       - name: aliasName
+        required: true
         in: path
         description: The name of the alias to retrieve
-        required: true
         schema:
           type: string
       responses:
@@ -1852,9 +1852,9 @@ paths:
       operationId: deleteAlias
       parameters:
       - name: aliasName
+        required: true
         in: path
         description: The name of the alias to delete
-        required: true
         schema:
           type: string
       responses:
@@ -1927,9 +1927,9 @@ paths:
       operationId: takeSnapshot
       parameters:
       - name: snapshot_path
+        required: true
         in: query
         description: The directory on the server where the snapshot should be saved.
-        required: true
         schema:
           type: string
       responses:
@@ -2019,158 +2019,158 @@ paths:
       - name: q
         in: query
         schema:
-          description: The query text to search for in the collection. Use * as the search string to return all documents. This is typically useful when used in conjunction with filter_by.
           type: string
+          description: The query text to search for in the collection. Use * as the search string to return all documents. This is typically useful when used in conjunction with filter_by.
       - name: query_by
         in: query
         schema:
-          description: A list of `string` fields that should be queried against. Multiple fields are separated with a comma.
           type: string
+          description: A list of `string` fields that should be queried against. Multiple fields are separated with a comma.
       - name: query_by_weights
         in: query
         schema:
-          description: The relative weight to give each `query_by` field when ranking results. This can be used to boost fields in priority, when looking for matches. Multiple fields are separated with a comma.
           type: string
+          description: The relative weight to give each `query_by` field when ranking results. This can be used to boost fields in priority, when looking for matches. Multiple fields are separated with a comma.
       - name: text_match_type
         in: query
         schema:
-          description: In a multi-field matching context, this parameter determines how the representative text match score of a record is calculated. Possible values are max_score (default) or max_weight.
           type: string
+          description: In a multi-field matching context, this parameter determines how the representative text match score of a record is calculated. Possible values are max_score (default) or max_weight.
       - name: prefix
         in: query
         schema:
-          description: Boolean field to indicate that the last word in the query should be treated as a prefix, and not as a whole word. This is used for building autocomplete and instant search interfaces. Defaults to true.
           type: string
+          description: Boolean field to indicate that the last word in the query should be treated as a prefix, and not as a whole word. This is used for building autocomplete and instant search interfaces. Defaults to true.
       - name: infix
         in: query
         schema:
-          description: If infix index is enabled for this field, infix searching can be done on a per-field basis by sending a comma separated string parameter called infix to the search query. This parameter can have 3 values; `off` infix search is disabled, which is default `always` infix search is performed along with regular search `fallback` infix search is performed if regular search does not produce results
           type: string
+          description: If infix index is enabled for this field, infix searching can be done on a per-field basis by sending a comma separated string parameter called infix to the search query. This parameter can have 3 values; `off` infix search is disabled, which is default `always` infix search is performed along with regular search `fallback` infix search is performed if regular search does not produce results
       - name: max_extra_prefix
         in: query
         schema:
-          description: There are also 2 parameters that allow you to control the extent of infix searching max_extra_prefix and max_extra_suffix which specify the maximum number of symbols before or after the query that can be present in the token. For example query "K2100" has 2 extra symbols in "6PK2100". By default, any number of prefixes/suffixes can be present for a match.
           type: integer
+          description: There are also 2 parameters that allow you to control the extent of infix searching max_extra_prefix and max_extra_suffix which specify the maximum number of symbols before or after the query that can be present in the token. For example query "K2100" has 2 extra symbols in "6PK2100". By default, any number of prefixes/suffixes can be present for a match.
       - name: max_extra_suffix
         in: query
         schema:
-          description: There are also 2 parameters that allow you to control the extent of infix searching max_extra_prefix and max_extra_suffix which specify the maximum number of symbols before or after the query that can be present in the token. For example query "K2100" has 2 extra symbols in "6PK2100". By default, any number of prefixes/suffixes can be present for a match.
           type: integer
+          description: There are also 2 parameters that allow you to control the extent of infix searching max_extra_prefix and max_extra_suffix which specify the maximum number of symbols before or after the query that can be present in the token. For example query "K2100" has 2 extra symbols in "6PK2100". By default, any number of prefixes/suffixes can be present for a match.
       - name: filter_by
         in: query
         schema:
-          description: Filter conditions for refining youropen api validator search results. Separate multiple conditions with &&.
           type: string
+          description: Filter conditions for refining youropen api validator search results. Separate multiple conditions with &&.
           example: 'num_employees:>100 && country: [USA, UK]'
       - name: sort_by
         in: query
         schema:
-          description: A list of numerical fields and their corresponding sort orders that will be used for ordering your results. Up to 3 sort fields can be specified. The text similarity score is exposed as a special `_text_match` field that you can use in the list of sorting fields. If no `sort_by` parameter is specified, results are sorted by `_text_match:desc,default_sorting_field:desc`
           type: string
+          description: A list of numerical fields and their corresponding sort orders that will be used for ordering your results. Up to 3 sort fields can be specified. The text similarity score is exposed as a special `_text_match` field that you can use in the list of sorting fields. If no `sort_by` parameter is specified, results are sorted by `_text_match:desc,default_sorting_field:desc`
       - name: facet_by
         in: query
         schema:
-          description: A list of fields that will be used for faceting your results on. Separate multiple fields with a comma.
           type: string
+          description: A list of fields that will be used for faceting your results on. Separate multiple fields with a comma.
       - name: max_facet_values
         in: query
         schema:
-          description: Maximum number of facet values to be returned.
           type: integer
+          description: Maximum number of facet values to be returned.
       - name: facet_query
         in: query
         schema:
-          description: Facet values that are returned can now be filtered via this parameter. The matching facet text is also highlighted. For example, when faceting by `category`, you can set `facet_query=category:shoe` to return only facet values that contain the prefix "shoe".
           type: string
+          description: Facet values that are returned can now be filtered via this parameter. The matching facet text is also highlighted. For example, when faceting by `category`, you can set `facet_query=category:shoe` to return only facet values that contain the prefix "shoe".
       - name: num_typos
         in: query
         schema:
+          type: string
           description: |
             The number of typographical errors (1 or 2) that would be tolerated. Default: 2
-          type: string
       - name: page
         in: query
         schema:
-          description: Results from this specific page number would be fetched.
           type: integer
+          description: Results from this specific page number would be fetched.
       - name: per_page
         in: query
         schema:
-          description: 'Number of results to fetch per page. Default: 10'
           type: integer
+          description: 'Number of results to fetch per page. Default: 10'
       - name: limit
         in: query
         schema:
+          type: integer
           description: |
             Number of hits to fetch. Can be used as an alternative to the per_page parameter. Default: 10.
-          type: integer
       - name: offset
         in: query
         schema:
-          description: Identifies the starting point to return hits from a result set. Can be used as an alternative to the page parameter.
           type: integer
+          description: Identifies the starting point to return hits from a result set. Can be used as an alternative to the page parameter.
       - name: group_by
         in: query
         schema:
-          description: You can aggregate search results into groups or buckets by specify one or more `group_by` fields. Separate multiple fields with a comma. To group on a particular field, it must be a faceted field.
           type: string
+          description: You can aggregate search results into groups or buckets by specify one or more `group_by` fields. Separate multiple fields with a comma. To group on a particular field, it must be a faceted field.
       - name: group_limit
         in: query
         schema:
+          type: integer
           description: |
             Maximum number of hits to be returned for every group. If the `group_limit` is set as `K` then only the top K hits in each group are returned in the response. Default: 3
-          type: integer
       - name: group_missing_values
         in: query
         schema:
+          type: boolean
           description: |
             Setting this parameter to true will place all documents that have a null value in the group_by field, into a single group. Setting this parameter to false, will cause each document with a null value in the group_by field to not be grouped with other documents. Default: true
-          type: boolean
       - name: include_fields
         in: query
         schema:
-          description: List of fields from the document to include in the search result
           type: string
+          description: List of fields from the document to include in the search result
       - name: exclude_fields
         in: query
         schema:
-          description: List of fields from the document to exclude in the search result
           type: string
+          description: List of fields from the document to exclude in the search result
       - name: highlight_full_fields
         in: query
         schema:
-          description: List of fields which should be highlighted fully without snippeting
           type: string
+          description: List of fields which should be highlighted fully without snippeting
       - name: highlight_affix_num_tokens
         in: query
         schema:
+          type: integer
           description: |
             The number of tokens that should surround the highlighted text on each side. Default: 4
-          type: integer
       - name: highlight_start_tag
         in: query
         schema:
+          type: string
           description: |
             The start tag used for the highlighted snippets. Default: `<mark>`
-          type: string
       - name: highlight_end_tag
         in: query
         schema:
+          type: string
           description: |
             The end tag used for the highlighted snippets. Default: `</mark>`
-          type: string
       - name: snippet_threshold
         in: query
         schema:
+          type: integer
           description: |
             Field values under this length will be fully highlighted, instead of showing a snippet of relevant portion. Default: 30
-          type: integer
       - name: drop_tokens_threshold
         in: query
         schema:
+          type: integer
           description: |
             If the number of results found for a specific query is less than this number, Typesense will attempt to drop the tokens in the query until enough results are found. Tokens that have the least individual hits are dropped first. Set to 0 to disable. Default: 10
-          type: integer
       - name: drop_tokens_mode
         in: query
         schema:
@@ -2178,216 +2178,216 @@ paths:
       - name: typo_tokens_threshold
         in: query
         schema:
+          type: integer
           description: |
             If the number of results found for a specific query is less than this number, Typesense will attempt to look for tokens with more typos until enough results are found. Default: 100
-          type: integer
       - name: enable_typos_for_alpha_numerical_tokens
         in: query
         schema:
+          type: boolean
           description: |
             Set this parameter to false to disable typos on alphanumerical query tokens. Default: true.
-          type: boolean
       - name: filter_curated_hits
         in: query
         schema:
+          type: boolean
           description: |
             Whether the filter_by condition of the search query should be applicable to curated results (override definitions, pinned hits, hidden hits, etc.). Default: false
-          type: boolean
       - name: enable_synonyms
         in: query
         schema:
+          type: boolean
           description: |
             If you have some synonyms defined but want to disable all of them for a particular search query, set enable_synonyms to false. Default: true
-          type: boolean
       - name: enable_analytics
         in: query
         schema:
-          description: |
-            Flag for enabling/disabling analytics aggregation for specific search queries (for e.g. those originating from a test script).
           type: boolean
           default: true
+          description: |
+            Flag for enabling/disabling analytics aggregation for specific search queries (for e.g. those originating from a test script).
       - name: synonym_prefix
         in: query
         schema:
+          type: boolean
           description: |
             Allow synonym resolution on word prefixes in the query. Default: false
-          type: boolean
       - name: synonym_num_typos
         in: query
         schema:
+          type: integer
           description: |
             Allow synonym resolution on typo-corrected words in the query. Default: 0
-          type: integer
       - name: pinned_hits
         in: query
         schema:
+          type: string
           description: |
             A list of records to unconditionally include in the search results at specific positions. An example use case would be to feature or promote certain items on the top of search results. A list of `record_id:hit_position`. Eg: to include a record with ID 123 at Position 1 and another record with ID 456 at Position 5, you'd specify `123:1,456:5`.
             You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
-          type: string
       - name: hidden_hits
         in: query
         schema:
+          type: string
           description: |
             A list of records to unconditionally hide from search results. A list of `record_id`s to hide. Eg: to hide records with IDs 123 and 456, you'd specify `123,456`.
             You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
-          type: string
       - name: override_tags
         in: query
         schema:
-          description: Comma separated list of tags to trigger the curations rules that match the tags.
           type: string
+          description: Comma separated list of tags to trigger the curations rules that match the tags.
       - name: highlight_fields
         in: query
         schema:
+          type: string
           description: |
             A list of custom fields that must be highlighted even if you don't query for them
-          type: string
       - name: pre_segmented_query
         in: query
         schema:
+          type: boolean
+          default: false
           description: |
             You can index content from any logographic language into Typesense if you are able to segment / split the text into space-separated words yourself before indexing and querying.
             Set this parameter to true to do the same
-          type: boolean
-          default: false
       - name: preset
         in: query
         schema:
+          type: string
           description: |
             Search using a bunch of search parameters by setting this parameter to the name of the existing Preset.
-          type: string
       - name: enable_overrides
         in: query
         schema:
-          description: |
-            If you have some overrides defined but want to disable all of them during query time, you can do that by setting this parameter to false
           type: boolean
           default: false
+          description: |
+            If you have some overrides defined but want to disable all of them during query time, you can do that by setting this parameter to false
       - name: prioritize_exact_match
         in: query
         schema:
-          description: |
-            Set this parameter to true to ensure that an exact match is ranked above the others
           type: boolean
           default: true
+          description: |
+            Set this parameter to true to ensure that an exact match is ranked above the others
       - name: prioritize_token_position
         in: query
         schema:
-          description: |
-            Make Typesense prioritize documents where the query words appear earlier in the text.
           type: boolean
           default: false
+          description: |
+            Make Typesense prioritize documents where the query words appear earlier in the text.
       - name: prioritize_num_matching_fields
         in: query
         schema:
-          description: |
-            Make Typesense prioritize documents where the query words appear in more number of fields.
           type: boolean
           default: true
+          description: |
+            Make Typesense prioritize documents where the query words appear in more number of fields.
       - name: enable_typos_for_numerical_tokens
         in: query
         schema:
-          description: |
-            Make Typesense disable typos for numerical tokens.
           type: boolean
           default: true
+          description: |
+            Make Typesense disable typos for numerical tokens.
       - name: exhaustive_search
         in: query
         schema:
+          type: boolean
           description: |
             Setting this to true will make Typesense consider all prefixes and typo corrections of the words in the query without stopping early when enough results are found (drop_tokens_threshold and typo_tokens_threshold configurations are ignored).
-          type: boolean
       - name: search_cutoff_ms
         in: query
         schema:
+          type: integer
           description: |
             Typesense will attempt to return results early if the cutoff time has elapsed. This is not a strict guarantee and facet computation is not bound by this parameter.
-          type: integer
       - name: use_cache
         in: query
         schema:
+          type: boolean
           description: |
             Enable server side caching of search query results. By default, caching is disabled.
-          type: boolean
       - name: cache_ttl
         in: query
         schema:
+          type: integer
           description: |
             The duration (in seconds) that determines how long the search query is cached. This value can be set on a per-query basis. Default: 60.
-          type: integer
       - name: min_len_1typo
         in: query
         schema:
+          type: integer
           description: |
             Minimum word length for 1-typo correction to be applied. The value of num_typos is still treated as the maximum allowed typos.
-          type: integer
       - name: min_len_2typo
         in: query
         schema:
+          type: integer
           description: |
             Minimum word length for 2-typo correction to be applied. The value of num_typos is still treated as the maximum allowed typos.
-          type: integer
       - name: vector_query
         in: query
         schema:
+          type: string
           description: |
             Vector query expression for fetching documents "closest" to a given query/document vector.
-          type: string
       - name: remote_embedding_timeout_ms
         in: query
         schema:
+          type: integer
           description: |
             Timeout (in milliseconds) for fetching remote embeddings.
-          type: integer
       - name: remote_embedding_num_tries
         in: query
         schema:
+          type: integer
           description: |
             Number of times to retry fetching remote embeddings.
-          type: integer
       - name: facet_strategy
         in: query
         schema:
+          type: string
           description: |
             Choose the underlying faceting strategy used. Comma separated string of allows values: exhaustive, top_values or automatic (default).
-          type: string
       - name: stopwords
         in: query
         schema:
+          type: string
           description: |
             Name of the stopwords set to apply for this search, the keywords present in the set will be removed from the search query.
-          type: string
       - name: facet_return_parent
         in: query
         schema:
+          type: string
           description: |
             Comma separated string of nested facet fields whose parent object should be returned in facet response.
-          type: string
       - name: voice_query
         in: query
         schema:
+          type: string
           description: |
             The base64 encoded audio file in 16 khz 16-bit WAV format.
-          type: string
       - name: conversation
         in: query
         schema:
+          type: boolean
           description: |
             Enable conversational search.
-          type: boolean
       - name: conversation_model_id
         in: query
         schema:
+          type: string
           description: |
             The Id of Conversation Model to be used.
-          type: string
       - name: conversation_id
         in: query
         schema:
+          type: string
           description: |
             The Id of a previous conversation to continue, this tells Typesense to include prior context when communicating with the LLM.
-          type: string
       requestBody:
         content:
           application/json:
@@ -2415,8 +2415,8 @@ paths:
       description: Submit a single analytics event. The event must correspond to an existing analytics rule by name.
       operationId: createAnalyticsEvent
       requestBody:
-        description: The analytics event to be created
         required: true
+        description: The analytics event to be created
         content:
           application/json:
             schema:
@@ -2442,20 +2442,20 @@ paths:
       operationId: getAnalyticsEvents
       parameters:
       - name: user_id
-        in: query
         required: true
+        in: query
         schema:
           type: string
       - name: name
+        required: true
         in: query
         description: Analytics rule name
-        required: true
         schema:
           type: string
       - name: n
+        required: true
         in: query
         description: Number of events to return (max 1000)
-        required: true
         schema:
           type: integer
       responses:
@@ -2507,8 +2507,8 @@ paths:
       description: Create one or more analytics rules. You can send a single rule object or an array of rule objects.
       operationId: createAnalyticsRule
       requestBody:
-        description: The analytics rule(s) to be created
         required: true
+        description: The analytics rule(s) to be created
         content:
           application/json:
             schema:
@@ -2548,9 +2548,9 @@ paths:
       operationId: retrieveAnalyticsRules
       parameters:
       - name: rule_tag
+        required: false
         in: query
         description: Filter rules by rule_tag
-        required: false
         schema:
           type: string
       responses:
@@ -2571,14 +2571,14 @@ paths:
       operationId: upsertAnalyticsRule
       parameters:
       - name: ruleName
+        required: true
         in: path
         description: The name of the analytics rule to upsert
-        required: true
         schema:
           type: string
       requestBody:
-        description: The Analytics rule to be upserted
         required: true
+        description: The Analytics rule to be upserted
         content:
           application/json:
             schema:
@@ -2604,9 +2604,9 @@ paths:
       operationId: retrieveAnalyticsRule
       parameters:
       - name: ruleName
+        required: true
         in: path
         description: The name of the analytics rule to retrieve
-        required: true
         schema:
           type: string
       responses:
@@ -2630,9 +2630,9 @@ paths:
       operationId: deleteAnalyticsRule
       parameters:
       - name: ruleName
+        required: true
         in: path
         description: The name of the analytics rule to delete
-        required: true
         schema:
           type: string
       responses:
@@ -2699,15 +2699,15 @@ paths:
       operationId: upsertStopwordsSet
       parameters:
       - name: setId
+        required: true
         in: path
         description: The ID of the stopwords set to upsert.
-        required: true
         schema:
           type: string
         example: countries
       requestBody:
-        description: The stopwords set to upsert.
         required: true
+        description: The stopwords set to upsert.
         content:
           application/json:
             schema:
@@ -2733,9 +2733,9 @@ paths:
       operationId: retrieveStopwordsSet
       parameters:
       - name: setId
+        required: true
         in: path
         description: The ID of the stopwords set to retrieve.
-        required: true
         schema:
           type: string
         example: countries
@@ -2760,9 +2760,9 @@ paths:
       operationId: deleteStopwordsSet
       parameters:
       - name: setId
+        required: true
         in: path
         description: The ID of the stopwords set to delete.
-        required: true
         schema:
           type: string
         example: countries
@@ -2809,9 +2809,9 @@ paths:
       operationId: retrievePreset
       parameters:
       - name: presetId
+        required: true
         in: path
         description: The ID of the preset to retrieve.
-        required: true
         schema:
           type: string
         example: listing_view
@@ -2836,15 +2836,15 @@ paths:
       operationId: upsertPreset
       parameters:
       - name: presetId
+        required: true
         in: path
         description: The name of the preset set to upsert.
-        required: true
         schema:
           type: string
         example: listing_view
       requestBody:
-        description: The stopwords set to upsert.
         required: true
+        description: The stopwords set to upsert.
         content:
           application/json:
             schema:
@@ -2870,9 +2870,9 @@ paths:
       operationId: deletePreset
       parameters:
       - name: presetId
+        required: true
         in: path
         description: The ID of the preset to delete.
-        required: true
         schema:
           type: string
         example: listing_view
@@ -2920,9 +2920,9 @@ paths:
       operationId: getStemmingDictionary
       parameters:
       - name: dictionaryId
+        required: true
         in: path
         description: The ID of the dictionary to retrieve
-        required: true
         schema:
           type: string
         example: irregular-plurals
@@ -2948,15 +2948,15 @@ paths:
       operationId: importStemmingDictionary
       parameters:
       - name: id
+        required: true
         in: query
         description: The ID to assign to the dictionary
-        required: true
         schema:
           type: string
         example: irregular-plurals
       requestBody:
-        description: The JSONL file containing word mappings
         required: true
+        description: The JSONL file containing word mappings
         content:
           application/json:
             schema:
@@ -3004,8 +3004,8 @@ paths:
       description: Create a new NL search model.
       operationId: createNLSearchModel
       requestBody:
-        description: The NL search model to be created
         required: true
+        description: The NL search model to be created
         content:
           application/json:
             schema:
@@ -3032,9 +3032,9 @@ paths:
       operationId: retrieveNLSearchModel
       parameters:
       - name: modelId
+        required: true
         in: path
         description: The ID of the NL search model to retrieve
-        required: true
         schema:
           type: string
       responses:
@@ -3058,14 +3058,14 @@ paths:
       operationId: updateNLSearchModel
       parameters:
       - name: modelId
+        required: true
         in: path
         description: The ID of the NL search model to update
-        required: true
         schema:
           type: string
       requestBody:
-        description: The NL search model fields to update
         required: true
+        description: The NL search model fields to update
         content:
           application/json:
             schema:
@@ -3097,9 +3097,9 @@ paths:
       operationId: deleteNLSearchModel
       parameters:
       - name: modelId
+        required: true
         in: path
         description: The ID of the NL search model to delete
-        required: true
         schema:
           type: string
       responses:
@@ -3124,12 +3124,12 @@ components:
       - fields
       properties:
         name:
-          description: Name of the collection
           type: string
+          description: Name of the collection
           example: companies
         fields:
-          description: A list of fields for querying, filtering and faceting
           type: array
+          description: A list of fields for querying, filtering and faceting
           example:
           - name: num_employees
             type: int32
@@ -3143,45 +3143,45 @@ components:
           items:
             $ref: '#/components/schemas/Field'
         default_sorting_field:
-          description: The name of an int32 / float field that determines the order in which the search results are ranked when a sort_by clause is not provided during searching. This field must indicate some kind of popularity.
           type: string
-          example: num_employees
           default: ''
+          description: The name of an int32 / float field that determines the order in which the search results are ranked when a sort_by clause is not provided during searching. This field must indicate some kind of popularity.
+          example: num_employees
         token_separators:
+          type: array
+          default: []
           description: |
             List of symbols or special characters to be used for splitting the text into individual words in addition to space and new-line characters.
-          type: array
           items:
             type: string
             minLength: 1
             maxLength: 1
-          default: []
         synonym_sets:
-          description: List of synonym set names to associate with this collection
           type: array
+          description: List of synonym set names to associate with this collection
           items:
             type: string
             example: synonym_set_1
         enable_nested_fields:
-          description: Enables experimental support at a collection level for nested object or object array fields. This field is only available if the Typesense server is version `0.24.0.rcn34` or later.
           type: boolean
-          example: true
           default: false
+          description: Enables experimental support at a collection level for nested object or object array fields. This field is only available if the Typesense server is version `0.24.0.rcn34` or later.
+          example: true
         symbols_to_index:
+          type: array
+          default: []
           description: |
             List of symbols or special characters to be indexed.
-          type: array
           items:
             type: string
             minLength: 1
             maxLength: 1
-          default: []
         voice_query_model:
           $ref: '#/components/schemas/VoiceQueryModelCollectionConfig'
         metadata:
+          type: object
           description: |
             Optional details about the collection, e.g., when it was created, who created it etc.
-          type: object
           x-rust-is-used-as-input: true
       x-rust-builder: true
       x-rust-is-used-as-input: true
@@ -3191,8 +3191,8 @@ components:
       - fields
       properties:
         fields:
-          description: A list of fields for querying, filtering and faceting
           type: array
+          description: A list of fields for querying, filtering and faceting
           example:
           - name: company_name
             type: string
@@ -3206,15 +3206,15 @@ components:
           items:
             $ref: '#/components/schemas/Field'
         synonym_sets:
-          description: List of synonym set names to associate with this collection
           type: array
+          description: List of synonym set names to associate with this collection
           items:
             type: string
             example: synonym_set_1
         metadata:
+          type: object
           description: |
             Optional details about the collection, e.g., when it was created, who created it etc.
-          type: object
           x-rust-is-used-as-input: true
       x-rust-is-used-as-input: true
     CollectionResponse:
@@ -3255,8 +3255,8 @@ components:
           example: false
         index:
           type: boolean
-          example: true
           default: true
+          example: true
         locale:
           type: string
           example: el
@@ -3265,12 +3265,12 @@ components:
           example: true
         infix:
           type: boolean
-          example: true
           default: false
+          example: true
         reference:
+          type: string
           description: |
             Name of a field in another collection that should be linked to this collection so that it can be joined during query.
-          type: string
         num_dim:
           type: integer
           example: 256
@@ -3278,43 +3278,43 @@ components:
           type: boolean
           example: true
         store:
+          type: boolean
           description: |
             When set to false, the field value will not be stored on disk. Default: true.
-          type: boolean
         vec_dist:
+          type: string
           description: |
             The distance metric to be used for vector search. Default: `cosine`. You can also use `ip` for inner product.
-          type: string
         range_index:
+          type: boolean
           description: |
             Enables an index optimized for range filtering on numerical fields (e.g. rating:>3.5). Default: false.
-          type: boolean
         stem:
+          type: boolean
           description: |
             Values are stemmed before indexing in-memory. Default: false.
-          type: boolean
         stem_dictionary:
-          description: Name of the stemming dictionary to use for this field
           type: string
+          description: Name of the stemming dictionary to use for this field
           example: irregular-plurals
         token_separators:
+          type: array
+          default: []
           description: |
             List of symbols or special characters to be used for splitting the text into individual words in addition to space and new-line characters.
-          type: array
           items:
             type: string
             minLength: 1
             maxLength: 1
-          default: []
         symbols_to_index:
+          type: array
+          default: []
           description: |
             List of symbols or special characters to be indexed.
-          type: array
           items:
             type: string
             minLength: 1
             maxLength: 1
-          default: []
         embed:
           type: object
           required:
@@ -3352,9 +3352,9 @@ components:
                   type: string
       x-rust-builder: true
     VoiceQueryModelCollectionConfig:
+      type: object
       description: |
         Configuration for the voice query model
-      type: object
       properties:
         model_name:
           type: string
@@ -3365,8 +3365,8 @@ components:
       - collection_name
       properties:
         collection_name:
-          description: Name of the collection you wish to map the alias to
           type: string
+          description: Name of the collection you wish to map the alias to
       x-rust-is-used-as-input: true
     CollectionAlias:
       type: object
@@ -3375,12 +3375,12 @@ components:
       - name
       properties:
         name:
-          description: Name of the collection alias
           type: string
+          description: Name of the collection alias
           readOnly: true
         collection_name:
-          description: Name of the collection the alias mapped to
           type: string
+          description: Name of the collection the alias mapped to
     CollectionAliasesResponse:
       type: object
       required:
@@ -3399,30 +3399,30 @@ components:
           items:
             $ref: '#/components/schemas/FacetCounts'
         found:
-          description: The number of documents found
           type: integer
+          description: The number of documents found
         found_docs:
           type: integer
         search_time_ms:
+          type: integer
           description: The number of milliseconds the search took
-          type: integer
         out_of:
+          type: integer
           description: The total number of documents in the collection
-          type: integer
         search_cutoff:
-          description: Whether the search was cut off
           type: boolean
+          description: Whether the search was cut off
         page:
-          description: The search result page number
           type: integer
+          description: The search result page number
         grouped_hits:
           type: array
           items:
             $ref: '#/components/schemas/SearchGroupedHit'
           x-rust-type: Option<Vec<models::SearchGroupedHit<D>>>
         hits:
-          description: The documents that matched the search query
           type: array
+          description: The documents that matched the search query
           items:
             $ref: '#/components/schemas/SearchResultHit'
           x-rust-type: Option<Vec<models::SearchResultHit<D>>>
@@ -3431,13 +3431,13 @@ components:
         conversation:
           $ref: '#/components/schemas/SearchResultConversation'
         union_request_params:
-          description: Returned only for union query response.
           type: array
+          description: Returned only for union query response.
           items:
             $ref: '#/components/schemas/SearchRequestParams'
         metadata:
-          description: Custom JSON object that can be returned in the search response
           type: object
+          description: Custom JSON object that can be returned in the search response
           additionalProperties: true
       x-rust-generic-parameter: D
     SearchRequestParams:
@@ -3488,8 +3488,8 @@ components:
           type: array
           items: {}
         hits:
-          description: The documents that matched the search query
           type: array
+          description: The documents that matched the search query
           items:
             $ref: '#/components/schemas/SearchResultHit'
           x-rust-type: Vec<models::SearchResultHit<D>>
@@ -3509,17 +3509,17 @@ components:
         text_match: 1234556
       properties:
         highlights:
-          description: (Deprecated) Contains highlighted portions of the search fields
           type: array
+          description: (Deprecated) Contains highlighted portions of the search fields
           items:
             $ref: '#/components/schemas/SearchHighlight'
         highlight:
-          description: Highlighted version of the matching document
           type: object
+          description: Highlighted version of the matching document
           additionalProperties: true
         document:
-          description: Can be any key-value pair
           type: object
+          description: Can be any key-value pair
           additionalProperties:
             type: object
           x-rust-type: Option<D>
@@ -3546,25 +3546,25 @@ components:
             typo_prefix_score:
               type: integer
         geo_distance_meters:
-          description: Can be any key-value pair
           type: object
+          description: Can be any key-value pair
           additionalProperties:
             type: integer
         vector_distance:
-          description: Distance between the query vector and matching document's vector value
           type: number
+          description: Distance between the query vector and matching document's vector value
           format: float
         hybrid_search_info:
-          description: Information about hybrid search scoring
           type: object
+          description: Information about hybrid search scoring
           properties:
             rank_fusion_score:
-              description: Combined score from rank fusion of text and vector search
               type: number
+              description: Combined score from rank fusion of text and vector search
               format: float
         search_index:
-          description: Returned only for union query response. Indicates the index of the query which this document matched to.
           type: integer
+          description: Returned only for union query response. Indicates the index of the query which this document matched to.
       x-rust-generic-parameter: D
     SearchHighlight:
       type: object
@@ -3573,32 +3573,32 @@ components:
           type: string
           example: company_name
         snippet:
-          description: Present only for (non-array) string fields
           type: string
+          description: Present only for (non-array) string fields
           example: <mark>Stark</mark> Industries
         snippets:
-          description: Present only for (array) string[] fields
           type: array
+          description: Present only for (array) string[] fields
           example:
           - <mark>Stark</mark> Industries
           - <mark>Stark</mark> Corp
           items:
             type: string
         value:
-          description: Full field value with highlighting, present only for (non-array) string fields
           type: string
+          description: Full field value with highlighting, present only for (non-array) string fields
           example: <mark>Stark</mark> Industries is a major supplier of space equipment.
         values:
-          description: Full field value with highlighting, present only for (array) string[] fields
           type: array
+          description: Full field value with highlighting, present only for (array) string[] fields
           example:
           - <mark>Stark</mark> Industries
           - <mark>Stark</mark> Corp
           items:
             type: string
         indices:
-          description: The indices property will be present only for string[] fields and will contain the corresponding indices of the snippets in the search field
           type: array
+          description: The indices property will be present only for string[] fields and will contain the corresponding indices of the snippets in the search field
           example: 1
           items:
             type: integer
@@ -3613,19 +3613,19 @@ components:
       - synonyms
       properties:
         root:
-          description: For 1-way synonyms, indicates the root word that words in the `synonyms` parameter map to.
           type: string
+          description: For 1-way synonyms, indicates the root word that words in the `synonyms` parameter map to.
         synonyms:
-          description: Array of words that should be considered as synonyms.
           type: array
+          description: Array of words that should be considered as synonyms.
           items:
             type: string
         locale:
-          description: Locale for the synonym, leave blank to use the standard tokenizer.
           type: string
+          description: Locale for the synonym, leave blank to use the standard tokenizer.
         symbols_to_index:
-          description: By default, special characters are dropped from synonyms. Use this attribute to specify which special characters should be indexed as is.
           type: array
+          description: By default, special characters are dropped from synonyms. Use this attribute to specify which special characters should be indexed as is.
           items:
             type: string
     SearchSynonym:
@@ -3644,8 +3644,8 @@ components:
       - id
       properties:
         id:
-          description: The id of the synonym that was deleted
           type: string
+          description: The id of the synonym that was deleted
     SearchSynonymsResponse:
       type: object
       required:
@@ -3667,14 +3667,14 @@ components:
       type: object
       properties:
         collection:
-          description: Name of the collection being modified
           type: string
+          description: Name of the collection being modified
         validated_docs:
+          type: integer
           description: Number of documents that have been validated
-          type: integer
         altered_docs:
-          description: Number of documents that have been altered
           type: integer
+          description: Number of documents that have been altered
     SuccessStatus:
       type: object
       required:
@@ -3730,8 +3730,8 @@ components:
       - id
       properties:
         id:
-          description: The id of the API key that was deleted
           type: integer
+          description: The id of the API key that was deleted
           format: int64
     ApiKeysResponse:
       type: object
@@ -3773,526 +3773,526 @@ components:
       type: object
       properties:
         q:
+          type: string
           description: The query text to search for in the collection. Use * as the search string to return all documents. This is typically useful when used in conjunction with filter_by.
-          type: string
         query_by:
+          type: string
           description: A list of `string` fields that should be queried against. Multiple fields are separated with a comma.
-          type: string
         nl_query:
-          description: Whether to use natural language processing to parse the query.
           type: boolean
+          description: Whether to use natural language processing to parse the query.
         nl_model_id:
+          type: string
           description: The ID of the natural language model to use.
-          type: string
         query_by_weights:
+          type: string
           description: The relative weight to give each `query_by` field when ranking results. This can be used to boost fields in priority, when looking for matches. Multiple fields are separated with a comma.
-          type: string
         text_match_type:
+          type: string
           description: In a multi-field matching context, this parameter determines how the representative text match score of a record is calculated. Possible values are max_score (default) or max_weight.
-          type: string
         prefix:
+          type: string
           description: Boolean field to indicate that the last word in the query should be treated as a prefix, and not as a whole word. This is used for building autocomplete and instant search interfaces. Defaults to true.
-          type: string
         infix:
+          type: string
           description: If infix index is enabled for this field, infix searching can be done on a per-field basis by sending a comma separated string parameter called infix to the search query. This parameter can have 3 values; `off` infix search is disabled, which is default `always` infix search is performed along with regular search `fallback` infix search is performed if regular search does not produce results
-          type: string
         max_extra_prefix:
-          description: There are also 2 parameters that allow you to control the extent of infix searching max_extra_prefix and max_extra_suffix which specify the maximum number of symbols before or after the query that can be present in the token. For example query "K2100" has 2 extra symbols in "6PK2100". By default, any number of prefixes/suffixes can be present for a match.
           type: integer
+          description: There are also 2 parameters that allow you to control the extent of infix searching max_extra_prefix and max_extra_suffix which specify the maximum number of symbols before or after the query that can be present in the token. For example query "K2100" has 2 extra symbols in "6PK2100". By default, any number of prefixes/suffixes can be present for a match.
         max_extra_suffix:
-          description: There are also 2 parameters that allow you to control the extent of infix searching max_extra_prefix and max_extra_suffix which specify the maximum number of symbols before or after the query that can be present in the token. For example query "K2100" has 2 extra symbols in "6PK2100". By default, any number of prefixes/suffixes can be present for a match.
           type: integer
+          description: There are also 2 parameters that allow you to control the extent of infix searching max_extra_prefix and max_extra_suffix which specify the maximum number of symbols before or after the query that can be present in the token. For example query "K2100" has 2 extra symbols in "6PK2100". By default, any number of prefixes/suffixes can be present for a match.
         filter_by:
-          description: Filter conditions for refining your open api validator search results. Separate multiple conditions with &&.
           type: string
+          description: Filter conditions for refining your open api validator search results. Separate multiple conditions with &&.
           example: 'num_employees:>100 && country: [USA, UK]'
         max_filter_by_candidates:
-          description: Controls the number of similar words that Typesense considers during fuzzy search on filter_by values. Useful for controlling prefix matches like company_name:Acm*.
           type: integer
+          description: Controls the number of similar words that Typesense considers during fuzzy search on filter_by values. Useful for controlling prefix matches like company_name:Acm*.
         sort_by:
-          description: A list of numerical fields and their corresponding sort orders that will be used for ordering your results. Up to 3 sort fields can be specified. The text similarity score is exposed as a special `_text_match` field that you can use in the list of sorting fields. If no `sort_by` parameter is specified, results are sorted by `_text_match:desc,default_sorting_field:desc`
           type: string
+          description: A list of numerical fields and their corresponding sort orders that will be used for ordering your results. Up to 3 sort fields can be specified. The text similarity score is exposed as a special `_text_match` field that you can use in the list of sorting fields. If no `sort_by` parameter is specified, results are sorted by `_text_match:desc,default_sorting_field:desc`
           example: num_employees:desc
         facet_by:
+          type: string
           description: A list of fields that will be used for faceting your results on. Separate multiple fields with a comma.
-          type: string
         max_facet_values:
-          description: Maximum number of facet values to be returned.
           type: integer
+          description: Maximum number of facet values to be returned.
         facet_query:
-          description: Facet values that are returned can now be filtered via this parameter. The matching facet text is also highlighted. For example, when faceting by `category`, you can set `facet_query=category:shoe` to return only facet values that contain the prefix "shoe".
           type: string
+          description: Facet values that are returned can now be filtered via this parameter. The matching facet text is also highlighted. For example, when faceting by `category`, you can set `facet_query=category:shoe` to return only facet values that contain the prefix "shoe".
         num_typos:
+          type: string
           description: |
             The number of typographical errors (1 or 2) that would be tolerated. Default: 2
-          type: string
         page:
+          type: integer
           description: Results from this specific page number would be fetched.
-          type: integer
         per_page:
-          description: 'Number of results to fetch per page. Default: 10'
           type: integer
+          description: 'Number of results to fetch per page. Default: 10'
         limit:
+          type: integer
           description: |
             Number of hits to fetch. Can be used as an alternative to the per_page parameter. Default: 10.
-          type: integer
         offset:
-          description: Identifies the starting point to return hits from a result set. Can be used as an alternative to the page parameter.
           type: integer
+          description: Identifies the starting point to return hits from a result set. Can be used as an alternative to the page parameter.
         group_by:
-          description: You can aggregate search results into groups or buckets by specify one or more `group_by` fields. Separate multiple fields with a comma. To group on a particular field, it must be a faceted field.
           type: string
+          description: You can aggregate search results into groups or buckets by specify one or more `group_by` fields. Separate multiple fields with a comma. To group on a particular field, it must be a faceted field.
         group_limit:
+          type: integer
           description: |
             Maximum number of hits to be returned for every group. If the `group_limit` is set as `K` then only the top K hits in each group are returned in the response. Default: 3
-          type: integer
         group_missing_values:
+          type: boolean
           description: |
             Setting this parameter to true will place all documents that have a null value in the group_by field, into a single group. Setting this parameter to false, will cause each document with a null value in the group_by field to not be grouped with other documents. Default: true
-          type: boolean
         include_fields:
+          type: string
           description: List of fields from the document to include in the search result
-          type: string
         exclude_fields:
+          type: string
           description: List of fields from the document to exclude in the search result
-          type: string
         highlight_full_fields:
-          description: List of fields which should be highlighted fully without snippeting
           type: string
+          description: List of fields which should be highlighted fully without snippeting
         highlight_affix_num_tokens:
+          type: integer
           description: |
             The number of tokens that should surround the highlighted text on each side. Default: 4
-          type: integer
         highlight_start_tag:
+          type: string
           description: |
             The start tag used for the highlighted snippets. Default: `<mark>`
-          type: string
         highlight_end_tag:
+          type: string
           description: |
             The end tag used for the highlighted snippets. Default: `</mark>`
-          type: string
         enable_highlight_v1:
+          type: boolean
+          default: true
           description: |
             Flag for enabling/disabling the deprecated, old highlight structure in the response. Default: true
+        enable_analytics:
           type: boolean
           default: true
-        enable_analytics:
           description: |
             Flag for enabling/disabling analytics aggregation for specific search queries (for e.g. those originating from a test script).
-          type: boolean
-          default: true
         snippet_threshold:
+          type: integer
           description: |
             Field values under this length will be fully highlighted, instead of showing a snippet of relevant portion. Default: 30
-          type: integer
         synonym_sets:
-          description: List of synonym set names to associate with this search query
           type: string
+          description: List of synonym set names to associate with this search query
           example: synonym_set_1,synonym_set_2
         drop_tokens_threshold:
+          type: integer
           description: |
             If the number of results found for a specific query is less than this number, Typesense will attempt to drop the tokens in the query until enough results are found. Tokens that have the least individual hits are dropped first. Set to 0 to disable. Default: 10
-          type: integer
         drop_tokens_mode:
           $ref: '#/components/schemas/DropTokensMode'
         typo_tokens_threshold:
+          type: integer
           description: |
             If the number of results found for a specific query is less than this number, Typesense will attempt to look for tokens with more typos until enough results are found. Default: 100
-          type: integer
         enable_typos_for_alpha_numerical_tokens:
+          type: boolean
           description: |
             Set this parameter to false to disable typos on alphanumerical query tokens. Default: true.
-          type: boolean
         filter_curated_hits:
+          type: boolean
           description: |
             Whether the filter_by condition of the search query should be applicable to curated results (override definitions, pinned hits, hidden hits, etc.). Default: false
-          type: boolean
         enable_synonyms:
+          type: boolean
           description: |
             If you have some synonyms defined but want to disable all of them for a particular search query, set enable_synonyms to false. Default: true
-          type: boolean
         synonym_prefix:
+          type: boolean
           description: |
             Allow synonym resolution on word prefixes in the query. Default: false
-          type: boolean
         synonym_num_typos:
+          type: integer
           description: |
             Allow synonym resolution on typo-corrected words in the query. Default: 0
-          type: integer
         pinned_hits:
+          type: string
           description: |
             A list of records to unconditionally include in the search results at specific positions. An example use case would be to feature or promote certain items on the top of search results. A list of `record_id:hit_position`. Eg: to include a record with ID 123 at Position 1 and another record with ID 456 at Position 5, you'd specify `123:1,456:5`.
             You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
-          type: string
         hidden_hits:
+          type: string
           description: |
             A list of records to unconditionally hide from search results. A list of `record_id`s to hide. Eg: to hide records with IDs 123 and 456, you'd specify `123,456`.
             You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
-          type: string
         override_tags:
-          description: Comma separated list of tags to trigger the curations rules that match the tags.
           type: string
+          description: Comma separated list of tags to trigger the curations rules that match the tags.
         highlight_fields:
+          type: string
           description: |
             A list of custom fields that must be highlighted even if you don't query for them
-          type: string
         split_join_tokens:
+          type: string
           description: |
             Treat space as typo: search for q=basket ball if q=basketball is not found or vice-versa. Splitting/joining of tokens will only be attempted if the original query produces no results. To always trigger this behavior, set value to `always``. To disable, set value to `off`. Default is `fallback`.
-          type: string
         pre_segmented_query:
+          type: boolean
           description: |
             You can index content from any logographic language into Typesense if you are able to segment / split the text into space-separated words yourself before indexing and querying.
             Set this parameter to true to do the same
-          type: boolean
         preset:
+          type: string
           description: |
             Search using a bunch of search parameters by setting this parameter to the name of the existing Preset.
-          type: string
         enable_overrides:
+          type: boolean
+          default: false
           description: |
             If you have some overrides defined but want to disable all of them during query time, you can do that by setting this parameter to false
-          type: boolean
-          default: false
         prioritize_exact_match:
+          type: boolean
+          default: true
           description: |
             Set this parameter to true to ensure that an exact match is ranked above the others
-          type: boolean
-          default: true
         max_candidates:
+          type: integer
           description: |
             Control the number of words that Typesense considers for typo and prefix searching.
-          type: integer
         prioritize_token_position:
-          description: |
-            Make Typesense prioritize documents where the query words appear earlier in the text.
           type: boolean
           default: false
+          description: |
+            Make Typesense prioritize documents where the query words appear earlier in the text.
         prioritize_num_matching_fields:
+          type: boolean
+          default: true
           description: |
             Make Typesense prioritize documents where the query words appear in more number of fields.
+        enable_typos_for_numerical_tokens:
           type: boolean
           default: true
-        enable_typos_for_numerical_tokens:
           description: |
             Make Typesense disable typos for numerical tokens.
-          type: boolean
-          default: true
         exhaustive_search:
+          type: boolean
           description: |
             Setting this to true will make Typesense consider all prefixes and typo corrections of the words in the query without stopping early when enough results are found (drop_tokens_threshold and typo_tokens_threshold configurations are ignored).
-          type: boolean
         search_cutoff_ms:
+          type: integer
           description: |
             Typesense will attempt to return results early if the cutoff time has elapsed. This is not a strict guarantee and facet computation is not bound by this parameter.
-          type: integer
         use_cache:
+          type: boolean
           description: |
             Enable server side caching of search query results. By default, caching is disabled.
-          type: boolean
         cache_ttl:
+          type: integer
           description: |
             The duration (in seconds) that determines how long the search query is cached. This value can be set on a per-query basis. Default: 60.
-          type: integer
         min_len_1typo:
+          type: integer
           description: |
             Minimum word length for 1-typo correction to be applied. The value of num_typos is still treated as the maximum allowed typos.
-          type: integer
         min_len_2typo:
+          type: integer
           description: |
             Minimum word length for 2-typo correction to be applied. The value of num_typos is still treated as the maximum allowed typos.
-          type: integer
         vector_query:
+          type: string
           description: |
             Vector query expression for fetching documents "closest" to a given query/document vector.
-          type: string
         remote_embedding_timeout_ms:
+          type: integer
           description: |
             Timeout (in milliseconds) for fetching remote embeddings.
-          type: integer
         remote_embedding_num_tries:
+          type: integer
           description: |
             Number of times to retry fetching remote embeddings.
-          type: integer
         facet_strategy:
+          type: string
           description: |
             Choose the underlying faceting strategy used. Comma separated string of allows values: exhaustive, top_values or automatic (default).
-          type: string
         stopwords:
+          type: string
           description: |
             Name of the stopwords set to apply for this search, the keywords present in the set will be removed from the search query.
-          type: string
         facet_return_parent:
+          type: string
           description: |
             Comma separated string of nested facet fields whose parent object should be returned in facet response.
-          type: string
         voice_query:
+          type: string
           description: |
             The base64 encoded audio file in 16 khz 16-bit WAV format.
-          type: string
         conversation:
+          type: boolean
           description: |
             Enable conversational search.
-          type: boolean
         conversation_model_id:
+          type: string
           description: |
             The Id of Conversation Model to be used.
-          type: string
         conversation_id:
+          type: string
           description: |
             The Id of a previous conversation to continue, this tells Typesense to include prior context when communicating with the LLM.
-          type: string
       x-rust-builder: true
       x-rust-is-used-as-input: true
     MultiSearchParameters:
+      type: object
       description: |
         Parameters for the multi search API.
-      type: object
       properties:
         q:
+          type: string
           description: The query text to search for in the collection. Use * as the search string to return all documents. This is typically useful when used in conjunction with filter_by.
-          type: string
         query_by:
+          type: string
           description: A list of `string` fields that should be queried against. Multiple fields are separated with a comma.
-          type: string
         query_by_weights:
+          type: string
           description: The relative weight to give each `query_by` field when ranking results. This can be used to boost fields in priority, when looking for matches. Multiple fields are separated with a comma.
-          type: string
         text_match_type:
+          type: string
           description: In a multi-field matching context, this parameter determines how the representative text match score of a record is calculated. Possible values are max_score (default) or max_weight.
-          type: string
         prefix:
+          type: string
           description: Boolean field to indicate that the last word in the query should be treated as a prefix, and not as a whole word. This is used for building autocomplete and instant search interfaces. Defaults to true.
-          type: string
         infix:
+          type: string
           description: If infix index is enabled for this field, infix searching can be done on a per-field basis by sending a comma separated string parameter called infix to the search query. This parameter can have 3 values; `off` infix search is disabled, which is default `always` infix search is performed along with regular search `fallback` infix search is performed if regular search does not produce results
-          type: string
         max_extra_prefix:
-          description: There are also 2 parameters that allow you to control the extent of infix searching max_extra_prefix and max_extra_suffix which specify the maximum number of symbols before or after the query that can be present in the token. For example query "K2100" has 2 extra symbols in "6PK2100". By default, any number of prefixes/suffixes can be present for a match.
           type: integer
+          description: There are also 2 parameters that allow you to control the extent of infix searching max_extra_prefix and max_extra_suffix which specify the maximum number of symbols before or after the query that can be present in the token. For example query "K2100" has 2 extra symbols in "6PK2100". By default, any number of prefixes/suffixes can be present for a match.
         max_extra_suffix:
-          description: There are also 2 parameters that allow you to control the extent of infix searching max_extra_prefix and max_extra_suffix which specify the maximum number of symbols before or after the query that can be present in the token. For example query "K2100" has 2 extra symbols in "6PK2100". By default, any number of prefixes/suffixes can be present for a match.
           type: integer
+          description: There are also 2 parameters that allow you to control the extent of infix searching max_extra_prefix and max_extra_suffix which specify the maximum number of symbols before or after the query that can be present in the token. For example query "K2100" has 2 extra symbols in "6PK2100". By default, any number of prefixes/suffixes can be present for a match.
         filter_by:
-          description: Filter conditions for refining youropen api validator search results. Separate multiple conditions with &&.
           type: string
+          description: Filter conditions for refining youropen api validator search results. Separate multiple conditions with &&.
           example: 'num_employees:>100 && country: [USA, UK]'
         sort_by:
+          type: string
           description: A list of numerical fields and their corresponding sort orders that will be used for ordering your results. Up to 3 sort fields can be specified. The text similarity score is exposed as a special `_text_match` field that you can use in the list of sorting fields. If no `sort_by` parameter is specified, results are sorted by `_text_match:desc,default_sorting_field:desc`
-          type: string
         facet_by:
+          type: string
           description: A list of fields that will be used for faceting your results on. Separate multiple fields with a comma.
-          type: string
         max_facet_values:
-          description: Maximum number of facet values to be returned.
           type: integer
+          description: Maximum number of facet values to be returned.
         facet_query:
-          description: Facet values that are returned can now be filtered via this parameter. The matching facet text is also highlighted. For example, when faceting by `category`, you can set `facet_query=category:shoe` to return only facet values that contain the prefix "shoe".
           type: string
+          description: Facet values that are returned can now be filtered via this parameter. The matching facet text is also highlighted. For example, when faceting by `category`, you can set `facet_query=category:shoe` to return only facet values that contain the prefix "shoe".
         num_typos:
+          type: string
           description: |
             The number of typographical errors (1 or 2) that would be tolerated. Default: 2
-          type: string
         page:
+          type: integer
           description: Results from this specific page number would be fetched.
-          type: integer
         per_page:
-          description: 'Number of results to fetch per page. Default: 10'
           type: integer
+          description: 'Number of results to fetch per page. Default: 10'
         limit:
+          type: integer
           description: |
             Number of hits to fetch. Can be used as an alternative to the per_page parameter. Default: 10.
-          type: integer
         offset:
-          description: Identifies the starting point to return hits from a result set. Can be used as an alternative to the page parameter.
           type: integer
+          description: Identifies the starting point to return hits from a result set. Can be used as an alternative to the page parameter.
         group_by:
-          description: You can aggregate search results into groups or buckets by specify one or more `group_by` fields. Separate multiple fields with a comma. To group on a particular field, it must be a faceted field.
           type: string
+          description: You can aggregate search results into groups or buckets by specify one or more `group_by` fields. Separate multiple fields with a comma. To group on a particular field, it must be a faceted field.
         group_limit:
+          type: integer
           description: |
             Maximum number of hits to be returned for every group. If the `group_limit` is set as `K` then only the top K hits in each group are returned in the response. Default: 3
-          type: integer
         group_missing_values:
+          type: boolean
           description: |
             Setting this parameter to true will place all documents that have a null value in the group_by field, into a single group. Setting this parameter to false, will cause each document with a null value in the group_by field to not be grouped with other documents. Default: true
-          type: boolean
         include_fields:
+          type: string
           description: List of fields from the document to include in the search result
-          type: string
         exclude_fields:
+          type: string
           description: List of fields from the document to exclude in the search result
-          type: string
         highlight_full_fields:
-          description: List of fields which should be highlighted fully without snippeting
           type: string
+          description: List of fields which should be highlighted fully without snippeting
         highlight_affix_num_tokens:
+          type: integer
           description: |
             The number of tokens that should surround the highlighted text on each side. Default: 4
-          type: integer
         highlight_start_tag:
+          type: string
           description: |
             The start tag used for the highlighted snippets. Default: `<mark>`
-          type: string
         highlight_end_tag:
+          type: string
           description: |
             The end tag used for the highlighted snippets. Default: `</mark>`
-          type: string
         snippet_threshold:
+          type: integer
           description: |
             Field values under this length will be fully highlighted, instead of showing a snippet of relevant portion. Default: 30
-          type: integer
         drop_tokens_threshold:
+          type: integer
           description: |
             If the number of results found for a specific query is less than this number, Typesense will attempt to drop the tokens in the query until enough results are found. Tokens that have the least individual hits are dropped first. Set to 0 to disable. Default: 10
-          type: integer
         drop_tokens_mode:
           $ref: '#/components/schemas/DropTokensMode'
         typo_tokens_threshold:
+          type: integer
           description: |
             If the number of results found for a specific query is less than this number, Typesense will attempt to look for tokens with more typos until enough results are found. Default: 100
-          type: integer
         enable_typos_for_alpha_numerical_tokens:
+          type: boolean
           description: |
             Set this parameter to false to disable typos on alphanumerical query tokens. Default: true.
-          type: boolean
         filter_curated_hits:
+          type: boolean
           description: |
             Whether the filter_by condition of the search query should be applicable to curated results (override definitions, pinned hits, hidden hits, etc.). Default: false
-          type: boolean
         enable_synonyms:
+          type: boolean
           description: |
             If you have some synonyms defined but want to disable all of them for a particular search query, set enable_synonyms to false. Default: true
-          type: boolean
         enable_analytics:
-          description: |
-            Flag for enabling/disabling analytics aggregation for specific search queries (for e.g. those originating from a test script).
           type: boolean
           default: true
+          description: |
+            Flag for enabling/disabling analytics aggregation for specific search queries (for e.g. those originating from a test script).
         synonym_prefix:
+          type: boolean
           description: |
             Allow synonym resolution on word prefixes in the query. Default: false
-          type: boolean
         synonym_num_typos:
+          type: integer
           description: |
             Allow synonym resolution on typo-corrected words in the query. Default: 0
-          type: integer
         pinned_hits:
+          type: string
           description: |
             A list of records to unconditionally include in the search results at specific positions. An example use case would be to feature or promote certain items on the top of search results. A list of `record_id:hit_position`. Eg: to include a record with ID 123 at Position 1 and another record with ID 456 at Position 5, you'd specify `123:1,456:5`.
             You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
-          type: string
         hidden_hits:
+          type: string
           description: |
             A list of records to unconditionally hide from search results. A list of `record_id`s to hide. Eg: to hide records with IDs 123 and 456, you'd specify `123,456`.
             You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
-          type: string
         override_tags:
-          description: Comma separated list of tags to trigger the curations rules that match the tags.
           type: string
+          description: Comma separated list of tags to trigger the curations rules that match the tags.
         highlight_fields:
+          type: string
           description: |
             A list of custom fields that must be highlighted even if you don't query for them
-          type: string
         pre_segmented_query:
+          type: boolean
+          default: false
           description: |
             You can index content from any logographic language into Typesense if you are able to segment / split the text into space-separated words yourself before indexing and querying.
             Set this parameter to true to do the same
-          type: boolean
-          default: false
         preset:
+          type: string
           description: |
             Search using a bunch of search parameters by setting this parameter to the name of the existing Preset.
-          type: string
         enable_overrides:
+          type: boolean
+          default: false
           description: |
             If you have some overrides defined but want to disable all of them during query time, you can do that by setting this parameter to false
-          type: boolean
-          default: false
         prioritize_exact_match:
+          type: boolean
+          default: true
           description: |
             Set this parameter to true to ensure that an exact match is ranked above the others
-          type: boolean
-          default: true
         prioritize_token_position:
-          description: |
-            Make Typesense prioritize documents where the query words appear earlier in the text.
           type: boolean
           default: false
+          description: |
+            Make Typesense prioritize documents where the query words appear earlier in the text.
         prioritize_num_matching_fields:
+          type: boolean
+          default: true
           description: |
             Make Typesense prioritize documents where the query words appear in more number of fields.
+        enable_typos_for_numerical_tokens:
           type: boolean
           default: true
-        enable_typos_for_numerical_tokens:
           description: |
             Make Typesense disable typos for numerical tokens.
-          type: boolean
-          default: true
         exhaustive_search:
+          type: boolean
           description: |
             Setting this to true will make Typesense consider all prefixes and typo corrections of the words in the query without stopping early when enough results are found (drop_tokens_threshold and typo_tokens_threshold configurations are ignored).
-          type: boolean
         search_cutoff_ms:
+          type: integer
           description: |
             Typesense will attempt to return results early if the cutoff time has elapsed. This is not a strict guarantee and facet computation is not bound by this parameter.
-          type: integer
         use_cache:
+          type: boolean
           description: |
             Enable server side caching of search query results. By default, caching is disabled.
-          type: boolean
         cache_ttl:
+          type: integer
           description: |
             The duration (in seconds) that determines how long the search query is cached. This value can be set on a per-query basis. Default: 60.
-          type: integer
         min_len_1typo:
+          type: integer
           description: |
             Minimum word length for 1-typo correction to be applied. The value of num_typos is still treated as the maximum allowed typos.
-          type: integer
         min_len_2typo:
+          type: integer
           description: |
             Minimum word length for 2-typo correction to be applied. The value of num_typos is still treated as the maximum allowed typos.
-          type: integer
         vector_query:
+          type: string
           description: |
             Vector query expression for fetching documents "closest" to a given query/document vector.
-          type: string
         remote_embedding_timeout_ms:
+          type: integer
           description: |
             Timeout (in milliseconds) for fetching remote embeddings.
-          type: integer
         remote_embedding_num_tries:
+          type: integer
           description: |
             Number of times to retry fetching remote embeddings.
-          type: integer
         facet_strategy:
+          type: string
           description: |
             Choose the underlying faceting strategy used. Comma separated string of allows values: exhaustive, top_values or automatic (default).
-          type: string
         stopwords:
+          type: string
           description: |
             Name of the stopwords set to apply for this search, the keywords present in the set will be removed from the search query.
-          type: string
         facet_return_parent:
+          type: string
           description: |
             Comma separated string of nested facet fields whose parent object should be returned in facet response.
-          type: string
         voice_query:
+          type: string
           description: |
             The base64 encoded audio file in 16 khz 16-bit WAV format.
-          type: string
         conversation:
+          type: boolean
           description: |
             Enable conversational search.
-          type: boolean
         conversation_model_id:
+          type: string
           description: |
             The Id of Conversation Model to be used.
-          type: string
         conversation_id:
+          type: string
           description: |
             The Id of a previous conversation to continue, this tells Typesense to include prior context when communicating with the LLM.
-          type: string
       x-rust-builder: true
       x-rust-is-used-as-input: true
     MultiSearchSearchesParameter:
@@ -4301,9 +4301,9 @@ components:
       - searches
       properties:
         union:
-          description: When true, merges the search results from each search query into a single ordered set of hits.
           type: boolean
           default: false
+          description: When true, merges the search results from each search query into a single ordered set of hits.
         searches:
           type: array
           items:
@@ -4378,14 +4378,14 @@ components:
       - data
       properties:
         name:
+          type: string
           description: Name of the analytics rule this event corresponds to
-          type: string
         event_type:
-          description: Type of event (e.g., click, conversion, query, visit)
           type: string
+          description: Type of event (e.g., click, conversion, query, visit)
         data:
-          description: Event payload
           type: object
+          description: Event payload
           properties:
             user_id:
               type: string
@@ -4475,8 +4475,8 @@ components:
           x-rust-is-used-as-input: true
       x-rust-is-used-as-input: true
     AnalyticsRuleUpdate:
-      description: Fields allowed to update on an analytics rule
       type: object
+      description: Fields allowed to update on an analytics rule
       properties:
         name:
           type: string
@@ -4669,9 +4669,9 @@ components:
       - emplace
       x-rust-is-used-as-input: true
     DropTokensMode:
+      type: string
       description: |
         Dictates the direction in which the words in the query must be dropped when the original words in the query do not appear in any document. Values: right_to_left (default), left_to_right, both_sides:3 A note on both_sides:3 - for queries up to 3 tokens (words) in length, this mode will drop tokens from both sides and exhaustively rank all matching results. If query length is greater than 3 words, Typesense will just fallback to default behavior of right_to_left
-      type: string
       enum:
       - right_to_left
       - left_to_right
@@ -4704,34 +4704,34 @@ components:
       type: object
       properties:
         id:
+          type: string
           description: An explicit id for the model, otherwise the API will return a response with an auto-generated conversation model id.
-          type: string
         model_name:
+          type: string
           description: Name of the LLM model offered by OpenAI, Cloudflare or vLLM
-          type: string
         api_key:
+          type: string
           description: The LLM service's API Key
-          type: string
         history_collection:
+          type: string
           description: Typesense collection that stores the historical conversations
-          type: string
         account_id:
+          type: string
           description: LLM service's account ID (only applicable for Cloudflare)
-          type: string
         system_prompt:
-          description: The system prompt that contains special instructions to the LLM
           type: string
+          description: The system prompt that contains special instructions to the LLM
         ttl:
+          type: integer
           description: |
             Time interval in seconds after which the messages would be deleted. Default: 86400 (24 hours)
-          type: integer
         max_bytes:
+          type: integer
           description: |
             The maximum number of bytes to send to the LLM in every API call. Consult the LLM's documentation on the number of bytes supported in the context window.
-          type: integer
         vllm_url:
-          description: URL of vLLM service
           type: string
+          description: URL of vLLM service
       x-rust-is-used-as-input: true
     ConversationModelSchema:
       allOf:
@@ -4750,12 +4750,12 @@ components:
       - words
       properties:
         id:
-          description: Unique identifier for the dictionary
           type: string
+          description: Unique identifier for the dictionary
           example: irregular-plurals
         words:
-          description: List of word mappings in the dictionary
           type: array
+          description: List of word mappings in the dictionary
           items:
             type: object
             required:
@@ -4763,72 +4763,72 @@ components:
             - root
             properties:
               word:
-                description: The word form to be stemmed
                 type: string
+                description: The word form to be stemmed
                 example: people
               root:
-                description: The root form of the word
                 type: string
+                description: The root form of the word
                 example: person
     NLSearchModelBase:
       type: object
       properties:
         model_name:
+          type: string
           description: Name of the NL model to use
-          type: string
         api_key:
+          type: string
           description: API key for the NL model service
-          type: string
         api_url:
+          type: string
           description: Custom API URL for the NL model service
-          type: string
         max_bytes:
+          type: integer
           description: Maximum number of bytes to process
-          type: integer
         temperature:
+          type: number
           description: Temperature parameter for the NL model
-          type: number
         system_prompt:
-          description: System prompt for the NL model
           type: string
+          description: System prompt for the NL model
         top_p:
-          description: Top-p parameter for the NL model (Google-specific)
           type: number
+          description: Top-p parameter for the NL model (Google-specific)
         top_k:
-          description: Top-k parameter for the NL model (Google-specific)
           type: integer
+          description: Top-k parameter for the NL model (Google-specific)
         stop_sequences:
-          description: Stop sequences for the NL model (Google-specific)
           type: array
+          description: Stop sequences for the NL model (Google-specific)
           items:
             type: string
         api_version:
+          type: string
           description: API version for the NL model service
-          type: string
         project_id:
+          type: string
           description: Project ID for GCP Vertex AI
-          type: string
         access_token:
+          type: string
           description: Access token for GCP Vertex AI
-          type: string
         refresh_token:
+          type: string
           description: Refresh token for GCP Vertex AI
-          type: string
         client_id:
+          type: string
           description: Client ID for GCP Vertex AI
-          type: string
         client_secret:
+          type: string
           description: Client secret for GCP Vertex AI
-          type: string
         region:
+          type: string
           description: Region for GCP Vertex AI
-          type: string
         max_output_tokens:
-          description: Maximum output tokens for GCP Vertex AI
           type: integer
+          description: Maximum output tokens for GCP Vertex AI
         account_id:
-          description: Account ID for Cloudflare-specific models
           type: string
+          description: Account ID for Cloudflare-specific models
     NLSearchModelCreateSchema:
       allOf:
       - $ref: '#/components/schemas/NLSearchModelBase'
@@ -4857,8 +4857,8 @@ components:
       - id
       properties:
         id:
-          description: ID of the deleted NL search model
           type: string
+          description: ID of the deleted NL search model
     SynonymItemSchema:
       type: object
       required:
@@ -4866,22 +4866,22 @@ components:
       - synonyms
       properties:
         id:
-          description: Unique identifier for the synonym item
           type: string
+          description: Unique identifier for the synonym item
         synonyms:
-          description: Array of words that should be considered as synonyms
           type: array
+          description: Array of words that should be considered as synonyms
           items:
             type: string
         root:
+          type: string
           description: For 1-way synonyms, indicates the root word that words in the synonyms parameter map to
-          type: string
         locale:
-          description: Locale for the synonym, leave blank to use the standard tokenizer
           type: string
+          description: Locale for the synonym, leave blank to use the standard tokenizer
         symbols_to_index:
-          description: By default, special characters are dropped from synonyms. Use this attribute to specify which special characters should be indexed as is
           type: array
+          description: By default, special characters are dropped from synonyms. Use this attribute to specify which special characters should be indexed as is
           items:
             type: string
       x-rust-is-used-as-input: true
@@ -4891,8 +4891,8 @@ components:
       - items
       properties:
         items:
-          description: Array of synonym items
           type: array
+          description: Array of synonym items
           items:
             $ref: '#/components/schemas/SynonymItemSchema'
       x-rust-is-used-as-input: true
@@ -4912,8 +4912,8 @@ components:
       - synonym_sets
       properties:
         synonym_sets:
-          description: Array of synonym sets
           type: array
+          description: Array of synonym sets
           items:
             $ref: '#/components/schemas/SynonymSetSchema'
     SynonymSetRetrieveSchema:
@@ -4924,16 +4924,16 @@ components:
       - name
       properties:
         name:
-          description: Name of the deleted synonym set
           type: string
+          description: Name of the deleted synonym set
     SynonymItemDeleteSchema:
       type: object
       required:
       - id
       properties:
         id:
-          description: ID of the deleted synonym item
           type: string
+          description: ID of the deleted synonym item
     CurationItemCreateSchema:
       type: object
       required:
@@ -4942,55 +4942,55 @@ components:
         rule:
           $ref: '#/components/schemas/CurationRule'
         includes:
-          description: List of document `id`s that should be included in the search results with their corresponding `position`s.
           type: array
+          description: List of document `id`s that should be included in the search results with their corresponding `position`s.
           items:
             $ref: '#/components/schemas/CurationInclude'
         excludes:
-          description: List of document `id`s that should be excluded from the search results.
           type: array
+          description: List of document `id`s that should be excluded from the search results.
           items:
             $ref: '#/components/schemas/CurationExclude'
         filter_by:
+          type: string
           description: |
             A filter by clause that is applied to any search query that matches the curation rule.
-          type: string
         remove_matched_tokens:
+          type: boolean
           description: |
             Indicates whether search query tokens that exist in the curation's rule should be removed from the search query.
-          type: boolean
         metadata:
+          type: object
           description: |
             Return a custom JSON object in the Search API response, when this rule is triggered. This can can be used to display a pre-defined message (eg: a promotion banner) on the front-end when a particular rule is triggered.
-          type: object
           x-rust-is-used-as-input: true
         sort_by:
+          type: string
           description: |
             A sort by clause that is applied to any search query that matches the curation rule.
-          type: string
         replace_query:
+          type: string
           description: |
             Replaces the current search query with this value, when the search query matches the curation rule.
-          type: string
         filter_curated_hits:
+          type: boolean
           description: |
             When set to true, the filter conditions of the query is applied to the curated records as well. Default: false.
-          type: boolean
         effective_from_ts:
+          type: integer
           description: |
             A Unix timestamp that indicates the date/time from which the curation will be active. You can use this to create rules that start applying from a future point in time.
-          type: integer
         effective_to_ts:
+          type: integer
           description: |
             A Unix timestamp that indicates the date/time until which the curation will be active. You can use this to create rules that stop applying after a period of time.
-          type: integer
         stop_processing:
+          type: boolean
           description: |
             When set to true, curation processing will stop at the first matching rule. When set to false curation processing will continue and multiple curation actions will be triggered in sequence. Curations are processed in the lexical sort order of their id field.
-          type: boolean
         id:
-          description: ID of the curation item
           type: string
+          description: ID of the curation item
       x-rust-is-used-as-input: true
     CurationItemSchema:
       allOf:
@@ -5007,13 +5007,13 @@ components:
       - items
       properties:
         items:
-          description: Array of curation items
           type: array
+          description: Array of curation items
           items:
             $ref: '#/components/schemas/CurationItemCreateSchema'
         description:
-          description: Optional description for the curation set
           type: string
+          description: Optional description for the curation set
       x-rust-is-used-as-input: true
     CurationSetSchema:
       allOf:
@@ -5028,24 +5028,24 @@ components:
       type: object
       properties:
         tags:
-          description: List of tag values to associate with this curation rule.
           type: array
+          description: List of tag values to associate with this curation rule.
           items:
             type: string
         query:
-          description: Indicates what search queries should be curated
           type: string
+          description: Indicates what search queries should be curated
         match:
+          type: string
           description: |
             Indicates whether the match on the query term should be `exact` or `contains`. If we want to match all queries that contained the word `apple`, we will use the `contains` match instead.
-          type: string
           enum:
           - exact
           - contains
         filter_by:
+          type: string
           description: |
             Indicates that the curation should apply when the filter_by parameter in a search query exactly matches the string specified here (including backticks, spaces, brackets, etc).
-          type: string
     CurationInclude:
       type: object
       required:
@@ -5053,19 +5053,19 @@ components:
       - position
       properties:
         id:
-          description: document id that should be included
           type: string
+          description: document id that should be included
         position:
-          description: position number where document should be included in the search results
           type: integer
+          description: position number where document should be included in the search results
     CurationExclude:
       type: object
       required:
       - id
       properties:
         id:
-          description: document id that should be excluded from the search results.
           type: string
+          description: document id that should be excluded from the search results.
     CurationSetRetrieveSchema:
       $ref: '#/components/schemas/CurationSetCreateSchema'
     CurationSetDeleteSchema:
@@ -5074,24 +5074,24 @@ components:
       - name
       properties:
         name:
-          description: Name of the deleted curation set
           type: string
+          description: Name of the deleted curation set
     CurationItemDeleteSchema:
       type: object
       required:
       - id
       properties:
         id:
-          description: ID of the deleted curation item
           type: string
+          description: ID of the deleted curation item
     ImportDocumentsParameters:
       type: object
       properties:
         batch_size:
           type: integer
         return_id:
-          description: Returning the id of the imported documents. If you want the import response to return the ingested document's id in the response, you can use the return_id parameter.
           type: boolean
+          description: Returning the id of the imported documents. If you want the import response to return the ingested document's id in the response, you can use the return_id parameter.
         remote_embedding_batch_size:
           type: integer
         return_doc:
@@ -5105,14 +5105,14 @@ components:
       type: object
       properties:
         filter_by:
+          type: string
           description: Filter conditions for refining your search results. Separate multiple conditions with &&.
-          type: string
         include_fields:
+          type: string
           description: List of fields from the document to include in the search result
-          type: string
         exclude_fields:
-          description: List of fields from the document to exclude in the search result
           type: string
+          description: List of fields from the document to exclude in the search result
       x-rust-is-used-as-input: true
     UpdateDocumentsParameters:
       type: object
@@ -5130,27 +5130,27 @@ components:
           type: string
           example: 'num_employees:>100 && country: [USA, UK]'
         batch_size:
-          description: Batch size parameter controls the number of documents that should be deleted at a time. A larger value will speed up deletions, but will impact performance of other operations running on the server.
           type: integer
+          description: Batch size parameter controls the number of documents that should be deleted at a time. A larger value will speed up deletions, but will impact performance of other operations running on the server.
         ignore_not_found:
           type: boolean
         truncate:
-          description: When true, removes all documents from the collection while preserving the collection and its schema.
           type: boolean
+          description: When true, removes all documents from the collection while preserving the collection and its schema.
       x-rust-is-used-as-input: true
     GetCollectionsParameters:
       type: object
       properties:
         exclude_fields:
-          description: Comma-separated list of fields from the collection to exclude from the response
           type: string
+          description: Comma-separated list of fields from the collection to exclude from the response
         limit:
+          type: integer
           description: |
             Number of collections to fetch. Default: returns all collections.
-          type: integer
         offset:
-          description: Identifies the starting point to return collections when paginating.
           type: integer
+          description: Identifies the starting point to return collections when paginating.
       x-rust-is-used-as-input: true
   securitySchemes:
     api_key_header:

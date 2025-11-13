@@ -58,9 +58,9 @@ pub(crate) struct OpenAPIMethod {
 #[serde(rename_all = "camelCase")]
 pub(crate) struct OpenAPIBody {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub(crate) description: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) required: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) content: Option<IndexMap<String, OpenAPIBodyContent>>,
 
@@ -86,11 +86,11 @@ pub(crate) struct OpenAPIParameter {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) required: Option<Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) r#in: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) description: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub(crate) required: Option<Value>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) schema: Option<OpenAPIProperty>,
 
@@ -114,11 +114,13 @@ pub(crate) struct OpenAPIComponents {
 #[serde(rename_all = "camelCase")]
 pub(crate) struct OpenAPIProperty {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub(crate) description: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) r#type: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) default: Option<Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) required: Option<Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) example: Option<Value>,
     #[serde(rename = "$ref", skip_serializing_if = "Option::is_none")]
