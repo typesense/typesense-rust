@@ -13,7 +13,7 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SchemaChangeStatus<'a> {
+pub struct SchemaChangeStatus {
     /// Name of the collection being modified
     #[serde(rename = "collection", skip_serializing_if = "Option::is_none")]
     pub collection: Option<String>,
@@ -23,17 +23,14 @@ pub struct SchemaChangeStatus<'a> {
     /// Number of documents that have been altered
     #[serde(rename = "altered_docs", skip_serializing_if = "Option::is_none")]
     pub altered_docs: Option<i32>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> SchemaChangeStatus<'a> {
+impl SchemaChangeStatus {
     pub fn new() -> Self {
         Self {
             collection: None,
             validated_docs: None,
             altered_docs: None,
-            _phantom: PhantomData,
         }
     }
 }

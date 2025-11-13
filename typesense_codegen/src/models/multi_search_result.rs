@@ -13,21 +13,18 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct MultiSearchResult<'a, D> {
+pub struct MultiSearchResult<D> {
     #[serde(rename = "results")]
-    pub results: Vec<models::MultiSearchResultItem<'a, D>>,
+    pub results: Vec<models::MultiSearchResultItem<D>>,
     #[serde(rename = "conversation", skip_serializing_if = "Option::is_none")]
-    pub conversation: Option<Box<models::SearchResultConversation<'a>>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
+    pub conversation: Option<Box<models::SearchResultConversation>>,
 }
 
-impl<'a, D> MultiSearchResult<'a, D> {
-    pub fn new(results: Vec<models::MultiSearchResultItem<'a, D>>) -> Self {
+impl<D> MultiSearchResult<D> {
+    pub fn new(results: Vec<models::MultiSearchResultItem<D>>) -> Self {
         Self {
             results,
             conversation: None,
-            _phantom: PhantomData,
         }
     }
 }

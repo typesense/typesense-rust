@@ -13,7 +13,7 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchHighlight<'a> {
+pub struct SearchHighlight {
     #[serde(rename = "field", skip_serializing_if = "Option::is_none")]
     pub field: Option<String>,
     /// Present only for (non-array) string fields
@@ -33,11 +33,9 @@ pub struct SearchHighlight<'a> {
     pub indices: Option<Vec<i32>>,
     #[serde(rename = "matched_tokens", skip_serializing_if = "Option::is_none")]
     pub matched_tokens: Option<Vec<serde_json::Value>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> SearchHighlight<'a> {
+impl SearchHighlight {
     pub fn new() -> Self {
         Self {
             field: None,
@@ -47,7 +45,6 @@ impl<'a> SearchHighlight<'a> {
             values: None,
             indices: None,
             matched_tokens: None,
-            _phantom: PhantomData,
         }
     }
 }

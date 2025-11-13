@@ -87,8 +87,8 @@ pub struct UpsertAliasParams<'p> {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum CreateCollectionError {
-    Status400(models::ApiResponse<'static>),
-    Status409(models::ApiResponse<'static>),
+    Status400(models::ApiResponse),
+    Status409(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -96,7 +96,7 @@ pub enum CreateCollectionError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum DeleteAliasError {
-    Status404(models::ApiResponse<'static>),
+    Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -104,7 +104,7 @@ pub enum DeleteAliasError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum DeleteCollectionError {
-    Status404(models::ApiResponse<'static>),
+    Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -112,7 +112,7 @@ pub enum DeleteCollectionError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum GetAliasError {
-    Status404(models::ApiResponse<'static>),
+    Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -127,7 +127,7 @@ pub enum GetAliasesError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum GetCollectionError {
-    Status404(models::ApiResponse<'static>),
+    Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -142,8 +142,8 @@ pub enum GetCollectionsError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum UpdateCollectionError {
-    Status400(models::ApiResponse<'static>),
-    Status404(models::ApiResponse<'static>),
+    Status400(models::ApiResponse),
+    Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -151,8 +151,8 @@ pub enum UpdateCollectionError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum UpsertAliasError {
-    Status400(models::ApiResponse<'static>),
-    Status404(models::ApiResponse<'static>),
+    Status400(models::ApiResponse),
+    Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -160,7 +160,7 @@ pub enum UpsertAliasError {
 pub async fn create_collection(
     configuration: &configuration::Configuration,
     params: &CreateCollectionParams<'_>,
-) -> Result<models::CollectionResponse<'static>, Error<CreateCollectionError>> {
+) -> Result<models::CollectionResponse, Error<CreateCollectionError>> {
     let uri_str = format!("{}/collections", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -219,7 +219,7 @@ pub async fn create_collection(
 pub async fn delete_alias(
     configuration: &configuration::Configuration,
     params: &DeleteAliasParams<'_>,
-) -> Result<models::CollectionAlias<'static>, Error<DeleteAliasError>> {
+) -> Result<models::CollectionAlias, Error<DeleteAliasError>> {
     let uri_str = format!(
         "{}/aliases/{aliasName}",
         configuration.base_path,
@@ -282,7 +282,7 @@ pub async fn delete_alias(
 pub async fn delete_collection(
     configuration: &configuration::Configuration,
     params: &DeleteCollectionParams<'_>,
-) -> Result<models::CollectionResponse<'static>, Error<DeleteCollectionError>> {
+) -> Result<models::CollectionResponse, Error<DeleteCollectionError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}",
         configuration.base_path,
@@ -345,7 +345,7 @@ pub async fn delete_collection(
 pub async fn get_alias(
     configuration: &configuration::Configuration,
     params: &GetAliasParams<'_>,
-) -> Result<models::CollectionAlias<'static>, Error<GetAliasError>> {
+) -> Result<models::CollectionAlias, Error<GetAliasError>> {
     let uri_str = format!(
         "{}/aliases/{aliasName}",
         configuration.base_path,
@@ -405,7 +405,7 @@ pub async fn get_alias(
 /// List all aliases and the corresponding collections that they map to.
 pub async fn get_aliases(
     configuration: &configuration::Configuration,
-) -> Result<models::CollectionAliasesResponse<'static>, Error<GetAliasesError>> {
+) -> Result<models::CollectionAliasesResponse, Error<GetAliasesError>> {
     let uri_str = format!("{}/aliases", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -462,7 +462,7 @@ pub async fn get_aliases(
 pub async fn get_collection(
     configuration: &configuration::Configuration,
     params: &GetCollectionParams<'_>,
-) -> Result<models::CollectionResponse<'static>, Error<GetCollectionError>> {
+) -> Result<models::CollectionResponse, Error<GetCollectionError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}",
         configuration.base_path,
@@ -523,7 +523,7 @@ pub async fn get_collection(
 pub async fn get_collections(
     configuration: &configuration::Configuration,
     params: &GetCollectionsParams<'_>,
-) -> Result<Vec<models::CollectionResponse<'static>>, Error<GetCollectionsError>> {
+) -> Result<Vec<models::CollectionResponse>, Error<GetCollectionsError>> {
     let uri_str = format!("{}/collections", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -653,7 +653,7 @@ pub async fn update_collection(
 pub async fn upsert_alias(
     configuration: &configuration::Configuration,
     params: &UpsertAliasParams<'_>,
-) -> Result<models::CollectionAlias<'static>, Error<UpsertAliasError>> {
+) -> Result<models::CollectionAlias, Error<UpsertAliasError>> {
     let uri_str = format!(
         "{}/aliases/{aliasName}",
         configuration.base_path,

@@ -13,7 +13,7 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchResultConversation<'a> {
+pub struct SearchResultConversation {
     #[serde(rename = "answer")]
     pub answer: String,
     #[serde(rename = "conversation_history")]
@@ -22,11 +22,9 @@ pub struct SearchResultConversation<'a> {
     pub conversation_id: String,
     #[serde(rename = "query")]
     pub query: String,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> SearchResultConversation<'a> {
+impl SearchResultConversation {
     pub fn new(
         answer: String,
         conversation_history: Vec<serde_json::Value>,
@@ -38,7 +36,6 @@ impl<'a> SearchResultConversation<'a> {
             conversation_history,
             conversation_id,
             query,
-            _phantom: PhantomData,
         }
     }
 }

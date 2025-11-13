@@ -13,23 +13,20 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct CollectionAlias<'a> {
+pub struct CollectionAlias {
     /// Name of the collection alias
     #[serde(rename = "name")]
     pub name: String,
     /// Name of the collection the alias mapped to
     #[serde(rename = "collection_name")]
     pub collection_name: String,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> CollectionAlias<'a> {
+impl CollectionAlias {
     pub fn new(name: String, collection_name: String) -> Self {
         Self {
             name,
             collection_name,
-            _phantom: PhantomData,
         }
     }
 }

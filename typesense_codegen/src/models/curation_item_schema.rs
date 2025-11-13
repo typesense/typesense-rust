@@ -13,15 +13,15 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct CurationItemSchema<'a> {
+pub struct CurationItemSchema {
     #[serde(rename = "rule")]
-    pub rule: Box<models::CurationRule<'a>>,
+    pub rule: Box<models::CurationRule>,
     /// List of document `id`s that should be included in the search results with their corresponding `position`s.
     #[serde(rename = "includes", skip_serializing_if = "Option::is_none")]
-    pub includes: Option<Vec<models::CurationInclude<'a>>>,
+    pub includes: Option<Vec<models::CurationInclude>>,
     /// List of document `id`s that should be excluded from the search results.
     #[serde(rename = "excludes", skip_serializing_if = "Option::is_none")]
-    pub excludes: Option<Vec<models::CurationExclude<'a>>>,
+    pub excludes: Option<Vec<models::CurationExclude>>,
     /// A filter by clause that is applied to any search query that matches the curation rule.
     #[serde(rename = "filter_by", skip_serializing_if = "Option::is_none")]
     pub filter_by: Option<String>,
@@ -57,12 +57,10 @@ pub struct CurationItemSchema<'a> {
     pub stop_processing: Option<bool>,
     #[serde(rename = "id")]
     pub id: String,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> CurationItemSchema<'a> {
-    pub fn new(rule: models::CurationRule<'a>, id: String) -> Self {
+impl CurationItemSchema {
+    pub fn new(rule: models::CurationRule, id: String) -> Self {
         Self {
             rule: Box::new(rule),
             includes: None,
@@ -77,7 +75,6 @@ impl<'a> CurationItemSchema<'a> {
             effective_to_ts: None,
             stop_processing: None,
             id,
-            _phantom: PhantomData,
         }
     }
 }

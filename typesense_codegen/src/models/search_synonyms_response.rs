@@ -13,18 +13,13 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchSynonymsResponse<'a> {
+pub struct SearchSynonymsResponse {
     #[serde(rename = "synonyms")]
-    pub synonyms: Vec<models::SearchSynonym<'a>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
+    pub synonyms: Vec<models::SearchSynonym>,
 }
 
-impl<'a> SearchSynonymsResponse<'a> {
-    pub fn new(synonyms: Vec<models::SearchSynonym<'a>>) -> Self {
-        Self {
-            synonyms,
-            _phantom: PhantomData,
-        }
+impl SearchSynonymsResponse {
+    pub fn new(synonyms: Vec<models::SearchSynonym>) -> Self {
+        Self { synonyms }
     }
 }

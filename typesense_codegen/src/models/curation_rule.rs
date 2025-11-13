@@ -13,7 +13,7 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct CurationRule<'a> {
+pub struct CurationRule {
     /// List of tag values to associate with this curation rule.
     #[serde(rename = "tags", skip_serializing_if = "Option::is_none")]
     pub tags: Option<Vec<String>>,
@@ -26,18 +26,15 @@ pub struct CurationRule<'a> {
     /// Indicates that the curation should apply when the filter_by parameter in a search query exactly matches the string specified here (including backticks, spaces, brackets, etc).
     #[serde(rename = "filter_by", skip_serializing_if = "Option::is_none")]
     pub filter_by: Option<String>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> CurationRule<'a> {
+impl CurationRule {
     pub fn new() -> Self {
         Self {
             tags: None,
             query: None,
             r#match: None,
             filter_by: None,
-            _phantom: PhantomData,
         }
     }
 }

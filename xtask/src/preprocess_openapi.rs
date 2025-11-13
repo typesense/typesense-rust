@@ -229,22 +229,31 @@ fn collect_property(prop: &OpenAPIProperty) -> Vec<String> {
 
 fn schemas_mark_owned_data(doc: &mut OpenAPI) {
     let mut request_schemas = HashSet::new();
-    doc.paths.iter().for_each(|(_, pms)| {
-        pms.iter().for_each(|(_, pm)| {
-            if let Some(ps) = &pm.parameters {
-                ps.iter().for_each(|p| {
-                    if let Some(s) = &p.schema {
+    doc.paths.iter_mut().for_each(|(_, pms)| {
+        pms.iter_mut().for_each(|(_, pm)| {
+            if let Some(ps) = &mut pm.parameters {
+                ps.iter_mut().for_each(|p| {
+                    if let Some(s) = &mut p.schema {
+                        if s.r#type.as_deref() == Some("object") || s.one_of.is_some() {
+                            s.extra
+                                .insert("x-rust-is-used-as-input".to_owned(), Value::Bool(true));
+                        }
                         request_schemas.extend(collect_property(s));
                     }
                 })
             }
-            if let Some(reqb) = &pm.request_body
-                && let Some(cs) = &reqb.content
+
+            if let Some(reqb) = &mut pm.request_body
+                && let Some(cs) = &mut reqb.content
             {
-                cs.iter().for_each(|(_, c)| {
-                    c.schema.as_ref().iter().for_each(|cp| {
-                        request_schemas.extend(collect_property(cp));
-                    })
+                cs.iter_mut().for_each(|(_, c)| {
+                    if let Some(s) = &mut c.schema {
+                        if s.r#type.as_deref() == Some("object") || s.one_of.is_some() {
+                            s.extra
+                                .insert("x-rust-is-used-as-input".to_owned(), Value::Bool(true));
+                        }
+                        request_schemas.extend(collect_property(s));
+                    }
                 })
             }
         })
@@ -270,7 +279,7 @@ fn schemas_mark_owned_data(doc: &mut OpenAPI) {
 
         for (_, prop) in schema.properties.iter_mut().flat_map(|v| v.iter_mut()) {
             for inner in prop.one_of.iter_mut().flat_map(|v| v.iter_mut()) {
-                if inner.r#type.as_deref() != Some("object") {
+                if inner.r#type.as_deref() != Some("object") && inner.one_of.is_none() {
                     continue;
                 }
                 inner
@@ -278,7 +287,7 @@ fn schemas_mark_owned_data(doc: &mut OpenAPI) {
                     .insert("x-rust-is-used-as-input".to_owned(), Value::Bool(true));
             }
             for inner in prop.any_of.iter_mut().flat_map(|v| v.iter_mut()) {
-                if inner.r#type.as_deref() != Some("object") {
+                if inner.r#type.as_deref() != Some("object") && inner.one_of.is_none() {
                     continue;
                 }
                 inner
@@ -286,14 +295,14 @@ fn schemas_mark_owned_data(doc: &mut OpenAPI) {
                     .insert("x-rust-is-used-as-input".to_owned(), Value::Bool(true));
             }
             if let Some(inner) = &mut prop.items
-                && inner.r#type.as_deref() == Some("object")
+                && (inner.r#type.as_deref() == Some("object") || inner.one_of.is_some())
             {
                 inner
                     .extra
                     .insert("x-rust-is-used-as-input".to_owned(), Value::Bool(true));
             }
 
-            if prop.r#type.as_deref() != Some("object") {
+            if prop.r#type.as_deref() != Some("object") && prop.one_of.is_none() {
                 continue;
             }
             prop.extra

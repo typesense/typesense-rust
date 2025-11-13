@@ -13,18 +13,13 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct PresetsRetrieveSchema<'a> {
+pub struct PresetsRetrieveSchema {
     #[serde(rename = "presets")]
-    pub presets: Vec<models::PresetSchema<'a>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
+    pub presets: Vec<models::PresetSchema>,
 }
 
-impl<'a> PresetsRetrieveSchema<'a> {
-    pub fn new(presets: Vec<models::PresetSchema<'a>>) -> Self {
-        Self {
-            presets,
-            _phantom: PhantomData,
-        }
+impl PresetsRetrieveSchema {
+    pub fn new(presets: Vec<models::PresetSchema>) -> Self {
+        Self { presets }
     }
 }

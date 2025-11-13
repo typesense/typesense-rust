@@ -22,7 +22,7 @@ pub struct CollectionSchema<'a> {
     pub name: Cow<'a, str>,
     /// A list of fields for querying, filtering and faceting
     #[serde(rename = "fields")]
-    pub fields: Vec<models::Field<'a>>,
+    pub fields: Vec<models::Field>,
     /// The name of an int32 / float field that determines the order in which the search results are ranked when a sort_by clause is not provided during searching. This field must indicate some kind of popularity.
     #[serde(
         rename = "default_sorting_field",
@@ -45,7 +45,7 @@ pub struct CollectionSchema<'a> {
     #[serde(rename = "symbols_to_index", skip_serializing_if = "Option::is_none")]
     pub symbols_to_index: Option<Vec<String>>,
     #[serde(rename = "voice_query_model", skip_serializing_if = "Option::is_none")]
-    pub voice_query_model: Option<Box<models::VoiceQueryModelCollectionConfig<'a>>>,
+    pub voice_query_model: Option<Box<models::VoiceQueryModelCollectionConfig>>,
     /// Optional details about the collection, e.g., when it was created, who created it etc.
     #[serde(rename = "metadata", skip_serializing_if = "Option::is_none")]
     pub metadata: Option<serde_json::Value>,
@@ -55,7 +55,7 @@ pub struct CollectionSchema<'a> {
 }
 
 impl<'a> CollectionSchema<'a> {
-    pub fn new(name: Cow<'a, str>, fields: Vec<models::Field<'a>>) -> Self {
+    pub fn new(name: Cow<'a, str>, fields: Vec<models::Field>) -> Self {
         Self {
             name,
             fields,

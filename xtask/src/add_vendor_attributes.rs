@@ -24,28 +24,25 @@ pub fn add_vendor_attributes(doc: &mut OpenAPI) -> Result<(), String> {
     attrs.schema_field_type_overrides(
         "SearchResult",
         [
-            ("hits", "Option<Vec<models::SearchResultHit<'a, D>>>"),
-            (
-                "grouped_hits",
-                "Option<Vec<models::SearchGroupedHit<'a, D>>>",
-            ),
+            ("hits", "Option<Vec<models::SearchResultHit<D>>>"),
+            ("grouped_hits", "Option<Vec<models::SearchGroupedHit<D>>>"),
         ],
     )?;
     attrs.schema_field_type_overrides(
         "SearchGroupedHit",
-        [("hits", "Vec<models::SearchResultHit<'a, D>>")],
+        [("hits", "Vec<models::SearchResultHit<D>>")],
     )?;
     attrs.schema_field_type_overrides("SearchResultHit", [("document", "Option<D>")])?;
     attrs.schema_field_type_overrides(
         "MultiSearchResult",
-        [("results", "Vec<models::MultiSearchResultItem<'a, D>>")],
+        [("results", "Vec<models::MultiSearchResultItem<D>>")],
     )?;
 
     // Operations
     attrs
         .operation("/collections/{collectionName}/documents/search", "get")
         .generic_parameter("D: for<'de> serde::Deserialize<'de> + Serialize")?
-        .return_type("models::SearchResult<'static, D>")?;
+        .return_type("models::SearchResult<D>")?;
 
     attrs
         .operation("/multi_search", "post")
@@ -54,7 +51,7 @@ pub fn add_vendor_attributes(doc: &mut OpenAPI) -> Result<(), String> {
     // The endpoint return `null` if no schema changes are in progress
     attrs
         .operation("/operations/schema_changes", "get")
-        .return_type("Option<Vec<models::SchemaChangeStatus<'static>>>")?;
+        .return_type("Option<Vec<models::SchemaChangeStatus>>")?;
 
     // The documents /import endpoint expects a text/plain body and response
     attrs

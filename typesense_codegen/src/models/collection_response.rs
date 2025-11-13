@@ -13,13 +13,13 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct CollectionResponse<'a> {
+pub struct CollectionResponse {
     /// Name of the collection
     #[serde(rename = "name")]
     pub name: String,
     /// A list of fields for querying, filtering and faceting
     #[serde(rename = "fields")]
-    pub fields: Vec<models::Field<'a>>,
+    pub fields: Vec<models::Field>,
     /// The name of an int32 / float field that determines the order in which the search results are ranked when a sort_by clause is not provided during searching. This field must indicate some kind of popularity.
     #[serde(
         rename = "default_sorting_field",
@@ -42,7 +42,7 @@ pub struct CollectionResponse<'a> {
     #[serde(rename = "symbols_to_index", skip_serializing_if = "Option::is_none")]
     pub symbols_to_index: Option<Vec<String>>,
     #[serde(rename = "voice_query_model", skip_serializing_if = "Option::is_none")]
-    pub voice_query_model: Option<Box<models::VoiceQueryModelCollectionConfig<'a>>>,
+    pub voice_query_model: Option<Box<models::VoiceQueryModelCollectionConfig>>,
     /// Optional details about the collection, e.g., when it was created, who created it etc.
     #[serde(rename = "metadata", skip_serializing_if = "Option::is_none")]
     pub metadata: Option<serde_json::Value>,
@@ -52,14 +52,12 @@ pub struct CollectionResponse<'a> {
     /// Timestamp of when the collection was created (Unix epoch in seconds)
     #[serde(rename = "created_at")]
     pub created_at: i64,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> CollectionResponse<'a> {
+impl CollectionResponse {
     pub fn new(
         name: String,
-        fields: Vec<models::Field<'a>>,
+        fields: Vec<models::Field>,
         num_documents: i64,
         created_at: i64,
     ) -> Self {
@@ -75,7 +73,6 @@ impl<'a> CollectionResponse<'a> {
             metadata: None,
             num_documents,
             created_at,
-            _phantom: PhantomData,
         }
     }
 }

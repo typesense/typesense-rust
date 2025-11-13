@@ -29,8 +29,7 @@ impl<'a> Stopwords<'a> {
         &self,
         set_id: impl Into<Cow<'_, str>>,
         schema: models::StopwordsSetUpsertSchema<'_>,
-    ) -> Result<models::StopwordsSetSchema<'static>, Error<stopwords_api::UpsertStopwordsSetError>>
-    {
+    ) -> Result<models::StopwordsSetSchema, Error<stopwords_api::UpsertStopwordsSetError>> {
         let params = stopwords_api::UpsertStopwordsSetParams {
             set_id: set_id.into(),
             stopwords_set_upsert_schema: schema,
@@ -43,7 +42,7 @@ impl<'a> Stopwords<'a> {
     pub async fn retrieve(
         &self,
     ) -> Result<
-        models::StopwordsSetsRetrieveAllSchema<'static>,
+        models::StopwordsSetsRetrieveAllSchema,
         Error<stopwords_api::RetrieveStopwordsSetsError>,
     > {
         execute_wrapper!(self, stopwords_api::retrieve_stopwords_sets)

@@ -29,8 +29,7 @@ impl<'c> Collections<'c> {
     pub async fn create(
         &self,
         schema: models::CollectionSchema<'_>,
-    ) -> Result<models::CollectionResponse<'static>, Error<collections_api::CreateCollectionError>>
-    {
+    ) -> Result<models::CollectionResponse, Error<collections_api::CreateCollectionError>> {
         let params = collections_api::CreateCollectionParams {
             collection_schema: schema,
             _phantom: core::marker::PhantomData,
@@ -42,8 +41,7 @@ impl<'c> Collections<'c> {
     pub async fn retrieve(
         &self,
         params: GetCollectionsParameters<'_>,
-    ) -> Result<Vec<models::CollectionResponse<'static>>, Error<collections_api::GetCollectionsError>>
-    {
+    ) -> Result<Vec<models::CollectionResponse>, Error<collections_api::GetCollectionsError>> {
         let params = GetCollectionsParams {
             exclude_fields: params.exclude_fields,
             limit: params.limit,

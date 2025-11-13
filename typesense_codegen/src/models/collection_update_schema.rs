@@ -16,7 +16,7 @@ use serde::{Deserialize, Serialize};
 pub struct CollectionUpdateSchema<'a> {
     /// A list of fields for querying, filtering and faceting
     #[serde(rename = "fields")]
-    pub fields: Vec<models::Field<'a>>,
+    pub fields: Vec<models::Field>,
     /// List of synonym set names to associate with this collection
     #[serde(rename = "synonym_sets", skip_serializing_if = "Option::is_none")]
     pub synonym_sets: Option<Vec<String>>,
@@ -28,7 +28,7 @@ pub struct CollectionUpdateSchema<'a> {
 }
 
 impl<'a> CollectionUpdateSchema<'a> {
-    pub fn new(fields: Vec<models::Field<'a>>) -> Self {
+    pub fn new(fields: Vec<models::Field>) -> Self {
         Self {
             fields,
             synonym_sets: None,

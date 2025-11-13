@@ -13,7 +13,7 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct FacetCountsStats<'a> {
+pub struct FacetCountsStats {
     #[serde(rename = "max", skip_serializing_if = "Option::is_none")]
     pub max: Option<f64>,
     #[serde(rename = "min", skip_serializing_if = "Option::is_none")]
@@ -24,11 +24,9 @@ pub struct FacetCountsStats<'a> {
     pub total_values: Option<i32>,
     #[serde(rename = "avg", skip_serializing_if = "Option::is_none")]
     pub avg: Option<f64>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> FacetCountsStats<'a> {
+impl FacetCountsStats {
     pub fn new() -> Self {
         Self {
             max: None,
@@ -36,7 +34,6 @@ impl<'a> FacetCountsStats<'a> {
             sum: None,
             total_values: None,
             avg: None,
-            _phantom: PhantomData,
         }
     }
 }

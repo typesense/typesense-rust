@@ -13,18 +13,15 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct StopwordsSetRetrieveSchema<'a> {
+pub struct StopwordsSetRetrieveSchema {
     #[serde(rename = "stopwords")]
-    pub stopwords: Box<models::StopwordsSetSchema<'a>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
+    pub stopwords: Box<models::StopwordsSetSchema>,
 }
 
-impl<'a> StopwordsSetRetrieveSchema<'a> {
-    pub fn new(stopwords: models::StopwordsSetSchema<'a>) -> Self {
+impl StopwordsSetRetrieveSchema {
+    pub fn new(stopwords: models::StopwordsSetSchema) -> Self {
         Self {
             stopwords: Box::new(stopwords),
-            _phantom: PhantomData,
         }
     }
 }

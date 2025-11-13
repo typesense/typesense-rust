@@ -13,18 +13,13 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ListStemmingDictionaries200Response<'a> {
+pub struct ListStemmingDictionaries200Response {
     #[serde(rename = "dictionaries", skip_serializing_if = "Option::is_none")]
     pub dictionaries: Option<Vec<String>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> ListStemmingDictionaries200Response<'a> {
+impl ListStemmingDictionaries200Response {
     pub fn new() -> Self {
-        Self {
-            dictionaries: None,
-            _phantom: PhantomData,
-        }
+        Self { dictionaries: None }
     }
 }

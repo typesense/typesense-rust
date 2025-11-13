@@ -13,24 +13,21 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct FacetCounts<'a> {
+pub struct FacetCounts {
     #[serde(rename = "counts", skip_serializing_if = "Option::is_none")]
-    pub counts: Option<Vec<models::FacetCountsCountsInner<'a>>>,
+    pub counts: Option<Vec<models::FacetCountsCountsInner>>,
     #[serde(rename = "field_name", skip_serializing_if = "Option::is_none")]
     pub field_name: Option<String>,
     #[serde(rename = "stats", skip_serializing_if = "Option::is_none")]
-    pub stats: Option<Box<models::FacetCountsStats<'a>>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
+    pub stats: Option<Box<models::FacetCountsStats>>,
 }
 
-impl<'a> FacetCounts<'a> {
+impl FacetCounts {
     pub fn new() -> Self {
         Self {
             counts: None,
             field_name: None,
             stats: None,
-            _phantom: PhantomData,
         }
     }
 }

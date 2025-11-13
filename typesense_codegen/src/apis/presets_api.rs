@@ -44,7 +44,7 @@ pub struct UpsertPresetParams<'p> {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum DeletePresetError {
-    Status404(models::ApiResponse<'static>),
+    Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -59,7 +59,7 @@ pub enum RetrieveAllPresetsError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum RetrievePresetError {
-    Status404(models::ApiResponse<'static>),
+    Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -67,7 +67,7 @@ pub enum RetrievePresetError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum UpsertPresetError {
-    Status400(models::ApiResponse<'static>),
+    Status400(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -75,7 +75,7 @@ pub enum UpsertPresetError {
 pub async fn delete_preset(
     configuration: &configuration::Configuration,
     params: &DeletePresetParams<'_>,
-) -> Result<models::PresetDeleteSchema<'static>, Error<DeletePresetError>> {
+) -> Result<models::PresetDeleteSchema, Error<DeletePresetError>> {
     let uri_str = format!(
         "{}/presets/{presetId}",
         configuration.base_path,
@@ -137,7 +137,7 @@ pub async fn delete_preset(
 /// Retrieve the details of all presets
 pub async fn retrieve_all_presets(
     configuration: &configuration::Configuration,
-) -> Result<models::PresetsRetrieveSchema<'static>, Error<RetrieveAllPresetsError>> {
+) -> Result<models::PresetsRetrieveSchema, Error<RetrieveAllPresetsError>> {
     let uri_str = format!("{}/presets", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -194,7 +194,7 @@ pub async fn retrieve_all_presets(
 pub async fn retrieve_preset(
     configuration: &configuration::Configuration,
     params: &RetrievePresetParams<'_>,
-) -> Result<models::PresetSchema<'static>, Error<RetrievePresetError>> {
+) -> Result<models::PresetSchema, Error<RetrievePresetError>> {
     let uri_str = format!(
         "{}/presets/{presetId}",
         configuration.base_path,
@@ -255,7 +255,7 @@ pub async fn retrieve_preset(
 pub async fn upsert_preset(
     configuration: &configuration::Configuration,
     params: &UpsertPresetParams<'_>,
-) -> Result<models::PresetSchema<'static>, Error<UpsertPresetError>> {
+) -> Result<models::PresetSchema, Error<UpsertPresetError>> {
     let uri_str = format!(
         "{}/presets/{presetId}",
         configuration.base_path,

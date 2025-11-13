@@ -47,7 +47,7 @@ impl<'a> Dictionaries<'a> {
     pub async fn retrieve(
         &self,
     ) -> Result<
-        models::ListStemmingDictionaries200Response<'static>,
+        models::ListStemmingDictionaries200Response,
         Error<stemming_api::ListStemmingDictionariesError>,
     > {
         execute_wrapper!(self, stemming_api::list_stemming_dictionaries)

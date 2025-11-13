@@ -15,13 +15,13 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct CurationItemCreateSchema<'a> {
     #[serde(rename = "rule")]
-    pub rule: Box<models::CurationRule<'a>>,
+    pub rule: Box<models::CurationRule>,
     /// List of document `id`s that should be included in the search results with their corresponding `position`s.
     #[serde(rename = "includes", skip_serializing_if = "Option::is_none")]
-    pub includes: Option<Vec<models::CurationInclude<'a>>>,
+    pub includes: Option<Vec<models::CurationInclude>>,
     /// List of document `id`s that should be excluded from the search results.
     #[serde(rename = "excludes", skip_serializing_if = "Option::is_none")]
-    pub excludes: Option<Vec<models::CurationExclude<'a>>>,
+    pub excludes: Option<Vec<models::CurationExclude>>,
     /// A filter by clause that is applied to any search query that matches the curation rule.
     #[serde(rename = "filter_by", skip_serializing_if = "Option::is_none")]
     pub filter_by: Option<Cow<'a, str>>,
@@ -63,7 +63,7 @@ pub struct CurationItemCreateSchema<'a> {
 }
 
 impl<'a> CurationItemCreateSchema<'a> {
-    pub fn new(rule: models::CurationRule<'a>) -> Self {
+    pub fn new(rule: models::CurationRule) -> Self {
         Self {
             rule: Box::new(rule),
             includes: None,

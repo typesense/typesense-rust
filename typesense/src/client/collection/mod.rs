@@ -55,8 +55,7 @@ where
     #[inline]
     pub async fn retrieve(
         &self,
-    ) -> Result<models::CollectionResponse<'static>, Error<collections_api::GetCollectionError>>
-    {
+    ) -> Result<models::CollectionResponse, Error<collections_api::GetCollectionError>> {
         let params = collections_api::GetCollectionParams {
             collection_name: self.collection_name.as_ref().into(),
             _phantom: core::marker::PhantomData,
@@ -68,8 +67,7 @@ where
     #[inline]
     pub async fn delete(
         &self,
-    ) -> Result<models::CollectionResponse<'static>, Error<collections_api::DeleteCollectionError>>
-    {
+    ) -> Result<models::CollectionResponse, Error<collections_api::DeleteCollectionError>> {
         let params = collections_api::DeleteCollectionParams {
             collection_name: self.collection_name.as_ref().into(),
             _phantom: core::marker::PhantomData,

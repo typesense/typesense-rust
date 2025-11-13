@@ -13,10 +13,10 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchResultHit<'a, D> {
+pub struct SearchResultHit<D> {
     /// (Deprecated) Contains highlighted portions of the search fields
     #[serde(rename = "highlights", skip_serializing_if = "Option::is_none")]
-    pub highlights: Option<Vec<models::SearchHighlight<'a>>>,
+    pub highlights: Option<Vec<models::SearchHighlight>>,
     /// Highlighted version of the matching document
     #[serde(rename = "highlight", skip_serializing_if = "Option::is_none")]
     pub highlight: Option<std::collections::HashMap<String, serde_json::Value>>,
@@ -26,7 +26,7 @@ pub struct SearchResultHit<'a, D> {
     #[serde(rename = "text_match", skip_serializing_if = "Option::is_none")]
     pub text_match: Option<i64>,
     #[serde(rename = "text_match_info", skip_serializing_if = "Option::is_none")]
-    pub text_match_info: Option<Box<models::SearchResultHitTextMatchInfo<'a>>>,
+    pub text_match_info: Option<Box<models::SearchResultHitTextMatchInfo>>,
     /// Can be any key-value pair
     #[serde(
         rename = "geo_distance_meters",
@@ -37,15 +37,13 @@ pub struct SearchResultHit<'a, D> {
     #[serde(rename = "vector_distance", skip_serializing_if = "Option::is_none")]
     pub vector_distance: Option<f32>,
     #[serde(rename = "hybrid_search_info", skip_serializing_if = "Option::is_none")]
-    pub hybrid_search_info: Option<Box<models::SearchResultHitHybridSearchInfo<'a>>>,
+    pub hybrid_search_info: Option<Box<models::SearchResultHitHybridSearchInfo>>,
     /// Returned only for union query response. Indicates the index of the query which this document matched to.
     #[serde(rename = "search_index", skip_serializing_if = "Option::is_none")]
     pub search_index: Option<i32>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a, D> SearchResultHit<'a, D> {
+impl<D> SearchResultHit<D> {
     pub fn new() -> Self {
         Self {
             highlights: None,
@@ -57,7 +55,6 @@ impl<'a, D> SearchResultHit<'a, D> {
             vector_distance: None,
             hybrid_search_info: None,
             search_index: None,
-            _phantom: PhantomData,
         }
     }
 }

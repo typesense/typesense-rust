@@ -13,7 +13,7 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchRequestParams<'a> {
+pub struct SearchRequestParams {
     #[serde(rename = "collection_name")]
     pub collection_name: String,
     #[serde(rename = "q")]
@@ -21,19 +21,16 @@ pub struct SearchRequestParams<'a> {
     #[serde(rename = "per_page")]
     pub per_page: i32,
     #[serde(rename = "voice_query", skip_serializing_if = "Option::is_none")]
-    pub voice_query: Option<Box<models::SearchRequestParamsVoiceQuery<'a>>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
+    pub voice_query: Option<Box<models::SearchRequestParamsVoiceQuery>>,
 }
 
-impl<'a> SearchRequestParams<'a> {
+impl SearchRequestParams {
     pub fn new(collection_name: String, q: String, per_page: i32) -> Self {
         Self {
             collection_name,
             q,
             per_page,
             voice_query: None,
-            _phantom: PhantomData,
         }
     }
 }

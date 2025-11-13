@@ -13,19 +13,14 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchSynonymDeleteResponse<'a> {
+pub struct SearchSynonymDeleteResponse {
     /// The id of the synonym that was deleted
     #[serde(rename = "id")]
     pub id: String,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> SearchSynonymDeleteResponse<'a> {
+impl SearchSynonymDeleteResponse {
     pub fn new(id: String) -> Self {
-        Self {
-            id,
-            _phantom: PhantomData,
-        }
+        Self { id }
     }
 }

@@ -13,28 +13,22 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchGroupedHit<'a, D> {
+pub struct SearchGroupedHit<D> {
     #[serde(rename = "found", skip_serializing_if = "Option::is_none")]
     pub found: Option<i32>,
     #[serde(rename = "group_key")]
     pub group_key: Vec<serde_json::Value>,
     /// The documents that matched the search query
     #[serde(rename = "hits")]
-    pub hits: Vec<models::SearchResultHit<'a, D>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
+    pub hits: Vec<models::SearchResultHit<D>>,
 }
 
-impl<'a, D> SearchGroupedHit<'a, D> {
-    pub fn new(
-        group_key: Vec<serde_json::Value>,
-        hits: Vec<models::SearchResultHit<'a, D>>,
-    ) -> Self {
+impl<D> SearchGroupedHit<D> {
+    pub fn new(group_key: Vec<serde_json::Value>, hits: Vec<models::SearchResultHit<D>>) -> Self {
         Self {
             found: None,
             group_key,
             hits,
-            _phantom: PhantomData,
         }
     }
 }

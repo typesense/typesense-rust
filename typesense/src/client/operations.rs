@@ -28,9 +28,7 @@ impl<'a> Operations<'a> {
     /// to the specific node that responded successfully.
     ///
     /// Docs: <https://typesense.org/docs/latest/api/cluster-operations.html#debug>
-    pub async fn debug(
-        &self,
-    ) -> Result<models::Debug200Response<'static>, Error<debug_api::DebugError>> {
+    pub async fn debug(&self) -> Result<models::Debug200Response, Error<debug_api::DebugError>> {
         execute_wrapper!(self, debug_api::debug)
     }
 
@@ -38,9 +36,7 @@ impl<'a> Operations<'a> {
     /// When a node is running out of memory / disk, the API response will have an additional resource_error field that's set to either `OUT_OF_DISK`` or `OUT_OF_MEMORY``.
     ///
     /// Docs: <https://typesense.org/docs/latest/api/cluster-operations.html#health>
-    pub async fn health(
-        &self,
-    ) -> Result<models::HealthStatus<'static>, Error<health_api::HealthError>> {
+    pub async fn health(&self) -> Result<models::HealthStatus, Error<health_api::HealthError>> {
         execute_wrapper!(self, health_api::health)
     }
 
@@ -99,8 +95,7 @@ impl<'a> Operations<'a> {
     /// Docs: <https://typesense.org/docs/latest/api/cluster-operations.html#api-stats>
     pub async fn retrieve_api_stats(
         &self,
-    ) -> Result<models::ApiStatsResponse<'static>, Error<operations_api::RetrieveApiStatsError>>
-    {
+    ) -> Result<models::ApiStatsResponse, Error<operations_api::RetrieveApiStatsError>> {
         execute_wrapper!(self, operations_api::retrieve_api_stats)
     }
 
@@ -111,7 +106,7 @@ impl<'a> Operations<'a> {
     pub async fn take_snapshot(
         &self,
         params: operations_api::TakeSnapshotParams<'_>,
-    ) -> Result<models::SuccessStatus<'static>, Error<operations_api::TakeSnapshotError>> {
+    ) -> Result<models::SuccessStatus, Error<operations_api::TakeSnapshotError>> {
         execute_wrapper!(self, operations_api::take_snapshot, params)
     }
 
@@ -119,9 +114,7 @@ impl<'a> Operations<'a> {
     /// The follower node that you run this operation against will become the new leader, once this command succeeds.
     ///
     /// Docs: <https://typesense.org/docs/latest/api/cluster-operations.html#re-elect-leader>
-    pub async fn vote(
-        &self,
-    ) -> Result<models::SuccessStatus<'static>, Error<operations_api::VoteError>> {
+    pub async fn vote(&self) -> Result<models::SuccessStatus, Error<operations_api::VoteError>> {
         execute_wrapper!(self, operations_api::vote)
     }
 
@@ -130,10 +123,8 @@ impl<'a> Operations<'a> {
     /// Docs: <https://typesense.org/docs/latest/api/collections.html#get-schema-change-status>
     pub async fn get_schema_changes(
         &self,
-    ) -> Result<
-        Option<Vec<models::SchemaChangeStatus<'static>>>,
-        Error<operations_api::GetSchemaChangesError>,
-    > {
+    ) -> Result<Option<Vec<models::SchemaChangeStatus>>, Error<operations_api::GetSchemaChangesError>>
+    {
         execute_wrapper!(self, operations_api::get_schema_changes)
     }
 
@@ -143,7 +134,7 @@ impl<'a> Operations<'a> {
     /// Docs: <https://typesense.org/docs/latest/api/cluster-operations.html#compacting-the-on-disk-database>
     pub async fn compact_db(
         &self,
-    ) -> Result<models::SuccessStatus<'static>, Error<operations_api::CompactDbError>> {
+    ) -> Result<models::SuccessStatus, Error<operations_api::CompactDbError>> {
         execute_wrapper!(self, operations_api::compact_db)
     }
 
@@ -152,7 +143,7 @@ impl<'a> Operations<'a> {
     /// Docs: <https://typesense.org/docs/latest/api/cluster-operations.html#clear-cache>
     pub async fn clear_cache(
         &self,
-    ) -> Result<models::SuccessStatus<'static>, Error<operations_api::ClearCacheError>> {
+    ) -> Result<models::SuccessStatus, Error<operations_api::ClearCacheError>> {
         execute_wrapper!(self, operations_api::clear_cache)
     }
 
@@ -163,8 +154,7 @@ impl<'a> Operations<'a> {
     pub async fn toggle_slow_request_log(
         &self,
         slow_requests_threshold_ms: i32,
-    ) -> Result<models::SuccessStatus<'static>, Error<operations_api::ToggleSlowRequestLogError>>
-    {
+    ) -> Result<models::SuccessStatus, Error<operations_api::ToggleSlowRequestLogError>> {
         let params = operations_api::ToggleSlowRequestLogParams {
             toggle_slow_request_log_request: Some(models::ToggleSlowRequestLogRequest {
                 log_slow_requests_time_ms: slow_requests_threshold_ms,

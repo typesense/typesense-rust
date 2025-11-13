@@ -13,18 +13,13 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ApiResponse<'a> {
+pub struct ApiResponse {
     #[serde(rename = "message")]
     pub message: String,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> ApiResponse<'a> {
+impl ApiResponse {
     pub fn new(message: String) -> Self {
-        Self {
-            message,
-            _phantom: PhantomData,
-        }
+        Self { message }
     }
 }

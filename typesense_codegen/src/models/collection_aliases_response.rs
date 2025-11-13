@@ -13,18 +13,13 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct CollectionAliasesResponse<'a> {
+pub struct CollectionAliasesResponse {
     #[serde(rename = "aliases")]
-    pub aliases: Vec<models::CollectionAlias<'a>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
+    pub aliases: Vec<models::CollectionAlias>,
 }
 
-impl<'a> CollectionAliasesResponse<'a> {
-    pub fn new(aliases: Vec<models::CollectionAlias<'a>>) -> Self {
-        Self {
-            aliases,
-            _phantom: PhantomData,
-        }
+impl CollectionAliasesResponse {
+    pub fn new(aliases: Vec<models::CollectionAlias>) -> Self {
+        Self { aliases }
     }
 }

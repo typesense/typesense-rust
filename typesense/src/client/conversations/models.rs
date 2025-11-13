@@ -27,7 +27,7 @@ impl<'a> Models<'a> {
         &self,
         schema: models::ConversationModelCreateSchema<'_>,
     ) -> Result<
-        models::ConversationModelSchema<'static>,
+        models::ConversationModelSchema,
         Error<conversations_api::CreateConversationModelError>,
     > {
         let params = conversations_api::CreateConversationModelParams {
@@ -41,7 +41,7 @@ impl<'a> Models<'a> {
     pub async fn retrieve(
         &self,
     ) -> Result<
-        Vec<models::ConversationModelSchema<'static>>,
+        Vec<models::ConversationModelSchema>,
         Error<conversations_api::RetrieveAllConversationModelsError>,
     > {
         execute_wrapper!(self, conversations_api::retrieve_all_conversation_models)

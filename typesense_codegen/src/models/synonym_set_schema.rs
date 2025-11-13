@@ -13,23 +13,17 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SynonymSetSchema<'a> {
+pub struct SynonymSetSchema {
     /// Array of synonym items
     #[serde(rename = "items")]
-    pub items: Vec<models::SynonymItemSchema<'a>>,
+    pub items: Vec<models::SynonymItemSchema<'static>>,
     /// Name of the synonym set
     #[serde(rename = "name")]
     pub name: String,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> SynonymSetSchema<'a> {
-    pub fn new(items: Vec<models::SynonymItemSchema<'a>>, name: String) -> Self {
-        Self {
-            items,
-            name,
-            _phantom: PhantomData,
-        }
+impl SynonymSetSchema {
+    pub fn new(items: Vec<models::SynonymItemSchema<'static>>, name: String) -> Self {
+        Self { items, name }
     }
 }

@@ -13,18 +13,13 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Debug200Response<'a> {
+pub struct Debug200Response {
     #[serde(rename = "version", skip_serializing_if = "Option::is_none")]
     pub version: Option<String>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> Debug200Response<'a> {
+impl Debug200Response {
     pub fn new() -> Self {
-        Self {
-            version: None,
-            _phantom: PhantomData,
-        }
+        Self { version: None }
     }
 }

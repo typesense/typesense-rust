@@ -88,7 +88,7 @@ pub enum VoteError {
 /// Clear the cached responses of search requests that are sent with `use_cache` parameter in the LRU cache.
 pub async fn clear_cache(
     configuration: &configuration::Configuration,
-) -> Result<models::SuccessStatus<'static>, Error<ClearCacheError>> {
+) -> Result<models::SuccessStatus, Error<ClearCacheError>> {
     let uri_str = format!("{}/operations/cache/clear", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -146,7 +146,7 @@ pub async fn clear_cache(
 /// Typesense uses RocksDB to store your documents on the disk. If you do frequent writes or updates, you could benefit from running a compaction of the underlying RocksDB database. This could reduce the size of the database and decrease read latency. While the database will not block during this operation, we recommend running it during off-peak hours.
 pub async fn compact_db(
     configuration: &configuration::Configuration,
-) -> Result<models::SuccessStatus<'static>, Error<CompactDbError>> {
+) -> Result<models::SuccessStatus, Error<CompactDbError>> {
     let uri_str = format!("{}/operations/db/compact", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -204,7 +204,7 @@ pub async fn compact_db(
 /// Returns the status of any ongoing schema change operations. If no schema changes are in progress, returns an empty response.
 pub async fn get_schema_changes(
     configuration: &configuration::Configuration,
-) -> Result<Option<Vec<models::SchemaChangeStatus<'static>>>, Error<GetSchemaChangesError>> {
+) -> Result<Option<Vec<models::SchemaChangeStatus>>, Error<GetSchemaChangesError>> {
     let uri_str = format!("{}/operations/schema_changes", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -237,12 +237,12 @@ pub async fn get_schema_changes(
             ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `Option<Vec<models::SchemaChangeStatus<'static>>>`",
+                    "Received `text/plain` content type response that cannot be converted to `Option<Vec<models::SchemaChangeStatus>>`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `Option<Vec<models::SchemaChangeStatus<'static>>>`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `Option<Vec<models::SchemaChangeStatus>>`"
                 ))));
             }
         }
@@ -260,7 +260,7 @@ pub async fn get_schema_changes(
 /// Retrieve the stats about API endpoints.
 pub async fn retrieve_api_stats(
     configuration: &configuration::Configuration,
-) -> Result<models::ApiStatsResponse<'static>, Error<RetrieveApiStatsError>> {
+) -> Result<models::ApiStatsResponse, Error<RetrieveApiStatsError>> {
     let uri_str = format!("{}/stats.json", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -373,7 +373,7 @@ pub async fn retrieve_metrics(
 pub async fn take_snapshot(
     configuration: &configuration::Configuration,
     params: &TakeSnapshotParams<'_>,
-) -> Result<models::SuccessStatus<'static>, Error<TakeSnapshotError>> {
+) -> Result<models::SuccessStatus, Error<TakeSnapshotError>> {
     let uri_str = format!("{}/operations/snapshot", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -433,7 +433,7 @@ pub async fn take_snapshot(
 pub async fn toggle_slow_request_log(
     configuration: &configuration::Configuration,
     params: &ToggleSlowRequestLogParams<'_>,
-) -> Result<models::SuccessStatus<'static>, Error<ToggleSlowRequestLogError>> {
+) -> Result<models::SuccessStatus, Error<ToggleSlowRequestLogError>> {
     let uri_str = format!("{}/config", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -492,7 +492,7 @@ pub async fn toggle_slow_request_log(
 /// Triggers a follower node to initiate the raft voting process, which triggers leader re-election. The follower node that you run this operation against will become the new leader, once this command succeeds.
 pub async fn vote(
     configuration: &configuration::Configuration,
-) -> Result<models::SuccessStatus<'static>, Error<VoteError>> {
+) -> Result<models::SuccessStatus, Error<VoteError>> {
     let uri_str = format!("{}/operations/vote", configuration.base_path);
     let mut req_builder = configuration
         .client

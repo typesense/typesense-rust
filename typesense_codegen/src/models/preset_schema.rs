@@ -13,21 +13,18 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct PresetSchema<'a> {
+pub struct PresetSchema {
     #[serde(rename = "value")]
-    pub value: Box<models::PresetUpsertSchemaValue<'a>>,
+    pub value: Box<models::PresetUpsertSchemaValue<'static>>,
     #[serde(rename = "name")]
     pub name: String,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> PresetSchema<'a> {
-    pub fn new(value: models::PresetUpsertSchemaValue<'a>, name: String) -> Self {
+impl PresetSchema {
+    pub fn new(value: models::PresetUpsertSchemaValue<'static>, name: String) -> Self {
         Self {
             value: Box::new(value),
             name,
-            _phantom: PhantomData,
         }
     }
 }

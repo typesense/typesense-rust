@@ -29,8 +29,7 @@ impl<'a> Dictionary<'a> {
     /// Retrieves the details of this specific stemming dictionary.
     pub async fn retrieve(
         &self,
-    ) -> Result<models::StemmingDictionary<'static>, Error<stemming_api::GetStemmingDictionaryError>>
-    {
+    ) -> Result<models::StemmingDictionary, Error<stemming_api::GetStemmingDictionaryError>> {
         let params = stemming_api::GetStemmingDictionaryParams {
             dictionary_id: self.dictionary_id.into(),
             _phantom: core::marker::PhantomData,

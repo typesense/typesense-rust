@@ -13,7 +13,7 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ApiStatsResponse<'a> {
+pub struct ApiStatsResponse {
     #[serde(rename = "delete_latency_ms", skip_serializing_if = "Option::is_none")]
     pub delete_latency_ms: Option<f64>,
     #[serde(
@@ -64,11 +64,9 @@ pub struct ApiStatsResponse<'a> {
         skip_serializing_if = "Option::is_none"
     )]
     pub write_requests_per_second: Option<f64>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> ApiStatsResponse<'a> {
+impl ApiStatsResponse {
     pub fn new() -> Self {
         Self {
             delete_latency_ms: None,
@@ -84,7 +82,6 @@ impl<'a> ApiStatsResponse<'a> {
             total_requests_per_second: None,
             write_latency_ms: None,
             write_requests_per_second: None,
-            _phantom: PhantomData,
         }
     }
 }

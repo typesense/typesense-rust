@@ -120,10 +120,8 @@ where
     pub async fn delete(
         &self,
         params: DeleteDocumentsParameters<'_>,
-    ) -> Result<
-        raw_models::DeleteDocuments200Response<'static>,
-        Error<documents_api::DeleteDocumentsError>,
-    > {
+    ) -> Result<raw_models::DeleteDocuments200Response, Error<documents_api::DeleteDocumentsError>>
+    {
         let params = documents_api::DeleteDocumentsParams {
             collection_name: self.collection_name.into(),
             filter_by: Some(params.filter_by),
@@ -143,7 +141,7 @@ where
     pub async fn search(
         &self,
         params: raw_models::SearchParameters<'_>,
-    ) -> Result<SearchResult<'static, D>, Error<documents_api::SearchCollectionError>> {
+    ) -> Result<SearchResult<D>, Error<documents_api::SearchCollectionError>> {
         let search_params = documents_api::SearchCollectionParams {
             collection_name: self.collection_name.into(),
 
@@ -275,10 +273,8 @@ where
         &self,
         document: &D::Partial,
         params: UpdateDocumentsParameters<'_>,
-    ) -> Result<
-        raw_models::UpdateDocuments200Response<'static>,
-        Error<documents_api::UpdateDocumentsError>,
-    > {
+    ) -> Result<raw_models::UpdateDocuments200Response, Error<documents_api::UpdateDocumentsError>>
+    {
         let params = documents_api::UpdateDocumentsParams {
             collection_name: self.collection_name.into(),
             filter_by: params.filter_by,

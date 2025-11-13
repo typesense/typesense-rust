@@ -13,7 +13,7 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct FacetCountsCountsInner<'a> {
+pub struct FacetCountsCountsInner {
     #[serde(rename = "count", skip_serializing_if = "Option::is_none")]
     pub count: Option<i32>,
     #[serde(rename = "highlighted", skip_serializing_if = "Option::is_none")]
@@ -22,18 +22,15 @@ pub struct FacetCountsCountsInner<'a> {
     pub value: Option<String>,
     #[serde(rename = "parent", skip_serializing_if = "Option::is_none")]
     pub parent: Option<serde_json::Value>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> FacetCountsCountsInner<'a> {
+impl FacetCountsCountsInner {
     pub fn new() -> Self {
         Self {
             count: None,
             highlighted: None,
             value: None,
             parent: None,
-            _phantom: PhantomData,
         }
     }
 }

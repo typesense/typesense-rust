@@ -13,7 +13,7 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchSynonymSchema<'a> {
+pub struct SearchSynonymSchema {
     /// For 1-way synonyms, indicates the root word that words in the `synonyms` parameter map to.
     #[serde(rename = "root", skip_serializing_if = "Option::is_none")]
     pub root: Option<String>,
@@ -26,18 +26,15 @@ pub struct SearchSynonymSchema<'a> {
     /// By default, special characters are dropped from synonyms. Use this attribute to specify which special characters should be indexed as is.
     #[serde(rename = "symbols_to_index", skip_serializing_if = "Option::is_none")]
     pub symbols_to_index: Option<Vec<String>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> SearchSynonymSchema<'a> {
+impl SearchSynonymSchema {
     pub fn new(synonyms: Vec<String>) -> Self {
         Self {
             root: None,
             synonyms,
             locale: None,
             symbols_to_index: None,
-            _phantom: PhantomData,
         }
     }
 }

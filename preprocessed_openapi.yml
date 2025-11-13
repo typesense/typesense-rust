@@ -278,6 +278,7 @@ paths:
               description: Can be any key-value pair
               type: object
               x-go-type: interface{}
+              x-rust-is-used-as-input: true
       responses:
         '201':
           description: Document successfully created/indexed
@@ -319,6 +320,7 @@ paths:
               description: Can be any key-value pair
               type: object
               x-go-type: interface{}
+              x-rust-is-used-as-input: true
         x-rust-params-generic-parameter: B
         x-rust-type: B
       responses:
@@ -844,7 +846,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
       x-rust-generic-parameter: 'D: for<''de> serde::Deserialize<''de> + Serialize'
-      x-rust-return-type: models::SearchResult<'static, D>
+      x-rust-return-type: models::SearchResult<D>
   /synonym_sets:
     get:
       tags:
@@ -1500,6 +1502,7 @@ paths:
               description: Can be any key-value pair
               type: object
               x-go-type: interface{}
+              x-rust-is-used-as-input: true
         x-rust-params-generic-parameter: B
         x-rust-type: B
       responses:
@@ -1914,7 +1917,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/SchemaChangeStatus'
-      x-rust-return-type: Option<Vec<models::SchemaChangeStatus<'static>>>
+      x-rust-return-type: Option<Vec<models::SchemaChangeStatus>>
   /operations/snapshot:
     post:
       tags:
@@ -1997,6 +2000,7 @@ paths:
               properties:
                 log-slow-requests-time-ms:
                   type: integer
+              x-rust-is-used-as-input: true
       responses:
         '200':
           description: Compacting the on-disk database succeeded.
@@ -2513,6 +2517,7 @@ paths:
               - type: array
                 items:
                   $ref: '#/components/schemas/AnalyticsRuleCreate'
+              x-rust-is-used-as-input: true
       responses:
         '200':
           description: Analytics rule(s) successfully created
@@ -3414,13 +3419,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SearchGroupedHit'
-          x-rust-type: Option<Vec<models::SearchGroupedHit<'a, D>>>
+          x-rust-type: Option<Vec<models::SearchGroupedHit<D>>>
         hits:
           description: The documents that matched the search query
           type: array
           items:
             $ref: '#/components/schemas/SearchResultHit'
-          x-rust-type: Option<Vec<models::SearchResultHit<'a, D>>>
+          x-rust-type: Option<Vec<models::SearchResultHit<D>>>
         request_params:
           $ref: '#/components/schemas/SearchRequestParams'
         conversation:
@@ -3487,7 +3492,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SearchResultHit'
-          x-rust-type: Vec<models::SearchResultHit<'a, D>>
+          x-rust-type: Vec<models::SearchResultHit<D>>
       x-rust-generic-parameter: D
     SearchResultHit:
       type: object
@@ -3747,7 +3752,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MultiSearchResultItem'
-          x-rust-type: Vec<models::MultiSearchResultItem<'a, D>>
+          x-rust-type: Vec<models::MultiSearchResultItem<D>>
         conversation:
           $ref: '#/components/schemas/SearchResultConversation'
       x-rust-generic-parameter: D
@@ -4619,6 +4624,7 @@ components:
           oneOf:
           - $ref: '#/components/schemas/SearchParameters'
           - $ref: '#/components/schemas/MultiSearchSearchesParameter'
+          x-rust-is-used-as-input: true
       x-rust-is-used-as-input: true
     PresetSchema:
       allOf:

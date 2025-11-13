@@ -266,7 +266,7 @@ pub struct UpdateDocumentsParams<'p, B> {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum DeleteDocumentError {
-    Status404(models::ApiResponse<'static>),
+    Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -274,7 +274,7 @@ pub enum DeleteDocumentError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum DeleteDocumentsError {
-    Status404(models::ApiResponse<'static>),
+    Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -282,7 +282,7 @@ pub enum DeleteDocumentsError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ExportDocumentsError {
-    Status404(models::ApiResponse<'static>),
+    Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -290,7 +290,7 @@ pub enum ExportDocumentsError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum GetDocumentError {
-    Status404(models::ApiResponse<'static>),
+    Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -298,8 +298,8 @@ pub enum GetDocumentError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ImportDocumentsError {
-    Status400(models::ApiResponse<'static>),
-    Status404(models::ApiResponse<'static>),
+    Status400(models::ApiResponse),
+    Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -307,7 +307,7 @@ pub enum ImportDocumentsError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum IndexDocumentError {
-    Status404(models::ApiResponse<'static>),
+    Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -315,7 +315,7 @@ pub enum IndexDocumentError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum MultiSearchError {
-    Status400(models::ApiResponse<'static>),
+    Status400(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -323,8 +323,8 @@ pub enum MultiSearchError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum SearchCollectionError {
-    Status400(models::ApiResponse<'static>),
-    Status404(models::ApiResponse<'static>),
+    Status400(models::ApiResponse),
+    Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -332,7 +332,7 @@ pub enum SearchCollectionError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum UpdateDocumentError {
-    Status404(models::ApiResponse<'static>),
+    Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -340,8 +340,8 @@ pub enum UpdateDocumentError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum UpdateDocumentsError {
-    Status400(models::ApiResponse<'static>),
-    Status404(models::ApiResponse<'static>),
+    Status400(models::ApiResponse),
+    Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -413,7 +413,7 @@ pub async fn delete_document(
 pub async fn delete_documents(
     configuration: &configuration::Configuration,
     params: &DeleteDocumentsParams<'_>,
-) -> Result<models::DeleteDocuments200Response<'static>, Error<DeleteDocumentsError>> {
+) -> Result<models::DeleteDocuments200Response, Error<DeleteDocumentsError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}/documents",
         configuration.base_path,
@@ -1027,7 +1027,7 @@ pub async fn multi_search(
 pub async fn search_collection<D: for<'de> serde::Deserialize<'de> + Serialize>(
     configuration: &configuration::Configuration,
     params: &SearchCollectionParams<'_>,
-) -> Result<models::SearchResult<'static, D>, Error<SearchCollectionError>> {
+) -> Result<models::SearchResult<D>, Error<SearchCollectionError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}/documents/search",
         configuration.base_path,
@@ -1287,12 +1287,12 @@ pub async fn search_collection<D: for<'de> serde::Deserialize<'de> + Serialize>(
             ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SearchResult<'static, D>`",
+                    "Received `text/plain` content type response that cannot be converted to `models::SearchResult<D>`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SearchResult<'static, D>`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::SearchResult<D>`"
                 ))));
             }
         }
@@ -1379,7 +1379,7 @@ pub async fn update_document<B: Serialize>(
 pub async fn update_documents<B: Serialize>(
     configuration: &configuration::Configuration,
     params: &UpdateDocumentsParams<'_, B>,
-) -> Result<models::UpdateDocuments200Response<'static>, Error<UpdateDocumentsError>> {
+) -> Result<models::UpdateDocuments200Response, Error<UpdateDocumentsError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}/documents",
         configuration.base_path,

@@ -5,7 +5,7 @@ use serde_json::Value;
 use crate::{MultiSearchParseError, models::SearchResult};
 
 /// An extension trait for `MultiSearchResult` to provide typed parsing.
-pub trait MultiSearchResultExt<'a> {
+pub trait MultiSearchResultExt {
     /// Parses the result at a specific index from a multi-search response into a strongly-typed `SearchResult<T>`.
     ///
     /// # Arguments
@@ -14,9 +14,9 @@ pub trait MultiSearchResultExt<'a> {
     /// # Type Parameters
     /// * `D` - The concrete document type to deserialize the hits into.
     fn parse_at<D: DeserializeOwned>(
-        &'a self,
+        &self,
         index: usize,
-    ) -> Result<SearchResult<'a, D>, MultiSearchParseError>;
+    ) -> Result<SearchResult<D>, MultiSearchParseError>;
 }
 
 /// Small helpers to convert documents stored as `serde_json::Value` into a concrete `D`.
@@ -29,9 +29,9 @@ fn deserialize_opt_document<D: DeserializeOwned>(
     }
 }
 
-fn convert_hit_ref<'a, D: DeserializeOwned>(
-    raw_hit: &SearchResultHit<'a, Value>,
-) -> Result<SearchResultHit<'a, D>, serde_json::Error> {
+fn convert_hit_ref<D: DeserializeOwned>(
+    raw_hit: &SearchResultHit<Value>,
+) -> Result<SearchResultHit<D>, serde_json::Error> {
     Ok(SearchResultHit {
         document: deserialize_opt_document(raw_hit.document.clone())?,
         highlights: raw_hit.highlights.clone(),
@@ -42,13 +42,12 @@ fn convert_hit_ref<'a, D: DeserializeOwned>(
         vector_distance: raw_hit.vector_distance,
         hybrid_search_info: raw_hit.hybrid_search_info.clone(),
         search_index: raw_hit.search_index,
-        _phantom: core::marker::PhantomData,
     })
 }
 
-fn convert_group_ref<'a, D: DeserializeOwned>(
-    raw_group: &'a SearchGroupedHit<'_, Value>,
-) -> Result<SearchGroupedHit<'a, D>, serde_json::Error> {
+fn convert_group_ref<D: DeserializeOwned>(
+    raw_group: &SearchGroupedHit<Value>,
+) -> Result<SearchGroupedHit<D>, serde_json::Error> {
     let hits = raw_group
         .hits
         .iter()
@@ -59,14 +58,13 @@ fn convert_group_ref<'a, D: DeserializeOwned>(
         found: raw_group.found,
         group_key: raw_group.group_key.clone(),
         hits,
-        _phantom: core::marker::PhantomData,
     })
 }
 
 /// Convert a single `MultiSearchResultItem<Value>` into a strongly-typed `SearchResult<D>`.
-fn multi_search_item_to_search_result<'a, D: DeserializeOwned>(
-    item: &'a MultiSearchResultItem<'_, Value>,
-) -> Result<SearchResult<'a, D>, serde_json::Error> {
+fn multi_search_item_to_search_result<D: DeserializeOwned>(
+    item: &MultiSearchResultItem<Value>,
+) -> Result<SearchResult<D>, serde_json::Error> {
     let typed_hits = match &item.hits {
         Some(raw_hits) => Some(
             raw_hits
@@ -101,16 +99,15 @@ fn multi_search_item_to_search_result<'a, D: DeserializeOwned>(
         conversation: item.conversation.clone(),
         union_request_params: item.union_request_params.clone(),
         metadata: item.metadata.clone(),
-        _phantom: core::marker::PhantomData,
     })
 }
 
 /// Extension to parse an item out of a `MultiSearchResult<Value>` into a typed `SearchResult<T>`.
-impl<'a> MultiSearchResultExt<'a> for MultiSearchResult<'a, Value> {
+impl MultiSearchResultExt for MultiSearchResult<Value> {
     fn parse_at<T: DeserializeOwned>(
-        &'a self,
+        &self,
         index: usize,
-    ) -> Result<SearchResult<'a, T>, MultiSearchParseError> {
+    ) -> Result<SearchResult<T>, MultiSearchParseError> {
         let raw_item = self
             .results
             .get(index)

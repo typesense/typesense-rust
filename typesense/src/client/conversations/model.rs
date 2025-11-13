@@ -24,7 +24,7 @@ impl<'a> Model<'a> {
     pub async fn retrieve(
         &self,
     ) -> Result<
-        models::ConversationModelSchema<'static>,
+        models::ConversationModelSchema,
         Error<conversations_api::RetrieveConversationModelError>,
     > {
         let params = conversations_api::RetrieveConversationModelParams {
@@ -42,7 +42,7 @@ impl<'a> Model<'a> {
         &self,
         schema: models::ConversationModelUpdateSchema<'_>,
     ) -> Result<
-        models::ConversationModelSchema<'static>,
+        models::ConversationModelSchema,
         Error<conversations_api::UpdateConversationModelError>,
     > {
         let params = conversations_api::UpdateConversationModelParams {
@@ -57,7 +57,7 @@ impl<'a> Model<'a> {
     pub async fn delete(
         &self,
     ) -> Result<
-        models::ConversationModelSchema<'static>,
+        models::ConversationModelSchema,
         Error<conversations_api::DeleteConversationModelError>,
     > {
         let params = conversations_api::DeleteConversationModelParams {

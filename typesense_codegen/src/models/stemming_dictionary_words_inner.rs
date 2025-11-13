@@ -13,23 +13,17 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct StemmingDictionaryWordsInner<'a> {
+pub struct StemmingDictionaryWordsInner {
     /// The word form to be stemmed
     #[serde(rename = "word")]
     pub word: String,
     /// The root form of the word
     #[serde(rename = "root")]
     pub root: String,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> StemmingDictionaryWordsInner<'a> {
+impl StemmingDictionaryWordsInner {
     pub fn new(word: String, root: String) -> Self {
-        Self {
-            word,
-            root,
-            _phantom: PhantomData,
-        }
+        Self { word, root }
     }
 }

@@ -24,7 +24,7 @@ pub enum HealthError {
 /// Checks if Typesense server is ready to accept requests.
 pub async fn health(
     configuration: &configuration::Configuration,
-) -> Result<models::HealthStatus<'static>, Error<HealthError>> {
+) -> Result<models::HealthStatus, Error<HealthError>> {
     let uri_str = format!("{}/health", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 

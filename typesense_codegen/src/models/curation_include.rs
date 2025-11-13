@@ -13,23 +13,17 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct CurationInclude<'a> {
+pub struct CurationInclude {
     /// document id that should be included
     #[serde(rename = "id")]
     pub id: String,
     /// position number where document should be included in the search results
     #[serde(rename = "position")]
     pub position: i32,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> CurationInclude<'a> {
+impl CurationInclude {
     pub fn new(id: String, position: i32) -> Self {
-        Self {
-            id,
-            position,
-            _phantom: PhantomData,
-        }
+        Self { id, position }
     }
 }

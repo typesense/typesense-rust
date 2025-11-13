@@ -13,18 +13,13 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct DeleteDocuments200Response<'a> {
+pub struct DeleteDocuments200Response {
     #[serde(rename = "num_deleted")]
     pub num_deleted: i32,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> DeleteDocuments200Response<'a> {
+impl DeleteDocuments200Response {
     pub fn new(num_deleted: i32) -> Self {
-        Self {
-            num_deleted,
-            _phantom: PhantomData,
-        }
+        Self { num_deleted }
     }
 }

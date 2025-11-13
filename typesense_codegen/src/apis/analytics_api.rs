@@ -79,7 +79,7 @@ pub struct UpsertAnalyticsRuleParams<'p> {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum CreateAnalyticsEventError {
-    Status400(models::ApiResponse<'static>),
+    Status400(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -87,7 +87,7 @@ pub enum CreateAnalyticsEventError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum CreateAnalyticsRuleError {
-    Status400(models::ApiResponse<'static>),
+    Status400(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -95,7 +95,7 @@ pub enum CreateAnalyticsRuleError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum DeleteAnalyticsRuleError {
-    Status404(models::ApiResponse<'static>),
+    Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -110,7 +110,7 @@ pub enum FlushAnalyticsError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum GetAnalyticsEventsError {
-    Status400(models::ApiResponse<'static>),
+    Status400(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -125,7 +125,7 @@ pub enum GetAnalyticsStatusError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum RetrieveAnalyticsRuleError {
-    Status404(models::ApiResponse<'static>),
+    Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -140,7 +140,7 @@ pub enum RetrieveAnalyticsRulesError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum UpsertAnalyticsRuleError {
-    Status400(models::ApiResponse<'static>),
+    Status400(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -148,7 +148,7 @@ pub enum UpsertAnalyticsRuleError {
 pub async fn create_analytics_event(
     configuration: &configuration::Configuration,
     params: &CreateAnalyticsEventParams<'_>,
-) -> Result<models::AnalyticsEventCreateResponse<'static>, Error<CreateAnalyticsEventError>> {
+) -> Result<models::AnalyticsEventCreateResponse, Error<CreateAnalyticsEventError>> {
     let uri_str = format!("{}/analytics/events", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -208,7 +208,7 @@ pub async fn create_analytics_event(
 pub async fn create_analytics_rule(
     configuration: &configuration::Configuration,
     params: &CreateAnalyticsRuleParams<'_>,
-) -> Result<models::CreateAnalyticsRule200Response<'static>, Error<CreateAnalyticsRuleError>> {
+) -> Result<models::CreateAnalyticsRule200Response, Error<CreateAnalyticsRuleError>> {
     let uri_str = format!("{}/analytics/rules", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -268,7 +268,7 @@ pub async fn create_analytics_rule(
 pub async fn delete_analytics_rule(
     configuration: &configuration::Configuration,
     params: &DeleteAnalyticsRuleParams<'_>,
-) -> Result<models::AnalyticsRule<'static>, Error<DeleteAnalyticsRuleError>> {
+) -> Result<models::AnalyticsRule, Error<DeleteAnalyticsRuleError>> {
     let uri_str = format!(
         "{}/analytics/rules/{ruleName}",
         configuration.base_path,
@@ -330,7 +330,7 @@ pub async fn delete_analytics_rule(
 /// Triggers a flush of analytics data to persistent storage.
 pub async fn flush_analytics(
     configuration: &configuration::Configuration,
-) -> Result<models::AnalyticsEventCreateResponse<'static>, Error<FlushAnalyticsError>> {
+) -> Result<models::AnalyticsEventCreateResponse, Error<FlushAnalyticsError>> {
     let uri_str = format!("{}/analytics/flush", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -389,7 +389,7 @@ pub async fn flush_analytics(
 pub async fn get_analytics_events(
     configuration: &configuration::Configuration,
     params: &GetAnalyticsEventsParams<'_>,
-) -> Result<models::AnalyticsEventsResponse<'static>, Error<GetAnalyticsEventsError>> {
+) -> Result<models::AnalyticsEventsResponse, Error<GetAnalyticsEventsError>> {
     let uri_str = format!("{}/analytics/events", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -448,7 +448,7 @@ pub async fn get_analytics_events(
 /// Returns sizes of internal analytics buffers and queues.
 pub async fn get_analytics_status(
     configuration: &configuration::Configuration,
-) -> Result<models::AnalyticsStatus<'static>, Error<GetAnalyticsStatusError>> {
+) -> Result<models::AnalyticsStatus, Error<GetAnalyticsStatusError>> {
     let uri_str = format!("{}/analytics/status", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -505,7 +505,7 @@ pub async fn get_analytics_status(
 pub async fn retrieve_analytics_rule(
     configuration: &configuration::Configuration,
     params: &RetrieveAnalyticsRuleParams<'_>,
-) -> Result<models::AnalyticsRule<'static>, Error<RetrieveAnalyticsRuleError>> {
+) -> Result<models::AnalyticsRule, Error<RetrieveAnalyticsRuleError>> {
     let uri_str = format!(
         "{}/analytics/rules/{ruleName}",
         configuration.base_path,
@@ -566,7 +566,7 @@ pub async fn retrieve_analytics_rule(
 pub async fn retrieve_analytics_rules(
     configuration: &configuration::Configuration,
     params: &RetrieveAnalyticsRulesParams<'_>,
-) -> Result<Vec<models::AnalyticsRule<'static>>, Error<RetrieveAnalyticsRulesError>> {
+) -> Result<Vec<models::AnalyticsRule>, Error<RetrieveAnalyticsRulesError>> {
     let uri_str = format!("{}/analytics/rules", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -626,7 +626,7 @@ pub async fn retrieve_analytics_rules(
 pub async fn upsert_analytics_rule(
     configuration: &configuration::Configuration,
     params: &UpsertAnalyticsRuleParams<'_>,
-) -> Result<models::AnalyticsRule<'static>, Error<UpsertAnalyticsRuleError>> {
+) -> Result<models::AnalyticsRule, Error<UpsertAnalyticsRuleError>> {
     let uri_str = format!(
         "{}/analytics/rules/{ruleName}",
         configuration.base_path,

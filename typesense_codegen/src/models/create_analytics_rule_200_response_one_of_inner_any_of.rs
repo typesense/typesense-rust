@@ -13,18 +13,13 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct CreateAnalyticsRule200ResponseOneOfInnerAnyOf<'a> {
+pub struct CreateAnalyticsRule200ResponseOneOfInnerAnyOf {
     #[serde(rename = "error", skip_serializing_if = "Option::is_none")]
     pub error: Option<String>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> CreateAnalyticsRule200ResponseOneOfInnerAnyOf<'a> {
+impl CreateAnalyticsRule200ResponseOneOfInnerAnyOf {
     pub fn new() -> Self {
-        Self {
-            error: None,
-            _phantom: PhantomData,
-        }
+        Self { error: None }
     }
 }

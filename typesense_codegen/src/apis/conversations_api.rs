@@ -50,7 +50,7 @@ pub struct UpdateConversationModelParams<'p> {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum CreateConversationModelError {
-    Status400(models::ApiResponse<'static>),
+    Status400(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -86,7 +86,7 @@ pub enum UpdateConversationModelError {
 pub async fn create_conversation_model(
     configuration: &configuration::Configuration,
     params: &CreateConversationModelParams<'_>,
-) -> Result<models::ConversationModelSchema<'static>, Error<CreateConversationModelError>> {
+) -> Result<models::ConversationModelSchema, Error<CreateConversationModelError>> {
     let uri_str = format!("{}/conversations/models", configuration.base_path);
     let mut req_builder = configuration
         .client
@@ -146,7 +146,7 @@ pub async fn create_conversation_model(
 pub async fn delete_conversation_model(
     configuration: &configuration::Configuration,
     params: &DeleteConversationModelParams<'_>,
-) -> Result<models::ConversationModelSchema<'static>, Error<DeleteConversationModelError>> {
+) -> Result<models::ConversationModelSchema, Error<DeleteConversationModelError>> {
     let uri_str = format!(
         "{}/conversations/models/{modelId}",
         configuration.base_path,
@@ -208,8 +208,7 @@ pub async fn delete_conversation_model(
 /// Retrieve all conversation models
 pub async fn retrieve_all_conversation_models(
     configuration: &configuration::Configuration,
-) -> Result<Vec<models::ConversationModelSchema<'static>>, Error<RetrieveAllConversationModelsError>>
-{
+) -> Result<Vec<models::ConversationModelSchema>, Error<RetrieveAllConversationModelsError>> {
     let uri_str = format!("{}/conversations/models", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -267,7 +266,7 @@ pub async fn retrieve_all_conversation_models(
 pub async fn retrieve_conversation_model(
     configuration: &configuration::Configuration,
     params: &RetrieveConversationModelParams<'_>,
-) -> Result<models::ConversationModelSchema<'static>, Error<RetrieveConversationModelError>> {
+) -> Result<models::ConversationModelSchema, Error<RetrieveConversationModelError>> {
     let uri_str = format!(
         "{}/conversations/models/{modelId}",
         configuration.base_path,
@@ -328,7 +327,7 @@ pub async fn retrieve_conversation_model(
 pub async fn update_conversation_model(
     configuration: &configuration::Configuration,
     params: &UpdateConversationModelParams<'_>,
-) -> Result<models::ConversationModelSchema<'static>, Error<UpdateConversationModelError>> {
+) -> Result<models::ConversationModelSchema, Error<UpdateConversationModelError>> {
     let uri_str = format!(
         "{}/conversations/models/{modelId}",
         configuration.base_path,

@@ -13,18 +13,13 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct DeleteStopwordsSet200Response<'a> {
+pub struct DeleteStopwordsSet200Response {
     #[serde(rename = "id")]
     pub id: String,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> DeleteStopwordsSet200Response<'a> {
+impl DeleteStopwordsSet200Response {
     pub fn new(id: String) -> Self {
-        Self {
-            id,
-            _phantom: PhantomData,
-        }
+        Self { id }
     }
 }

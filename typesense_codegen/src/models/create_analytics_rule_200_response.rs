@@ -14,12 +14,12 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum CreateAnalyticsRule200Response<'a> {
-    AnalyticsRule(Box<models::AnalyticsRule<'a>>),
-    Array(Vec<models::CreateAnalyticsRule200ResponseOneOfInner<'a>>),
+pub enum CreateAnalyticsRule200Response {
+    AnalyticsRule(Box<models::AnalyticsRule>),
+    Array(Vec<models::CreateAnalyticsRule200ResponseOneOfInner>),
 }
 
-impl Default for CreateAnalyticsRule200Response<'_> {
+impl Default for CreateAnalyticsRule200Response {
     fn default() -> Self {
         Self::AnalyticsRule(Default::default())
     }

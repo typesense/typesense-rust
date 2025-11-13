@@ -36,7 +36,7 @@ pub struct ImportStemmingDictionaryParams<'p> {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum GetStemmingDictionaryError {
-    Status404(models::ApiResponse<'static>),
+    Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -44,7 +44,7 @@ pub enum GetStemmingDictionaryError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ImportStemmingDictionaryError {
-    Status400(models::ApiResponse<'static>),
+    Status400(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -59,7 +59,7 @@ pub enum ListStemmingDictionariesError {
 pub async fn get_stemming_dictionary(
     configuration: &configuration::Configuration,
     params: &GetStemmingDictionaryParams<'_>,
-) -> Result<models::StemmingDictionary<'static>, Error<GetStemmingDictionaryError>> {
+) -> Result<models::StemmingDictionary, Error<GetStemmingDictionaryError>> {
     let uri_str = format!(
         "{}/stemming/dictionaries/{dictionaryId}",
         configuration.base_path,
@@ -177,10 +177,7 @@ pub async fn import_stemming_dictionary(
 /// Retrieve a list of all available stemming dictionaries.
 pub async fn list_stemming_dictionaries(
     configuration: &configuration::Configuration,
-) -> Result<
-    models::ListStemmingDictionaries200Response<'static>,
-    Error<ListStemmingDictionariesError>,
-> {
+) -> Result<models::ListStemmingDictionaries200Response, Error<ListStemmingDictionariesError>> {
     let uri_str = format!("{}/stemming/dictionaries", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 

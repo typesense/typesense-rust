@@ -13,19 +13,14 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SynonymSetDeleteSchema<'a> {
+pub struct SynonymSetDeleteSchema {
     /// Name of the deleted synonym set
     #[serde(rename = "name")]
     pub name: String,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> SynonymSetDeleteSchema<'a> {
+impl SynonymSetDeleteSchema {
     pub fn new(name: String) -> Self {
-        Self {
-            name,
-            _phantom: PhantomData,
-        }
+        Self { name }
     }
 }

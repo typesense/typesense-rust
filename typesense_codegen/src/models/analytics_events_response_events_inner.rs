@@ -13,7 +13,7 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct AnalyticsEventsResponseEventsInner<'a> {
+pub struct AnalyticsEventsResponseEventsInner {
     #[serde(rename = "name", skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
     #[serde(rename = "event_type", skip_serializing_if = "Option::is_none")]
@@ -30,11 +30,9 @@ pub struct AnalyticsEventsResponseEventsInner<'a> {
     pub doc_ids: Option<Vec<String>>,
     #[serde(rename = "query", skip_serializing_if = "Option::is_none")]
     pub query: Option<String>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> AnalyticsEventsResponseEventsInner<'a> {
+impl AnalyticsEventsResponseEventsInner {
     pub fn new() -> Self {
         Self {
             name: None,
@@ -45,7 +43,6 @@ impl<'a> AnalyticsEventsResponseEventsInner<'a> {
             doc_id: None,
             doc_ids: None,
             query: None,
-            _phantom: PhantomData,
         }
     }
 }

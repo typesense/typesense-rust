@@ -13,18 +13,13 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct PresetDeleteSchema<'a> {
+pub struct PresetDeleteSchema {
     #[serde(rename = "name")]
     pub name: String,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> PresetDeleteSchema<'a> {
+impl PresetDeleteSchema {
     pub fn new(name: String) -> Self {
-        Self {
-            name,
-            _phantom: PhantomData,
-        }
+        Self { name }
     }
 }

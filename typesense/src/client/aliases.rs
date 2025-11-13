@@ -33,7 +33,7 @@ impl<'a> Aliases<'a> {
         &self,
         alias_name: impl Into<Cow<'_, str>>,
         schema: models::CollectionAliasSchema<'_>,
-    ) -> Result<models::CollectionAlias<'static>, Error<collections_api::UpsertAliasError>> {
+    ) -> Result<models::CollectionAlias, Error<collections_api::UpsertAliasError>> {
         let params = collections_api::UpsertAliasParams {
             alias_name: alias_name.into(),
             collection_alias_schema: Some(schema),
@@ -45,8 +45,7 @@ impl<'a> Aliases<'a> {
     /// Lists all aliases and the corresponding collections that they map to.
     pub async fn retrieve(
         &self,
-    ) -> Result<models::CollectionAliasesResponse<'static>, Error<collections_api::GetAliasesError>>
-    {
+    ) -> Result<models::CollectionAliasesResponse, Error<collections_api::GetAliasesError>> {
         execute_wrapper!(self, collections_api::get_aliases)
     }
 }

@@ -13,18 +13,13 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ApiKeysResponse<'a> {
+pub struct ApiKeysResponse {
     #[serde(rename = "keys")]
-    pub keys: Vec<models::ApiKey<'a>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
+    pub keys: Vec<models::ApiKey>,
 }
 
-impl<'a> ApiKeysResponse<'a> {
-    pub fn new(keys: Vec<models::ApiKey<'a>>) -> Self {
-        Self {
-            keys,
-            _phantom: PhantomData,
-        }
+impl ApiKeysResponse {
+    pub fn new(keys: Vec<models::ApiKey>) -> Self {
+        Self { keys }
     }
 }

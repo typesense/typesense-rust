@@ -13,18 +13,13 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SuccessStatus<'a> {
+pub struct SuccessStatus {
     #[serde(rename = "success")]
     pub success: bool,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> SuccessStatus<'a> {
+impl SuccessStatus {
     pub fn new(success: bool) -> Self {
-        Self {
-            success,
-            _phantom: PhantomData,
-        }
+        Self { success }
     }
 }

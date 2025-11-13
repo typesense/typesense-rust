@@ -13,9 +13,9 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchResult<'a, D> {
+pub struct SearchResult<D> {
     #[serde(rename = "facet_counts", skip_serializing_if = "Option::is_none")]
-    pub facet_counts: Option<Vec<models::FacetCounts<'a>>>,
+    pub facet_counts: Option<Vec<models::FacetCounts>>,
     /// The number of documents found
     #[serde(rename = "found", skip_serializing_if = "Option::is_none")]
     pub found: Option<i32>,
@@ -34,28 +34,26 @@ pub struct SearchResult<'a, D> {
     #[serde(rename = "page", skip_serializing_if = "Option::is_none")]
     pub page: Option<i32>,
     #[serde(rename = "grouped_hits", skip_serializing_if = "Option::is_none")]
-    pub grouped_hits: Option<Vec<models::SearchGroupedHit<'a, D>>>,
+    pub grouped_hits: Option<Vec<models::SearchGroupedHit<D>>>,
     /// The documents that matched the search query
     #[serde(rename = "hits", skip_serializing_if = "Option::is_none")]
-    pub hits: Option<Vec<models::SearchResultHit<'a, D>>>,
+    pub hits: Option<Vec<models::SearchResultHit<D>>>,
     #[serde(rename = "request_params", skip_serializing_if = "Option::is_none")]
-    pub request_params: Option<Box<models::SearchRequestParams<'a>>>,
+    pub request_params: Option<Box<models::SearchRequestParams>>,
     #[serde(rename = "conversation", skip_serializing_if = "Option::is_none")]
-    pub conversation: Option<Box<models::SearchResultConversation<'a>>>,
+    pub conversation: Option<Box<models::SearchResultConversation>>,
     /// Returned only for union query response.
     #[serde(
         rename = "union_request_params",
         skip_serializing_if = "Option::is_none"
     )]
-    pub union_request_params: Option<Vec<models::SearchRequestParams<'a>>>,
+    pub union_request_params: Option<Vec<models::SearchRequestParams>>,
     /// Custom JSON object that can be returned in the search response
     #[serde(rename = "metadata", skip_serializing_if = "Option::is_none")]
     pub metadata: Option<std::collections::HashMap<String, serde_json::Value>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a, D> SearchResult<'a, D> {
+impl<D> SearchResult<D> {
     pub fn new() -> Self {
         Self {
             facet_counts: None,
@@ -71,7 +69,6 @@ impl<'a, D> SearchResult<'a, D> {
             conversation: None,
             union_request_params: None,
             metadata: None,
-            _phantom: PhantomData,
         }
     }
 }

@@ -13,18 +13,13 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct AnalyticsEventsResponse<'a> {
+pub struct AnalyticsEventsResponse {
     #[serde(rename = "events")]
-    pub events: Vec<models::AnalyticsEventsResponseEventsInner<'a>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
+    pub events: Vec<models::AnalyticsEventsResponseEventsInner>,
 }
 
-impl<'a> AnalyticsEventsResponse<'a> {
-    pub fn new(events: Vec<models::AnalyticsEventsResponseEventsInner<'a>>) -> Self {
-        Self {
-            events,
-            _phantom: PhantomData,
-        }
+impl AnalyticsEventsResponse {
+    pub fn new(events: Vec<models::AnalyticsEventsResponseEventsInner>) -> Self {
+        Self { events }
     }
 }

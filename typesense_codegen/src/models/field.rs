@@ -16,7 +16,7 @@ use serde::{Deserialize, Serialize};
 #[builder(on(Cow<'_, str>, into))]
 #[builder(on(String, into))]
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Field<'a> {
+pub struct Field {
     #[serde(rename = "name")]
     pub name: String,
     #[serde(rename = "type")]
@@ -62,13 +62,10 @@ pub struct Field<'a> {
     #[serde(rename = "symbols_to_index", skip_serializing_if = "Option::is_none")]
     pub symbols_to_index: Option<Vec<String>>,
     #[serde(rename = "embed", skip_serializing_if = "Option::is_none")]
-    pub embed: Option<Box<models::FieldEmbed<'a>>>,
-    #[serde(skip)]
-    #[builder(default)]
-    pub _phantom: PhantomData<&'a ()>,
+    pub embed: Option<Box<models::FieldEmbed>>,
 }
 
-impl<'a> Field<'a> {
+impl Field {
     pub fn new(name: String, r#type: String) -> Self {
         Self {
             name,
@@ -90,7 +87,6 @@ impl<'a> Field<'a> {
             token_separators: None,
             symbols_to_index: None,
             embed: None,
-            _phantom: PhantomData,
         }
     }
 }

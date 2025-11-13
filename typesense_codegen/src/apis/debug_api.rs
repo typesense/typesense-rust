@@ -24,7 +24,7 @@ pub enum DebugError {
 /// Print debugging information
 pub async fn debug(
     configuration: &configuration::Configuration,
-) -> Result<models::Debug200Response<'static>, Error<DebugError>> {
+) -> Result<models::Debug200Response, Error<DebugError>> {
     let uri_str = format!("{}/debug", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 

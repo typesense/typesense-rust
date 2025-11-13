@@ -64,10 +64,10 @@ pub struct {{{operationIdCamelCase}}}Params<'p{{!
 pub enum {{{operationIdCamelCase}}}Success {
     {{#responses}}
     {{#is2xx}}
-    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}<'static>{{/isEnum}}),
+    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}),
     {{/is2xx}}
     {{#is3xx}}
-    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}<'static>{{/isEnum}}),
+    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}),
     {{/is3xx}}
     {{/responses}}
     UnknownValue(serde_json::Value),
@@ -84,13 +84,13 @@ pub enum {{{operationIdCamelCase}}}Success {
 pub enum {{{operationIdCamelCase}}}Error {
     {{#responses}}
     {{#is4xx}}
-    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}<'static>{{/isEnum}}),
+    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}),
     {{/is4xx}}
     {{#is5xx}}
-    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}<'static>{{/isEnum}}),
+    Status{{code}}({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}),
     {{/is5xx}}
     {{#isDefault}}
-    DefaultResponse({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}<'static>{{/isEnum}}),
+    DefaultResponse({{#isEnum}}{{{enumName}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}),
     {{/isDefault}}
     {{/responses}}
     UnknownValue(serde_json::Value),
@@ -116,8 +116,8 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}{{#vendorExtensi
 }}{{#isResponseFile}}{{#supportAsync}}reqwest::Response{{/supportAsync}}{{^supportAsync}}reqwest::blocking::Response{{/supportAsync}}{{/isResponseFile}}{{!
 }}{{^isResponseFile}}{{#supportMultipleResponses}}ResponseContent<{{{operationIdCamelCase}}}Success>{{/supportMultipleResponses}}{{^supportMultipleResponses}}{{!
 }}{{^returnType}}(){{/returnType}}{{!
-}}{{#isArray}}Vec<{{#returnProperty.items}}{{{dataType}}}{{#isModel}}<'static>{{/isModel}}{{/returnProperty.items}}>{{/isArray}}{{!
-}}{{^isArray}}{{#returnProperty}}{{{dataType}}}{{#isModel}}<'static>{{/isModel}}{{/returnProperty}}{{!
+}}{{#isArray}}Vec<{{#returnProperty.items}}{{{dataType}}}{{#isModel}}{{#vendorExtensions.x-rust-is-used-as-input}}<'static>{{/vendorExtensions.x-rust-is-used-as-input}}{{/isModel}}{{/returnProperty.items}}>{{/isArray}}{{!
+}}{{^isArray}}{{#returnProperty}}{{{dataType}}}{{#isModel}}{{#vendorExtensions.x-rust-is-used-as-input}}<'static>{{/vendorExtensions.x-rust-is-used-as-input}}{{/isModel}}{{/returnProperty}}{{!
 }}{{/isArray}}{{/supportMultipleResponses}}{{/isResponseFile}}{{/vendorExtensions.x-rust-return-type}}, Error<{{{operationIdCamelCase}}}Error>> {
 {{/vendorExtensions.x-group-parameters}}
     let uri_str = format!("{}{{{path}}}", configuration.base_path{{#pathParams}}, {{{baseName}}}={{#isString}}crate::apis::urlencode(&{{/isString}}{{{vendorExtensions.x-rust-param-identifier}}}{{^required}}.unwrap(){{/required}}{{#required}}{{#isNullable}}.unwrap(){{/isNullable}}{{/required}}{{#isArray}}.join(",").as_ref(){{/isArray}}{{^isString}}{{^isUuid}}{{^isPrimitiveType}}{{^isContainer}}.to_string(){{/isContainer}}{{/isPrimitiveType}}{{/isUuid}}{{/isString}}{{#isString}}){{/isString}}{{/pathParams}});

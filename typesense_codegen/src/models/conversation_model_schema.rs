@@ -13,7 +13,7 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ConversationModelSchema<'a> {
+pub struct ConversationModelSchema {
     /// An explicit id for the model, otherwise the API will return a response with an auto-generated conversation model id.
     #[serde(rename = "id")]
     pub id: String,
@@ -41,11 +41,9 @@ pub struct ConversationModelSchema<'a> {
     /// URL of vLLM service
     #[serde(rename = "vllm_url", skip_serializing_if = "Option::is_none")]
     pub vllm_url: Option<String>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> ConversationModelSchema<'a> {
+impl ConversationModelSchema {
     pub fn new(id: String, model_name: String, history_collection: String, max_bytes: i32) -> Self {
         Self {
             id,
@@ -57,7 +55,6 @@ impl<'a> ConversationModelSchema<'a> {
             ttl: None,
             max_bytes,
             vllm_url: None,
-            _phantom: PhantomData,
         }
     }
 }

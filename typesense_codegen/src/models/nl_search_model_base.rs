@@ -13,7 +13,7 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct NlSearchModelBase<'a> {
+pub struct NlSearchModelBase {
     /// Name of the NL model to use
     #[serde(rename = "model_name", skip_serializing_if = "Option::is_none")]
     pub model_name: Option<String>,
@@ -68,11 +68,9 @@ pub struct NlSearchModelBase<'a> {
     /// Account ID for Cloudflare-specific models
     #[serde(rename = "account_id", skip_serializing_if = "Option::is_none")]
     pub account_id: Option<String>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> NlSearchModelBase<'a> {
+impl NlSearchModelBase {
     pub fn new() -> Self {
         Self {
             model_name: None,
@@ -93,7 +91,6 @@ impl<'a> NlSearchModelBase<'a> {
             region: None,
             max_output_tokens: None,
             account_id: None,
-            _phantom: PhantomData,
         }
     }
 }

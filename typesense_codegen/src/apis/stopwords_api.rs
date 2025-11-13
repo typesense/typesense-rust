@@ -44,7 +44,7 @@ pub struct UpsertStopwordsSetParams<'p> {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum DeleteStopwordsSetError {
-    Status404(models::ApiResponse<'static>),
+    Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -52,7 +52,7 @@ pub enum DeleteStopwordsSetError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum RetrieveStopwordsSetError {
-    Status404(models::ApiResponse<'static>),
+    Status404(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -67,7 +67,7 @@ pub enum RetrieveStopwordsSetsError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum UpsertStopwordsSetError {
-    Status400(models::ApiResponse<'static>),
+    Status400(models::ApiResponse),
     UnknownValue(serde_json::Value),
 }
 
@@ -75,7 +75,7 @@ pub enum UpsertStopwordsSetError {
 pub async fn delete_stopwords_set(
     configuration: &configuration::Configuration,
     params: &DeleteStopwordsSetParams<'_>,
-) -> Result<models::DeleteStopwordsSet200Response<'static>, Error<DeleteStopwordsSetError>> {
+) -> Result<models::DeleteStopwordsSet200Response, Error<DeleteStopwordsSetError>> {
     let uri_str = format!(
         "{}/stopwords/{setId}",
         configuration.base_path,
@@ -138,7 +138,7 @@ pub async fn delete_stopwords_set(
 pub async fn retrieve_stopwords_set(
     configuration: &configuration::Configuration,
     params: &RetrieveStopwordsSetParams<'_>,
-) -> Result<models::StopwordsSetRetrieveSchema<'static>, Error<RetrieveStopwordsSetError>> {
+) -> Result<models::StopwordsSetRetrieveSchema, Error<RetrieveStopwordsSetError>> {
     let uri_str = format!(
         "{}/stopwords/{setId}",
         configuration.base_path,
@@ -198,7 +198,7 @@ pub async fn retrieve_stopwords_set(
 /// Retrieve the details of all stopwords sets
 pub async fn retrieve_stopwords_sets(
     configuration: &configuration::Configuration,
-) -> Result<models::StopwordsSetsRetrieveAllSchema<'static>, Error<RetrieveStopwordsSetsError>> {
+) -> Result<models::StopwordsSetsRetrieveAllSchema, Error<RetrieveStopwordsSetsError>> {
     let uri_str = format!("{}/stopwords", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
 
@@ -255,7 +255,7 @@ pub async fn retrieve_stopwords_sets(
 pub async fn upsert_stopwords_set(
     configuration: &configuration::Configuration,
     params: &UpsertStopwordsSetParams<'_>,
-) -> Result<models::StopwordsSetSchema<'static>, Error<UpsertStopwordsSetError>> {
+) -> Result<models::StopwordsSetSchema, Error<UpsertStopwordsSetError>> {
     let uri_str = format!(
         "{}/stopwords/{setId}",
         configuration.base_path,

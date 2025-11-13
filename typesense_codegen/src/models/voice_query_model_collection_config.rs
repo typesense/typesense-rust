@@ -14,19 +14,14 @@ use serde::{Deserialize, Serialize};
 
 /// VoiceQueryModelCollectionConfig : Configuration for the voice query model
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct VoiceQueryModelCollectionConfig<'a> {
+pub struct VoiceQueryModelCollectionConfig {
     #[serde(rename = "model_name", skip_serializing_if = "Option::is_none")]
     pub model_name: Option<String>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> VoiceQueryModelCollectionConfig<'a> {
+impl VoiceQueryModelCollectionConfig {
     /// Configuration for the voice query model
     pub fn new() -> Self {
-        Self {
-            model_name: None,
-            _phantom: PhantomData,
-        }
+        Self { model_name: None }
     }
 }

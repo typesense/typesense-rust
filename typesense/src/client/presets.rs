@@ -25,8 +25,7 @@ impl<'a> Presets<'a> {
     /// Retrieves the details of all presets.
     pub async fn retrieve(
         &self,
-    ) -> Result<models::PresetsRetrieveSchema<'static>, Error<presets_api::RetrieveAllPresetsError>>
-    {
+    ) -> Result<models::PresetsRetrieveSchema, Error<presets_api::RetrieveAllPresetsError>> {
         execute_wrapper!(self, presets_api::retrieve_all_presets)
     }
 
@@ -39,7 +38,7 @@ impl<'a> Presets<'a> {
         &self,
         preset_id: impl Into<Cow<'_, str>>,
         schema: models::PresetUpsertSchema<'_>,
-    ) -> Result<models::PresetSchema<'static>, Error<presets_api::UpsertPresetError>> {
+    ) -> Result<models::PresetSchema, Error<presets_api::UpsertPresetError>> {
         let params = presets_api::UpsertPresetParams {
             preset_id: preset_id.into(),
             preset_upsert_schema: schema,

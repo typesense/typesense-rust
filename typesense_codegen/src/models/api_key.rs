@@ -13,7 +13,7 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ApiKey<'a> {
+pub struct ApiKey {
     #[serde(rename = "value", skip_serializing_if = "Option::is_none")]
     pub value: Option<String>,
     #[serde(rename = "description")]
@@ -28,11 +28,9 @@ pub struct ApiKey<'a> {
     pub id: Option<i64>,
     #[serde(rename = "value_prefix", skip_serializing_if = "Option::is_none")]
     pub value_prefix: Option<String>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> ApiKey<'a> {
+impl ApiKey {
     pub fn new(description: String, actions: Vec<String>, collections: Vec<String>) -> Self {
         Self {
             value: None,
@@ -42,7 +40,6 @@ impl<'a> ApiKey<'a> {
             expires_at: None,
             id: None,
             value_prefix: None,
-            _phantom: PhantomData,
         }
     }
 }

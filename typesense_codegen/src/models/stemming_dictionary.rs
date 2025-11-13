@@ -13,23 +13,17 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct StemmingDictionary<'a> {
+pub struct StemmingDictionary {
     /// Unique identifier for the dictionary
     #[serde(rename = "id")]
     pub id: String,
     /// List of word mappings in the dictionary
     #[serde(rename = "words")]
-    pub words: Vec<models::StemmingDictionaryWordsInner<'a>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
+    pub words: Vec<models::StemmingDictionaryWordsInner>,
 }
 
-impl<'a> StemmingDictionary<'a> {
-    pub fn new(id: String, words: Vec<models::StemmingDictionaryWordsInner<'a>>) -> Self {
-        Self {
-            id,
-            words,
-            _phantom: PhantomData,
-        }
+impl StemmingDictionary {
+    pub fn new(id: String, words: Vec<models::StemmingDictionaryWordsInner>) -> Self {
+        Self { id, words }
     }
 }

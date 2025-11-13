@@ -13,7 +13,7 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SearchSynonym<'a> {
+pub struct SearchSynonym {
     /// For 1-way synonyms, indicates the root word that words in the `synonyms` parameter map to.
     #[serde(rename = "root", skip_serializing_if = "Option::is_none")]
     pub root: Option<String>,
@@ -28,11 +28,9 @@ pub struct SearchSynonym<'a> {
     pub symbols_to_index: Option<Vec<String>>,
     #[serde(rename = "id")]
     pub id: String,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> SearchSynonym<'a> {
+impl SearchSynonym {
     pub fn new(synonyms: Vec<String>, id: String) -> Self {
         Self {
             root: None,
@@ -40,7 +38,6 @@ impl<'a> SearchSynonym<'a> {
             locale: None,
             symbols_to_index: None,
             id,
-            _phantom: PhantomData,
         }
     }
 }

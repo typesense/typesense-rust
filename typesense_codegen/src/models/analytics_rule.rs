@@ -13,7 +13,7 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct AnalyticsRule<'a> {
+pub struct AnalyticsRule {
     #[serde(rename = "name")]
     pub name: String,
     #[serde(rename = "type")]
@@ -25,12 +25,10 @@ pub struct AnalyticsRule<'a> {
     #[serde(rename = "rule_tag", skip_serializing_if = "Option::is_none")]
     pub rule_tag: Option<String>,
     #[serde(rename = "params", skip_serializing_if = "Option::is_none")]
-    pub params: Option<Box<models::AnalyticsRuleCreateParams<'a>>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
+    pub params: Option<Box<models::AnalyticsRuleCreateParams<'static>>>,
 }
 
-impl<'a> AnalyticsRule<'a> {
+impl AnalyticsRule {
     pub fn new(name: String, r#type: Type, collection: String, event_type: String) -> Self {
         Self {
             name,
@@ -39,7 +37,6 @@ impl<'a> AnalyticsRule<'a> {
             event_type,
             rule_tag: None,
             params: None,
-            _phantom: PhantomData,
         }
     }
 }

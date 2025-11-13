@@ -13,19 +13,14 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct CurationSetDeleteSchema<'a> {
+pub struct CurationSetDeleteSchema {
     /// Name of the deleted curation set
     #[serde(rename = "name")]
     pub name: String,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> CurationSetDeleteSchema<'a> {
+impl CurationSetDeleteSchema {
     pub fn new(name: String) -> Self {
-        Self {
-            name,
-            _phantom: PhantomData,
-        }
+        Self { name }
     }
 }

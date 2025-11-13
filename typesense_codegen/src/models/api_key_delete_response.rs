@@ -13,19 +13,14 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ApiKeyDeleteResponse<'a> {
+pub struct ApiKeyDeleteResponse {
     /// The id of the API key that was deleted
     #[serde(rename = "id")]
     pub id: i64,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> ApiKeyDeleteResponse<'a> {
+impl ApiKeyDeleteResponse {
     pub fn new(id: i64) -> Self {
-        Self {
-            id,
-            _phantom: PhantomData,
-        }
+        Self { id }
     }
 }

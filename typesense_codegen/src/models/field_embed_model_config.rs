@@ -13,7 +13,7 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct FieldEmbedModelConfig<'a> {
+pub struct FieldEmbedModelConfig {
     #[serde(rename = "model_name")]
     pub model_name: String,
     #[serde(rename = "api_key", skip_serializing_if = "Option::is_none")]
@@ -34,11 +34,9 @@ pub struct FieldEmbedModelConfig<'a> {
     pub indexing_prefix: Option<String>,
     #[serde(rename = "query_prefix", skip_serializing_if = "Option::is_none")]
     pub query_prefix: Option<String>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> FieldEmbedModelConfig<'a> {
+impl FieldEmbedModelConfig {
     pub fn new(model_name: String) -> Self {
         Self {
             model_name,
@@ -51,7 +49,6 @@ impl<'a> FieldEmbedModelConfig<'a> {
             project_id: None,
             indexing_prefix: None,
             query_prefix: None,
-            _phantom: PhantomData,
         }
     }
 }

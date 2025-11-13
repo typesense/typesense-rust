@@ -13,7 +13,7 @@ use ::std::{borrow::Cow, marker::PhantomData};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct NlSearchModelSchema<'a> {
+pub struct NlSearchModelSchema {
     /// Name of the NL model to use
     #[serde(rename = "model_name", skip_serializing_if = "Option::is_none")]
     pub model_name: Option<String>,
@@ -71,11 +71,9 @@ pub struct NlSearchModelSchema<'a> {
     /// ID of the NL search model
     #[serde(rename = "id")]
     pub id: String,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> NlSearchModelSchema<'a> {
+impl NlSearchModelSchema {
     pub fn new(id: String) -> Self {
         Self {
             model_name: None,
@@ -97,7 +95,6 @@ impl<'a> NlSearchModelSchema<'a> {
             max_output_tokens: None,
             account_id: None,
             id,
-            _phantom: PhantomData,
         }
     }
 }
