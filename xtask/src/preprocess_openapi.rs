@@ -156,44 +156,39 @@ pub fn preprocess_openapi_file(
     add_vendor_attributes(&mut doc)?;
 
     println!("Unwrapping parameters...");
-    unwrap_search_parameters(&mut doc)?;
-    unwrap_multi_search_parameters(&mut doc)?;
-    unwrap_parameters_by_path(
-        &mut doc,
+    doc.unwrap_search_parameters()?;
+    doc.unwrap_multi_search_parameters()?;
+    doc.unwrap_parameters_by_path(
         "/collections/{collectionName}/documents/import",
         "post",
         "importDocumentsParameters",
         Some("ImportDocumentsParameters"), // Copy schema to components
     )?;
-    unwrap_parameters_by_path(
-        &mut doc,
+    doc.unwrap_parameters_by_path(
         "/collections/{collectionName}/documents/export",
         "get",
         "exportDocumentsParameters",
         Some("ExportDocumentsParameters"),
     )?;
-    unwrap_parameters_by_path(
-        &mut doc,
+    doc.unwrap_parameters_by_path(
         "/collections/{collectionName}/documents",
         "patch",
         "updateDocumentsParameters",
         Some("UpdateDocumentsParameters"),
     )?;
-    unwrap_parameters_by_path(
-        &mut doc,
+    doc.unwrap_parameters_by_path(
         "/collections/{collectionName}/documents",
         "delete",
         "deleteDocumentsParameters",
         Some("DeleteDocumentsParameters"),
     )?;
-    unwrap_parameters_by_path(
-        &mut doc,
+    doc.unwrap_parameters_by_path(
         "/collections",
         "get",
         "getCollectionsParameters",
         Some("GetCollectionsParameters"),
     )?;
-    schemas_mark_borrowed_data(&mut doc);
+    doc.mark_borrowed_data();
     println!("Preprocessing complete.");
 
     // --- Step 3: Serialize the modified spec and write to the output file ---
@@ -206,278 +201,267 @@ pub fn preprocess_openapi_file(
     Ok(())
 }
 
-fn collect_property(prop: &OpenAPIProperty) -> Vec<String> {
-    let mut data = Vec::new();
-    if let Some(schema) = &prop.r#ref {
-        data.push(
-            schema
-                .trim_start_matches("#/components/schemas/")
-                .to_owned(),
-        );
+impl OpenAPIProperty {
+    fn collect_properties(&self) -> Vec<String> {
+        let mut data = Vec::new();
+        if let Some(schema) = &self.r#ref {
+            data.push(
+                schema
+                    .trim_start_matches("#/components/schemas/")
+                    .to_owned(),
+            );
+        }
+        if let Some(p) = &self.items {
+            data.extend(p.collect_properties());
+        }
+        if let Some(v) = &self.any_of {
+            v.iter().for_each(|p| data.extend(p.collect_properties()));
+        }
+        if let Some(v) = &self.one_of {
+            v.iter().for_each(|p| data.extend(p.collect_properties()));
+        }
+        data
     }
-    if let Some(p) = &prop.items {
-        data.extend(collect_property(p));
-    }
-    if let Some(v) = &prop.any_of {
-        v.iter().for_each(|p| data.extend(collect_property(p)));
-    }
-    if let Some(v) = &prop.one_of {
-        v.iter().for_each(|p| data.extend(collect_property(p)));
-    }
-    data
-}
 
-fn schemas_mark_borrowed_data(doc: &mut OpenAPI) {
-    println!("Marking borrowed data...");
-
-    let mut request_schemas = HashSet::new();
-    doc.paths.iter_mut().for_each(|(_, pms)| {
-        pms.iter_mut().for_each(|(_, pm)| {
-            if let Some(ps) = &mut pm.parameters {
-                ps.iter_mut().for_each(|p| {
-                    if let Some(s) = &mut p.schema {
-                        if s.r#type.as_deref() == Some("object") || s.one_of.is_some() {
-                            s.extra
-                                .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
-                        }
-                        request_schemas.extend(collect_property(s));
-                    }
-                })
-            }
-
-            if let Some(reqb) = &mut pm.request_body
-                && let Some(cs) = &mut reqb.content
-            {
-                cs.iter_mut().for_each(|(_, c)| {
-                    if let Some(s) = &mut c.schema {
-                        if s.r#type.as_deref() == Some("object") || s.one_of.is_some() {
-                            s.extra
-                                .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
-                        }
-                        request_schemas.extend(collect_property(s));
-                    }
-                })
-            }
-        })
-    });
-
-    let schemas = doc
-        .components
-        .schemas
-        .iter()
-        .filter(|(n, _)| n.ends_with("Parameters") || request_schemas.contains(n.as_str()))
-        .map(|(n, _)| n.to_owned())
-        .collect::<Vec<String>>();
-    drop(request_schemas);
-
-    for schema_name in schemas {
-        let Some(schema) = doc.components.schemas.get_mut(&schema_name) else {
-            continue;
-        };
-
-        schema
-            .extra
-            .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
-
-        for (_, prop) in schema.properties.iter_mut().flat_map(|v| v.iter_mut()) {
-            for inner in prop.one_of.iter_mut().flat_map(|v| v.iter_mut()) {
-                if inner.r#type.as_deref() != Some("object") && inner.one_of.is_none() {
-                    continue;
-                }
-                inner
-                    .extra
-                    .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
-            }
-            for inner in prop.any_of.iter_mut().flat_map(|v| v.iter_mut()) {
-                if inner.r#type.as_deref() != Some("object") && inner.one_of.is_none() {
-                    continue;
-                }
-                inner
-                    .extra
-                    .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
-            }
-            if let Some(inner) = &mut prop.items
-                && (inner.r#type.as_deref() == Some("object") || inner.one_of.is_some())
-            {
-                inner
-                    .extra
-                    .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
-            }
-
-            if prop.r#type.as_deref() != Some("object") && prop.one_of.is_none() {
-                continue;
-            }
-            prop.extra
+    fn mark_borrowed_property(&mut self) {
+        if self.r#type.as_deref() == Some("object") || self.one_of.is_some() {
+            self.extra
                 .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
         }
     }
 }
 
-/// A generic function to:
-/// 1. (Optional) Copy an inline parameter schema to `components/schemas`.
-/// 2. Unwrap that parameter object into individual query parameters within the `paths` definition.
-fn unwrap_parameters_by_path(
-    doc: &mut OpenAPI,
-    path: &str,
-    method: &str,
-    param_name_to_unwrap: &str,
-    new_component_name: Option<&str>,
-) -> Result<(), String> {
-    // --- Step 1 (Optional): Copy the inline schema to components ---
-    if let Some(component_name) = new_component_name {
+impl OpenAPI {
+    fn mark_borrowed_data(&mut self) {
+        println!("Marking borrowed data...");
+
+        let mut request_schemas = HashSet::new();
+        self.paths.iter_mut().for_each(|(_, pms)| {
+            pms.iter_mut().for_each(|(_, pm)| {
+                if let Some(ps) = &mut pm.parameters {
+                    ps.iter_mut().for_each(|p| {
+                        if let Some(s) = &mut p.schema {
+                            s.mark_borrowed_property();
+                            request_schemas.extend(s.collect_properties());
+                        }
+                    })
+                }
+
+                if let Some(reqb) = &mut pm.request_body
+                    && let Some(cs) = &mut reqb.content
+                {
+                    cs.iter_mut().for_each(|(_, c)| {
+                        if let Some(s) = &mut c.schema {
+                            s.mark_borrowed_property();
+                            request_schemas.extend(s.collect_properties());
+                        }
+                    })
+                }
+            })
+        });
+
+        let schemas = self
+            .components
+            .schemas
+            .iter()
+            .filter(|(n, _)| n.ends_with("Parameters") || request_schemas.contains(n.as_str()))
+            .map(|(n, _)| n.to_owned())
+            .collect::<Vec<String>>();
+        drop(request_schemas);
+
+        for schema_name in schemas {
+            let Some(schema) = self.components.schemas.get_mut(&schema_name) else {
+                continue;
+            };
+
+            schema
+                .extra
+                .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
+
+            for (_, prop) in schema.properties.iter_mut().flat_map(|v| v.iter_mut()) {
+                for inner in prop.one_of.iter_mut().flat_map(|v| v.iter_mut()) {
+                    inner.mark_borrowed_property();
+                }
+                for inner in prop.any_of.iter_mut().flat_map(|v| v.iter_mut()) {
+                    inner.mark_borrowed_property();
+                }
+                if let Some(inner) = &mut prop.items {
+                    inner.mark_borrowed_property();
+                }
+
+                prop.mark_borrowed_property();
+            }
+        }
+    }
+
+    /// A generic function to:
+    /// 1. (Optional) Copy an inline parameter schema to `components/schemas`.
+    /// 2. Unwrap that parameter object into individual query parameters within the `paths` definition.
+    fn unwrap_parameters_by_path(
+        &mut self,
+        path: &str,
+        method: &str,
+        param_name_to_unwrap: &str,
+        new_component_name: Option<&str>,
+    ) -> Result<(), String> {
+        // --- Step 1 (Optional): Copy the inline schema to components ---
+        if let Some(component_name) = new_component_name {
+            println!(
+                "- Copying inline schema for '{}' to components.schemas.{}...",
+                param_name_to_unwrap, component_name
+            );
+
+            // Find the parameter with the inline schema to copy using a read-only borrow
+            let params_for_copy = self
+                .paths
+                .get(path)
+                .and_then(|p| p.get(method))
+                .and_then(|op| op.parameters.as_ref())
+                .ok_or_else(|| format!("Could not find parameters for {} {}", method, path))?;
+
+            let param_to_copy = params_for_copy
+                .iter()
+                .find(|p| p.name.as_deref() == Some(param_name_to_unwrap))
+                .ok_or_else(|| {
+                    format!("Parameter '{}' not found for copying", param_name_to_unwrap)
+                })?;
+
+            let inline_schema = param_to_copy
+                .schema
+                .clone()
+                .ok_or_else(|| format!("No schema found for '{}'", param_name_to_unwrap))?;
+
+            // Get a mutable borrow to insert the cloned schema into components
+            self.components
+                .schemas
+                .insert(component_name.into(), inline_schema);
+        }
+
+        // --- Step 2: Unwrap the parameter object into individual parameters ---
         println!(
-            "- Copying inline schema for '{}' to components.schemas.{}...",
-            param_name_to_unwrap, component_name
+            "- Unwrapping parameter object '{}'...",
+            param_name_to_unwrap
         );
 
-        // Find the parameter with the inline schema to copy using a read-only borrow
-        let params_for_copy = doc
+        // Navigate down to the operation's parameters list (mutable)
+        let params_for_unwrap = self
             .paths
-            .get(path)
-            .and_then(|p| p.get(method))
-            .and_then(|op| op.parameters.as_ref())
+            .get_mut(path)
+            .and_then(|p| p.get_mut(method))
+            .and_then(|op| op.parameters.as_mut())
             .ok_or_else(|| format!("Could not find parameters for {} {}", method, path))?;
 
-        let param_to_copy = params_for_copy
+        let param_index = params_for_unwrap
             .iter()
-            .find(|p| p.name.as_deref() == Some(param_name_to_unwrap))
-            .ok_or_else(|| format!("Parameter '{}' not found for copying", param_name_to_unwrap))?;
+            .position(|p| p.name.as_deref() == Some(param_name_to_unwrap))
+            .ok_or_else(|| format!("Parameter '{}' not found in {}", param_name_to_unwrap, path))?;
 
-        let inline_schema = param_to_copy
+        let param_object = params_for_unwrap.remove(param_index);
+        let properties = param_object
             .schema
-            .clone()
-            .ok_or_else(|| format!("No schema found for '{}'", param_name_to_unwrap))?;
+            .and_then(|s| s.properties)
+            .ok_or_else(|| {
+                format!(
+                    "Could not extract properties from '{}'",
+                    param_name_to_unwrap
+                )
+            })?;
 
-        // Get a mutable borrow to insert the cloned schema into components
-        doc.components
+        for (key, value) in properties {
+            let new_param = OpenAPIParameter {
+                name: Some(key),
+                r#in: Some("query".to_owned()),
+                schema: Some(value),
+                ..Default::default()
+            };
+            params_for_unwrap.push(new_param);
+        }
+
+        Ok(())
+    }
+
+    /// Special handler for unwrapping search parameters from `components/schemas`.
+    fn unwrap_search_parameters(&mut self) -> Result<(), String> {
+        println!("- Unwrapping searchParameters...");
+        // Get the definition of SearchParameters from components
+        let search_params_props = self
+            .components
             .schemas
-            .insert(component_name.into(), inline_schema);
+            .get("SearchParameters")
+            .and_then(|sp| sp.properties.as_ref())
+            .cloned() // Clone to avoid borrowing issues
+            .ok_or_else(|| "Could not find schema for SearchParameters".to_string())?;
+
+        // Navigate to the operation's parameters list
+        let params = self
+            .paths
+            .get_mut("/collections/{collectionName}/documents/search")
+            .and_then(|p| p.get_mut("get"))
+            .and_then(|op| op.parameters.as_mut())
+            .ok_or_else(|| {
+                "Could not find parameters for /collections/{collectionName}/documents/search"
+                    .to_string()
+            })?;
+
+        // Find and remove the old parameter object.
+        let param_index = params
+            .iter()
+            .position(|p| p.name.as_deref() == Some("searchParameters"))
+            .ok_or_else(|| "searchParameters object not found".to_string())?;
+        params.remove(param_index);
+
+        // Add the new individual parameters.
+        for (key, value) in search_params_props {
+            let new_param = OpenAPIParameter {
+                name: Some(key),
+                r#in: Some("query".to_owned()),
+                schema: Some(value),
+                ..Default::default()
+            };
+            params.push(new_param);
+        }
+
+        Ok(())
     }
 
-    // --- Step 2: Unwrap the parameter object into individual parameters ---
-    println!(
-        "- Unwrapping parameter object '{}'...",
-        param_name_to_unwrap
-    );
+    /// Special handler for unwrapping multi-search parameters from `components/schemas`.
+    fn unwrap_multi_search_parameters(&mut self) -> Result<(), String> {
+        println!("- Unwrapping multiSearchParameters...");
+        // Get the definition of MultiSearchParameters from components
+        let search_params_props = self
+            .components
+            .schemas
+            .get("MultiSearchParameters")
+            .and_then(|sp| sp.properties.as_ref())
+            .cloned()
+            .ok_or_else(|| "Could not find schema for MultiSearchParameters".to_string())?;
 
-    // Navigate down to the operation's parameters list (mutable)
-    let params_for_unwrap = doc
-        .paths
-        .get_mut(path)
-        .and_then(|p| p.get_mut(method))
-        .and_then(|op| op.parameters.as_mut())
-        .ok_or_else(|| format!("Could not find parameters for {} {}", method, path))?;
+        // Navigate to the operation's parameters list
+        let params = self
+            .paths
+            .get_mut("/multi_search")
+            .and_then(|p| p.get_mut("post"))
+            .and_then(|op| op.parameters.as_mut())
+            .ok_or_else(|| "Could not find parameters for /multi_search".to_string())?;
 
-    let param_index = params_for_unwrap
-        .iter()
-        .position(|p| p.name.as_deref() == Some(param_name_to_unwrap))
-        .ok_or_else(|| format!("Parameter '{}' not found in {}", param_name_to_unwrap, path))?;
+        // Find and remove the old parameter object.
+        let param_index = params
+            .iter()
+            .position(|p| p.name.as_deref() == Some("multiSearchParameters"))
+            .ok_or_else(|| "multiSearchParameters object not found".to_string())?;
+        params.remove(param_index);
 
-    let param_object = params_for_unwrap.remove(param_index);
-    let properties = param_object
-        .schema
-        .and_then(|s| s.properties)
-        .ok_or_else(|| {
-            format!(
-                "Could not extract properties from '{}'",
-                param_name_to_unwrap
-            )
-        })?;
+        // Add the new individual parameters.
+        for (key, value) in search_params_props {
+            let new_param = OpenAPIParameter {
+                name: Some(key),
+                r#in: Some("query".to_owned()),
+                schema: Some(value),
+                ..Default::default()
+            };
+            params.push(new_param);
+        }
 
-    for (key, value) in properties {
-        let new_param = OpenAPIParameter {
-            name: Some(key),
-            r#in: Some("query".to_owned()),
-            schema: Some(value),
-            ..Default::default()
-        };
-        params_for_unwrap.push(new_param);
+        Ok(())
     }
-
-    Ok(())
-}
-
-/// Special handler for unwrapping search parameters from `components/schemas`.
-fn unwrap_search_parameters(doc: &mut OpenAPI) -> Result<(), String> {
-    println!("- Unwrapping searchParameters...");
-    // Get the definition of SearchParameters from components
-    let search_params_props = doc
-        .components
-        .schemas
-        .get("SearchParameters")
-        .and_then(|sp| sp.properties.as_ref())
-        .cloned() // Clone to avoid borrowing issues
-        .ok_or_else(|| "Could not find schema for SearchParameters".to_string())?;
-
-    // Navigate to the operation's parameters list
-    let params = doc
-        .paths
-        .get_mut("/collections/{collectionName}/documents/search")
-        .and_then(|p| p.get_mut("get"))
-        .and_then(|op| op.parameters.as_mut())
-        .ok_or_else(|| {
-            "Could not find parameters for /collections/{collectionName}/documents/search"
-                .to_string()
-        })?;
-
-    // Find and remove the old parameter object.
-    let param_index = params
-        .iter()
-        .position(|p| p.name.as_deref() == Some("searchParameters"))
-        .ok_or_else(|| "searchParameters object not found".to_string())?;
-    params.remove(param_index);
-
-    // Add the new individual parameters.
-    for (key, value) in search_params_props {
-        let new_param = OpenAPIParameter {
-            name: Some(key),
-            r#in: Some("query".to_owned()),
-            schema: Some(value),
-            ..Default::default()
-        };
-        params.push(new_param);
-    }
-
-    Ok(())
-}
-
-/// Special handler for unwrapping multi-search parameters from `components/schemas`.
-fn unwrap_multi_search_parameters(doc: &mut OpenAPI) -> Result<(), String> {
-    println!("- Unwrapping multiSearchParameters...");
-    // Get the definition of MultiSearchParameters from components
-    let search_params_props = doc
-        .components
-        .schemas
-        .get("MultiSearchParameters")
-        .and_then(|sp| sp.properties.as_ref())
-        .cloned()
-        .ok_or_else(|| "Could not find schema for MultiSearchParameters".to_string())?;
-
-    // Navigate to the operation's parameters list
-    let params = doc
-        .paths
-        .get_mut("/multi_search")
-        .and_then(|p| p.get_mut("post"))
-        .and_then(|op| op.parameters.as_mut())
-        .ok_or_else(|| "Could not find parameters for /multi_search".to_string())?;
-
-    // Find and remove the old parameter object.
-    let param_index = params
-        .iter()
-        .position(|p| p.name.as_deref() == Some("multiSearchParameters"))
-        .ok_or_else(|| "multiSearchParameters object not found".to_string())?;
-    params.remove(param_index);
-
-    // Add the new individual parameters.
-    for (key, value) in search_params_props {
-        let new_param = OpenAPIParameter {
-            name: Some(key),
-            r#in: Some("query".to_owned()),
-            schema: Some(value),
-            ..Default::default()
-        };
-        params.push(new_param);
-    }
-
-    Ok(())
 }

@@ -143,7 +143,7 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
     let actual_fields_map: std::collections::HashMap<String, Field> = retrieved_schema
         .fields
         .into_iter()
-        .map(|f| (f.name.clone().into(), f))
+        .map(|f| (f.name.clone(), f))
         .collect();
 
     // Iterate through our *expected* fields and assert only the attributes we set.

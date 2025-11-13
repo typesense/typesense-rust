@@ -14,7 +14,7 @@ async fn run_test_schemaless_document_lifecycle() {
 
     // ---  Setup: Create a Collection ---
     let schema = CollectionSchema {
-        name: collection_name.clone().into(),
+        name: collection_name.as_str().into(),
         fields: vec![
             Field {
                 name: "title".into(),

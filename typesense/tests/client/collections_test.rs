@@ -10,7 +10,7 @@ async fn logic_test_collections_and_collection_lifecycle() {
 
     // --- 1. Create a Collection (via `collections`) ---
     let schema = CollectionSchema {
-        name: collection_name.clone().into(),
+        name: collection_name.as_str().into(),
         fields: vec![
             Field {
                 name: "name".into(),
