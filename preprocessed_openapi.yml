@@ -278,7 +278,7 @@ paths:
               type: object
               description: Can be any key-value pair
               x-go-type: interface{}
-              x-rust-is-used-as-input: true
+              x-rust-has-borrowed-data: true
       responses:
         '201':
           description: Document successfully created/indexed
@@ -320,7 +320,7 @@ paths:
               type: object
               description: Can be any key-value pair
               x-go-type: interface{}
-              x-rust-is-used-as-input: true
+              x-rust-has-borrowed-data: true
         x-rust-params-generic-parameter: B
         x-rust-type: B
       responses:
@@ -1502,7 +1502,7 @@ paths:
               type: object
               description: Can be any key-value pair
               x-go-type: interface{}
-              x-rust-is-used-as-input: true
+              x-rust-has-borrowed-data: true
         x-rust-params-generic-parameter: B
         x-rust-type: B
       responses:
@@ -2000,7 +2000,7 @@ paths:
               properties:
                 log-slow-requests-time-ms:
                   type: integer
-              x-rust-is-used-as-input: true
+              x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Compacting the on-disk database succeeded.
@@ -2517,7 +2517,7 @@ paths:
               - type: array
                 items:
                   $ref: '#/components/schemas/AnalyticsRuleCreate'
-              x-rust-is-used-as-input: true
+              x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Analytics rule(s) successfully created
@@ -3182,9 +3182,9 @@ components:
           type: object
           description: |
             Optional details about the collection, e.g., when it was created, who created it etc.
-          x-rust-is-used-as-input: true
+          x-rust-has-borrowed-data: true
       x-rust-builder: true
-      x-rust-is-used-as-input: true
+      x-rust-has-borrowed-data: true
     CollectionUpdateSchema:
       type: object
       required:
@@ -3215,8 +3215,8 @@ components:
           type: object
           description: |
             Optional details about the collection, e.g., when it was created, who created it etc.
-          x-rust-is-used-as-input: true
-      x-rust-is-used-as-input: true
+          x-rust-has-borrowed-data: true
+      x-rust-has-borrowed-data: true
     CollectionResponse:
       allOf:
       - $ref: '#/components/schemas/CollectionSchema'
@@ -3367,7 +3367,7 @@ components:
         collection_name:
           type: string
           description: Name of the collection you wish to map the alias to
-      x-rust-is-used-as-input: true
+      x-rust-has-borrowed-data: true
     CollectionAlias:
       type: object
       required:
@@ -3711,7 +3711,7 @@ components:
         expires_at:
           type: integer
           format: int64
-      x-rust-is-used-as-input: true
+      x-rust-has-borrowed-data: true
     ApiKey:
       allOf:
       - $ref: '#/components/schemas/ApiKeySchema'
@@ -4043,7 +4043,7 @@ components:
           description: |
             The Id of a previous conversation to continue, this tells Typesense to include prior context when communicating with the LLM.
       x-rust-builder: true
-      x-rust-is-used-as-input: true
+      x-rust-has-borrowed-data: true
     MultiSearchParameters:
       type: object
       description: |
@@ -4294,7 +4294,7 @@ components:
           description: |
             The Id of a previous conversation to continue, this tells Typesense to include prior context when communicating with the LLM.
       x-rust-builder: true
-      x-rust-is-used-as-input: true
+      x-rust-has-borrowed-data: true
     MultiSearchSearchesParameter:
       type: object
       required:
@@ -4308,7 +4308,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MultiSearchCollectionParameters'
-      x-rust-is-used-as-input: true
+      x-rust-has-borrowed-data: true
     MultiSearchCollectionParameters:
       allOf:
       - $ref: '#/components/schemas/MultiSearchParameters'
@@ -4327,7 +4327,7 @@ components:
               When true, computes both text match and vector distance scores for all matches in hybrid search. Documents found only through keyword search will get a vector distance score, and documents found only through vector search will get a text match score.
             default: false
       x-rust-builder: true
-      x-rust-is-used-as-input: true
+      x-rust-has-borrowed-data: true
     FacetCounts:
       type: object
       properties:
@@ -4399,8 +4399,8 @@ components:
               type: string
             analytics_tag:
               type: string
-          x-rust-is-used-as-input: true
-      x-rust-is-used-as-input: true
+          x-rust-has-borrowed-data: true
+      x-rust-has-borrowed-data: true
     AnalyticsEventsResponse:
       type: object
       required:
@@ -4472,8 +4472,8 @@ components:
               type: string
             weight:
               type: integer
-          x-rust-is-used-as-input: true
-      x-rust-is-used-as-input: true
+          x-rust-has-borrowed-data: true
+      x-rust-has-borrowed-data: true
     AnalyticsRuleUpdate:
       type: object
       description: Fields allowed to update on an analytics rule
@@ -4501,8 +4501,8 @@ components:
               type: string
             weight:
               type: integer
-          x-rust-is-used-as-input: true
-      x-rust-is-used-as-input: true
+          x-rust-has-borrowed-data: true
+      x-rust-has-borrowed-data: true
     AnalyticsRule:
       allOf:
       - $ref: '#/components/schemas/AnalyticsRuleCreate'
@@ -4579,7 +4579,7 @@ components:
             type: string
         locale:
           type: string
-      x-rust-is-used-as-input: true
+      x-rust-has-borrowed-data: true
     StopwordsSetSchema:
       type: object
       required:
@@ -4624,8 +4624,8 @@ components:
           oneOf:
           - $ref: '#/components/schemas/SearchParameters'
           - $ref: '#/components/schemas/MultiSearchSearchesParameter'
-          x-rust-is-used-as-input: true
-      x-rust-is-used-as-input: true
+          x-rust-has-borrowed-data: true
+      x-rust-has-borrowed-data: true
     PresetSchema:
       allOf:
       - $ref: '#/components/schemas/PresetUpsertSchema'
@@ -4659,7 +4659,7 @@ components:
       - coerce_or_drop
       - drop
       - reject
-      x-rust-is-used-as-input: true
+      x-rust-has-borrowed-data: true
     IndexAction:
       type: string
       enum:
@@ -4667,7 +4667,7 @@ components:
       - update
       - upsert
       - emplace
-      x-rust-is-used-as-input: true
+      x-rust-has-borrowed-data: true
     DropTokensMode:
       type: string
       description: |
@@ -4676,7 +4676,7 @@ components:
       - right_to_left
       - left_to_right
       - both_sides:3
-      x-rust-is-used-as-input: true
+      x-rust-has-borrowed-data: true
     ConversationModelCreateSchema:
       required:
       - model_name
@@ -4699,7 +4699,7 @@ components:
           history_collection:
             type: string
             description: Typesense collection that stores the historical conversations
-      x-rust-is-used-as-input: true
+      x-rust-has-borrowed-data: true
     ConversationModelUpdateSchema:
       type: object
       properties:
@@ -4732,7 +4732,7 @@ components:
         vllm_url:
           type: string
           description: URL of vLLM service
-      x-rust-is-used-as-input: true
+      x-rust-has-borrowed-data: true
     ConversationModelSchema:
       allOf:
       - $ref: '#/components/schemas/ConversationModelCreateSchema'
@@ -4837,7 +4837,7 @@ components:
           id:
             type: string
             description: Optional ID for the NL search model
-      x-rust-is-used-as-input: true
+      x-rust-has-borrowed-data: true
     NLSearchModelSchema:
       allOf:
       - $ref: '#/components/schemas/NLSearchModelCreateSchema'
@@ -4850,7 +4850,7 @@ components:
             description: ID of the NL search model
     NLSearchModelUpdateSchema:
       $ref: '#/components/schemas/NLSearchModelCreateSchema'
-      x-rust-is-used-as-input: true
+      x-rust-has-borrowed-data: true
     NLSearchModelDeleteSchema:
       type: object
       required:
@@ -4884,7 +4884,7 @@ components:
           description: By default, special characters are dropped from synonyms. Use this attribute to specify which special characters should be indexed as is
           items:
             type: string
-      x-rust-is-used-as-input: true
+      x-rust-has-borrowed-data: true
     SynonymSetCreateSchema:
       type: object
       required:
@@ -4895,7 +4895,7 @@ components:
           description: Array of synonym items
           items:
             $ref: '#/components/schemas/SynonymItemSchema'
-      x-rust-is-used-as-input: true
+      x-rust-has-borrowed-data: true
     SynonymSetSchema:
       allOf:
       - $ref: '#/components/schemas/SynonymSetCreateSchema'
@@ -4963,7 +4963,7 @@ components:
           type: object
           description: |
             Return a custom JSON object in the Search API response, when this rule is triggered. This can can be used to display a pre-defined message (eg: a promotion banner) on the front-end when a particular rule is triggered.
-          x-rust-is-used-as-input: true
+          x-rust-has-borrowed-data: true
         sort_by:
           type: string
           description: |
@@ -4991,7 +4991,7 @@ components:
         id:
           type: string
           description: ID of the curation item
-      x-rust-is-used-as-input: true
+      x-rust-has-borrowed-data: true
     CurationItemSchema:
       allOf:
       - $ref: '#/components/schemas/CurationItemCreateSchema'
@@ -5014,7 +5014,7 @@ components:
         description:
           type: string
           description: Optional description for the curation set
-      x-rust-is-used-as-input: true
+      x-rust-has-borrowed-data: true
     CurationSetSchema:
       allOf:
       - $ref: '#/components/schemas/CurationSetCreateSchema'
@@ -5100,7 +5100,7 @@ components:
           $ref: '#/components/schemas/IndexAction'
         dirty_values:
           $ref: '#/components/schemas/DirtyValues'
-      x-rust-is-used-as-input: true
+      x-rust-has-borrowed-data: true
     ExportDocumentsParameters:
       type: object
       properties:
@@ -5113,14 +5113,14 @@ components:
         exclude_fields:
           type: string
           description: List of fields from the document to exclude in the search result
-      x-rust-is-used-as-input: true
+      x-rust-has-borrowed-data: true
     UpdateDocumentsParameters:
       type: object
       properties:
         filter_by:
           type: string
           example: 'num_employees:>100 && country: [USA, UK]'
-      x-rust-is-used-as-input: true
+      x-rust-has-borrowed-data: true
     DeleteDocumentsParameters:
       type: object
       required:
@@ -5137,7 +5137,7 @@ components:
         truncate:
           type: boolean
           description: When true, removes all documents from the collection while preserving the collection and its schema.
-      x-rust-is-used-as-input: true
+      x-rust-has-borrowed-data: true
     GetCollectionsParameters:
       type: object
       properties:
@@ -5151,7 +5151,7 @@ components:
         offset:
           type: integer
           description: Identifies the starting point to return collections when paginating.
-      x-rust-is-used-as-input: true
+      x-rust-has-borrowed-data: true
   securitySchemes:
     api_key_header:
       type: apiKey

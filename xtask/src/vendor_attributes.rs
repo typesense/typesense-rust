@@ -116,7 +116,7 @@ impl<'a, 'b> OperationContext<'a, 'b> {
     }
 
     fn try_set_request_body(&mut self, attr: &str, val: Value) -> Result<&mut Self, String> {
-        let method = &mut self
+        let req = &mut self
             .vendor
             .doc
             .paths
@@ -125,14 +125,14 @@ impl<'a, 'b> OperationContext<'a, 'b> {
             .get_mut(self.method)
             .ok_or_else(|| format!("operation method not found: {}.{}", self.path, self.method))?
             .request_body;
-        let method = match method {
+        let req = match req {
             Some(v) => v,
             None => {
-                *method = Some(Default::default());
-                method.as_mut().unwrap()
+                *req = Some(Default::default());
+                req.as_mut().unwrap()
             }
         };
-        method.extra.insert(attr.to_owned(), val);
+        req.extra.insert(attr.to_owned(), val);
         Ok(self)
     }
 

@@ -114,8 +114,8 @@ pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}{{#vendorExtensi
 }}{{#isResponseFile}}{{#supportAsync}}reqwest::Response{{/supportAsync}}{{^supportAsync}}reqwest::blocking::Response{{/supportAsync}}{{/isResponseFile}}{{!
 }}{{^isResponseFile}}{{#supportMultipleResponses}}ResponseContent<{{{operationIdCamelCase}}}Success>{{/supportMultipleResponses}}{{^supportMultipleResponses}}{{!
 }}{{^returnType}}(){{/returnType}}{{!
-}}{{#isArray}}Vec<{{#returnProperty.items}}{{{dataType}}}{{#isModel}}{{#vendorExtensions.x-rust-is-used-as-input}}<'static>{{/vendorExtensions.x-rust-is-used-as-input}}{{/isModel}}{{/returnProperty.items}}>{{/isArray}}{{!
-}}{{^isArray}}{{#returnProperty}}{{{dataType}}}{{#isModel}}{{#vendorExtensions.x-rust-is-used-as-input}}<'static>{{/vendorExtensions.x-rust-is-used-as-input}}{{/isModel}}{{/returnProperty}}{{!
+}}{{#isArray}}Vec<{{#returnProperty.items}}{{{dataType}}}{{#isModel}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'static>{{/vendorExtensions.x-rust-has-borrowed-data}}{{/isModel}}{{/returnProperty.items}}>{{/isArray}}{{!
+}}{{^isArray}}{{#returnProperty}}{{{dataType}}}{{#isModel}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'static>{{/vendorExtensions.x-rust-has-borrowed-data}}{{/isModel}}{{/returnProperty}}{{!
 }}{{/isArray}}{{/supportMultipleResponses}}{{/isResponseFile}}{{/vendorExtensions.x-rust-return-type}}, Error<{{{operationIdCamelCase}}}Error>> {
 {{/vendorExtensions.x-group-parameters}}
     let uri_str = format!("{}{{{path}}}", configuration.base_path{{#pathParams}}, {{{baseName}}}={{#isString}}crate::apis::urlencode(&{{/isString}}{{{vendorExtensions.x-rust-param-identifier}}}{{^required}}.unwrap(){{/required}}{{#required}}{{#isNullable}}.unwrap(){{/isNullable}}{{/required}}{{#isArray}}.join(",").as_ref(){{/isArray}}{{^isString}}{{^isUuid}}{{^isPrimitiveType}}{{^isContainer}}.to_string(){{/isContainer}}{{/isPrimitiveType}}{{/isUuid}}{{/isString}}{{#isString}}){{/isString}}{{/pathParams}});

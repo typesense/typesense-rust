@@ -28,7 +28,6 @@ pub(crate) struct OpenAPI {
     pub(crate) extra: IndexMap<String, Value>,
 }
 
-// PATHS
 pub(crate) type OpenAPIPath = IndexMap<String, OpenAPIMethod>;
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -99,7 +98,6 @@ pub(crate) struct OpenAPIParameter {
     pub(crate) extra: IndexMap<String, Value>,
 }
 
-// COMPONENTS
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct OpenAPIComponents {
@@ -195,7 +193,7 @@ pub fn preprocess_openapi_file(
         "getCollectionsParameters",
         Some("GetCollectionsParameters"),
     )?;
-    schemas_mark_owned_data(&mut doc);
+    schemas_mark_borrowed_data(&mut doc);
     println!("Preprocessing complete.");
 
     // --- Step 3: Serialize the modified spec and write to the output file ---
@@ -229,7 +227,9 @@ fn collect_property(prop: &OpenAPIProperty) -> Vec<String> {
     data
 }
 
-fn schemas_mark_owned_data(doc: &mut OpenAPI) {
+fn schemas_mark_borrowed_data(doc: &mut OpenAPI) {
+    println!("Marking borrowed data...");
+
     let mut request_schemas = HashSet::new();
     doc.paths.iter_mut().for_each(|(_, pms)| {
         pms.iter_mut().for_each(|(_, pm)| {
@@ -238,7 +238,7 @@ fn schemas_mark_owned_data(doc: &mut OpenAPI) {
                     if let Some(s) = &mut p.schema {
                         if s.r#type.as_deref() == Some("object") || s.one_of.is_some() {
                             s.extra
-                                .insert("x-rust-is-used-as-input".to_owned(), Value::Bool(true));
+                                .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
                         }
                         request_schemas.extend(collect_property(s));
                     }
@@ -252,7 +252,7 @@ fn schemas_mark_owned_data(doc: &mut OpenAPI) {
                     if let Some(s) = &mut c.schema {
                         if s.r#type.as_deref() == Some("object") || s.one_of.is_some() {
                             s.extra
-                                .insert("x-rust-is-used-as-input".to_owned(), Value::Bool(true));
+                                .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
                         }
                         request_schemas.extend(collect_property(s));
                     }
@@ -277,7 +277,7 @@ fn schemas_mark_owned_data(doc: &mut OpenAPI) {
 
         schema
             .extra
-            .insert("x-rust-is-used-as-input".to_owned(), Value::Bool(true));
+            .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
 
         for (_, prop) in schema.properties.iter_mut().flat_map(|v| v.iter_mut()) {
             for inner in prop.one_of.iter_mut().flat_map(|v| v.iter_mut()) {
@@ -286,7 +286,7 @@ fn schemas_mark_owned_data(doc: &mut OpenAPI) {
                 }
                 inner
                     .extra
-                    .insert("x-rust-is-used-as-input".to_owned(), Value::Bool(true));
+                    .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
             }
             for inner in prop.any_of.iter_mut().flat_map(|v| v.iter_mut()) {
                 if inner.r#type.as_deref() != Some("object") && inner.one_of.is_none() {
@@ -294,21 +294,21 @@ fn schemas_mark_owned_data(doc: &mut OpenAPI) {
                 }
                 inner
                     .extra
-                    .insert("x-rust-is-used-as-input".to_owned(), Value::Bool(true));
+                    .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
             }
             if let Some(inner) = &mut prop.items
                 && (inner.r#type.as_deref() == Some("object") || inner.one_of.is_some())
             {
                 inner
                     .extra
-                    .insert("x-rust-is-used-as-input".to_owned(), Value::Bool(true));
+                    .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
             }
 
             if prop.r#type.as_deref() != Some("object") && prop.one_of.is_none() {
                 continue;
             }
             prop.extra
-                .insert("x-rust-is-used-as-input".to_owned(), Value::Bool(true));
+                .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
         }
     }
 }

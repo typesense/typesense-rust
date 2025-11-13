@@ -84,7 +84,5 @@ pub fn add_vendor_attributes(doc: &mut OpenAPI) -> Result<(), String> {
         .params_generic_parameter("B")?
         .request_type("B")?;
 
-    // attrs.schemas_mark_owned_data()?;
-
     Ok(())
 }

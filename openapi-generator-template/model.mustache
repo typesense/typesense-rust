@@ -129,7 +129,7 @@ impl Default for {{classname}} {
 {{/vendorExtensions.x-rust-builder}}{{!
 }}{{#vendorExtensions.x-rust-has-byte-array}}#[serde_as]{{/vendorExtensions.x-rust-has-byte-array}}{{!
 }}{{#oneOf.isEmpty}}#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct {{{classname}}}{{#vendorExtensions.x-rust-is-used-as-input}}<'a{{#vendorExtensions.x-rust-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-generic-parameter}}>{{/vendorExtensions.x-rust-is-used-as-input}}{{^vendorExtensions.x-rust-is-used-as-input}}{{#vendorExtensions.x-rust-generic-parameter}}<{{{.}}}>{{/vendorExtensions.x-rust-generic-parameter}}{{/vendorExtensions.x-rust-is-used-as-input}} {
+pub struct {{{classname}}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a{{#vendorExtensions.x-rust-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-generic-parameter}}>{{/vendorExtensions.x-rust-has-borrowed-data}}{{^vendorExtensions.x-rust-has-borrowed-data}}{{#vendorExtensions.x-rust-generic-parameter}}<{{{.}}}>{{/vendorExtensions.x-rust-generic-parameter}}{{/vendorExtensions.x-rust-has-borrowed-data}} {
 {{#vars}}
     {{#description}}
     /// {{{.}}}
@@ -148,15 +148,15 @@ pub struct {{{classname}}}{{#vendorExtensions.x-rust-is-used-as-input}}<'a{{#ven
     ### Enums
     }}{{#isEnum}}{{#isArray}}{{#uniqueItems}}std::collections::HashSet<{{/uniqueItems}}{{^uniqueItems}}Vec<{{/uniqueItems}}{{/isArray}}{{{enumName}}}{{#isArray}}>{{/isArray}}{{/isEnum}}{{!
     ### Models
-    }}{{^isEnum}}{{#isModel}}{{^avoidBoxedModels}}Box<{{/avoidBoxedModels}}{{{dataType}}}{{#vendorExtensions.x-rust-is-used-as-input}}{{#model}}{{#vendorExtensions.x-rust-is-used-as-input}}<'a>{{/vendorExtensions.x-rust-is-used-as-input}}{{^vendorExtensions.x-rust-is-used-as-input}}<'static>{{/vendorExtensions.x-rust-is-used-as-input}}{{/model}}{{/vendorExtensions.x-rust-is-used-as-input}}{{^avoidBoxedModels}}>{{/avoidBoxedModels}}{{/isModel}}{{!
+    }}{{^isEnum}}{{#isModel}}{{^avoidBoxedModels}}Box<{{/avoidBoxedModels}}{{{dataType}}}{{#vendorExtensions.x-rust-has-borrowed-data}}{{#model}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a>{{/vendorExtensions.x-rust-has-borrowed-data}}{{^vendorExtensions.x-rust-has-borrowed-data}}<'static>{{/vendorExtensions.x-rust-has-borrowed-data}}{{/model}}{{/vendorExtensions.x-rust-has-borrowed-data}}{{^avoidBoxedModels}}>{{/avoidBoxedModels}}{{/isModel}}{{!
     ### ByteArray
     }}{{^isModel}}{{#isByteArray}}Vec<u8>{{/isByteArray}}{{!
     ### String
-    }}{{^isByteArray}}{{#isString}}{{#model}}{{#vendorExtensions.x-rust-is-used-as-input}}Cow<'a, str>{{/vendorExtensions.x-rust-is-used-as-input}}{{^vendorExtensions.x-rust-is-used-as-input}}String{{/vendorExtensions.x-rust-is-used-as-input}}{{/model}}{{/isString}}{{!
+    }}{{^isByteArray}}{{#isString}}{{#model}}{{#vendorExtensions.x-rust-has-borrowed-data}}Cow<'a, str>{{/vendorExtensions.x-rust-has-borrowed-data}}{{^vendorExtensions.x-rust-has-borrowed-data}}String{{/vendorExtensions.x-rust-has-borrowed-data}}{{/model}}{{/isString}}{{!
     ### Arrays
     }}{{^isString}}{{#isArray}}Vec<{{#items}}{{!
     ### Array Models
-    }}{{#isModel}}{{{dataType}}}{{#vendorExtensions.x-rust-is-used-as-input}}{{#model}}{{#vendorExtensions.x-rust-is-used-as-input}}<'a>{{/vendorExtensions.x-rust-is-used-as-input}}{{^vendorExtensions.x-rust-is-used-as-input}}<'static>{{/vendorExtensions.x-rust-is-used-as-input}}{{/model}}{{/vendorExtensions.x-rust-is-used-as-input}}{{/isModel}}{{!
+    }}{{#isModel}}{{{dataType}}}{{#vendorExtensions.x-rust-has-borrowed-data}}{{#model}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a>{{/vendorExtensions.x-rust-has-borrowed-data}}{{^vendorExtensions.x-rust-has-borrowed-data}}<'static>{{/vendorExtensions.x-rust-has-borrowed-data}}{{/model}}{{/vendorExtensions.x-rust-has-borrowed-data}}{{/isModel}}{{!
     ### Array other datatypes
     }}{{^isModel}}{{{dataType}}}{{/isModel}}{{/items}}>{{/isArray}}{{!
     ### Primitive datatypes
@@ -171,8 +171,8 @@ pub struct {{{classname}}}{{#vendorExtensions.x-rust-is-used-as-input}}<'a{{#ven
 {{/vars}}
 }
 
-impl{{#vendorExtensions.x-rust-is-used-as-input}}<'a{{#vendorExtensions.x-rust-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-generic-parameter}}>{{/vendorExtensions.x-rust-is-used-as-input}}{{^vendorExtensions.x-rust-is-used-as-input}}{{#vendorExtensions.x-rust-generic-parameter}}<{{{.}}}>{{/vendorExtensions.x-rust-generic-parameter}}{{/vendorExtensions.x-rust-is-used-as-input}} {{!
-    }}{{{classname}}}{{#vendorExtensions.x-rust-is-used-as-input}}<'a{{#vendorExtensions.x-rust-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-generic-parameter}}>{{/vendorExtensions.x-rust-is-used-as-input}}{{^vendorExtensions.x-rust-is-used-as-input}}{{#vendorExtensions.x-rust-generic-parameter}}<{{{.}}}>{{/vendorExtensions.x-rust-generic-parameter}}{{/vendorExtensions.x-rust-is-used-as-input}} {
+impl{{#vendorExtensions.x-rust-has-borrowed-data}}<'a{{#vendorExtensions.x-rust-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-generic-parameter}}>{{/vendorExtensions.x-rust-has-borrowed-data}}{{^vendorExtensions.x-rust-has-borrowed-data}}{{#vendorExtensions.x-rust-generic-parameter}}<{{{.}}}>{{/vendorExtensions.x-rust-generic-parameter}}{{/vendorExtensions.x-rust-has-borrowed-data}} {{!
+    }}{{{classname}}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a{{#vendorExtensions.x-rust-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-generic-parameter}}>{{/vendorExtensions.x-rust-has-borrowed-data}}{{^vendorExtensions.x-rust-has-borrowed-data}}{{#vendorExtensions.x-rust-generic-parameter}}<{{{.}}}>{{/vendorExtensions.x-rust-generic-parameter}}{{/vendorExtensions.x-rust-has-borrowed-data}} {
     {{#description}}
     /// {{{.}}}
     {{/description}}
@@ -183,11 +183,11 @@ impl{{#vendorExtensions.x-rust-is-used-as-input}}<'a{{#vendorExtensions.x-rust-g
     }}{{^vendorExtensions.x-rust-type}}{{#isNullable}}Option<{{/isNullable}}{{!
     }}{{#isEnum}}{{#isArray}}{{#uniqueItems}}std::collections::HashSet<{{/uniqueItems}}{{^uniqueItems}}Vec<{{/uniqueItems}}{{/isArray}}{{{enumName}}}{{#isArray}}>{{/isArray}}{{/isEnum}}{{!
     }}{{^isEnum}}{{#isByteArray}}Vec<u8>{{/isByteArray}}{{!
-    }}{{^isByteArray}}{{#isString}}{{#model}}{{#vendorExtensions.x-rust-is-used-as-input}}Cow<'a, str>{{/vendorExtensions.x-rust-is-used-as-input}}{{^vendorExtensions.x-rust-is-used-as-input}}String{{/vendorExtensions.x-rust-is-used-as-input}}{{/model}}{{/isString}}{{!
+    }}{{^isByteArray}}{{#isString}}{{#model}}{{#vendorExtensions.x-rust-has-borrowed-data}}Cow<'a, str>{{/vendorExtensions.x-rust-has-borrowed-data}}{{^vendorExtensions.x-rust-has-borrowed-data}}String{{/vendorExtensions.x-rust-has-borrowed-data}}{{/model}}{{/isString}}{{!
     }}{{^isString}}{{#isArray}}Vec<{{#items}}{{!
-    }}{{#isModel}}{{{dataType}}}{{#vendorExtensions.x-rust-is-used-as-input}}{{#model}}{{#vendorExtensions.x-rust-is-used-as-input}}<'a>{{/vendorExtensions.x-rust-is-used-as-input}}{{^vendorExtensions.x-rust-is-used-as-input}}<'static>{{/vendorExtensions.x-rust-is-used-as-input}}{{/model}}{{/vendorExtensions.x-rust-is-used-as-input}}{{/isModel}}{{!
+    }}{{#isModel}}{{{dataType}}}{{#vendorExtensions.x-rust-has-borrowed-data}}{{#model}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a>{{/vendorExtensions.x-rust-has-borrowed-data}}{{^vendorExtensions.x-rust-has-borrowed-data}}<'static>{{/vendorExtensions.x-rust-has-borrowed-data}}{{/model}}{{/vendorExtensions.x-rust-has-borrowed-data}}{{/isModel}}{{!
     }}{{^isModel}}{{{dataType}}}{{/isModel}}{{/items}}>{{/isArray}}{{!
-    }}{{^isArray}}{{{dataType}}}{{#isModel}}{{#vendorExtensions.x-rust-is-used-as-input}}{{#model}}{{#vendorExtensions.x-rust-is-used-as-input}}<'a>{{/vendorExtensions.x-rust-is-used-as-input}}{{^vendorExtensions.x-rust-is-used-as-input}}<'static>{{/vendorExtensions.x-rust-is-used-as-input}}{{/model}}{{/vendorExtensions.x-rust-is-used-as-input}}{{/isModel}}{{!
+    }}{{^isArray}}{{{dataType}}}{{#isModel}}{{#vendorExtensions.x-rust-has-borrowed-data}}{{#model}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a>{{/vendorExtensions.x-rust-has-borrowed-data}}{{^vendorExtensions.x-rust-has-borrowed-data}}<'static>{{/vendorExtensions.x-rust-has-borrowed-data}}{{/model}}{{/vendorExtensions.x-rust-has-borrowed-data}}{{/isModel}}{{!
     }}{{/isArray}}{{/isString}}{{/isByteArray}}{{/isEnum}}{{!
     }}{{#isNullable}}>{{/isNullable}}{{/vendorExtensions.x-rust-type}}{{!
     ### Comma for next arguement
@@ -218,16 +218,16 @@ impl{{#vendorExtensions.x-rust-is-used-as-input}}<'a{{#vendorExtensions.x-rust-g
 {{/description}}
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum {{classname}}{{#vendorExtensions.x-rust-is-used-as-input}}<'a>{{/vendorExtensions.x-rust-is-used-as-input}} {
+pub enum {{classname}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a>{{/vendorExtensions.x-rust-has-borrowed-data}} {
 {{#composedSchemas.oneOf}}
     {{#description}}
     /// {{{.}}}
     {{/description}}
-    {{{name}}}({{#isModel}}{{^avoidBoxedModels}}Box<{{/avoidBoxedModels}}{{/isModel}}{{#isArray}}Vec<{{{items.dataType}}}{{#vendorExtensions.x-rust-is-used-as-input}}<'a>{{/vendorExtensions.x-rust-is-used-as-input}}>{{/isArray}}{{^isArray}}{{{dataType}}}{{#vendorExtensions.x-rust-is-used-as-input}}<'a>{{/vendorExtensions.x-rust-is-used-as-input}}{{/isArray}}{{#isModel}}{{^avoidBoxedModels}}>{{/avoidBoxedModels}}{{/isModel}}),
+    {{{name}}}({{#isModel}}{{^avoidBoxedModels}}Box<{{/avoidBoxedModels}}{{/isModel}}{{#isArray}}Vec<{{{items.dataType}}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a>{{/vendorExtensions.x-rust-has-borrowed-data}}>{{/isArray}}{{^isArray}}{{{dataType}}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a>{{/vendorExtensions.x-rust-has-borrowed-data}}{{/isArray}}{{#isModel}}{{^avoidBoxedModels}}>{{/avoidBoxedModels}}{{/isModel}}),
 {{/composedSchemas.oneOf}}
 }
 
-impl Default for {{classname}}{{#vendorExtensions.x-rust-is-used-as-input}}<'_>{{/vendorExtensions.x-rust-is-used-as-input}} {
+impl Default for {{classname}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'_>{{/vendorExtensions.x-rust-has-borrowed-data}} {
     fn default() -> Self {
         {{#composedSchemas.oneOf}}{{#-first}}Self::{{{name}}}(Default::default()){{/-first}}{{/composedSchemas.oneOf}}
     }
