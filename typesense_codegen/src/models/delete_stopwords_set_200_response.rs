@@ -15,13 +15,13 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct DeleteStopwordsSet200Response<'a> {
     #[serde(rename = "id")]
-    pub id: Cow<'a, str>,
+    pub id: String,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> DeleteStopwordsSet200Response<'a> {
-    pub fn new(id: Cow<'a, str>) -> Self {
+    pub fn new(id: String) -> Self {
         Self {
             id,
             _phantom: PhantomData,

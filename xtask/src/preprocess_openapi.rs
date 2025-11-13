@@ -254,7 +254,7 @@ fn schemas_mark_owned_data(doc: &mut OpenAPI) {
         .components
         .schemas
         .iter()
-        .filter(|(n, _)| !n.ends_with("Parameters") && !request_schemas.contains(n.as_str()))
+        .filter(|(n, _)| n.ends_with("Parameters") || request_schemas.contains(n.as_str()))
         .map(|(n, _)| n.to_owned())
         .collect::<Vec<String>>();
     drop(request_schemas);
@@ -266,7 +266,7 @@ fn schemas_mark_owned_data(doc: &mut OpenAPI) {
 
         schema
             .extra
-            .insert("x-rust-is-owned-data".to_owned(), Value::Bool(true));
+            .insert("x-rust-is-used-as-input".to_owned(), Value::Bool(true));
 
         for (_, prop) in schema.properties.iter_mut().flat_map(|v| v.iter_mut()) {
             for inner in prop.one_of.iter_mut().flat_map(|v| v.iter_mut()) {
@@ -275,7 +275,7 @@ fn schemas_mark_owned_data(doc: &mut OpenAPI) {
                 }
                 inner
                     .extra
-                    .insert("x-rust-is-owned-data".to_owned(), Value::Bool(true));
+                    .insert("x-rust-is-used-as-input".to_owned(), Value::Bool(true));
             }
             for inner in prop.any_of.iter_mut().flat_map(|v| v.iter_mut()) {
                 if inner.r#type.as_deref() != Some("object") {
@@ -283,21 +283,21 @@ fn schemas_mark_owned_data(doc: &mut OpenAPI) {
                 }
                 inner
                     .extra
-                    .insert("x-rust-is-owned-data".to_owned(), Value::Bool(true));
+                    .insert("x-rust-is-used-as-input".to_owned(), Value::Bool(true));
             }
             if let Some(inner) = &mut prop.items
                 && inner.r#type.as_deref() == Some("object")
             {
                 inner
                     .extra
-                    .insert("x-rust-is-owned-data".to_owned(), Value::Bool(true));
+                    .insert("x-rust-is-used-as-input".to_owned(), Value::Bool(true));
             }
 
             if prop.r#type.as_deref() != Some("object") {
                 continue;
             }
             prop.extra
-                .insert("x-rust-is-owned-data".to_owned(), Value::Bool(true));
+                .insert("x-rust-is-used-as-input".to_owned(), Value::Bool(true));
         }
     }
 }

@@ -15,31 +15,31 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct FieldEmbedModelConfig<'a> {
     #[serde(rename = "model_name")]
-    pub model_name: Cow<'a, str>,
+    pub model_name: String,
     #[serde(rename = "api_key", skip_serializing_if = "Option::is_none")]
-    pub api_key: Option<Cow<'a, str>>,
+    pub api_key: Option<String>,
     #[serde(rename = "url", skip_serializing_if = "Option::is_none")]
-    pub url: Option<Cow<'a, str>>,
+    pub url: Option<String>,
     #[serde(rename = "access_token", skip_serializing_if = "Option::is_none")]
-    pub access_token: Option<Cow<'a, str>>,
+    pub access_token: Option<String>,
     #[serde(rename = "refresh_token", skip_serializing_if = "Option::is_none")]
-    pub refresh_token: Option<Cow<'a, str>>,
+    pub refresh_token: Option<String>,
     #[serde(rename = "client_id", skip_serializing_if = "Option::is_none")]
-    pub client_id: Option<Cow<'a, str>>,
+    pub client_id: Option<String>,
     #[serde(rename = "client_secret", skip_serializing_if = "Option::is_none")]
-    pub client_secret: Option<Cow<'a, str>>,
+    pub client_secret: Option<String>,
     #[serde(rename = "project_id", skip_serializing_if = "Option::is_none")]
-    pub project_id: Option<Cow<'a, str>>,
+    pub project_id: Option<String>,
     #[serde(rename = "indexing_prefix", skip_serializing_if = "Option::is_none")]
-    pub indexing_prefix: Option<Cow<'a, str>>,
+    pub indexing_prefix: Option<String>,
     #[serde(rename = "query_prefix", skip_serializing_if = "Option::is_none")]
-    pub query_prefix: Option<Cow<'a, str>>,
+    pub query_prefix: Option<String>,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> FieldEmbedModelConfig<'a> {
-    pub fn new(model_name: Cow<'a, str>) -> Self {
+    pub fn new(model_name: String) -> Self {
         Self {
             model_name,
             api_key: None,

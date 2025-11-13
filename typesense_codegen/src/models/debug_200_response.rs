@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Debug200Response<'a> {
     #[serde(rename = "version", skip_serializing_if = "Option::is_none")]
-    pub version: Option<Cow<'a, str>>,
+    pub version: Option<String>,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }

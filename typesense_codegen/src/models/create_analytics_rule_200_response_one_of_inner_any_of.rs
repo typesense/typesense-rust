@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct CreateAnalyticsRule200ResponseOneOfInnerAnyOf<'a> {
     #[serde(rename = "error", skip_serializing_if = "Option::is_none")]
-    pub error: Option<Cow<'a, str>>,
+    pub error: Option<String>,
     #[serde(skip)]
     pub _phantom: PhantomData<&'a ()>,
 }

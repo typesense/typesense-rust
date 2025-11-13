@@ -153,7 +153,7 @@ pub struct {{{classname}}}<'a{{#vendorExtensions.x-rust-generic-parameter}}, {{{
     ### ByteArray
     }}{{^isModel}}{{#isByteArray}}Vec<u8>{{/isByteArray}}{{!
     ### String
-    }}{{^isByteArray}}{{#isString}}{{#model}}{{#vendorExtensions.x-rust-is-owned-data}}String{{/vendorExtensions.x-rust-is-owned-data}}{{^vendorExtensions.x-rust-is-owned-data}}Cow<'a, str>{{/vendorExtensions.x-rust-is-owned-data}}{{/model}}{{/isString}}{{!
+    }}{{^isByteArray}}{{#isString}}{{#model}}{{#vendorExtensions.x-rust-is-used-as-input}}Cow<'a, str>{{/vendorExtensions.x-rust-is-used-as-input}}{{^vendorExtensions.x-rust-is-used-as-input}}String{{/vendorExtensions.x-rust-is-used-as-input}}{{/model}}{{/isString}}{{!
     ### Arrays
     }}{{^isString}}{{#isArray}}Vec<{{#items}}{{!
     ### Array Models
@@ -186,7 +186,7 @@ impl<'a{{#vendorExtensions.x-rust-generic-parameter}}, {{{.}}}{{/vendorExtension
     }}{{^vendorExtensions.x-rust-type}}{{#isNullable}}Option<{{/isNullable}}{{!
     }}{{#isEnum}}{{#isArray}}{{#uniqueItems}}std::collections::HashSet<{{/uniqueItems}}{{^uniqueItems}}Vec<{{/uniqueItems}}{{/isArray}}{{{enumName}}}{{#isArray}}>{{/isArray}}{{/isEnum}}{{!
     }}{{^isEnum}}{{#isByteArray}}Vec<u8>{{/isByteArray}}{{!
-    }}{{^isByteArray}}{{#isString}}{{#model}}{{#vendorExtensions.x-rust-is-owned-data}}String{{/vendorExtensions.x-rust-is-owned-data}}{{^vendorExtensions.x-rust-is-owned-data}}Cow<'a, str>{{/vendorExtensions.x-rust-is-owned-data}}{{/model}}{{/isString}}{{!
+    }}{{^isByteArray}}{{#isString}}{{#model}}{{#vendorExtensions.x-rust-is-used-as-input}}Cow<'a, str>{{/vendorExtensions.x-rust-is-used-as-input}}{{^vendorExtensions.x-rust-is-used-as-input}}String{{/vendorExtensions.x-rust-is-used-as-input}}{{/model}}{{/isString}}{{!
     }}{{^isString}}{{#isArray}}Vec<{{#items}}{{!
     }}{{#isModel}}{{{dataType}}}<'a>{{/isModel}}{{!
     }}{{^isModel}}{{{dataType}}}{{/isModel}}{{/items}}>{{/isArray}}{{!

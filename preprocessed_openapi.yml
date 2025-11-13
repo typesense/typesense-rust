@@ -3177,7 +3177,9 @@ components:
           description: |
             Optional details about the collection, e.g., when it was created, who created it etc.
           type: object
+          x-rust-is-used-as-input: true
       x-rust-builder: true
+      x-rust-is-used-as-input: true
     CollectionUpdateSchema:
       type: object
       required:
@@ -3208,6 +3210,8 @@ components:
           description: |
             Optional details about the collection, e.g., when it was created, who created it etc.
           type: object
+          x-rust-is-used-as-input: true
+      x-rust-is-used-as-input: true
     CollectionResponse:
       allOf:
       - $ref: '#/components/schemas/CollectionSchema'
@@ -3226,7 +3230,6 @@ components:
             description: Timestamp of when the collection was created (Unix epoch in seconds)
             format: int64
             readOnly: true
-      x-rust-is-owned-data: true
     Field:
       type: object
       required:
@@ -3342,9 +3345,7 @@ components:
                   type: string
                 query_prefix:
                   type: string
-          x-rust-is-owned-data: true
       x-rust-builder: true
-      x-rust-is-owned-data: true
     VoiceQueryModelCollectionConfig:
       description: |
         Configuration for the voice query model
@@ -3353,7 +3354,6 @@ components:
         model_name:
           type: string
           example: ts/whisper/base.en
-      x-rust-is-owned-data: true
     CollectionAliasSchema:
       type: object
       required:
@@ -3362,6 +3362,7 @@ components:
         collection_name:
           description: Name of the collection you wish to map the alias to
           type: string
+      x-rust-is-used-as-input: true
     CollectionAlias:
       type: object
       required:
@@ -3375,7 +3376,6 @@ components:
         collection_name:
           description: Name of the collection the alias mapped to
           type: string
-      x-rust-is-owned-data: true
     CollectionAliasesResponse:
       type: object
       required:
@@ -3386,7 +3386,6 @@ components:
           items:
             $ref: '#/components/schemas/CollectionAlias'
           x-go-type: '[]*CollectionAlias'
-      x-rust-is-owned-data: true
     SearchResult:
       type: object
       properties:
@@ -3435,9 +3434,7 @@ components:
           description: Custom JSON object that can be returned in the search response
           type: object
           additionalProperties: true
-          x-rust-is-owned-data: true
       x-rust-generic-parameter: D
-      x-rust-is-owned-data: true
     SearchRequestParams:
       type: object
       required:
@@ -3456,8 +3453,6 @@ components:
           properties:
             transcribed_query:
               type: string
-          x-rust-is-owned-data: true
-      x-rust-is-owned-data: true
     SearchResultConversation:
       type: object
       required:
@@ -3472,12 +3467,10 @@ components:
           type: array
           items:
             type: object
-            x-rust-is-owned-data: true
         conversation_id:
           type: string
         query:
           type: string
-      x-rust-is-owned-data: true
     SearchGroupedHit:
       type: object
       required:
@@ -3496,7 +3489,6 @@ components:
             $ref: '#/components/schemas/SearchResultHit'
           x-rust-type: Vec<models::SearchResultHit<'a, D>>
       x-rust-generic-parameter: D
-      x-rust-is-owned-data: true
     SearchResultHit:
       type: object
       example:
@@ -3520,14 +3512,12 @@ components:
           description: Highlighted version of the matching document
           type: object
           additionalProperties: true
-          x-rust-is-owned-data: true
         document:
           description: Can be any key-value pair
           type: object
           additionalProperties:
             type: object
           x-rust-type: Option<D>
-          x-rust-is-owned-data: true
         text_match:
           type: integer
           format: int64
@@ -3550,13 +3540,11 @@ components:
               type: integer
             typo_prefix_score:
               type: integer
-          x-rust-is-owned-data: true
         geo_distance_meters:
           description: Can be any key-value pair
           type: object
           additionalProperties:
             type: integer
-          x-rust-is-owned-data: true
         vector_distance:
           description: Distance between the query vector and matching document's vector value
           type: number
@@ -3569,12 +3557,10 @@ components:
               description: Combined score from rank fusion of text and vector search
               type: number
               format: float
-          x-rust-is-owned-data: true
         search_index:
           description: Returned only for union query response. Indicates the index of the query which this document matched to.
           type: integer
       x-rust-generic-parameter: D
-      x-rust-is-owned-data: true
     SearchHighlight:
       type: object
       properties:
@@ -3616,8 +3602,6 @@ components:
           items:
             type: object
             x-go-type: interface{}
-            x-rust-is-owned-data: true
-      x-rust-is-owned-data: true
     SearchSynonymSchema:
       type: object
       required:
@@ -3639,7 +3623,6 @@ components:
           type: array
           items:
             type: string
-      x-rust-is-owned-data: true
     SearchSynonym:
       allOf:
       - $ref: '#/components/schemas/SearchSynonymSchema'
@@ -3650,7 +3633,6 @@ components:
           id:
             type: string
             readOnly: true
-      x-rust-is-owned-data: true
     SearchSynonymDeleteResponse:
       type: object
       required:
@@ -3659,7 +3641,6 @@ components:
         id:
           description: The id of the synonym that was deleted
           type: string
-      x-rust-is-owned-data: true
     SearchSynonymsResponse:
       type: object
       required:
@@ -3670,7 +3651,6 @@ components:
           items:
             $ref: '#/components/schemas/SearchSynonym'
           x-go-type: '[]*SearchSynonym'
-      x-rust-is-owned-data: true
     HealthStatus:
       type: object
       required:
@@ -3678,7 +3658,6 @@ components:
       properties:
         ok:
           type: boolean
-      x-rust-is-owned-data: true
     SchemaChangeStatus:
       type: object
       properties:
@@ -3691,7 +3670,6 @@ components:
         altered_docs:
           description: Number of documents that have been altered
           type: integer
-      x-rust-is-owned-data: true
     SuccessStatus:
       type: object
       required:
@@ -3699,7 +3677,6 @@ components:
       properties:
         success:
           type: boolean
-      x-rust-is-owned-data: true
     ApiResponse:
       type: object
       required:
@@ -3707,7 +3684,6 @@ components:
       properties:
         message:
           type: string
-      x-rust-is-owned-data: true
     ApiKeySchema:
       type: object
       required:
@@ -3730,6 +3706,7 @@ components:
         expires_at:
           type: integer
           format: int64
+      x-rust-is-used-as-input: true
     ApiKey:
       allOf:
       - $ref: '#/components/schemas/ApiKeySchema'
@@ -3742,7 +3719,6 @@ components:
           value_prefix:
             type: string
             readOnly: true
-      x-rust-is-owned-data: true
     ApiKeyDeleteResponse:
       type: object
       required:
@@ -3752,7 +3728,6 @@ components:
           description: The id of the API key that was deleted
           type: integer
           format: int64
-      x-rust-is-owned-data: true
     ApiKeysResponse:
       type: object
       required:
@@ -3763,7 +3738,6 @@ components:
           items:
             $ref: '#/components/schemas/ApiKey'
           x-go-type: '[]*ApiKey'
-      x-rust-is-owned-data: true
     MultiSearchResult:
       type: object
       required:
@@ -3777,7 +3751,6 @@ components:
         conversation:
           $ref: '#/components/schemas/SearchResultConversation'
       x-rust-generic-parameter: D
-      x-rust-is-owned-data: true
     MultiSearchResultItem:
       allOf:
       - $ref: '#/components/schemas/SearchResult'
@@ -3791,7 +3764,6 @@ components:
             type: string
             description: Error description
       x-rust-generic-parameter: D
-      x-rust-is-owned-data: true
     SearchParameters:
       type: object
       properties:
@@ -4066,6 +4038,7 @@ components:
             The Id of a previous conversation to continue, this tells Typesense to include prior context when communicating with the LLM.
           type: string
       x-rust-builder: true
+      x-rust-is-used-as-input: true
     MultiSearchParameters:
       description: |
         Parameters for the multi search API.
@@ -4316,6 +4289,7 @@ components:
             The Id of a previous conversation to continue, this tells Typesense to include prior context when communicating with the LLM.
           type: string
       x-rust-builder: true
+      x-rust-is-used-as-input: true
     MultiSearchSearchesParameter:
       type: object
       required:
@@ -4329,6 +4303,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MultiSearchCollectionParameters'
+      x-rust-is-used-as-input: true
     MultiSearchCollectionParameters:
       allOf:
       - $ref: '#/components/schemas/MultiSearchParameters'
@@ -4347,6 +4322,7 @@ components:
               When true, computes both text match and vector distance scores for all matches in hybrid search. Documents found only through keyword search will get a vector distance score, and documents found only through vector search will get a text match score.
             default: false
       x-rust-builder: true
+      x-rust-is-used-as-input: true
     FacetCounts:
       type: object
       properties:
@@ -4363,7 +4339,6 @@ components:
                 type: string
               parent:
                 type: object
-            x-rust-is-owned-data: true
         field_name:
           type: string
         stats:
@@ -4383,8 +4358,6 @@ components:
             avg:
               type: number
               format: double
-          x-rust-is-owned-data: true
-      x-rust-is-owned-data: true
     AnalyticsEventCreateResponse:
       type: object
       required:
@@ -4392,7 +4365,6 @@ components:
       properties:
         ok:
           type: boolean
-      x-rust-is-owned-data: true
     AnalyticsEvent:
       type: object
       required:
@@ -4422,6 +4394,8 @@ components:
               type: string
             analytics_tag:
               type: string
+          x-rust-is-used-as-input: true
+      x-rust-is-used-as-input: true
     AnalyticsEventsResponse:
       type: object
       required:
@@ -4451,8 +4425,6 @@ components:
                   type: string
               query:
                 type: string
-            x-rust-is-owned-data: true
-      x-rust-is-owned-data: true
     AnalyticsRuleCreate:
       type: object
       required:
@@ -4495,6 +4467,8 @@ components:
               type: string
             weight:
               type: integer
+          x-rust-is-used-as-input: true
+      x-rust-is-used-as-input: true
     AnalyticsRuleUpdate:
       description: Fields allowed to update on an analytics rule
       type: object
@@ -4522,11 +4496,12 @@ components:
               type: string
             weight:
               type: integer
+          x-rust-is-used-as-input: true
+      x-rust-is-used-as-input: true
     AnalyticsRule:
       allOf:
       - $ref: '#/components/schemas/AnalyticsRuleCreate'
       - type: object
-      x-rust-is-owned-data: true
     AnalyticsStatus:
       type: object
       properties:
@@ -4544,7 +4519,6 @@ components:
           type: integer
         doc_counter_events:
           type: integer
-      x-rust-is-owned-data: true
     APIStatsResponse:
       type: object
       properties:
@@ -4563,7 +4537,6 @@ components:
         latency_ms:
           type: object
           x-go-type: map[string]float64
-          x-rust-is-owned-data: true
         overloaded_requests_per_second:
           type: number
           format: double
@@ -4573,7 +4546,6 @@ components:
         requests_per_second:
           type: object
           x-go-type: map[string]float64
-          x-rust-is-owned-data: true
         search_latency_ms:
           type: number
           format: double
@@ -4589,7 +4561,6 @@ components:
         write_requests_per_second:
           type: number
           format: double
-      x-rust-is-owned-data: true
     StopwordsSetUpsertSchema:
       type: object
       required:
@@ -4603,6 +4574,7 @@ components:
             type: string
         locale:
           type: string
+      x-rust-is-used-as-input: true
     StopwordsSetSchema:
       type: object
       required:
@@ -4619,7 +4591,6 @@ components:
             type: string
         locale:
           type: string
-      x-rust-is-owned-data: true
     StopwordsSetRetrieveSchema:
       type: object
       required:
@@ -4629,7 +4600,6 @@ components:
       properties:
         stopwords:
           $ref: '#/components/schemas/StopwordsSetSchema'
-      x-rust-is-owned-data: true
     StopwordsSetsRetrieveAllSchema:
       type: object
       required:
@@ -4641,7 +4611,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/StopwordsSetSchema'
-      x-rust-is-owned-data: true
     PresetUpsertSchema:
       required:
       - value
@@ -4650,6 +4619,7 @@ components:
           oneOf:
           - $ref: '#/components/schemas/SearchParameters'
           - $ref: '#/components/schemas/MultiSearchSearchesParameter'
+      x-rust-is-used-as-input: true
     PresetSchema:
       allOf:
       - $ref: '#/components/schemas/PresetUpsertSchema'
@@ -4659,7 +4629,6 @@ components:
         properties:
           name:
             type: string
-      x-rust-is-owned-data: true
     PresetsRetrieveSchema:
       type: object
       required:
@@ -4670,7 +4639,6 @@ components:
           items:
             $ref: '#/components/schemas/PresetSchema'
           x-go-type: '[]*PresetSchema'
-      x-rust-is-owned-data: true
     PresetDeleteSchema:
       type: object
       required:
@@ -4678,7 +4646,6 @@ components:
       properties:
         name:
           type: string
-      x-rust-is-owned-data: true
     DirtyValues:
       type: string
       enum:
@@ -4686,6 +4653,7 @@ components:
       - coerce_or_drop
       - drop
       - reject
+      x-rust-is-used-as-input: true
     IndexAction:
       type: string
       enum:
@@ -4693,6 +4661,7 @@ components:
       - update
       - upsert
       - emplace
+      x-rust-is-used-as-input: true
     DropTokensMode:
       description: |
         Dictates the direction in which the words in the query must be dropped when the original words in the query do not appear in any document. Values: right_to_left (default), left_to_right, both_sides:3 A note on both_sides:3 - for queries up to 3 tokens (words) in length, this mode will drop tokens from both sides and exhaustively rank all matching results. If query length is greater than 3 words, Typesense will just fallback to default behavior of right_to_left
@@ -4701,6 +4670,7 @@ components:
       - right_to_left
       - left_to_right
       - both_sides:3
+      x-rust-is-used-as-input: true
     ConversationModelCreateSchema:
       required:
       - model_name
@@ -4723,6 +4693,7 @@ components:
           history_collection:
             type: string
             description: Typesense collection that stores the historical conversations
+      x-rust-is-used-as-input: true
     ConversationModelUpdateSchema:
       type: object
       properties:
@@ -4755,6 +4726,7 @@ components:
         vllm_url:
           description: URL of vLLM service
           type: string
+      x-rust-is-used-as-input: true
     ConversationModelSchema:
       allOf:
       - $ref: '#/components/schemas/ConversationModelCreateSchema'
@@ -4765,7 +4737,6 @@ components:
           id:
             type: string
             description: An explicit id for the model, otherwise the API will return a response with an auto-generated conversation model id.
-      x-rust-is-owned-data: true
     StemmingDictionary:
       type: object
       required:
@@ -4793,8 +4764,6 @@ components:
                 description: The root form of the word
                 type: string
                 example: person
-            x-rust-is-owned-data: true
-      x-rust-is-owned-data: true
     NLSearchModelBase:
       type: object
       properties:
@@ -4854,7 +4823,6 @@ components:
         account_id:
           description: Account ID for Cloudflare-specific models
           type: string
-      x-rust-is-owned-data: true
     NLSearchModelCreateSchema:
       allOf:
       - $ref: '#/components/schemas/NLSearchModelBase'
@@ -4863,6 +4831,7 @@ components:
           id:
             type: string
             description: Optional ID for the NL search model
+      x-rust-is-used-as-input: true
     NLSearchModelSchema:
       allOf:
       - $ref: '#/components/schemas/NLSearchModelCreateSchema'
@@ -4873,9 +4842,9 @@ components:
           id:
             type: string
             description: ID of the NL search model
-      x-rust-is-owned-data: true
     NLSearchModelUpdateSchema:
       $ref: '#/components/schemas/NLSearchModelCreateSchema'
+      x-rust-is-used-as-input: true
     NLSearchModelDeleteSchema:
       type: object
       required:
@@ -4884,7 +4853,6 @@ components:
         id:
           description: ID of the deleted NL search model
           type: string
-      x-rust-is-owned-data: true
     SynonymItemSchema:
       type: object
       required:
@@ -4910,6 +4878,7 @@ components:
           type: array
           items:
             type: string
+      x-rust-is-used-as-input: true
     SynonymSetCreateSchema:
       type: object
       required:
@@ -4920,6 +4889,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SynonymItemSchema'
+      x-rust-is-used-as-input: true
     SynonymSetSchema:
       allOf:
       - $ref: '#/components/schemas/SynonymSetCreateSchema'
@@ -4930,7 +4900,6 @@ components:
           name:
             type: string
             description: Name of the synonym set
-      x-rust-is-owned-data: true
     SynonymSetsRetrieveSchema:
       type: object
       required:
@@ -4941,10 +4910,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SynonymSetSchema'
-      x-rust-is-owned-data: true
     SynonymSetRetrieveSchema:
       $ref: '#/components/schemas/SynonymSetCreateSchema'
-      x-rust-is-owned-data: true
     SynonymSetDeleteSchema:
       type: object
       required:
@@ -4953,7 +4920,6 @@ components:
         name:
           description: Name of the deleted synonym set
           type: string
-      x-rust-is-owned-data: true
     SynonymItemDeleteSchema:
       type: object
       required:
@@ -4962,7 +4928,6 @@ components:
         id:
           description: ID of the deleted synonym item
           type: string
-      x-rust-is-owned-data: true
     CurationItemCreateSchema:
       type: object
       required:
@@ -4992,6 +4957,7 @@ components:
           description: |
             Return a custom JSON object in the Search API response, when this rule is triggered. This can can be used to display a pre-defined message (eg: a promotion banner) on the front-end when a particular rule is triggered.
           type: object
+          x-rust-is-used-as-input: true
         sort_by:
           description: |
             A sort by clause that is applied to any search query that matches the curation rule.
@@ -5019,6 +4985,7 @@ components:
         id:
           description: ID of the curation item
           type: string
+      x-rust-is-used-as-input: true
     CurationItemSchema:
       allOf:
       - $ref: '#/components/schemas/CurationItemCreateSchema'
@@ -5028,7 +4995,6 @@ components:
         properties:
           id:
             type: string
-      x-rust-is-owned-data: true
     CurationSetCreateSchema:
       type: object
       required:
@@ -5042,6 +5008,7 @@ components:
         description:
           description: Optional description for the curation set
           type: string
+      x-rust-is-used-as-input: true
     CurationSetSchema:
       allOf:
       - $ref: '#/components/schemas/CurationSetCreateSchema'
@@ -5051,7 +5018,6 @@ components:
         properties:
           name:
             type: string
-      x-rust-is-owned-data: true
     CurationRule:
       type: object
       properties:
@@ -5074,7 +5040,6 @@ components:
           description: |
             Indicates that the curation should apply when the filter_by parameter in a search query exactly matches the string specified here (including backticks, spaces, brackets, etc).
           type: string
-      x-rust-is-owned-data: true
     CurationInclude:
       type: object
       required:
@@ -5087,7 +5052,6 @@ components:
         position:
           description: position number where document should be included in the search results
           type: integer
-      x-rust-is-owned-data: true
     CurationExclude:
       type: object
       required:
@@ -5096,10 +5060,8 @@ components:
         id:
           description: document id that should be excluded from the search results.
           type: string
-      x-rust-is-owned-data: true
     CurationSetRetrieveSchema:
       $ref: '#/components/schemas/CurationSetCreateSchema'
-      x-rust-is-owned-data: true
     CurationSetDeleteSchema:
       type: object
       required:
@@ -5108,7 +5070,6 @@ components:
         name:
           description: Name of the deleted curation set
           type: string
-      x-rust-is-owned-data: true
     CurationItemDeleteSchema:
       type: object
       required:
@@ -5117,7 +5078,6 @@ components:
         id:
           description: ID of the deleted curation item
           type: string
-      x-rust-is-owned-data: true
     ImportDocumentsParameters:
       type: object
       properties:
@@ -5134,6 +5094,7 @@ components:
           $ref: '#/components/schemas/IndexAction'
         dirty_values:
           $ref: '#/components/schemas/DirtyValues'
+      x-rust-is-used-as-input: true
     ExportDocumentsParameters:
       type: object
       properties:
@@ -5146,12 +5107,14 @@ components:
         exclude_fields:
           description: List of fields from the document to exclude in the search result
           type: string
+      x-rust-is-used-as-input: true
     UpdateDocumentsParameters:
       type: object
       properties:
         filter_by:
           type: string
           example: 'num_employees:>100 && country: [USA, UK]'
+      x-rust-is-used-as-input: true
     DeleteDocumentsParameters:
       type: object
       required:
@@ -5168,6 +5131,7 @@ components:
         truncate:
           description: When true, removes all documents from the collection while preserving the collection and its schema.
           type: boolean
+      x-rust-is-used-as-input: true
     GetCollectionsParameters:
       type: object
       properties:
@@ -5181,6 +5145,7 @@ components:
         offset:
           description: Identifies the starting point to return collections when paginating.
           type: integer
+      x-rust-is-used-as-input: true
   securitySchemes:
     api_key_header:
       type: apiKey
