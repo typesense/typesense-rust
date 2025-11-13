@@ -9,22 +9,19 @@
  */
 
 use crate::models;
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct PresetUpsertSchema<'a> {
     #[serde(rename = "value")]
     pub value: Box<models::PresetUpsertSchemaValue<'a>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> PresetUpsertSchema<'a> {
     pub fn new(value: models::PresetUpsertSchemaValue<'a>) -> Self {
         Self {
             value: Box::new(value),
-            _phantom: PhantomData,
         }
     }
 }

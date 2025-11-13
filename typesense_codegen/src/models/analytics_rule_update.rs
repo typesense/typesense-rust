@@ -9,7 +9,7 @@
  */
 
 use crate::models;
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 /// AnalyticsRuleUpdate : Fields allowed to update on an analytics rule
@@ -21,8 +21,6 @@ pub struct AnalyticsRuleUpdate<'a> {
     pub rule_tag: Option<Cow<'a, str>>,
     #[serde(rename = "params", skip_serializing_if = "Option::is_none")]
     pub params: Option<Box<models::AnalyticsRuleCreateParams<'a>>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> AnalyticsRuleUpdate<'a> {
@@ -32,7 +30,6 @@ impl<'a> AnalyticsRuleUpdate<'a> {
             name: None,
             rule_tag: None,
             params: None,
-            _phantom: PhantomData,
         }
     }
 }

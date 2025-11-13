@@ -27,7 +27,6 @@ impl<'a> Stopword<'a> {
     {
         let params = stopwords_api::RetrieveStopwordsSetParams {
             set_id: self.set_id.into(),
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, stopwords_api::retrieve_stopwords_set, params)
     }
@@ -39,7 +38,6 @@ impl<'a> Stopword<'a> {
     {
         let params = stopwords_api::DeleteStopwordsSetParams {
             set_id: self.set_id.into(),
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, stopwords_api::delete_stopwords_set, params)
     }

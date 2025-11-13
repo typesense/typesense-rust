@@ -9,22 +9,17 @@
  */
 
 use crate::models;
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct UpdateDocumentsParameters<'a> {
     #[serde(rename = "filter_by", skip_serializing_if = "Option::is_none")]
     pub filter_by: Option<Cow<'a, str>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> UpdateDocumentsParameters<'a> {
     pub fn new() -> Self {
-        Self {
-            filter_by: None,
-            _phantom: PhantomData,
-        }
+        Self { filter_by: None }
     }
 }

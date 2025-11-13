@@ -39,7 +39,6 @@ impl<'c> Keys<'c> {
     ) -> Result<models::ApiKey, Error<keys_api::CreateKeyError>> {
         let params = keys_api::CreateKeyParams {
             api_key_schema: Some(schema),
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, keys_api::create_key, params)
     }

@@ -10,7 +10,7 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
@@ -21,7 +21,6 @@ pub struct DeleteDocumentParams<'p> {
     pub collection_name: Cow<'p, str>,
     /// The Document ID
     pub document_id: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`delete_documents`]
@@ -33,7 +32,6 @@ pub struct DeleteDocumentsParams<'p> {
     pub batch_size: Option<i32>,
     pub ignore_not_found: Option<bool>,
     pub truncate: Option<bool>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`export_documents`]
@@ -44,7 +42,6 @@ pub struct ExportDocumentsParams<'p> {
     pub filter_by: Option<Cow<'p, str>>,
     pub include_fields: Option<Cow<'p, str>>,
     pub exclude_fields: Option<Cow<'p, str>>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`get_document`]
@@ -54,7 +51,6 @@ pub struct GetDocumentParams<'p> {
     pub collection_name: Cow<'p, str>,
     /// The Document ID
     pub document_id: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`import_documents`]
@@ -70,7 +66,6 @@ pub struct ImportDocumentsParams<'p> {
     pub return_doc: Option<bool>,
     pub action: Option<models::IndexAction>,
     pub dirty_values: Option<models::DirtyValues>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`index_document`]
@@ -84,7 +79,6 @@ pub struct IndexDocumentParams<'p> {
     pub action: Option<Cow<'p, str>>,
     /// Dealing with Dirty Data
     pub dirty_values: Option<models::DirtyValues>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`multi_search`]
@@ -155,7 +149,6 @@ pub struct MultiSearchParams<'p> {
     pub conversation_model_id: Option<Cow<'p, str>>,
     pub conversation_id: Option<Cow<'p, str>>,
     pub multi_search_searches_parameter: Option<models::MultiSearchSearchesParameter<'p>>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`search_collection`]
@@ -234,7 +227,6 @@ pub struct SearchCollectionParams<'p> {
     pub conversation: Option<bool>,
     pub conversation_model_id: Option<Cow<'p, str>>,
     pub conversation_id: Option<Cow<'p, str>>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`update_document`]
@@ -248,7 +240,6 @@ pub struct UpdateDocumentParams<'p, B> {
     pub body: B,
     /// Dealing with Dirty Data
     pub dirty_values: Option<models::DirtyValues>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`update_documents`]
@@ -259,7 +250,6 @@ pub struct UpdateDocumentsParams<'p, B> {
     /// The document fields to be updated
     pub body: B,
     pub filter_by: Option<Cow<'p, str>>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for typed errors of method [`delete_document`]

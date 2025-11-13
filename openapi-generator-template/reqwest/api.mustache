@@ -3,7 +3,6 @@
 use super::{Error, configuration, ContentType};
 use crate::{apis::ResponseContent, models};
 use ::std::borrow::Cow;
-use ::std::marker::PhantomData;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
@@ -46,7 +45,6 @@ pub struct {{{operationIdCamelCase}}}Params<'p{{!
     }},
     {{/vendorExtensions.x-rust-type}}
 {{#-last}}
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 {{/-last}}

@@ -18,7 +18,6 @@ async fn run_test_presets_lifecycle() {
     // This is the schema to be sent in the request body.
     let upsert_schema = PresetUpsertSchema {
         value: Box::new(expected_preset_value.clone()),
-        _phantom: core::marker::PhantomData,
     };
 
     // --- 2. Create (Upsert) a Preset (via `presets`) ---

@@ -278,7 +278,6 @@ async fn run_test_generic_document_lifecycle() {
     // --- 7. Bulk Update (via `documents().update()`) ---
     let bulk_update_params = UpdateDocumentsParameters {
         filter_by: Some("publication_year:>1965".into()),
-        _phantom: core::marker::PhantomData,
     };
     let bulk_update_response = typed_collection
         .documents()

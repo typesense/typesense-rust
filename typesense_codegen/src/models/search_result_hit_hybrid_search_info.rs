@@ -9,7 +9,7 @@
  */
 
 use crate::models;
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 /// SearchResultHitHybridSearchInfo : Information about hybrid search scoring

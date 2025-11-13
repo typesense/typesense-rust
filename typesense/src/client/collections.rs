@@ -32,7 +32,6 @@ impl<'c> Collections<'c> {
     ) -> Result<models::CollectionResponse, Error<collections_api::CreateCollectionError>> {
         let params = collections_api::CreateCollectionParams {
             collection_schema: schema,
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, collections_api::create_collection, params)
     }
@@ -46,7 +45,6 @@ impl<'c> Collections<'c> {
             exclude_fields: params.exclude_fields,
             limit: params.limit,
             offset: params.offset,
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, collections_api::get_collections, params)
     }

@@ -9,7 +9,7 @@
  */
 
 use crate::models;
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -24,8 +24,6 @@ pub struct DeleteDocumentsParameters<'a> {
     /// When true, removes all documents from the collection while preserving the collection and its schema.
     #[serde(rename = "truncate", skip_serializing_if = "Option::is_none")]
     pub truncate: Option<bool>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> DeleteDocumentsParameters<'a> {
@@ -35,7 +33,6 @@ impl<'a> DeleteDocumentsParameters<'a> {
             batch_size: None,
             ignore_not_found: None,
             truncate: None,
-            _phantom: PhantomData,
         }
     }
 }

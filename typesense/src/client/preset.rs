@@ -26,7 +26,6 @@ impl<'a> Preset<'a> {
     ) -> Result<models::PresetSchema, Error<presets_api::RetrievePresetError>> {
         let params = presets_api::RetrievePresetParams {
             preset_id: self.preset_id.into(),
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, presets_api::retrieve_preset, params)
     }
@@ -37,7 +36,6 @@ impl<'a> Preset<'a> {
     ) -> Result<models::PresetDeleteSchema, Error<presets_api::DeletePresetError>> {
         let params = presets_api::DeletePresetParams {
             preset_id: self.preset_id.into(),
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, presets_api::delete_preset, params)
     }

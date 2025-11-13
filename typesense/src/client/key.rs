@@ -28,7 +28,6 @@ impl<'c> Key<'c> {
     pub async fn retrieve(&self) -> Result<models::ApiKey, Error<keys_api::GetKeyError>> {
         let params = keys_api::GetKeyParams {
             key_id: self.key_id,
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, keys_api::get_key, params)
     }
@@ -40,7 +39,6 @@ impl<'c> Key<'c> {
     ) -> Result<models::ApiKeyDeleteResponse, Error<keys_api::DeleteKeyError>> {
         let params = keys_api::DeleteKeyParams {
             key_id: self.key_id,
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, keys_api::delete_key, params)
     }

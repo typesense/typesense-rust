@@ -37,7 +37,6 @@ impl<'a> Aliases<'a> {
         let params = collections_api::UpsertAliasParams {
             alias_name: alias_name.into(),
             collection_alias_schema: Some(schema),
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, collections_api::upsert_alias, params)
     }

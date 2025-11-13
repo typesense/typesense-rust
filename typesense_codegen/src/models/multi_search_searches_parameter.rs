@@ -9,7 +9,7 @@
  */
 
 use crate::models;
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -19,8 +19,6 @@ pub struct MultiSearchSearchesParameter<'a> {
     pub union: Option<bool>,
     #[serde(rename = "searches")]
     pub searches: Vec<models::MultiSearchCollectionParameters<'a>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> MultiSearchSearchesParameter<'a> {
@@ -28,7 +26,6 @@ impl<'a> MultiSearchSearchesParameter<'a> {
         Self {
             union: None,
             searches,
-            _phantom: PhantomData,
         }
     }
 }

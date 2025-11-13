@@ -9,7 +9,7 @@
  */
 
 use crate::models;
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 /// AnalyticsEventData : Event payload
@@ -25,8 +25,6 @@ pub struct AnalyticsEventData<'a> {
     pub q: Option<Cow<'a, str>>,
     #[serde(rename = "analytics_tag", skip_serializing_if = "Option::is_none")]
     pub analytics_tag: Option<Cow<'a, str>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> AnalyticsEventData<'a> {
@@ -38,7 +36,6 @@ impl<'a> AnalyticsEventData<'a> {
             doc_ids: None,
             q: None,
             analytics_tag: None,
-            _phantom: PhantomData,
         }
     }
 }

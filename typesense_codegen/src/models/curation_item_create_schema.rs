@@ -9,7 +9,7 @@
  */
 
 use crate::models;
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -58,8 +58,6 @@ pub struct CurationItemCreateSchema<'a> {
     /// ID of the curation item
     #[serde(rename = "id", skip_serializing_if = "Option::is_none")]
     pub id: Option<Cow<'a, str>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> CurationItemCreateSchema<'a> {
@@ -78,7 +76,6 @@ impl<'a> CurationItemCreateSchema<'a> {
             effective_to_ts: None,
             stop_processing: None,
             id: None,
-            _phantom: PhantomData,
         }
     }
 }

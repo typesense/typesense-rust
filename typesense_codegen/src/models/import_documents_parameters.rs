@@ -9,11 +9,11 @@
  */
 
 use crate::models;
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ImportDocumentsParameters<'a> {
+pub struct ImportDocumentsParameters {
     #[serde(rename = "batch_size", skip_serializing_if = "Option::is_none")]
     pub batch_size: Option<i32>,
     /// Returning the id of the imported documents. If you want the import response to return the ingested document's id in the response, you can use the return_id parameter.
@@ -30,11 +30,9 @@ pub struct ImportDocumentsParameters<'a> {
     pub action: Option<models::IndexAction>,
     #[serde(rename = "dirty_values", skip_serializing_if = "Option::is_none")]
     pub dirty_values: Option<models::DirtyValues>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> ImportDocumentsParameters<'a> {
+impl ImportDocumentsParameters {
     pub fn new() -> Self {
         Self {
             batch_size: None,
@@ -43,7 +41,6 @@ impl<'a> ImportDocumentsParameters<'a> {
             return_doc: None,
             action: None,
             dirty_values: None,
-            _phantom: PhantomData,
         }
     }
 }

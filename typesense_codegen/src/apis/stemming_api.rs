@@ -10,7 +10,7 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
@@ -19,7 +19,6 @@ use serde::{Deserialize, Serialize, de::Error as _};
 pub struct GetStemmingDictionaryParams<'p> {
     /// The ID of the dictionary to retrieve
     pub dictionary_id: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`import_stemming_dictionary`]
@@ -29,7 +28,6 @@ pub struct ImportStemmingDictionaryParams<'p> {
     pub id: Cow<'p, str>,
     /// The JSONL file containing word mappings
     pub body: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for typed errors of method [`get_stemming_dictionary`]

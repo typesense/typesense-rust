@@ -10,7 +10,7 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
@@ -19,7 +19,6 @@ use serde::{Deserialize, Serialize, de::Error as _};
 pub struct DeleteStopwordsSetParams<'p> {
     /// The ID of the stopwords set to delete.
     pub set_id: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`retrieve_stopwords_set`]
@@ -27,7 +26,6 @@ pub struct DeleteStopwordsSetParams<'p> {
 pub struct RetrieveStopwordsSetParams<'p> {
     /// The ID of the stopwords set to retrieve.
     pub set_id: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`upsert_stopwords_set`]
@@ -37,7 +35,6 @@ pub struct UpsertStopwordsSetParams<'p> {
     pub set_id: Cow<'p, str>,
     /// The stopwords set to upsert.
     pub stopwords_set_upsert_schema: models::StopwordsSetUpsertSchema<'p>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for typed errors of method [`delete_stopwords_set`]

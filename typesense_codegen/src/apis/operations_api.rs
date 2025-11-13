@@ -10,7 +10,7 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
@@ -19,14 +19,12 @@ use serde::{Deserialize, Serialize, de::Error as _};
 pub struct TakeSnapshotParams<'p> {
     /// The directory on the server where the snapshot should be saved.
     pub snapshot_path: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`toggle_slow_request_log`]
 #[derive(Clone, Debug)]
-pub struct ToggleSlowRequestLogParams<'p> {
-    pub toggle_slow_request_log_request: Option<models::ToggleSlowRequestLogRequest<'p>>,
-    pub _phantom: PhantomData<&'p ()>,
+pub struct ToggleSlowRequestLogParams {
+    pub toggle_slow_request_log_request: Option<models::ToggleSlowRequestLogRequest>,
 }
 
 /// struct for typed errors of method [`clear_cache`]
@@ -432,7 +430,7 @@ pub async fn take_snapshot(
 /// Enable logging of requests that take over a defined threshold of time. Default is `-1` which disables slow request logging. Slow requests are logged to the primary log file, with the prefix SLOW REQUEST.
 pub async fn toggle_slow_request_log(
     configuration: &configuration::Configuration,
-    params: &ToggleSlowRequestLogParams<'_>,
+    params: &ToggleSlowRequestLogParams,
 ) -> Result<models::SuccessStatus, Error<ToggleSlowRequestLogError>> {
     let uri_str = format!("{}/config", configuration.base_path);
     let mut req_builder = configuration

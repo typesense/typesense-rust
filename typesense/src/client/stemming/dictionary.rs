@@ -32,7 +32,6 @@ impl<'a> Dictionary<'a> {
     ) -> Result<models::StemmingDictionary, Error<stemming_api::GetStemmingDictionaryError>> {
         let params = stemming_api::GetStemmingDictionaryParams {
             dictionary_id: self.dictionary_id.into(),
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, stemming_api::get_stemming_dictionary, params)
     }

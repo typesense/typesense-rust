@@ -10,7 +10,7 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
@@ -19,23 +19,20 @@ use serde::{Deserialize, Serialize, de::Error as _};
 pub struct CreateKeyParams<'p> {
     /// The object that describes API key scope
     pub api_key_schema: Option<models::ApiKeySchema<'p>>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`delete_key`]
 #[derive(Clone, Debug)]
-pub struct DeleteKeyParams<'p> {
+pub struct DeleteKeyParams {
     /// The ID of the key to delete
     pub key_id: i64,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`get_key`]
 #[derive(Clone, Debug)]
-pub struct GetKeyParams<'p> {
+pub struct GetKeyParams {
     /// The ID of the key to retrieve
     pub key_id: i64,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for typed errors of method [`create_key`]
@@ -133,7 +130,7 @@ pub async fn create_key(
 
 pub async fn delete_key(
     configuration: &configuration::Configuration,
-    params: &DeleteKeyParams<'_>,
+    params: &DeleteKeyParams,
 ) -> Result<models::ApiKeyDeleteResponse, Error<DeleteKeyError>> {
     let uri_str = format!(
         "{}/keys/{keyId}",
@@ -196,7 +193,7 @@ pub async fn delete_key(
 /// Retrieve (metadata about) a key. Only the key prefix is returned when you retrieve a key. Due to security reasons, only the create endpoint returns the full API key.
 pub async fn get_key(
     configuration: &configuration::Configuration,
-    params: &GetKeyParams<'_>,
+    params: &GetKeyParams,
 ) -> Result<models::ApiKey, Error<GetKeyError>> {
     let uri_str = format!(
         "{}/keys/{keyId}",

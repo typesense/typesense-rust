@@ -9,22 +9,19 @@
  */
 
 use crate::models;
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ToggleSlowRequestLogRequest<'a> {
+pub struct ToggleSlowRequestLogRequest {
     #[serde(rename = "log-slow-requests-time-ms")]
     pub log_slow_requests_time_ms: i32,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
-impl<'a> ToggleSlowRequestLogRequest<'a> {
+impl ToggleSlowRequestLogRequest {
     pub fn new(log_slow_requests_time_ms: i32) -> Self {
         Self {
             log_slow_requests_time_ms,
-            _phantom: PhantomData,
         }
     }
 }

@@ -9,7 +9,7 @@
  */
 
 use crate::models;
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -23,8 +23,6 @@ pub struct ExportDocumentsParameters<'a> {
     /// List of fields from the document to exclude in the search result
     #[serde(rename = "exclude_fields", skip_serializing_if = "Option::is_none")]
     pub exclude_fields: Option<Cow<'a, str>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> ExportDocumentsParameters<'a> {
@@ -33,7 +31,6 @@ impl<'a> ExportDocumentsParameters<'a> {
             filter_by: None,
             include_fields: None,
             exclude_fields: None,
-            _phantom: PhantomData,
         }
     }
 }

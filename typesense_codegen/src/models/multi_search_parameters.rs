@@ -9,7 +9,7 @@
  */
 
 use crate::models;
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 /// MultiSearchParameters : Parameters for the multi search API.
@@ -260,9 +260,6 @@ pub struct MultiSearchParameters<'a> {
     /// The Id of a previous conversation to continue, this tells Typesense to include prior context when communicating with the LLM.
     #[serde(rename = "conversation_id", skip_serializing_if = "Option::is_none")]
     pub conversation_id: Option<Cow<'a, str>>,
-    #[serde(skip)]
-    #[builder(default)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> MultiSearchParameters<'a> {
@@ -333,7 +330,6 @@ impl<'a> MultiSearchParameters<'a> {
             conversation: None,
             conversation_model_id: None,
             conversation_id: None,
-            _phantom: PhantomData,
         }
     }
 }

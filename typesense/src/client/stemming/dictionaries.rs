@@ -38,7 +38,6 @@ impl<'a> Dictionaries<'a> {
         let params = stemming_api::ImportStemmingDictionaryParams {
             id: dictionary_id.into(),
             body: dictionary_jsonl.into(),
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, stemming_api::import_stemming_dictionary, params)
     }

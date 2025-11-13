@@ -61,7 +61,6 @@ where
             body: document,
             action: Some(action.into()),
             dirty_values: params.and_then(|d| d.dirty_values), // Or expose this as an argument if needed
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, documents_api::index_document, params)
     }
@@ -78,7 +77,7 @@ where
     pub async fn import_jsonl(
         &self,
         documents_jsonl: impl Into<Cow<'_, str>>,
-        params: ImportDocumentsParameters<'_>,
+        params: ImportDocumentsParameters,
     ) -> Result<String, Error<documents_api::ImportDocumentsError>> {
         let params = documents_api::ImportDocumentsParams {
             body: documents_jsonl.into(),
@@ -90,7 +89,6 @@ where
             remote_embedding_batch_size: params.remote_embedding_batch_size,
             return_doc: params.return_doc,
             return_id: params.return_id,
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, documents_api::import_documents, params)
     }
@@ -108,7 +106,6 @@ where
             exclude_fields: params.exclude_fields,
             filter_by: params.filter_by,
             include_fields: params.include_fields,
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, documents_api::export_documents, params)
     }
@@ -128,7 +125,6 @@ where
             batch_size: params.batch_size,
             ignore_not_found: params.ignore_not_found,
             truncate: params.truncate,
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, documents_api::delete_documents, params)
     }
@@ -217,7 +213,6 @@ where
             nl_query: params.nl_query,
             enable_analytics: params.enable_analytics,
             synonym_sets: params.synonym_sets,
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, documents_api::search_collection, search_params)
     }
@@ -279,7 +274,6 @@ where
             collection_name: self.collection_name.into(),
             filter_by: params.filter_by,
             body: document,
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, documents_api::update_documents, params)
     }

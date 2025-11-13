@@ -42,7 +42,6 @@ impl<'a> Presets<'a> {
         let params = presets_api::UpsertPresetParams {
             preset_id: preset_id.into(),
             preset_upsert_schema: schema,
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, presets_api::upsert_preset, params)
     }

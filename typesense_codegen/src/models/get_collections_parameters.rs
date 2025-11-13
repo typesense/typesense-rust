@@ -9,7 +9,7 @@
  */
 
 use crate::models;
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -23,8 +23,6 @@ pub struct GetCollectionsParameters<'a> {
     /// Identifies the starting point to return collections when paginating.
     #[serde(rename = "offset", skip_serializing_if = "Option::is_none")]
     pub offset: Option<i32>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> GetCollectionsParameters<'a> {
@@ -33,7 +31,6 @@ impl<'a> GetCollectionsParameters<'a> {
             exclude_fields: None,
             limit: None,
             offset: None,
-            _phantom: PhantomData,
         }
     }
 }

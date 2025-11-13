@@ -9,7 +9,7 @@
  */
 
 use crate::models;
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -41,8 +41,6 @@ pub struct ConversationModelCreateSchema<'a> {
     /// URL of vLLM service
     #[serde(rename = "vllm_url", skip_serializing_if = "Option::is_none")]
     pub vllm_url: Option<Cow<'a, str>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> ConversationModelCreateSchema<'a> {
@@ -57,7 +55,6 @@ impl<'a> ConversationModelCreateSchema<'a> {
             ttl: None,
             max_bytes,
             vllm_url: None,
-            _phantom: PhantomData,
         }
     }
 }

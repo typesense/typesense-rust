@@ -33,7 +33,6 @@ impl<'a> Stopwords<'a> {
         let params = stopwords_api::UpsertStopwordsSetParams {
             set_id: set_id.into(),
             stopwords_set_upsert_schema: schema,
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, stopwords_api::upsert_stopwords_set, params)
     }

@@ -32,7 +32,6 @@ impl<'a> Models<'a> {
     > {
         let params = conversations_api::CreateConversationModelParams {
             conversation_model_create_schema: schema,
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, conversations_api::create_conversation_model, params)
     }

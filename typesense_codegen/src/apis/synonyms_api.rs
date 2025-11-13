@@ -10,7 +10,7 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
@@ -19,7 +19,6 @@ use serde::{Deserialize, Serialize, de::Error as _};
 pub struct DeleteSynonymSetParams<'p> {
     /// The name of the synonym set to delete
     pub synonym_set_name: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`delete_synonym_set_item`]
@@ -29,7 +28,6 @@ pub struct DeleteSynonymSetItemParams<'p> {
     pub synonym_set_name: Cow<'p, str>,
     /// The id of the synonym item to delete
     pub item_id: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`retrieve_synonym_set`]
@@ -37,7 +35,6 @@ pub struct DeleteSynonymSetItemParams<'p> {
 pub struct RetrieveSynonymSetParams<'p> {
     /// The name of the synonym set to retrieve
     pub synonym_set_name: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`retrieve_synonym_set_item`]
@@ -47,7 +44,6 @@ pub struct RetrieveSynonymSetItemParams<'p> {
     pub synonym_set_name: Cow<'p, str>,
     /// The id of the synonym item to retrieve
     pub item_id: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`retrieve_synonym_set_items`]
@@ -55,7 +51,6 @@ pub struct RetrieveSynonymSetItemParams<'p> {
 pub struct RetrieveSynonymSetItemsParams<'p> {
     /// The name of the synonym set to retrieve items for
     pub synonym_set_name: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`upsert_synonym_set`]
@@ -65,7 +60,6 @@ pub struct UpsertSynonymSetParams<'p> {
     pub synonym_set_name: Cow<'p, str>,
     /// The synonym set to be created/updated
     pub synonym_set_create_schema: models::SynonymSetCreateSchema<'p>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`upsert_synonym_set_item`]
@@ -77,7 +71,6 @@ pub struct UpsertSynonymSetItemParams<'p> {
     pub item_id: Cow<'p, str>,
     /// The synonym item to be created/updated
     pub synonym_item_schema: models::SynonymItemSchema<'p>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for typed errors of method [`delete_synonym_set`]

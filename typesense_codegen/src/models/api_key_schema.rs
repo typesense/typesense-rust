@@ -9,7 +9,7 @@
  */
 
 use crate::models;
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -24,8 +24,6 @@ pub struct ApiKeySchema<'a> {
     pub collections: Vec<String>,
     #[serde(rename = "expires_at", skip_serializing_if = "Option::is_none")]
     pub expires_at: Option<i64>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> ApiKeySchema<'a> {
@@ -36,7 +34,6 @@ impl<'a> ApiKeySchema<'a> {
             actions,
             collections,
             expires_at: None,
-            _phantom: PhantomData,
         }
     }
 }

@@ -9,7 +9,7 @@
  */
 
 use crate::models;
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -34,8 +34,6 @@ pub struct AnalyticsRuleCreateParams<'a> {
     pub counter_field: Option<Cow<'a, str>>,
     #[serde(rename = "weight", skip_serializing_if = "Option::is_none")]
     pub weight: Option<i32>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> AnalyticsRuleCreateParams<'a> {
@@ -48,7 +46,6 @@ impl<'a> AnalyticsRuleCreateParams<'a> {
             expand_query: None,
             counter_field: None,
             weight: None,
-            _phantom: PhantomData,
         }
     }
 }

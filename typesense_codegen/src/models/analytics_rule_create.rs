@@ -9,7 +9,7 @@
  */
 
 use crate::models;
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -26,8 +26,6 @@ pub struct AnalyticsRuleCreate<'a> {
     pub rule_tag: Option<Cow<'a, str>>,
     #[serde(rename = "params", skip_serializing_if = "Option::is_none")]
     pub params: Option<Box<models::AnalyticsRuleCreateParams<'a>>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> AnalyticsRuleCreate<'a> {
@@ -44,7 +42,6 @@ impl<'a> AnalyticsRuleCreate<'a> {
             event_type,
             rule_tag: None,
             params: None,
-            _phantom: PhantomData,
         }
     }
 }

@@ -10,7 +10,7 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
@@ -19,7 +19,6 @@ use serde::{Deserialize, Serialize, de::Error as _};
 pub struct CreateCollectionParams<'p> {
     /// The collection object to be created
     pub collection_schema: models::CollectionSchema<'p>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`delete_alias`]
@@ -27,7 +26,6 @@ pub struct CreateCollectionParams<'p> {
 pub struct DeleteAliasParams<'p> {
     /// The name of the alias to delete
     pub alias_name: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`delete_collection`]
@@ -35,7 +33,6 @@ pub struct DeleteAliasParams<'p> {
 pub struct DeleteCollectionParams<'p> {
     /// The name of the collection to delete
     pub collection_name: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`get_alias`]
@@ -43,7 +40,6 @@ pub struct DeleteCollectionParams<'p> {
 pub struct GetAliasParams<'p> {
     /// The name of the alias to retrieve
     pub alias_name: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`get_collection`]
@@ -51,7 +47,6 @@ pub struct GetAliasParams<'p> {
 pub struct GetCollectionParams<'p> {
     /// The name of the collection to retrieve
     pub collection_name: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`get_collections`]
@@ -60,7 +55,6 @@ pub struct GetCollectionsParams<'p> {
     pub exclude_fields: Option<Cow<'p, str>>,
     pub limit: Option<i32>,
     pub offset: Option<i32>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`update_collection`]
@@ -69,8 +63,7 @@ pub struct UpdateCollectionParams<'p> {
     /// The name of the collection to update
     pub collection_name: Cow<'p, str>,
     /// The document object with fields to be updated
-    pub collection_update_schema: models::CollectionUpdateSchema<'p>,
-    pub _phantom: PhantomData<&'p ()>,
+    pub collection_update_schema: models::CollectionUpdateSchema,
 }
 
 /// struct for passing parameters to the method [`upsert_alias`]
@@ -80,7 +73,6 @@ pub struct UpsertAliasParams<'p> {
     pub alias_name: Cow<'p, str>,
     /// Collection alias to be created/updated
     pub collection_alias_schema: Option<models::CollectionAliasSchema<'p>>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for typed errors of method [`create_collection`]
@@ -589,7 +581,7 @@ pub async fn get_collections(
 pub async fn update_collection(
     configuration: &configuration::Configuration,
     params: &UpdateCollectionParams<'_>,
-) -> Result<models::CollectionUpdateSchema<'static>, Error<UpdateCollectionError>> {
+) -> Result<models::CollectionUpdateSchema, Error<UpdateCollectionError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}",
         configuration.base_path,

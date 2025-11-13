@@ -9,7 +9,7 @@
  */
 
 use crate::models;
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -29,8 +29,6 @@ pub struct SynonymItemSchema<'a> {
     /// By default, special characters are dropped from synonyms. Use this attribute to specify which special characters should be indexed as is
     #[serde(rename = "symbols_to_index", skip_serializing_if = "Option::is_none")]
     pub symbols_to_index: Option<Vec<String>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> SynonymItemSchema<'a> {
@@ -41,7 +39,6 @@ impl<'a> SynonymItemSchema<'a> {
             root: None,
             locale: None,
             symbols_to_index: None,
-            _phantom: PhantomData,
         }
     }
 }

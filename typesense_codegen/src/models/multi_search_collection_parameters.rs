@@ -9,7 +9,7 @@
  */
 
 use crate::models;
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(bon::Builder)]
@@ -274,9 +274,6 @@ pub struct MultiSearchCollectionParameters<'a> {
         skip_serializing_if = "Option::is_none"
     )]
     pub rerank_hybrid_matches: Option<bool>,
-    #[serde(skip)]
-    #[builder(default)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> MultiSearchCollectionParameters<'a> {
@@ -349,7 +346,6 @@ impl<'a> MultiSearchCollectionParameters<'a> {
             collection: None,
             x_typesense_api_key: None,
             rerank_hybrid_matches: None,
-            _phantom: PhantomData,
         }
     }
 }

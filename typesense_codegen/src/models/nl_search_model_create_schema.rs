@@ -9,7 +9,7 @@
  */
 
 use crate::models;
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -71,8 +71,6 @@ pub struct NlSearchModelCreateSchema<'a> {
     /// Optional ID for the NL search model
     #[serde(rename = "id", skip_serializing_if = "Option::is_none")]
     pub id: Option<Cow<'a, str>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> NlSearchModelCreateSchema<'a> {
@@ -97,7 +95,6 @@ impl<'a> NlSearchModelCreateSchema<'a> {
             max_output_tokens: None,
             account_id: None,
             id: None,
-            _phantom: PhantomData,
         }
     }
 }

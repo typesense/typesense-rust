@@ -29,7 +29,6 @@ impl<'a> Model<'a> {
     > {
         let params = conversations_api::RetrieveConversationModelParams {
             model_id: self.model_id.into(),
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, conversations_api::retrieve_conversation_model, params)
     }
@@ -48,7 +47,6 @@ impl<'a> Model<'a> {
         let params = conversations_api::UpdateConversationModelParams {
             model_id: self.model_id.into(),
             conversation_model_update_schema: schema,
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, conversations_api::update_conversation_model, params)
     }
@@ -62,7 +60,6 @@ impl<'a> Model<'a> {
     > {
         let params = conversations_api::DeleteConversationModelParams {
             model_id: self.model_id.into(),
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, conversations_api::delete_conversation_model, params)
     }

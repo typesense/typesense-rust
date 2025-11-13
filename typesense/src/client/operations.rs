@@ -158,9 +158,7 @@ impl<'a> Operations<'a> {
         let params = operations_api::ToggleSlowRequestLogParams {
             toggle_slow_request_log_request: Some(models::ToggleSlowRequestLogRequest {
                 log_slow_requests_time_ms: slow_requests_threshold_ms,
-                _phantom: core::marker::PhantomData,
             }),
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, operations_api::toggle_slow_request_log, params)
     }

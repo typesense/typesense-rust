@@ -26,7 +26,6 @@ impl<'a> Alias<'a> {
     ) -> Result<models::CollectionAlias, Error<collections_api::GetAliasError>> {
         let params = collections_api::GetAliasParams {
             alias_name: self.alias_name.into(),
-            _phantom: core::marker::PhantomData,
         };
 
         execute_wrapper!(self, collections_api::get_alias, params)
@@ -38,7 +37,6 @@ impl<'a> Alias<'a> {
     ) -> Result<models::CollectionAlias, Error<collections_api::DeleteAliasError>> {
         let params = collections_api::DeleteAliasParams {
             alias_name: self.alias_name.into(),
-            _phantom: core::marker::PhantomData,
         };
         execute_wrapper!(self, collections_api::delete_alias, params)
     }

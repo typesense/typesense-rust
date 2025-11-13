@@ -10,7 +10,7 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
@@ -19,7 +19,6 @@ use serde::{Deserialize, Serialize, de::Error as _};
 pub struct CreateNlSearchModelParams<'p> {
     /// The NL search model to be created
     pub nl_search_model_create_schema: models::NlSearchModelCreateSchema<'p>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`delete_nl_search_model`]
@@ -27,7 +26,6 @@ pub struct CreateNlSearchModelParams<'p> {
 pub struct DeleteNlSearchModelParams<'p> {
     /// The ID of the NL search model to delete
     pub model_id: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`retrieve_nl_search_model`]
@@ -35,7 +33,6 @@ pub struct DeleteNlSearchModelParams<'p> {
 pub struct RetrieveNlSearchModelParams<'p> {
     /// The ID of the NL search model to retrieve
     pub model_id: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`update_nl_search_model`]
@@ -45,7 +42,6 @@ pub struct UpdateNlSearchModelParams<'p> {
     pub model_id: Cow<'p, str>,
     /// The NL search model fields to update
     pub body: models::NlSearchModelCreateSchema<'p>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for typed errors of method [`create_nl_search_model`]

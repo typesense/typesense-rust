@@ -10,7 +10,7 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
@@ -18,7 +18,6 @@ use serde::{Deserialize, Serialize, de::Error as _};
 #[derive(Clone, Debug)]
 pub struct CreateConversationModelParams<'p> {
     pub conversation_model_create_schema: models::ConversationModelCreateSchema<'p>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`delete_conversation_model`]
@@ -26,7 +25,6 @@ pub struct CreateConversationModelParams<'p> {
 pub struct DeleteConversationModelParams<'p> {
     /// The id of the conversation model to delete
     pub model_id: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`retrieve_conversation_model`]
@@ -34,7 +32,6 @@ pub struct DeleteConversationModelParams<'p> {
 pub struct RetrieveConversationModelParams<'p> {
     /// The id of the conversation model to retrieve
     pub model_id: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`update_conversation_model`]
@@ -43,7 +40,6 @@ pub struct UpdateConversationModelParams<'p> {
     /// The id of the conversation model to update
     pub model_id: Cow<'p, str>,
     pub conversation_model_update_schema: models::ConversationModelUpdateSchema<'p>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for typed errors of method [`create_conversation_model`]

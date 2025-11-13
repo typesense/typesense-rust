@@ -258,7 +258,6 @@ impl<'c> MultiSearch<'c> {
         let request_body = raw_models::MultiSearchSearchesParameter {
             union: Some(true),
             searches: search_requests.searches,
-            _phantom: core::marker::PhantomData,
         };
 
         let multi_search_params = build_multi_search_params(request_body, common_search_params);
@@ -345,7 +344,6 @@ fn build_multi_search_params<'a>(
         vector_query: params.vector_query,
         voice_query: params.voice_query,
         enable_analytics: params.enable_analytics,
-        _phantom: core::marker::PhantomData,
         // enable_highlight_v1: None,
         // max_candidates: None,
         // max_filter_by_candidates: None,

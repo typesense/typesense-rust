@@ -1,7 +1,6 @@
 {{>partial_header}}
 use crate::models;
 use ::std::borrow::Cow;
-use ::std::marker::PhantomData;
 use serde::{Deserialize, Serialize};
 {{#models}}
 {{#model}}
@@ -170,11 +169,6 @@ pub struct {{{classname}}}{{#vendorExtensions.x-rust-is-used-as-input}}<'a{{#ven
     }}{{#isNullable}}>{{/isNullable}}{{^required}}>{{/required}},
     {{/vendorExtensions.x-rust-type}}
 {{/vars}}
-    {{#vendorExtensions.x-rust-is-used-as-input}}
-    #[serde(skip)]
-    {{#vendorExtensions.x-rust-builder}}#[builder(default)]{{/vendorExtensions.x-rust-builder}}
-    pub _phantom: PhantomData<&'a ()>,
-    {{/vendorExtensions.x-rust-is-used-as-input}}
 }
 
 impl{{#vendorExtensions.x-rust-is-used-as-input}}<'a{{#vendorExtensions.x-rust-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-generic-parameter}}>{{/vendorExtensions.x-rust-is-used-as-input}}{{^vendorExtensions.x-rust-is-used-as-input}}{{#vendorExtensions.x-rust-generic-parameter}}<{{{.}}}>{{/vendorExtensions.x-rust-generic-parameter}}{{/vendorExtensions.x-rust-is-used-as-input}} {{!
@@ -213,9 +207,6 @@ impl{{#vendorExtensions.x-rust-is-used-as-input}}<'a{{#vendorExtensions.x-rust-g
             {{{name}}}{{^required}}: None{{/required}}{{#required}}{{#isModel}}{{^avoidBoxedModels}}: {{^isNullable}}Box::new({{{name}}}){{/isNullable}}{{#isNullable}}if let Some(x) = {{{name}}} {Some(Box::new(x))} else {None}{{/isNullable}}{{/avoidBoxedModels}}{{/isModel}}{{/required}},
             {{/vendorExtensions.x-rust-type}}
             {{/vars}}
-            {{#vendorExtensions.x-rust-is-used-as-input}}
-            _phantom: PhantomData,
-            {{/vendorExtensions.x-rust-is-used-as-input}}
         }
     }
 }

@@ -10,7 +10,7 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
@@ -19,7 +19,6 @@ use serde::{Deserialize, Serialize, de::Error as _};
 pub struct CreateAnalyticsEventParams<'p> {
     /// The analytics event to be created
     pub analytics_event: models::AnalyticsEvent<'p>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`create_analytics_rule`]
@@ -27,7 +26,6 @@ pub struct CreateAnalyticsEventParams<'p> {
 pub struct CreateAnalyticsRuleParams<'p> {
     /// The analytics rule(s) to be created
     pub create_analytics_rule_request: models::CreateAnalyticsRuleRequest<'p>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`delete_analytics_rule`]
@@ -35,7 +33,6 @@ pub struct CreateAnalyticsRuleParams<'p> {
 pub struct DeleteAnalyticsRuleParams<'p> {
     /// The name of the analytics rule to delete
     pub rule_name: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`get_analytics_events`]
@@ -46,7 +43,6 @@ pub struct GetAnalyticsEventsParams<'p> {
     pub name: Cow<'p, str>,
     /// Number of events to return (max 1000)
     pub n: i32,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`retrieve_analytics_rule`]
@@ -54,7 +50,6 @@ pub struct GetAnalyticsEventsParams<'p> {
 pub struct RetrieveAnalyticsRuleParams<'p> {
     /// The name of the analytics rule to retrieve
     pub rule_name: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`retrieve_analytics_rules`]
@@ -62,7 +57,6 @@ pub struct RetrieveAnalyticsRuleParams<'p> {
 pub struct RetrieveAnalyticsRulesParams<'p> {
     /// Filter rules by rule_tag
     pub rule_tag: Option<Cow<'p, str>>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`upsert_analytics_rule`]
@@ -72,7 +66,6 @@ pub struct UpsertAnalyticsRuleParams<'p> {
     pub rule_name: Cow<'p, str>,
     /// The Analytics rule to be upserted
     pub analytics_rule_update: models::AnalyticsRuleUpdate<'p>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for typed errors of method [`create_analytics_event`]

@@ -9,7 +9,7 @@
  */
 
 use crate::models;
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -22,8 +22,6 @@ pub struct AnalyticsEvent<'a> {
     pub event_type: Cow<'a, str>,
     #[serde(rename = "data")]
     pub data: Box<models::AnalyticsEventData<'a>>,
-    #[serde(skip)]
-    pub _phantom: PhantomData<&'a ()>,
 }
 
 impl<'a> AnalyticsEvent<'a> {
@@ -36,7 +34,6 @@ impl<'a> AnalyticsEvent<'a> {
             name,
             event_type,
             data: Box::new(data),
-            _phantom: PhantomData,
         }
     }
 }

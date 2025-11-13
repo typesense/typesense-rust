@@ -52,7 +52,6 @@ where
         let params = documents_api::GetDocumentParams {
             collection_name: self.collection_name.into(),
             document_id: self.document_id.as_ref().into(),
-            _phantom: core::marker::PhantomData,
         };
 
         let result_value = execute_wrapper!(self, documents_api::get_document, params)?;
@@ -70,7 +69,6 @@ where
         let params = documents_api::DeleteDocumentParams {
             collection_name: self.collection_name.into(),
             document_id: self.document_id.as_ref().into(),
-            _phantom: core::marker::PhantomData,
         };
 
         let result_value = execute_wrapper!(self, documents_api::delete_document, params)?;
@@ -136,7 +134,6 @@ where
             document_id: self.document_id.as_ref().into(),
             body: partial_document,
             dirty_values: params.and_then(|d| d.dirty_values),
-            _phantom: core::marker::PhantomData,
         };
 
         let result_value = execute_wrapper!(self, documents_api::update_document, params)?;

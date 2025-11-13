@@ -10,7 +10,7 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
@@ -19,7 +19,6 @@ use serde::{Deserialize, Serialize, de::Error as _};
 pub struct DeleteCurationSetParams<'p> {
     /// The name of the curation set to delete
     pub curation_set_name: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`delete_curation_set_item`]
@@ -29,7 +28,6 @@ pub struct DeleteCurationSetItemParams<'p> {
     pub curation_set_name: Cow<'p, str>,
     /// The id of the curation item to delete
     pub item_id: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`retrieve_curation_set`]
@@ -37,7 +35,6 @@ pub struct DeleteCurationSetItemParams<'p> {
 pub struct RetrieveCurationSetParams<'p> {
     /// The name of the curation set to retrieve
     pub curation_set_name: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`retrieve_curation_set_item`]
@@ -47,7 +44,6 @@ pub struct RetrieveCurationSetItemParams<'p> {
     pub curation_set_name: Cow<'p, str>,
     /// The id of the curation item to retrieve
     pub item_id: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`retrieve_curation_set_items`]
@@ -55,7 +51,6 @@ pub struct RetrieveCurationSetItemParams<'p> {
 pub struct RetrieveCurationSetItemsParams<'p> {
     /// The name of the curation set to retrieve items for
     pub curation_set_name: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`upsert_curation_set`]
@@ -65,7 +60,6 @@ pub struct UpsertCurationSetParams<'p> {
     pub curation_set_name: Cow<'p, str>,
     /// The curation set to be created/updated
     pub curation_set_create_schema: models::CurationSetCreateSchema<'p>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`upsert_curation_set_item`]
@@ -77,7 +71,6 @@ pub struct UpsertCurationSetItemParams<'p> {
     pub item_id: Cow<'p, str>,
     /// The curation item to be created/updated
     pub curation_item_create_schema: models::CurationItemCreateSchema<'p>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for typed errors of method [`delete_curation_set`]

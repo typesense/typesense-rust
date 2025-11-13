@@ -10,7 +10,7 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
-use ::std::{borrow::Cow, marker::PhantomData};
+use ::std::borrow::Cow;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
@@ -19,7 +19,6 @@ use serde::{Deserialize, Serialize, de::Error as _};
 pub struct DeletePresetParams<'p> {
     /// The ID of the preset to delete.
     pub preset_id: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`retrieve_preset`]
@@ -27,7 +26,6 @@ pub struct DeletePresetParams<'p> {
 pub struct RetrievePresetParams<'p> {
     /// The ID of the preset to retrieve.
     pub preset_id: Cow<'p, str>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for passing parameters to the method [`upsert_preset`]
@@ -37,7 +35,6 @@ pub struct UpsertPresetParams<'p> {
     pub preset_id: Cow<'p, str>,
     /// The stopwords set to upsert.
     pub preset_upsert_schema: models::PresetUpsertSchema<'p>,
-    pub _phantom: PhantomData<&'p ()>,
 }
 
 /// struct for typed errors of method [`delete_preset`]
