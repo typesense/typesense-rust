@@ -9,9 +9,11 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(bon::Builder)]
+#[builder(on(Cow<'_, str>, into))]
 #[builder(on(String, into))]
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Field {
@@ -64,8 +66,8 @@ pub struct Field {
 }
 
 impl Field {
-    pub fn new(name: String, r#type: String) -> Field {
-        Field {
+    pub fn new(name: String, r#type: String) -> Self {
+        Self {
             name,
             r#type,
             optional: None,

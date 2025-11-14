@@ -9,10 +9,10 @@ async fn logic_test_aliases_and_alias_lifecycle() {
 
     // --- 1. Create a collection to alias to ---
     let collection_schema = CollectionSchema {
-        name: collection_name.clone(),
+        name: collection_name.as_str().into(),
         fields: vec![Field {
-            name: "name".to_owned(),
-            r#type: "string".to_owned(),
+            name: "name".into(),
+            r#type: "string".into(),
             ..Default::default()
         }],
         ..Default::default()
@@ -26,7 +26,7 @@ async fn logic_test_aliases_and_alias_lifecycle() {
 
     // --- 2. Create (Upsert) an alias ---
     let alias_schema = CollectionAliasSchema {
-        collection_name: collection_name.clone(),
+        collection_name: collection_name.as_str().into(),
     };
 
     let upsert_result = client.aliases().upsert(&alias_name, alias_schema).await;

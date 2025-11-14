@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -18,7 +19,7 @@ pub struct PresetsRetrieveSchema {
 }
 
 impl PresetsRetrieveSchema {
-    pub fn new(presets: Vec<models::PresetSchema>) -> PresetsRetrieveSchema {
-        PresetsRetrieveSchema { presets }
+    pub fn new(presets: Vec<models::PresetSchema>) -> Self {
+        Self { presets }
     }
 }

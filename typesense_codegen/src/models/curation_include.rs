@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -22,7 +23,7 @@ pub struct CurationInclude {
 }
 
 impl CurationInclude {
-    pub fn new(id: String, position: i32) -> CurationInclude {
-        CurationInclude { id, position }
+    pub fn new(id: String, position: i32) -> Self {
+        Self { id, position }
     }
 }

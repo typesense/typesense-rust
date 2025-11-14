@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 /// SearchResultHitHybridSearchInfo : Information about hybrid search scoring
@@ -21,8 +22,8 @@ pub struct SearchResultHitHybridSearchInfo {
 
 impl SearchResultHitHybridSearchInfo {
     /// Information about hybrid search scoring
-    pub fn new() -> SearchResultHitHybridSearchInfo {
-        SearchResultHitHybridSearchInfo {
+    pub fn new() -> Self {
+        Self {
             rank_fusion_score: None,
         }
     }

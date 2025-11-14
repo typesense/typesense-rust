@@ -9,19 +9,20 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct PresetSchema {
     #[serde(rename = "value")]
-    pub value: Box<models::PresetUpsertSchemaValue>,
+    pub value: Box<models::PresetUpsertSchemaValue<'static>>,
     #[serde(rename = "name")]
     pub name: String,
 }
 
 impl PresetSchema {
-    pub fn new(value: models::PresetUpsertSchemaValue, name: String) -> PresetSchema {
-        PresetSchema {
+    pub fn new(value: models::PresetUpsertSchemaValue<'static>, name: String) -> Self {
+        Self {
             value: Box::new(value),
             name,
         }

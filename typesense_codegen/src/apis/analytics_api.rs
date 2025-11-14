@@ -10,61 +10,62 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
+use ::std::borrow::Cow;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
 /// struct for passing parameters to the method [`create_analytics_event`]
 #[derive(Clone, Debug)]
-pub struct CreateAnalyticsEventParams {
+pub struct CreateAnalyticsEventParams<'p> {
     /// The analytics event to be created
-    pub analytics_event: models::AnalyticsEvent,
+    pub analytics_event: models::AnalyticsEvent<'p>,
 }
 
 /// struct for passing parameters to the method [`create_analytics_rule`]
 #[derive(Clone, Debug)]
-pub struct CreateAnalyticsRuleParams {
+pub struct CreateAnalyticsRuleParams<'p> {
     /// The analytics rule(s) to be created
-    pub create_analytics_rule_request: models::CreateAnalyticsRuleRequest,
+    pub create_analytics_rule_request: models::CreateAnalyticsRuleRequest<'p>,
 }
 
 /// struct for passing parameters to the method [`delete_analytics_rule`]
 #[derive(Clone, Debug)]
-pub struct DeleteAnalyticsRuleParams {
+pub struct DeleteAnalyticsRuleParams<'p> {
     /// The name of the analytics rule to delete
-    pub rule_name: String,
+    pub rule_name: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`get_analytics_events`]
 #[derive(Clone, Debug)]
-pub struct GetAnalyticsEventsParams {
-    pub user_id: String,
+pub struct GetAnalyticsEventsParams<'p> {
+    pub user_id: Cow<'p, str>,
     /// Analytics rule name
-    pub name: String,
+    pub name: Cow<'p, str>,
     /// Number of events to return (max 1000)
     pub n: i32,
 }
 
 /// struct for passing parameters to the method [`retrieve_analytics_rule`]
 #[derive(Clone, Debug)]
-pub struct RetrieveAnalyticsRuleParams {
+pub struct RetrieveAnalyticsRuleParams<'p> {
     /// The name of the analytics rule to retrieve
-    pub rule_name: String,
+    pub rule_name: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`retrieve_analytics_rules`]
 #[derive(Clone, Debug)]
-pub struct RetrieveAnalyticsRulesParams {
+pub struct RetrieveAnalyticsRulesParams<'p> {
     /// Filter rules by rule_tag
-    pub rule_tag: Option<String>,
+    pub rule_tag: Option<Cow<'p, str>>,
 }
 
 /// struct for passing parameters to the method [`upsert_analytics_rule`]
 #[derive(Clone, Debug)]
-pub struct UpsertAnalyticsRuleParams {
+pub struct UpsertAnalyticsRuleParams<'p> {
     /// The name of the analytics rule to upsert
-    pub rule_name: String,
+    pub rule_name: Cow<'p, str>,
     /// The Analytics rule to be upserted
-    pub analytics_rule_update: models::AnalyticsRuleUpdate,
+    pub analytics_rule_update: models::AnalyticsRuleUpdate<'p>,
 }
 
 /// struct for typed errors of method [`create_analytics_event`]
@@ -139,7 +140,7 @@ pub enum UpsertAnalyticsRuleError {
 /// Submit a single analytics event. The event must correspond to an existing analytics rule by name.
 pub async fn create_analytics_event(
     configuration: &configuration::Configuration,
-    params: &CreateAnalyticsEventParams,
+    params: &CreateAnalyticsEventParams<'_>,
 ) -> Result<models::AnalyticsEventCreateResponse, Error<CreateAnalyticsEventError>> {
     let uri_str = format!("{}/analytics/events", configuration.base_path);
     let mut req_builder = configuration
@@ -199,7 +200,7 @@ pub async fn create_analytics_event(
 /// Create one or more analytics rules. You can send a single rule object or an array of rule objects.
 pub async fn create_analytics_rule(
     configuration: &configuration::Configuration,
-    params: &CreateAnalyticsRuleParams,
+    params: &CreateAnalyticsRuleParams<'_>,
 ) -> Result<models::CreateAnalyticsRule200Response, Error<CreateAnalyticsRuleError>> {
     let uri_str = format!("{}/analytics/rules", configuration.base_path);
     let mut req_builder = configuration
@@ -259,7 +260,7 @@ pub async fn create_analytics_rule(
 /// Permanently deletes an analytics rule, given it's name
 pub async fn delete_analytics_rule(
     configuration: &configuration::Configuration,
-    params: &DeleteAnalyticsRuleParams,
+    params: &DeleteAnalyticsRuleParams<'_>,
 ) -> Result<models::AnalyticsRule, Error<DeleteAnalyticsRuleError>> {
     let uri_str = format!(
         "{}/analytics/rules/{ruleName}",
@@ -380,7 +381,7 @@ pub async fn flush_analytics(
 /// Retrieve the most recent events for a user and rule.
 pub async fn get_analytics_events(
     configuration: &configuration::Configuration,
-    params: &GetAnalyticsEventsParams,
+    params: &GetAnalyticsEventsParams<'_>,
 ) -> Result<models::AnalyticsEventsResponse, Error<GetAnalyticsEventsError>> {
     let uri_str = format!("{}/analytics/events", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -496,7 +497,7 @@ pub async fn get_analytics_status(
 /// Retrieve the details of an analytics rule, given it's name
 pub async fn retrieve_analytics_rule(
     configuration: &configuration::Configuration,
-    params: &RetrieveAnalyticsRuleParams,
+    params: &RetrieveAnalyticsRuleParams<'_>,
 ) -> Result<models::AnalyticsRule, Error<RetrieveAnalyticsRuleError>> {
     let uri_str = format!(
         "{}/analytics/rules/{ruleName}",
@@ -557,7 +558,7 @@ pub async fn retrieve_analytics_rule(
 /// Retrieve all analytics rules. Use the optional rule_tag filter to narrow down results.
 pub async fn retrieve_analytics_rules(
     configuration: &configuration::Configuration,
-    params: &RetrieveAnalyticsRulesParams,
+    params: &RetrieveAnalyticsRulesParams<'_>,
 ) -> Result<Vec<models::AnalyticsRule>, Error<RetrieveAnalyticsRulesError>> {
     let uri_str = format!("{}/analytics/rules", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -617,7 +618,7 @@ pub async fn retrieve_analytics_rules(
 /// Upserts an analytics rule with the given name.
 pub async fn upsert_analytics_rule(
     configuration: &configuration::Configuration,
-    params: &UpsertAnalyticsRuleParams,
+    params: &UpsertAnalyticsRuleParams<'_>,
 ) -> Result<models::AnalyticsRule, Error<UpsertAnalyticsRuleError>> {
     let uri_str = format!(
         "{}/analytics/rules/{ruleName}",

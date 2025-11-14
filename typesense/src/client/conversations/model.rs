@@ -28,7 +28,7 @@ impl<'a> Model<'a> {
         Error<conversations_api::RetrieveConversationModelError>,
     > {
         let params = conversations_api::RetrieveConversationModelParams {
-            model_id: self.model_id.to_owned(),
+            model_id: self.model_id.into(),
         };
         execute_wrapper!(self, conversations_api::retrieve_conversation_model, params)
     }
@@ -39,13 +39,13 @@ impl<'a> Model<'a> {
     /// * `schema` - A `ConversationModelUpdateSchema` object with the fields to update.
     pub async fn update(
         &self,
-        schema: models::ConversationModelUpdateSchema,
+        schema: models::ConversationModelUpdateSchema<'_>,
     ) -> Result<
         models::ConversationModelSchema,
         Error<conversations_api::UpdateConversationModelError>,
     > {
         let params = conversations_api::UpdateConversationModelParams {
-            model_id: self.model_id.to_owned(),
+            model_id: self.model_id.into(),
             conversation_model_update_schema: schema,
         };
         execute_wrapper!(self, conversations_api::update_conversation_model, params)
@@ -59,7 +59,7 @@ impl<'a> Model<'a> {
         Error<conversations_api::DeleteConversationModelError>,
     > {
         let params = conversations_api::DeleteConversationModelParams {
-            model_id: self.model_id.to_owned(),
+            model_id: self.model_id.into(),
         };
         execute_wrapper!(self, conversations_api::delete_conversation_model, params)
     }

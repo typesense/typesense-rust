@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -25,8 +26,8 @@ pub struct CollectionUpdateSchema {
 }
 
 impl CollectionUpdateSchema {
-    pub fn new(fields: Vec<models::Field>) -> CollectionUpdateSchema {
-        CollectionUpdateSchema {
+    pub fn new(fields: Vec<models::Field>) -> Self {
+        Self {
             fields,
             synonym_sets: None,
             metadata: None,

@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -32,8 +33,8 @@ pub struct AnalyticsEventsResponseEventsInner {
 }
 
 impl AnalyticsEventsResponseEventsInner {
-    pub fn new() -> AnalyticsEventsResponseEventsInner {
-        AnalyticsEventsResponseEventsInner {
+    pub fn new() -> Self {
+        Self {
             name: None,
             event_type: None,
             collection: None,

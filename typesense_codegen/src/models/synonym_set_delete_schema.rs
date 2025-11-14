@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -19,7 +20,7 @@ pub struct SynonymSetDeleteSchema {
 }
 
 impl SynonymSetDeleteSchema {
-    pub fn new(name: String) -> SynonymSetDeleteSchema {
-        SynonymSetDeleteSchema { name }
+    pub fn new(name: String) -> Self {
+        Self { name }
     }
 }

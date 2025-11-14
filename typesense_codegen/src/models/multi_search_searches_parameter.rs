@@ -9,22 +9,21 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct MultiSearchSearchesParameter {
+pub struct MultiSearchSearchesParameter<'a> {
     /// When true, merges the search results from each search query into a single ordered set of hits.
     #[serde(rename = "union", skip_serializing_if = "Option::is_none")]
     pub union: Option<bool>,
     #[serde(rename = "searches")]
-    pub searches: Vec<models::MultiSearchCollectionParameters>,
+    pub searches: Vec<models::MultiSearchCollectionParameters<'a>>,
 }
 
-impl MultiSearchSearchesParameter {
-    pub fn new(
-        searches: Vec<models::MultiSearchCollectionParameters>,
-    ) -> MultiSearchSearchesParameter {
-        MultiSearchSearchesParameter {
+impl<'a> MultiSearchSearchesParameter<'a> {
+    pub fn new(searches: Vec<models::MultiSearchCollectionParameters<'a>>) -> Self {
+        Self {
             union: None,
             searches,
         }

@@ -76,10 +76,17 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
         }
     }
 
-    let typesense_fields = fields
-        .iter()
-        .map(process_field)
-        .collect::<syn::Result<Vec<_>>>()?;
+    let mut regular_fields = Vec::new();
+    let mut flattened_fields = Vec::new();
+    for field in &fields {
+        let (regular, flattened) = process_field(field)?;
+        if let Some(f) = regular {
+            regular_fields.push(f);
+        }
+        if let Some(f) = flattened {
+            flattened_fields.push(f);
+        }
+    }
 
     let default_sorting_field = if let Some(v) = default_sorting_field {
         quote! {
@@ -139,15 +146,15 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
 
         impl #impl_generics ::typesense::prelude::Document for #ident #ty_generics #where_clause {
             const COLLECTION_NAME: &str = #collection_name;
+
             type Partial = #name_partial;
 
-            fn collection_schema() -> ::typesense::models::CollectionSchema {
-                let name = Self::COLLECTION_NAME.to_owned();
+            fn collection_schema() -> ::typesense::models::CollectionSchema<'static> {
+                let fields = [#(#regular_fields,)*].into_iter()
+                    #(.chain(#flattened_fields))*
+                    .collect::<Vec<_>>();
 
-                let mut fields = Vec::new();
-                #(fields.extend(#typesense_fields);)*
-
-                let builder = ::typesense::models::CollectionSchema::builder().name(name).fields(fields);
+                let builder = ::typesense::models::CollectionSchema::builder().name(Self::COLLECTION_NAME).fields(fields);
 
                 #default_sorting_field
                 #enable_nested_fields

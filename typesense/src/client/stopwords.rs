@@ -3,6 +3,7 @@
 //! A `Stopwords` instance is created via the main `client.stopwords()` method.
 
 use crate::{Client, Error, execute_wrapper};
+use ::std::borrow::Cow;
 use typesense_codegen::{apis::stopwords_api, models};
 
 /// Provides methods for managing Typesense stopwords sets.
@@ -26,8 +27,8 @@ impl<'a> Stopwords<'a> {
     /// * `schema` - A `StopwordsSetUpsertSchema` object with the stopwords to upsert.
     pub async fn upsert(
         &self,
-        set_id: impl Into<String>,
-        schema: models::StopwordsSetUpsertSchema,
+        set_id: impl Into<Cow<'_, str>>,
+        schema: models::StopwordsSetUpsertSchema<'_>,
     ) -> Result<models::StopwordsSetSchema, Error<stopwords_api::UpsertStopwordsSetError>> {
         let params = stopwords_api::UpsertStopwordsSetParams {
             set_id: set_id.into(),

@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -73,8 +74,8 @@ pub struct NlSearchModelSchema {
 }
 
 impl NlSearchModelSchema {
-    pub fn new(id: String) -> NlSearchModelSchema {
-        NlSearchModelSchema {
+    pub fn new(id: String) -> Self {
+        Self {
             model_name: None,
             api_key: None,
             api_url: None,

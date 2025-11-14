@@ -10,30 +10,31 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
+use ::std::borrow::Cow;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
 /// struct for passing parameters to the method [`delete_preset`]
 #[derive(Clone, Debug)]
-pub struct DeletePresetParams {
+pub struct DeletePresetParams<'p> {
     /// The ID of the preset to delete.
-    pub preset_id: String,
+    pub preset_id: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`retrieve_preset`]
 #[derive(Clone, Debug)]
-pub struct RetrievePresetParams {
+pub struct RetrievePresetParams<'p> {
     /// The ID of the preset to retrieve.
-    pub preset_id: String,
+    pub preset_id: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`upsert_preset`]
 #[derive(Clone, Debug)]
-pub struct UpsertPresetParams {
+pub struct UpsertPresetParams<'p> {
     /// The name of the preset set to upsert.
-    pub preset_id: String,
+    pub preset_id: Cow<'p, str>,
     /// The stopwords set to upsert.
-    pub preset_upsert_schema: models::PresetUpsertSchema,
+    pub preset_upsert_schema: models::PresetUpsertSchema<'p>,
 }
 
 /// struct for typed errors of method [`delete_preset`]
@@ -70,7 +71,7 @@ pub enum UpsertPresetError {
 /// Permanently deletes a preset, given it's name.
 pub async fn delete_preset(
     configuration: &configuration::Configuration,
-    params: &DeletePresetParams,
+    params: &DeletePresetParams<'_>,
 ) -> Result<models::PresetDeleteSchema, Error<DeletePresetError>> {
     let uri_str = format!(
         "{}/presets/{presetId}",
@@ -189,7 +190,7 @@ pub async fn retrieve_all_presets(
 /// Retrieve the details of a preset, given it's name.
 pub async fn retrieve_preset(
     configuration: &configuration::Configuration,
-    params: &RetrievePresetParams,
+    params: &RetrievePresetParams<'_>,
 ) -> Result<models::PresetSchema, Error<RetrievePresetError>> {
     let uri_str = format!(
         "{}/presets/{presetId}",
@@ -250,7 +251,7 @@ pub async fn retrieve_preset(
 /// Create or update an existing preset.
 pub async fn upsert_preset(
     configuration: &configuration::Configuration,
-    params: &UpsertPresetParams,
+    params: &UpsertPresetParams<'_>,
 ) -> Result<models::PresetSchema, Error<UpsertPresetError>> {
     let uri_str = format!(
         "{}/presets/{presetId}",

@@ -10,66 +10,67 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
+use ::std::borrow::Cow;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
 /// struct for passing parameters to the method [`delete_curation_set`]
 #[derive(Clone, Debug)]
-pub struct DeleteCurationSetParams {
+pub struct DeleteCurationSetParams<'p> {
     /// The name of the curation set to delete
-    pub curation_set_name: String,
+    pub curation_set_name: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`delete_curation_set_item`]
 #[derive(Clone, Debug)]
-pub struct DeleteCurationSetItemParams {
+pub struct DeleteCurationSetItemParams<'p> {
     /// The name of the curation set
-    pub curation_set_name: String,
+    pub curation_set_name: Cow<'p, str>,
     /// The id of the curation item to delete
-    pub item_id: String,
+    pub item_id: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`retrieve_curation_set`]
 #[derive(Clone, Debug)]
-pub struct RetrieveCurationSetParams {
+pub struct RetrieveCurationSetParams<'p> {
     /// The name of the curation set to retrieve
-    pub curation_set_name: String,
+    pub curation_set_name: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`retrieve_curation_set_item`]
 #[derive(Clone, Debug)]
-pub struct RetrieveCurationSetItemParams {
+pub struct RetrieveCurationSetItemParams<'p> {
     /// The name of the curation set
-    pub curation_set_name: String,
+    pub curation_set_name: Cow<'p, str>,
     /// The id of the curation item to retrieve
-    pub item_id: String,
+    pub item_id: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`retrieve_curation_set_items`]
 #[derive(Clone, Debug)]
-pub struct RetrieveCurationSetItemsParams {
+pub struct RetrieveCurationSetItemsParams<'p> {
     /// The name of the curation set to retrieve items for
-    pub curation_set_name: String,
+    pub curation_set_name: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`upsert_curation_set`]
 #[derive(Clone, Debug)]
-pub struct UpsertCurationSetParams {
+pub struct UpsertCurationSetParams<'p> {
     /// The name of the curation set to create/update
-    pub curation_set_name: String,
+    pub curation_set_name: Cow<'p, str>,
     /// The curation set to be created/updated
-    pub curation_set_create_schema: models::CurationSetCreateSchema,
+    pub curation_set_create_schema: models::CurationSetCreateSchema<'p>,
 }
 
 /// struct for passing parameters to the method [`upsert_curation_set_item`]
 #[derive(Clone, Debug)]
-pub struct UpsertCurationSetItemParams {
+pub struct UpsertCurationSetItemParams<'p> {
     /// The name of the curation set
-    pub curation_set_name: String,
+    pub curation_set_name: Cow<'p, str>,
     /// The id of the curation item to upsert
-    pub item_id: String,
+    pub item_id: Cow<'p, str>,
     /// The curation item to be created/updated
-    pub curation_item_create_schema: models::CurationItemCreateSchema,
+    pub curation_item_create_schema: models::CurationItemCreateSchema<'p>,
 }
 
 /// struct for typed errors of method [`delete_curation_set`]
@@ -138,7 +139,7 @@ pub enum UpsertCurationSetItemError {
 /// Delete a specific curation set by its name
 pub async fn delete_curation_set(
     configuration: &configuration::Configuration,
-    params: &DeleteCurationSetParams,
+    params: &DeleteCurationSetParams<'_>,
 ) -> Result<models::CurationSetDeleteSchema, Error<DeleteCurationSetError>> {
     let uri_str = format!(
         "{}/curation_sets/{curationSetName}",
@@ -201,7 +202,7 @@ pub async fn delete_curation_set(
 /// Delete a specific curation item by its id
 pub async fn delete_curation_set_item(
     configuration: &configuration::Configuration,
-    params: &DeleteCurationSetItemParams,
+    params: &DeleteCurationSetItemParams<'_>,
 ) -> Result<models::CurationItemDeleteSchema, Error<DeleteCurationSetItemError>> {
     let uri_str = format!(
         "{}/curation_sets/{curationSetName}/items/{itemId}",
@@ -265,8 +266,8 @@ pub async fn delete_curation_set_item(
 /// Retrieve a specific curation set by its name
 pub async fn retrieve_curation_set(
     configuration: &configuration::Configuration,
-    params: &RetrieveCurationSetParams,
-) -> Result<models::CurationSetCreateSchema, Error<RetrieveCurationSetError>> {
+    params: &RetrieveCurationSetParams<'_>,
+) -> Result<models::CurationSetCreateSchema<'static>, Error<RetrieveCurationSetError>> {
     let uri_str = format!(
         "{}/curation_sets/{curationSetName}",
         configuration.base_path,
@@ -326,7 +327,7 @@ pub async fn retrieve_curation_set(
 /// Retrieve a specific curation item by its id
 pub async fn retrieve_curation_set_item(
     configuration: &configuration::Configuration,
-    params: &RetrieveCurationSetItemParams,
+    params: &RetrieveCurationSetItemParams<'_>,
 ) -> Result<models::CurationItemSchema, Error<RetrieveCurationSetItemError>> {
     let uri_str = format!(
         "{}/curation_sets/{curationSetName}/items/{itemId}",
@@ -388,7 +389,7 @@ pub async fn retrieve_curation_set_item(
 /// Retrieve all curation items in a set
 pub async fn retrieve_curation_set_items(
     configuration: &configuration::Configuration,
-    params: &RetrieveCurationSetItemsParams,
+    params: &RetrieveCurationSetItemsParams<'_>,
 ) -> Result<Vec<models::CurationItemSchema>, Error<RetrieveCurationSetItemsError>> {
     let uri_str = format!(
         "{}/curation_sets/{curationSetName}/items",
@@ -505,7 +506,7 @@ pub async fn retrieve_curation_sets(
 /// Create or update a curation set with the given name
 pub async fn upsert_curation_set(
     configuration: &configuration::Configuration,
-    params: &UpsertCurationSetParams,
+    params: &UpsertCurationSetParams<'_>,
 ) -> Result<models::CurationSetSchema, Error<UpsertCurationSetError>> {
     let uri_str = format!(
         "{}/curation_sets/{curationSetName}",
@@ -567,7 +568,7 @@ pub async fn upsert_curation_set(
 /// Create or update a curation set item with the given id
 pub async fn upsert_curation_set_item(
     configuration: &configuration::Configuration,
-    params: &UpsertCurationSetItemParams,
+    params: &UpsertCurationSetItemParams<'_>,
 ) -> Result<models::CurationItemSchema, Error<UpsertCurationSetItemError>> {
     let uri_str = format!(
         "{}/curation_sets/{curationSetName}/items/{itemId}",
