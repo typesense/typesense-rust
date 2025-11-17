@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -66,8 +67,8 @@ pub struct ApiStatsResponse {
 }
 
 impl ApiStatsResponse {
-    pub fn new() -> ApiStatsResponse {
-        ApiStatsResponse {
+    pub fn new() -> Self {
+        Self {
             delete_latency_ms: None,
             delete_requests_per_second: None,
             import_latency_ms: None,

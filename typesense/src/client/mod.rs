@@ -38,8 +38,8 @@
 //!
 //!     // Search for a document
 //!     let search_params = models::SearchParameters {
-//!         q: Some("phone".to_owned()),
-//!         query_by: Some("name".to_owned()),
+//!         q: Some("phone".into()),
+//!         query_by: Some("name".into()),
 //!         ..Default::default()
 //!     };
 //!
@@ -91,8 +91,8 @@
 //!
 //!         // Search for a document
 //!         let search_params = models::SearchParameters {
-//!             q: Some("phone".to_owned()),
-//!             query_by: Some("name".to_owned()),
+//!             q: Some("phone".into()),
+//!             query_by: Some("name".into()),
 //!             ..Default::default()
 //!         };
 //!
@@ -142,15 +142,16 @@ use reqwest_middleware::ClientBuilder as ReqwestMiddlewareClientBuilder;
 use reqwest_retry::RetryTransientMiddleware;
 pub use reqwest_retry::policies::ExponentialBackoff;
 
-use debug_unsafe::{option::OptionUnwrapper, slice::SliceGetter};
-use serde::{Serialize, de::DeserializeOwned};
-use std::{
+use ::std::{
+    borrow::Cow,
     future::Future,
     sync::{
         RwLock,
         atomic::{AtomicBool, AtomicUsize, Ordering},
     },
 };
+use debug_unsafe::{option::OptionUnwrapper, slice::SliceGetter};
+use serde::{Serialize, de::DeserializeOwned};
 use typesense_codegen::apis::{self, configuration};
 use web_time::{Duration, Instant};
 
@@ -480,7 +481,10 @@ impl Client {
     /// # }
     /// ```
     #[inline]
-    pub fn collection_named<'c, 'n, D>(&'c self, collection_name: &'n str) -> Collection<'c, 'n, D>
+    pub fn collection_named<'c, D>(
+        &'c self,
+        collection_name: impl Into<Cow<'c, str>>,
+    ) -> Collection<'c, D>
     where
         D: DeserializeOwned + Serialize,
     {
@@ -525,7 +529,7 @@ impl Client {
     /// # }
     /// ```
     #[inline]
-    pub fn collection<'c, 'n, D>(&'c self) -> Collection<'c, 'n, D>
+    pub fn collection<'c, D>(&'c self) -> Collection<'c, D>
     where
         D: Document,
     {
@@ -561,10 +565,10 @@ impl Client {
     /// # }
     /// ```
     #[inline]
-    pub fn collection_schemaless<'c, 'n>(
+    pub fn collection_schemaless<'c>(
         &'c self,
-        collection_name: &'n str,
-    ) -> Collection<'c, 'n, serde_json::Value> {
+        collection_name: impl Into<Cow<'c, str>>,
+    ) -> Collection<'c, serde_json::Value> {
         Collection::new(self, collection_name)
     }
 
@@ -608,7 +612,7 @@ impl Client {
     /// #    .build()
     /// #    .unwrap();
     /// # let schema = models::ApiKeySchema {
-    /// #     description: "Search-only key.".to_owned(),
+    /// #     description: "Search-only key.".into(),
     /// #     actions: vec!["documents:search".to_owned()],
     /// #     collections: vec!["*".to_owned()],
     /// #     ..Default::default()
@@ -668,9 +672,9 @@ impl Client {
     /// #    .unwrap();
     /// # let search_requests = models::MultiSearchBody {
     /// #     searches: vec![models::MultiSearchCollectionParameters {
-    /// #         collection: Some("products".to_owned()),
-    /// #         q: Some("phone".to_owned()),
-    /// #         query_by: Some("name".to_owned()),
+    /// #         collection: Some("products".into()),
+    /// #         q: Some("phone".into()),
+    /// #         query_by: Some("name".into()),
     /// #         ..Default::default()
     /// #     }],
     /// #     ..Default::default()

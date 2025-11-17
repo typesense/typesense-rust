@@ -9,23 +9,24 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 /// AnalyticsRuleUpdate : Fields allowed to update on an analytics rule
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct AnalyticsRuleUpdate {
+pub struct AnalyticsRuleUpdate<'a> {
     #[serde(rename = "name", skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
+    pub name: Option<Cow<'a, str>>,
     #[serde(rename = "rule_tag", skip_serializing_if = "Option::is_none")]
-    pub rule_tag: Option<String>,
+    pub rule_tag: Option<Cow<'a, str>>,
     #[serde(rename = "params", skip_serializing_if = "Option::is_none")]
-    pub params: Option<Box<models::AnalyticsRuleCreateParams>>,
+    pub params: Option<Box<models::AnalyticsRuleCreateParams<'a>>>,
 }
 
-impl AnalyticsRuleUpdate {
+impl<'a> AnalyticsRuleUpdate<'a> {
     /// Fields allowed to update on an analytics rule
-    pub fn new() -> AnalyticsRuleUpdate {
-        AnalyticsRuleUpdate {
+    pub fn new() -> Self {
+        Self {
             name: None,
             rule_tag: None,
             params: None,

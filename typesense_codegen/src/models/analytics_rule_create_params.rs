@@ -9,15 +9,16 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct AnalyticsRuleCreateParams {
+pub struct AnalyticsRuleCreateParams<'a> {
     #[serde(
         rename = "destination_collection",
         skip_serializing_if = "Option::is_none"
     )]
-    pub destination_collection: Option<String>,
+    pub destination_collection: Option<Cow<'a, str>>,
     #[serde(rename = "limit", skip_serializing_if = "Option::is_none")]
     pub limit: Option<i32>,
     #[serde(
@@ -30,14 +31,14 @@ pub struct AnalyticsRuleCreateParams {
     #[serde(rename = "expand_query", skip_serializing_if = "Option::is_none")]
     pub expand_query: Option<bool>,
     #[serde(rename = "counter_field", skip_serializing_if = "Option::is_none")]
-    pub counter_field: Option<String>,
+    pub counter_field: Option<Cow<'a, str>>,
     #[serde(rename = "weight", skip_serializing_if = "Option::is_none")]
     pub weight: Option<i32>,
 }
 
-impl AnalyticsRuleCreateParams {
-    pub fn new() -> AnalyticsRuleCreateParams {
-        AnalyticsRuleCreateParams {
+impl<'a> AnalyticsRuleCreateParams<'a> {
+    pub fn new() -> Self {
+        Self {
             destination_collection: None,
             limit: None,
             capture_search_requests: None,

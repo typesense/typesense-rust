@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -59,8 +60,8 @@ impl CollectionResponse {
         fields: Vec<models::Field>,
         num_documents: i64,
         created_at: i64,
-    ) -> CollectionResponse {
-        CollectionResponse {
+    ) -> Self {
+        Self {
             name,
             fields,
             default_sorting_field: None,

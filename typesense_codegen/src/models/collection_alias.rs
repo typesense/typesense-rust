@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -22,8 +23,8 @@ pub struct CollectionAlias {
 }
 
 impl CollectionAlias {
-    pub fn new(name: String, collection_name: String) -> CollectionAlias {
-        CollectionAlias {
+    pub fn new(name: String, collection_name: String) -> Self {
+        Self {
             name,
             collection_name,
         }

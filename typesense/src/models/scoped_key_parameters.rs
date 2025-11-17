@@ -7,12 +7,12 @@ use serde::Serialize;
 /// search restrictions and an optional expiration time embedded within it. It allows
 /// you to delegate search permissions securely without exposing your main API key.
 #[derive(Debug, Clone, Default, Serialize)]
-pub struct ScopedKeyParameters {
+pub struct ScopedKeyParameters<'a> {
     /// The search parameters to embed in the key. These parameters will be
     /// enforced for all searches made with the generated key.
     /// For example, you can use `filter_by` to restrict searches to a subset of documents.
     #[serde(flatten, skip_serializing_if = "Option::is_none")]
-    pub search_params: Option<SearchParameters>,
+    pub search_params: Option<SearchParameters<'a>>,
 
     /// The number of `multi_search` requests that can be performed using this key.
     #[serde(skip_serializing_if = "Option::is_none")]

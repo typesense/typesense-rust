@@ -10,37 +10,38 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
+use ::std::borrow::Cow;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
 /// struct for passing parameters to the method [`create_nl_search_model`]
 #[derive(Clone, Debug)]
-pub struct CreateNlSearchModelParams {
+pub struct CreateNlSearchModelParams<'p> {
     /// The NL search model to be created
-    pub nl_search_model_create_schema: models::NlSearchModelCreateSchema,
+    pub nl_search_model_create_schema: models::NlSearchModelCreateSchema<'p>,
 }
 
 /// struct for passing parameters to the method [`delete_nl_search_model`]
 #[derive(Clone, Debug)]
-pub struct DeleteNlSearchModelParams {
+pub struct DeleteNlSearchModelParams<'p> {
     /// The ID of the NL search model to delete
-    pub model_id: String,
+    pub model_id: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`retrieve_nl_search_model`]
 #[derive(Clone, Debug)]
-pub struct RetrieveNlSearchModelParams {
+pub struct RetrieveNlSearchModelParams<'p> {
     /// The ID of the NL search model to retrieve
-    pub model_id: String,
+    pub model_id: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`update_nl_search_model`]
 #[derive(Clone, Debug)]
-pub struct UpdateNlSearchModelParams {
+pub struct UpdateNlSearchModelParams<'p> {
     /// The ID of the NL search model to update
-    pub model_id: String,
+    pub model_id: Cow<'p, str>,
     /// The NL search model fields to update
-    pub body: models::NlSearchModelCreateSchema,
+    pub body: models::NlSearchModelCreateSchema<'p>,
 }
 
 /// struct for typed errors of method [`create_nl_search_model`]
@@ -86,7 +87,7 @@ pub enum UpdateNlSearchModelError {
 /// Create a new NL search model.
 pub async fn create_nl_search_model(
     configuration: &configuration::Configuration,
-    params: &CreateNlSearchModelParams,
+    params: &CreateNlSearchModelParams<'_>,
 ) -> Result<models::NlSearchModelSchema, Error<CreateNlSearchModelError>> {
     let uri_str = format!("{}/nl_search_models", configuration.base_path);
     let mut req_builder = configuration
@@ -146,7 +147,7 @@ pub async fn create_nl_search_model(
 /// Delete a specific NL search model by its ID.
 pub async fn delete_nl_search_model(
     configuration: &configuration::Configuration,
-    params: &DeleteNlSearchModelParams,
+    params: &DeleteNlSearchModelParams<'_>,
 ) -> Result<models::NlSearchModelDeleteSchema, Error<DeleteNlSearchModelError>> {
     let uri_str = format!(
         "{}/nl_search_models/{modelId}",
@@ -265,7 +266,7 @@ pub async fn retrieve_all_nl_search_models(
 /// Retrieve a specific NL search model by its ID.
 pub async fn retrieve_nl_search_model(
     configuration: &configuration::Configuration,
-    params: &RetrieveNlSearchModelParams,
+    params: &RetrieveNlSearchModelParams<'_>,
 ) -> Result<models::NlSearchModelSchema, Error<RetrieveNlSearchModelError>> {
     let uri_str = format!(
         "{}/nl_search_models/{modelId}",
@@ -326,7 +327,7 @@ pub async fn retrieve_nl_search_model(
 /// Update an existing NL search model.
 pub async fn update_nl_search_model(
     configuration: &configuration::Configuration,
-    params: &UpdateNlSearchModelParams,
+    params: &UpdateNlSearchModelParams<'_>,
 ) -> Result<models::NlSearchModelSchema, Error<UpdateNlSearchModelError>> {
     let uri_str = format!(
         "{}/nl_search_models/{modelId}",

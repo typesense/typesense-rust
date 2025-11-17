@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -32,8 +33,8 @@ pub struct ImportDocumentsParameters {
 }
 
 impl ImportDocumentsParameters {
-    pub fn new() -> ImportDocumentsParameters {
-        ImportDocumentsParameters {
+    pub fn new() -> Self {
+        Self {
             batch_size: None,
             return_id: None,
             remote_embedding_batch_size: None,

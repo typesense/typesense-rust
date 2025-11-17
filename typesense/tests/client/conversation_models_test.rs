@@ -19,32 +19,32 @@ async fn test_create_model_with_invalid_key_fails_as_expected() {
 
     // --- 1. Setup: Create the prerequisite collection for history ---
     let schema = CollectionSchema {
-        name: collection_name.clone(),
+        name: collection_name.as_str().into(),
         fields: vec![
             Field {
-                name: "conversation_id".to_owned(),
-                r#type: "string".to_owned(),
+                name: "conversation_id".into(),
+                r#type: "string".into(),
                 ..Default::default()
             },
             Field {
-                name: "model_id".to_owned(),
-                r#type: "string".to_owned(),
+                name: "model_id".into(),
+                r#type: "string".into(),
                 ..Default::default()
             },
             Field {
-                name: "timestamp".to_owned(),
-                r#type: "int32".to_owned(),
+                name: "timestamp".into(),
+                r#type: "int32".into(),
                 ..Default::default()
             },
             Field {
-                name: "role".to_owned(),
-                r#type: "string".to_owned(),
+                name: "role".into(),
+                r#type: "string".into(),
                 index: Some(false),
                 ..Default::default()
             },
             Field {
-                name: "message".to_owned(),
-                r#type: "string".to_owned(),
+                name: "message".into(),
+                r#type: "string".into(),
                 index: Some(false),
                 ..Default::default()
             },
@@ -59,10 +59,10 @@ async fn test_create_model_with_invalid_key_fails_as_expected() {
 
     // --- 2. Action: Attempt to create a model with a deliberately invalid API key ---
     let create_schema = ConversationModelCreateSchema {
-        id: Some(model_id.clone()),
-        model_name: "openai/gpt-4".to_owned(),
-        api_key: Some("THIS_IS_AN_INVALID_KEY".to_owned()),
-        history_collection: collection_name.clone(),
+        id: Some(model_id.into()),
+        model_name: "openai/gpt-4".into(),
+        api_key: Some("THIS_IS_AN_INVALID_KEY".into()),
+        history_collection: collection_name.into(),
         max_bytes: 10000,
         ..Default::default()
     };
@@ -134,11 +134,11 @@ async fn test_create_model_with_wiremock() {
     let collection_name = new_id("history-collection");
 
     let create_schema = ConversationModelCreateSchema {
-        id: Some(model_id.clone()),
-        model_name: "openai/gpt-4".to_owned(),
-        api_key: Some("A-FAKE-BUT-VALID-LOOKING-KEY".to_owned()),
-        history_collection: collection_name.clone(),
-        system_prompt: Some("You are a helpful assistant.".to_owned()),
+        id: Some(model_id.as_str().into()),
+        model_name: "openai/gpt-4".into(),
+        api_key: Some("A-FAKE-BUT-VALID-LOOKING-KEY".into()),
+        history_collection: collection_name.as_str().into(),
+        system_prompt: Some("You are a helpful assistant.".into()),
         ..Default::default()
     };
 
@@ -180,7 +180,7 @@ async fn test_create_model_with_wiremock() {
     assert_eq!(created_model.history_collection, collection_name);
     assert_eq!(
         created_model.system_prompt,
-        Some("You are a helpful assistant.".to_owned())
+        Some("You are a helpful assistant.".into())
     );
 }
 
@@ -270,7 +270,7 @@ async fn test_update_single_model_with_wiremock() {
     let model_id = new_id("conv-model");
 
     let update_schema = ConversationModelUpdateSchema {
-        system_prompt: Some("A new, updated prompt.".to_owned()),
+        system_prompt: Some("A new, updated prompt.".into()),
         ..Default::default()
     };
 

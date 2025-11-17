@@ -10,14 +10,15 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
+use ::std::borrow::Cow;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
 /// struct for passing parameters to the method [`create_key`]
 #[derive(Clone, Debug)]
-pub struct CreateKeyParams {
+pub struct CreateKeyParams<'p> {
     /// The object that describes API key scope
-    pub api_key_schema: Option<models::ApiKeySchema>,
+    pub api_key_schema: Option<models::ApiKeySchema<'p>>,
 }
 
 /// struct for passing parameters to the method [`delete_key`]
@@ -70,7 +71,7 @@ pub enum GetKeysError {
 /// Create an API Key with fine-grain access control. You can restrict access on both a per-collection and per-action level. The generated key is returned only during creation. You want to store this key carefully in a secure place.
 pub async fn create_key(
     configuration: &configuration::Configuration,
-    params: &CreateKeyParams,
+    params: &CreateKeyParams<'_>,
 ) -> Result<models::ApiKey, Error<CreateKeyError>> {
     let uri_str = format!("{}/keys", configuration.base_path);
     let mut req_builder = configuration

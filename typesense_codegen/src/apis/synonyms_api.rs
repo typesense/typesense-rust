@@ -10,66 +10,67 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
+use ::std::borrow::Cow;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
 /// struct for passing parameters to the method [`delete_synonym_set`]
 #[derive(Clone, Debug)]
-pub struct DeleteSynonymSetParams {
+pub struct DeleteSynonymSetParams<'p> {
     /// The name of the synonym set to delete
-    pub synonym_set_name: String,
+    pub synonym_set_name: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`delete_synonym_set_item`]
 #[derive(Clone, Debug)]
-pub struct DeleteSynonymSetItemParams {
+pub struct DeleteSynonymSetItemParams<'p> {
     /// The name of the synonym set
-    pub synonym_set_name: String,
+    pub synonym_set_name: Cow<'p, str>,
     /// The id of the synonym item to delete
-    pub item_id: String,
+    pub item_id: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`retrieve_synonym_set`]
 #[derive(Clone, Debug)]
-pub struct RetrieveSynonymSetParams {
+pub struct RetrieveSynonymSetParams<'p> {
     /// The name of the synonym set to retrieve
-    pub synonym_set_name: String,
+    pub synonym_set_name: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`retrieve_synonym_set_item`]
 #[derive(Clone, Debug)]
-pub struct RetrieveSynonymSetItemParams {
+pub struct RetrieveSynonymSetItemParams<'p> {
     /// The name of the synonym set
-    pub synonym_set_name: String,
+    pub synonym_set_name: Cow<'p, str>,
     /// The id of the synonym item to retrieve
-    pub item_id: String,
+    pub item_id: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`retrieve_synonym_set_items`]
 #[derive(Clone, Debug)]
-pub struct RetrieveSynonymSetItemsParams {
+pub struct RetrieveSynonymSetItemsParams<'p> {
     /// The name of the synonym set to retrieve items for
-    pub synonym_set_name: String,
+    pub synonym_set_name: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`upsert_synonym_set`]
 #[derive(Clone, Debug)]
-pub struct UpsertSynonymSetParams {
+pub struct UpsertSynonymSetParams<'p> {
     /// The name of the synonym set to create/update
-    pub synonym_set_name: String,
+    pub synonym_set_name: Cow<'p, str>,
     /// The synonym set to be created/updated
-    pub synonym_set_create_schema: models::SynonymSetCreateSchema,
+    pub synonym_set_create_schema: models::SynonymSetCreateSchema<'p>,
 }
 
 /// struct for passing parameters to the method [`upsert_synonym_set_item`]
 #[derive(Clone, Debug)]
-pub struct UpsertSynonymSetItemParams {
+pub struct UpsertSynonymSetItemParams<'p> {
     /// The name of the synonym set
-    pub synonym_set_name: String,
+    pub synonym_set_name: Cow<'p, str>,
     /// The id of the synonym item to upsert
-    pub item_id: String,
+    pub item_id: Cow<'p, str>,
     /// The synonym item to be created/updated
-    pub synonym_item_schema: models::SynonymItemSchema,
+    pub synonym_item_schema: models::SynonymItemSchema<'p>,
 }
 
 /// struct for typed errors of method [`delete_synonym_set`]
@@ -138,7 +139,7 @@ pub enum UpsertSynonymSetItemError {
 /// Delete a specific synonym set by its name
 pub async fn delete_synonym_set(
     configuration: &configuration::Configuration,
-    params: &DeleteSynonymSetParams,
+    params: &DeleteSynonymSetParams<'_>,
 ) -> Result<models::SynonymSetDeleteSchema, Error<DeleteSynonymSetError>> {
     let uri_str = format!(
         "{}/synonym_sets/{synonymSetName}",
@@ -201,7 +202,7 @@ pub async fn delete_synonym_set(
 /// Delete a specific synonym item by its id
 pub async fn delete_synonym_set_item(
     configuration: &configuration::Configuration,
-    params: &DeleteSynonymSetItemParams,
+    params: &DeleteSynonymSetItemParams<'_>,
 ) -> Result<models::SynonymItemDeleteSchema, Error<DeleteSynonymSetItemError>> {
     let uri_str = format!(
         "{}/synonym_sets/{synonymSetName}/items/{itemId}",
@@ -265,8 +266,8 @@ pub async fn delete_synonym_set_item(
 /// Retrieve a specific synonym set by its name
 pub async fn retrieve_synonym_set(
     configuration: &configuration::Configuration,
-    params: &RetrieveSynonymSetParams,
-) -> Result<models::SynonymSetCreateSchema, Error<RetrieveSynonymSetError>> {
+    params: &RetrieveSynonymSetParams<'_>,
+) -> Result<models::SynonymSetCreateSchema<'static>, Error<RetrieveSynonymSetError>> {
     let uri_str = format!(
         "{}/synonym_sets/{synonymSetName}",
         configuration.base_path,
@@ -326,8 +327,8 @@ pub async fn retrieve_synonym_set(
 /// Retrieve a specific synonym item by its id
 pub async fn retrieve_synonym_set_item(
     configuration: &configuration::Configuration,
-    params: &RetrieveSynonymSetItemParams,
-) -> Result<models::SynonymItemSchema, Error<RetrieveSynonymSetItemError>> {
+    params: &RetrieveSynonymSetItemParams<'_>,
+) -> Result<models::SynonymItemSchema<'static>, Error<RetrieveSynonymSetItemError>> {
     let uri_str = format!(
         "{}/synonym_sets/{synonymSetName}/items/{itemId}",
         configuration.base_path,
@@ -388,8 +389,8 @@ pub async fn retrieve_synonym_set_item(
 /// Retrieve all synonym items in a set
 pub async fn retrieve_synonym_set_items(
     configuration: &configuration::Configuration,
-    params: &RetrieveSynonymSetItemsParams,
-) -> Result<Vec<models::SynonymItemSchema>, Error<RetrieveSynonymSetItemsError>> {
+    params: &RetrieveSynonymSetItemsParams<'_>,
+) -> Result<Vec<models::SynonymItemSchema<'static>>, Error<RetrieveSynonymSetItemsError>> {
     let uri_str = format!(
         "{}/synonym_sets/{synonymSetName}/items",
         configuration.base_path,
@@ -505,7 +506,7 @@ pub async fn retrieve_synonym_sets(
 /// Create or update a synonym set with the given name
 pub async fn upsert_synonym_set(
     configuration: &configuration::Configuration,
-    params: &UpsertSynonymSetParams,
+    params: &UpsertSynonymSetParams<'_>,
 ) -> Result<models::SynonymSetSchema, Error<UpsertSynonymSetError>> {
     let uri_str = format!(
         "{}/synonym_sets/{synonymSetName}",
@@ -567,8 +568,8 @@ pub async fn upsert_synonym_set(
 /// Create or update a synonym set item with the given id
 pub async fn upsert_synonym_set_item(
     configuration: &configuration::Configuration,
-    params: &UpsertSynonymSetItemParams,
-) -> Result<models::SynonymItemSchema, Error<UpsertSynonymSetItemError>> {
+    params: &UpsertSynonymSetItemParams<'_>,
+) -> Result<models::SynonymItemSchema<'static>, Error<UpsertSynonymSetItemError>> {
     let uri_str = format!(
         "{}/synonym_sets/{synonymSetName}/items/{itemId}",
         configuration.base_path,

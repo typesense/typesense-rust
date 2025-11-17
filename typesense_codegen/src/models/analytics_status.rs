@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -39,8 +40,8 @@ pub struct AnalyticsStatus {
 }
 
 impl AnalyticsStatus {
-    pub fn new() -> AnalyticsStatus {
-        AnalyticsStatus {
+    pub fn new() -> Self {
+        Self {
             popular_prefix_queries: None,
             nohits_prefix_queries: None,
             log_prefix_queries: None,

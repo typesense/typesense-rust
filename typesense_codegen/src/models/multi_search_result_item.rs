@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -59,8 +60,8 @@ pub struct MultiSearchResultItem<D> {
 }
 
 impl<D> MultiSearchResultItem<D> {
-    pub fn new() -> MultiSearchResultItem<D> {
-        MultiSearchResultItem {
+    pub fn new() -> Self {
+        Self {
             facet_counts: None,
             found: None,
             found_docs: None,

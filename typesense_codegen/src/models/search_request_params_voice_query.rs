@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -18,8 +19,8 @@ pub struct SearchRequestParamsVoiceQuery {
 }
 
 impl SearchRequestParamsVoiceQuery {
-    pub fn new() -> SearchRequestParamsVoiceQuery {
-        SearchRequestParamsVoiceQuery {
+    pub fn new() -> Self {
+        Self {
             transcribed_query: None,
         }
     }

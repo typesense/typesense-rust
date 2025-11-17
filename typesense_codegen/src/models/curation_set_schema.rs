@@ -9,13 +9,14 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct CurationSetSchema {
     /// Array of curation items
     #[serde(rename = "items")]
-    pub items: Vec<models::CurationItemCreateSchema>,
+    pub items: Vec<models::CurationItemCreateSchema<'static>>,
     /// Optional description for the curation set
     #[serde(rename = "description", skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
@@ -24,8 +25,8 @@ pub struct CurationSetSchema {
 }
 
 impl CurationSetSchema {
-    pub fn new(items: Vec<models::CurationItemCreateSchema>, name: String) -> CurationSetSchema {
-        CurationSetSchema {
+    pub fn new(items: Vec<models::CurationItemCreateSchema<'static>>, name: String) -> Self {
+        Self {
             items,
             description: None,
             name,

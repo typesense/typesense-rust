@@ -25,7 +25,7 @@ impl<'a> Models<'a> {
     /// * `schema` - A `ConversationModelCreateSchema` object describing the model.
     pub async fn create(
         &self,
-        schema: models::ConversationModelCreateSchema,
+        schema: models::ConversationModelCreateSchema<'_>,
     ) -> Result<
         models::ConversationModelSchema,
         Error<conversations_api::CreateConversationModelError>,

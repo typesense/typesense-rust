@@ -10,24 +10,25 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
+use ::std::borrow::Cow;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
 /// struct for passing parameters to the method [`delete_document`]
 #[derive(Clone, Debug)]
-pub struct DeleteDocumentParams {
+pub struct DeleteDocumentParams<'p> {
     /// The name of the collection to search for the document under
-    pub collection_name: String,
+    pub collection_name: Cow<'p, str>,
     /// The Document ID
-    pub document_id: String,
+    pub document_id: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`delete_documents`]
 #[derive(Clone, Debug)]
-pub struct DeleteDocumentsParams {
+pub struct DeleteDocumentsParams<'p> {
     /// The name of the collection to delete documents from
-    pub collection_name: String,
-    pub filter_by: Option<String>,
+    pub collection_name: Cow<'p, str>,
+    pub filter_by: Option<Cow<'p, str>>,
     pub batch_size: Option<i32>,
     pub ignore_not_found: Option<bool>,
     pub truncate: Option<bool>,
@@ -35,30 +36,30 @@ pub struct DeleteDocumentsParams {
 
 /// struct for passing parameters to the method [`export_documents`]
 #[derive(Clone, Debug)]
-pub struct ExportDocumentsParams {
+pub struct ExportDocumentsParams<'p> {
     /// The name of the collection
-    pub collection_name: String,
-    pub filter_by: Option<String>,
-    pub include_fields: Option<String>,
-    pub exclude_fields: Option<String>,
+    pub collection_name: Cow<'p, str>,
+    pub filter_by: Option<Cow<'p, str>>,
+    pub include_fields: Option<Cow<'p, str>>,
+    pub exclude_fields: Option<Cow<'p, str>>,
 }
 
 /// struct for passing parameters to the method [`get_document`]
 #[derive(Clone, Debug)]
-pub struct GetDocumentParams {
+pub struct GetDocumentParams<'p> {
     /// The name of the collection to search for the document under
-    pub collection_name: String,
+    pub collection_name: Cow<'p, str>,
     /// The Document ID
-    pub document_id: String,
+    pub document_id: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`import_documents`]
 #[derive(Clone, Debug)]
-pub struct ImportDocumentsParams {
+pub struct ImportDocumentsParams<'p> {
     /// The name of the collection
-    pub collection_name: String,
+    pub collection_name: Cow<'p, str>,
     /// The json array of documents or the JSONL file to import
-    pub body: String,
+    pub body: Cow<'p, str>,
     pub batch_size: Option<i32>,
     pub return_id: Option<bool>,
     pub remote_embedding_batch_size: Option<i32>,
@@ -69,47 +70,47 @@ pub struct ImportDocumentsParams {
 
 /// struct for passing parameters to the method [`index_document`]
 #[derive(Clone, Debug)]
-pub struct IndexDocumentParams {
+pub struct IndexDocumentParams<'p> {
     /// The name of the collection to add the document to
-    pub collection_name: String,
+    pub collection_name: Cow<'p, str>,
     /// The document object to be indexed
     pub body: serde_json::Value,
     /// Additional action to perform
-    pub action: Option<String>,
+    pub action: Option<Cow<'p, str>>,
     /// Dealing with Dirty Data
     pub dirty_values: Option<models::DirtyValues>,
 }
 
 /// struct for passing parameters to the method [`multi_search`]
 #[derive(Clone, Debug)]
-pub struct MultiSearchParams {
-    pub q: Option<String>,
-    pub query_by: Option<String>,
-    pub query_by_weights: Option<String>,
-    pub text_match_type: Option<String>,
-    pub prefix: Option<String>,
-    pub infix: Option<String>,
+pub struct MultiSearchParams<'p> {
+    pub q: Option<Cow<'p, str>>,
+    pub query_by: Option<Cow<'p, str>>,
+    pub query_by_weights: Option<Cow<'p, str>>,
+    pub text_match_type: Option<Cow<'p, str>>,
+    pub prefix: Option<Cow<'p, str>>,
+    pub infix: Option<Cow<'p, str>>,
     pub max_extra_prefix: Option<i32>,
     pub max_extra_suffix: Option<i32>,
-    pub filter_by: Option<String>,
-    pub sort_by: Option<String>,
-    pub facet_by: Option<String>,
+    pub filter_by: Option<Cow<'p, str>>,
+    pub sort_by: Option<Cow<'p, str>>,
+    pub facet_by: Option<Cow<'p, str>>,
     pub max_facet_values: Option<i32>,
-    pub facet_query: Option<String>,
-    pub num_typos: Option<String>,
+    pub facet_query: Option<Cow<'p, str>>,
+    pub num_typos: Option<Cow<'p, str>>,
     pub page: Option<i32>,
     pub per_page: Option<i32>,
     pub limit: Option<i32>,
     pub offset: Option<i32>,
-    pub group_by: Option<String>,
+    pub group_by: Option<Cow<'p, str>>,
     pub group_limit: Option<i32>,
     pub group_missing_values: Option<bool>,
-    pub include_fields: Option<String>,
-    pub exclude_fields: Option<String>,
-    pub highlight_full_fields: Option<String>,
+    pub include_fields: Option<Cow<'p, str>>,
+    pub exclude_fields: Option<Cow<'p, str>>,
+    pub highlight_full_fields: Option<Cow<'p, str>>,
     pub highlight_affix_num_tokens: Option<i32>,
-    pub highlight_start_tag: Option<String>,
-    pub highlight_end_tag: Option<String>,
+    pub highlight_start_tag: Option<Cow<'p, str>>,
+    pub highlight_end_tag: Option<Cow<'p, str>>,
     pub snippet_threshold: Option<i32>,
     pub drop_tokens_threshold: Option<i32>,
     pub drop_tokens_mode: Option<models::DropTokensMode>,
@@ -120,12 +121,12 @@ pub struct MultiSearchParams {
     pub enable_analytics: Option<bool>,
     pub synonym_prefix: Option<bool>,
     pub synonym_num_typos: Option<i32>,
-    pub pinned_hits: Option<String>,
-    pub hidden_hits: Option<String>,
-    pub override_tags: Option<String>,
-    pub highlight_fields: Option<String>,
+    pub pinned_hits: Option<Cow<'p, str>>,
+    pub hidden_hits: Option<Cow<'p, str>>,
+    pub override_tags: Option<Cow<'p, str>>,
+    pub highlight_fields: Option<Cow<'p, str>>,
     pub pre_segmented_query: Option<bool>,
-    pub preset: Option<String>,
+    pub preset: Option<Cow<'p, str>>,
     pub enable_overrides: Option<bool>,
     pub prioritize_exact_match: Option<bool>,
     pub prioritize_token_position: Option<bool>,
@@ -137,58 +138,58 @@ pub struct MultiSearchParams {
     pub cache_ttl: Option<i32>,
     pub min_len_1typo: Option<i32>,
     pub min_len_2typo: Option<i32>,
-    pub vector_query: Option<String>,
+    pub vector_query: Option<Cow<'p, str>>,
     pub remote_embedding_timeout_ms: Option<i32>,
     pub remote_embedding_num_tries: Option<i32>,
-    pub facet_strategy: Option<String>,
-    pub stopwords: Option<String>,
-    pub facet_return_parent: Option<String>,
-    pub voice_query: Option<String>,
+    pub facet_strategy: Option<Cow<'p, str>>,
+    pub stopwords: Option<Cow<'p, str>>,
+    pub facet_return_parent: Option<Cow<'p, str>>,
+    pub voice_query: Option<Cow<'p, str>>,
     pub conversation: Option<bool>,
-    pub conversation_model_id: Option<String>,
-    pub conversation_id: Option<String>,
-    pub multi_search_searches_parameter: Option<models::MultiSearchSearchesParameter>,
+    pub conversation_model_id: Option<Cow<'p, str>>,
+    pub conversation_id: Option<Cow<'p, str>>,
+    pub multi_search_searches_parameter: Option<models::MultiSearchSearchesParameter<'p>>,
 }
 
 /// struct for passing parameters to the method [`search_collection`]
 #[derive(Clone, Debug)]
-pub struct SearchCollectionParams {
+pub struct SearchCollectionParams<'p> {
     /// The name of the collection to search for the document under
-    pub collection_name: String,
-    pub q: Option<String>,
-    pub query_by: Option<String>,
+    pub collection_name: Cow<'p, str>,
+    pub q: Option<Cow<'p, str>>,
+    pub query_by: Option<Cow<'p, str>>,
     pub nl_query: Option<bool>,
-    pub nl_model_id: Option<String>,
-    pub query_by_weights: Option<String>,
-    pub text_match_type: Option<String>,
-    pub prefix: Option<String>,
-    pub infix: Option<String>,
+    pub nl_model_id: Option<Cow<'p, str>>,
+    pub query_by_weights: Option<Cow<'p, str>>,
+    pub text_match_type: Option<Cow<'p, str>>,
+    pub prefix: Option<Cow<'p, str>>,
+    pub infix: Option<Cow<'p, str>>,
     pub max_extra_prefix: Option<i32>,
     pub max_extra_suffix: Option<i32>,
-    pub filter_by: Option<String>,
+    pub filter_by: Option<Cow<'p, str>>,
     pub max_filter_by_candidates: Option<i32>,
-    pub sort_by: Option<String>,
-    pub facet_by: Option<String>,
+    pub sort_by: Option<Cow<'p, str>>,
+    pub facet_by: Option<Cow<'p, str>>,
     pub max_facet_values: Option<i32>,
-    pub facet_query: Option<String>,
-    pub num_typos: Option<String>,
+    pub facet_query: Option<Cow<'p, str>>,
+    pub num_typos: Option<Cow<'p, str>>,
     pub page: Option<i32>,
     pub per_page: Option<i32>,
     pub limit: Option<i32>,
     pub offset: Option<i32>,
-    pub group_by: Option<String>,
+    pub group_by: Option<Cow<'p, str>>,
     pub group_limit: Option<i32>,
     pub group_missing_values: Option<bool>,
-    pub include_fields: Option<String>,
-    pub exclude_fields: Option<String>,
-    pub highlight_full_fields: Option<String>,
+    pub include_fields: Option<Cow<'p, str>>,
+    pub exclude_fields: Option<Cow<'p, str>>,
+    pub highlight_full_fields: Option<Cow<'p, str>>,
     pub highlight_affix_num_tokens: Option<i32>,
-    pub highlight_start_tag: Option<String>,
-    pub highlight_end_tag: Option<String>,
+    pub highlight_start_tag: Option<Cow<'p, str>>,
+    pub highlight_end_tag: Option<Cow<'p, str>>,
     pub enable_highlight_v1: Option<bool>,
     pub enable_analytics: Option<bool>,
     pub snippet_threshold: Option<i32>,
-    pub synonym_sets: Option<String>,
+    pub synonym_sets: Option<Cow<'p, str>>,
     pub drop_tokens_threshold: Option<i32>,
     pub drop_tokens_mode: Option<models::DropTokensMode>,
     pub typo_tokens_threshold: Option<i32>,
@@ -197,13 +198,13 @@ pub struct SearchCollectionParams {
     pub enable_synonyms: Option<bool>,
     pub synonym_prefix: Option<bool>,
     pub synonym_num_typos: Option<i32>,
-    pub pinned_hits: Option<String>,
-    pub hidden_hits: Option<String>,
-    pub override_tags: Option<String>,
-    pub highlight_fields: Option<String>,
-    pub split_join_tokens: Option<String>,
+    pub pinned_hits: Option<Cow<'p, str>>,
+    pub hidden_hits: Option<Cow<'p, str>>,
+    pub override_tags: Option<Cow<'p, str>>,
+    pub highlight_fields: Option<Cow<'p, str>>,
+    pub split_join_tokens: Option<Cow<'p, str>>,
     pub pre_segmented_query: Option<bool>,
-    pub preset: Option<String>,
+    pub preset: Option<Cow<'p, str>>,
     pub enable_overrides: Option<bool>,
     pub prioritize_exact_match: Option<bool>,
     pub max_candidates: Option<i32>,
@@ -216,25 +217,25 @@ pub struct SearchCollectionParams {
     pub cache_ttl: Option<i32>,
     pub min_len_1typo: Option<i32>,
     pub min_len_2typo: Option<i32>,
-    pub vector_query: Option<String>,
+    pub vector_query: Option<Cow<'p, str>>,
     pub remote_embedding_timeout_ms: Option<i32>,
     pub remote_embedding_num_tries: Option<i32>,
-    pub facet_strategy: Option<String>,
-    pub stopwords: Option<String>,
-    pub facet_return_parent: Option<String>,
-    pub voice_query: Option<String>,
+    pub facet_strategy: Option<Cow<'p, str>>,
+    pub stopwords: Option<Cow<'p, str>>,
+    pub facet_return_parent: Option<Cow<'p, str>>,
+    pub voice_query: Option<Cow<'p, str>>,
     pub conversation: Option<bool>,
-    pub conversation_model_id: Option<String>,
-    pub conversation_id: Option<String>,
+    pub conversation_model_id: Option<Cow<'p, str>>,
+    pub conversation_id: Option<Cow<'p, str>>,
 }
 
 /// struct for passing parameters to the method [`update_document`]
 #[derive(Clone, Debug)]
-pub struct UpdateDocumentParams<B> {
+pub struct UpdateDocumentParams<'p, B> {
     /// The name of the collection to search for the document under
-    pub collection_name: String,
+    pub collection_name: Cow<'p, str>,
     /// The Document ID
-    pub document_id: String,
+    pub document_id: Cow<'p, str>,
     /// The document object with fields to be updated
     pub body: B,
     /// Dealing with Dirty Data
@@ -243,12 +244,12 @@ pub struct UpdateDocumentParams<B> {
 
 /// struct for passing parameters to the method [`update_documents`]
 #[derive(Clone, Debug)]
-pub struct UpdateDocumentsParams<B> {
+pub struct UpdateDocumentsParams<'p, B> {
     /// The name of the collection to update documents in
-    pub collection_name: String,
+    pub collection_name: Cow<'p, str>,
     /// The document fields to be updated
     pub body: B,
-    pub filter_by: Option<String>,
+    pub filter_by: Option<Cow<'p, str>>,
 }
 
 /// struct for typed errors of method [`delete_document`]
@@ -337,7 +338,7 @@ pub enum UpdateDocumentsError {
 /// Delete an individual document from a collection by using its ID.
 pub async fn delete_document(
     configuration: &configuration::Configuration,
-    params: &DeleteDocumentParams,
+    params: &DeleteDocumentParams<'_>,
 ) -> Result<serde_json::Value, Error<DeleteDocumentError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}/documents/{documentId}",
@@ -401,7 +402,7 @@ pub async fn delete_document(
 /// Delete a bunch of documents that match a specific filter condition. Use the `batch_size` parameter to control the number of documents that should deleted at a time. A larger value will speed up deletions, but will impact performance of other operations running on the server.
 pub async fn delete_documents(
     configuration: &configuration::Configuration,
-    params: &DeleteDocumentsParams,
+    params: &DeleteDocumentsParams<'_>,
 ) -> Result<models::DeleteDocuments200Response, Error<DeleteDocumentsError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}/documents",
@@ -476,7 +477,7 @@ pub async fn delete_documents(
 /// Export all documents in a collection in JSON lines format.
 pub async fn export_documents(
     configuration: &configuration::Configuration,
-    params: &ExportDocumentsParams,
+    params: &ExportDocumentsParams<'_>,
 ) -> Result<String, Error<ExportDocumentsError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}/documents/export",
@@ -541,7 +542,7 @@ pub async fn export_documents(
 /// Fetch an individual document from a collection by using its ID.
 pub async fn get_document(
     configuration: &configuration::Configuration,
-    params: &GetDocumentParams,
+    params: &GetDocumentParams<'_>,
 ) -> Result<serde_json::Value, Error<GetDocumentError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}/documents/{documentId}",
@@ -603,7 +604,7 @@ pub async fn get_document(
 /// The documents to be imported must be formatted in a newline delimited JSON structure. You can feed the output file from a Typesense export operation directly as import.
 pub async fn import_documents(
     configuration: &configuration::Configuration,
-    params: &ImportDocumentsParams,
+    params: &ImportDocumentsParams<'_>,
 ) -> Result<String, Error<ImportDocumentsError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}/documents/import",
@@ -646,7 +647,7 @@ pub async fn import_documents(
     };
     req_builder = req_builder
         .header(reqwest::header::CONTENT_TYPE, "text/plain")
-        .body(params.body.to_owned());
+        .body(params.body.clone().into_owned());
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;
@@ -683,7 +684,7 @@ pub async fn import_documents(
 /// A document to be indexed in a given collection must conform to the schema of the collection.
 pub async fn index_document(
     configuration: &configuration::Configuration,
-    params: &IndexDocumentParams,
+    params: &IndexDocumentParams<'_>,
 ) -> Result<serde_json::Value, Error<IndexDocumentError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}/documents",
@@ -753,7 +754,7 @@ pub async fn index_document(
 /// This is especially useful to avoid round-trip network latencies incurred otherwise if each of these requests are sent in separate HTTP requests. You can also use this feature to do a federated search across multiple collections in a single HTTP request.
 pub async fn multi_search(
     configuration: &configuration::Configuration,
-    params: &MultiSearchParams,
+    params: &MultiSearchParams<'_>,
 ) -> Result<serde_json::Value, Error<MultiSearchError>> {
     let uri_str = format!("{}/multi_search", configuration.base_path);
     let mut req_builder = configuration
@@ -1015,7 +1016,7 @@ pub async fn multi_search(
 /// Search for documents in a collection that match the search criteria.
 pub async fn search_collection<D: for<'de> serde::Deserialize<'de> + Serialize>(
     configuration: &configuration::Configuration,
-    params: &SearchCollectionParams,
+    params: &SearchCollectionParams<'_>,
 ) -> Result<models::SearchResult<D>, Error<SearchCollectionError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}/documents/search",
@@ -1299,7 +1300,7 @@ pub async fn search_collection<D: for<'de> serde::Deserialize<'de> + Serialize>(
 /// Update an individual document from a collection by using its ID. The update can be partial.
 pub async fn update_document<B: Serialize>(
     configuration: &configuration::Configuration,
-    params: &UpdateDocumentParams<B>,
+    params: &UpdateDocumentParams<'_, B>,
 ) -> Result<serde_json::Value, Error<UpdateDocumentError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}/documents/{documentId}",
@@ -1367,7 +1368,7 @@ pub async fn update_document<B: Serialize>(
 /// The filter_by query parameter is used to filter to specify a condition against which the documents are matched. The request body contains the fields that should be updated for any documents that match the filter condition. This endpoint is only available if the Typesense server is version `0.25.0.rc12` or later.
 pub async fn update_documents<B: Serialize>(
     configuration: &configuration::Configuration,
-    params: &UpdateDocumentsParams<B>,
+    params: &UpdateDocumentsParams<'_, B>,
 ) -> Result<models::UpdateDocuments200Response, Error<UpdateDocumentsError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}/documents",

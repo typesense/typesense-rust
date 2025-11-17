@@ -3,10 +3,12 @@ use clap::{Parser, ValueEnum};
 use std::{env, fs, process::Command};
 mod add_vendor_attributes;
 mod preprocess_openapi;
+#[cfg(feature = "typesense")]
 mod test_clean;
 mod vendor_attributes;
 
 use preprocess_openapi::preprocess_openapi_file;
+#[cfg(feature = "typesense")]
 use test_clean::test_clean;
 
 const SPEC_URL: &str =
@@ -50,12 +52,14 @@ enum Task {
     /// Preprocesses fetched OpenAPI spec file into a new one
     Preprocess,
     /// Clean up test artifacts, e.g., collections
+    #[cfg(feature = "typesense")]
     TestClean,
 }
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
+    #[cfg(feature = "typesense")]
     let rt = tokio::runtime::Runtime::new().unwrap();
 
     for task in cli.tasks {
@@ -65,6 +69,7 @@ fn main() -> Result<()> {
             Task::Fetch => task_fetch_api_spec()?,
             Task::Preprocess => preprocess_openapi_file(INPUT_SPEC_FILE, OUTPUT_PREPROCESSED_FILE)
                 .expect("Preprocess failed, aborting!"),
+            #[cfg(feature = "typesense")]
             Task::TestClean => {
                 let test_args = cli.test_args.clone();
                 let is_wasm = cli.wasm;

@@ -10,30 +10,31 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
+use ::std::borrow::Cow;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
 /// struct for passing parameters to the method [`delete_stopwords_set`]
 #[derive(Clone, Debug)]
-pub struct DeleteStopwordsSetParams {
+pub struct DeleteStopwordsSetParams<'p> {
     /// The ID of the stopwords set to delete.
-    pub set_id: String,
+    pub set_id: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`retrieve_stopwords_set`]
 #[derive(Clone, Debug)]
-pub struct RetrieveStopwordsSetParams {
+pub struct RetrieveStopwordsSetParams<'p> {
     /// The ID of the stopwords set to retrieve.
-    pub set_id: String,
+    pub set_id: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`upsert_stopwords_set`]
 #[derive(Clone, Debug)]
-pub struct UpsertStopwordsSetParams {
+pub struct UpsertStopwordsSetParams<'p> {
     /// The ID of the stopwords set to upsert.
-    pub set_id: String,
+    pub set_id: Cow<'p, str>,
     /// The stopwords set to upsert.
-    pub stopwords_set_upsert_schema: models::StopwordsSetUpsertSchema,
+    pub stopwords_set_upsert_schema: models::StopwordsSetUpsertSchema<'p>,
 }
 
 /// struct for typed errors of method [`delete_stopwords_set`]
@@ -70,7 +71,7 @@ pub enum UpsertStopwordsSetError {
 /// Permanently deletes a stopwords set, given it's name.
 pub async fn delete_stopwords_set(
     configuration: &configuration::Configuration,
-    params: &DeleteStopwordsSetParams,
+    params: &DeleteStopwordsSetParams<'_>,
 ) -> Result<models::DeleteStopwordsSet200Response, Error<DeleteStopwordsSetError>> {
     let uri_str = format!(
         "{}/stopwords/{setId}",
@@ -133,7 +134,7 @@ pub async fn delete_stopwords_set(
 /// Retrieve the details of a stopwords set, given it's name.
 pub async fn retrieve_stopwords_set(
     configuration: &configuration::Configuration,
-    params: &RetrieveStopwordsSetParams,
+    params: &RetrieveStopwordsSetParams<'_>,
 ) -> Result<models::StopwordsSetRetrieveSchema, Error<RetrieveStopwordsSetError>> {
     let uri_str = format!(
         "{}/stopwords/{setId}",
@@ -250,7 +251,7 @@ pub async fn retrieve_stopwords_sets(
 /// When an analytics rule is created, we give it a name and describe the type, the source collections and the destination collection.
 pub async fn upsert_stopwords_set(
     configuration: &configuration::Configuration,
-    params: &UpsertStopwordsSetParams,
+    params: &UpsertStopwordsSetParams<'_>,
 ) -> Result<models::StopwordsSetSchema, Error<UpsertStopwordsSetError>> {
     let uri_str = format!(
         "{}/stopwords/{setId}",

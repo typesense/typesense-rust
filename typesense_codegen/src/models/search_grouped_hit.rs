@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -23,11 +24,8 @@ pub struct SearchGroupedHit<D> {
 }
 
 impl<D> SearchGroupedHit<D> {
-    pub fn new(
-        group_key: Vec<serde_json::Value>,
-        hits: Vec<models::SearchResultHit<D>>,
-    ) -> SearchGroupedHit<D> {
-        SearchGroupedHit {
+    pub fn new(group_key: Vec<serde_json::Value>, hits: Vec<models::SearchResultHit<D>>) -> Self {
+        Self {
             found: None,
             group_key,
             hits,

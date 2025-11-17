@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -30,8 +31,8 @@ pub struct ApiKey {
 }
 
 impl ApiKey {
-    pub fn new(description: String, actions: Vec<String>, collections: Vec<String>) -> ApiKey {
-        ApiKey {
+    pub fn new(description: String, actions: Vec<String>, collections: Vec<String>) -> Self {
+        Self {
             value: None,
             description,
             actions,

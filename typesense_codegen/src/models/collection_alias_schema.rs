@@ -9,17 +9,18 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct CollectionAliasSchema {
+pub struct CollectionAliasSchema<'a> {
     /// Name of the collection you wish to map the alias to
     #[serde(rename = "collection_name")]
-    pub collection_name: String,
+    pub collection_name: Cow<'a, str>,
 }
 
-impl CollectionAliasSchema {
-    pub fn new(collection_name: String) -> CollectionAliasSchema {
-        CollectionAliasSchema { collection_name }
+impl<'a> CollectionAliasSchema<'a> {
+    pub fn new(collection_name: Cow<'a, str>) -> Self {
+        Self { collection_name }
     }
 }

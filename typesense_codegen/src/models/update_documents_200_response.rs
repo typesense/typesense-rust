@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -19,7 +20,7 @@ pub struct UpdateDocuments200Response {
 }
 
 impl UpdateDocuments200Response {
-    pub fn new(num_updated: i32) -> UpdateDocuments200Response {
-        UpdateDocuments200Response { num_updated }
+    pub fn new(num_updated: i32) -> Self {
+        Self { num_updated }
     }
 }

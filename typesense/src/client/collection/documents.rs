@@ -9,6 +9,7 @@ use crate::{
     models::{DocumentIndexParameters, SearchResult},
     traits,
 };
+use ::std::borrow::Cow;
 use serde::{Serialize, de::DeserializeOwned};
 use typesense_codegen::{
     apis::documents_api,
@@ -22,26 +23,26 @@ use typesense_codegen::{
 /// This struct is generic over the document type `D`. If created via `client.collection_schemaless(...)`,
 /// `D` defaults to `serde_json::Value`. If created via `client.collection_named::<MyType>(...)`,
 /// `D` will be `MyType`.
-pub struct Documents<'c, 'n, D = serde_json::Value>
+pub struct Documents<'d, D = serde_json::Value>
 where
     D: DeserializeOwned + Serialize,
 {
-    client: &'c Client,
-    collection_name: &'n str,
-    _phantom: std::marker::PhantomData<D>,
+    client: &'d Client,
+    collection_name: &'d str,
+    _phantom: core::marker::PhantomData<D>,
 }
 
-impl<'c, 'n, D> Documents<'c, 'n, D>
+impl<'d, D> Documents<'d, D>
 where
     D: DeserializeOwned + Serialize,
 {
     /// Creates a new `Documents` instance.
     #[inline]
-    pub(super) fn new(client: &'c Client, collection_name: &'n str) -> Self {
+    pub(super) fn new(client: &'d Client, collection_name: &'d str) -> Self {
         Self {
             client,
             collection_name,
-            _phantom: std::marker::PhantomData,
+            _phantom: core::marker::PhantomData,
         }
     }
 
@@ -56,9 +57,9 @@ where
         params: Option<DocumentIndexParameters>,
     ) -> Result<serde_json::Value, Error<documents_api::IndexDocumentError>> {
         let params = documents_api::IndexDocumentParams {
-            collection_name: self.collection_name.to_owned(),
+            collection_name: self.collection_name.into(),
             body: document,
-            action: Some(action.to_owned()),
+            action: Some(action.into()),
             dirty_values: params.and_then(|d| d.dirty_values), // Or expose this as an argument if needed
         };
         execute_wrapper!(self, documents_api::index_document, params)
@@ -75,12 +76,12 @@ where
     /// * `params` - An `ImportDocumentsParameters` struct containing options like `action` and `batch_size`.
     pub async fn import_jsonl(
         &self,
-        documents_jsonl: String,
+        documents_jsonl: impl Into<Cow<'_, str>>,
         params: ImportDocumentsParameters,
     ) -> Result<String, Error<documents_api::ImportDocumentsError>> {
         let params = documents_api::ImportDocumentsParams {
-            body: documents_jsonl,
-            collection_name: self.collection_name.to_owned(),
+            body: documents_jsonl.into(),
+            collection_name: self.collection_name.into(),
 
             action: params.action,
             batch_size: params.batch_size,
@@ -98,10 +99,10 @@ where
     /// * `params` - An `ExportDocumentsParameters` struct containing options like `filter_by` and `include_fields`.
     pub async fn export_jsonl(
         &self,
-        params: ExportDocumentsParameters,
+        params: ExportDocumentsParameters<'_>,
     ) -> Result<String, Error<documents_api::ExportDocumentsError>> {
         let params = documents_api::ExportDocumentsParams {
-            collection_name: self.collection_name.to_owned(),
+            collection_name: self.collection_name.into(),
             exclude_fields: params.exclude_fields,
             filter_by: params.filter_by,
             include_fields: params.include_fields,
@@ -115,11 +116,11 @@ where
     /// * `params` - A `DeleteDocumentsParameters` describing the conditions for deleting documents.
     pub async fn delete(
         &self,
-        params: DeleteDocumentsParameters,
+        params: DeleteDocumentsParameters<'_>,
     ) -> Result<raw_models::DeleteDocuments200Response, Error<documents_api::DeleteDocumentsError>>
     {
         let params = documents_api::DeleteDocumentsParams {
-            collection_name: self.collection_name.to_owned(),
+            collection_name: self.collection_name.into(),
             filter_by: Some(params.filter_by),
             batch_size: params.batch_size,
             ignore_not_found: params.ignore_not_found,
@@ -135,10 +136,10 @@ where
     /// * `params` - A `SearchParameters` struct containing all search parameters.
     pub async fn search(
         &self,
-        params: raw_models::SearchParameters,
+        params: raw_models::SearchParameters<'_>,
     ) -> Result<SearchResult<D>, Error<documents_api::SearchCollectionError>> {
         let search_params = documents_api::SearchCollectionParams {
-            collection_name: self.collection_name.to_owned(),
+            collection_name: self.collection_name.into(),
 
             // Map all corresponding fields directly.
             cache_ttl: params.cache_ttl,
@@ -217,7 +218,7 @@ where
     }
 }
 
-impl<'c, 'n, D> Documents<'c, 'n, D>
+impl<'d, D> Documents<'d, D>
 where
     D: traits::Document,
 {
@@ -266,11 +267,11 @@ where
     pub async fn update(
         &self,
         document: &D::Partial,
-        params: UpdateDocumentsParameters,
+        params: UpdateDocumentsParameters<'_>,
     ) -> Result<raw_models::UpdateDocuments200Response, Error<documents_api::UpdateDocumentsError>>
     {
         let params = documents_api::UpdateDocumentsParams {
-            collection_name: self.collection_name.to_owned(),
+            collection_name: self.collection_name.into(),
             filter_by: params.filter_by,
             body: document,
         };

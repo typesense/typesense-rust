@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -20,8 +21,8 @@ pub struct MultiSearchResult<D> {
 }
 
 impl<D> MultiSearchResult<D> {
-    pub fn new(results: Vec<models::MultiSearchResultItem<D>>) -> MultiSearchResult<D> {
-        MultiSearchResult {
+    pub fn new(results: Vec<models::MultiSearchResultItem<D>>) -> Self {
+        Self {
             results,
             conversation: None,
         }

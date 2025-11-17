@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -18,7 +19,7 @@ pub struct DeleteStopwordsSet200Response {
 }
 
 impl DeleteStopwordsSet200Response {
-    pub fn new(id: String) -> DeleteStopwordsSet200Response {
-        DeleteStopwordsSet200Response { id }
+    pub fn new(id: String) -> Self {
+        Self { id }
     }
 }
