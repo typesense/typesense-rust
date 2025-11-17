@@ -107,6 +107,9 @@ struct KitchenSinkProduct {
 
     hash_map_vec: Vec<HashMap<String, i32>>,
     btree_map_vec: Vec<BTreeMap<String, i32>>,
+    // optional = false should override the Option<T> type
+    #[typesense(optional = false)]
+    optional_field: Option<i32>,
 }
 
 #[test]
@@ -132,6 +135,8 @@ fn derived_document_handles_all_attributes() {
 
         { "name": "hash_map_vec", "type": "object[]" },
         { "name": "btree_map_vec", "type": "object[]" },
+
+        { "name": "optional_field", "type": "int32", "optional": false },
       ],
       "default_sorting_field": "renamed_price",
       "token_separators": ["-", "/"],
