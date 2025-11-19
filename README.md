@@ -76,6 +76,7 @@ let result = client
 | `num_dim`     | integer | Set this to a non-zero value to treat a field of type `float[]` as a vector field.                                    |
 | `locale`      | string  | Locale for text processing                                                                                            |
 | `vec_dist`    | string  | Distance metric to be used for vector search                                                                          |
+| `reference`   | string  | Name of a field in another collection to be used for JOINs                                                            |
 | `type`        | string  | Override the field type in Typesense                                                                                  |
 | `rename`      | string  | Rename the field in the Typesense schema                                                                              |
 | `flatten`     | --      | Generate Typesense field schemas for a nested struct                                                                  |
