@@ -150,7 +150,6 @@ use ::std::{
         atomic::{AtomicBool, AtomicUsize, Ordering},
     },
 };
-use debug_unsafe::{option::OptionUnwrapper, slice::SliceGetter};
 use serde::{Serialize, de::DeserializeOwned};
 use typesense_codegen::apis::{self, configuration};
 use web_time::{Duration, Instant};
@@ -258,7 +257,7 @@ impl Client {
                 .with(RetryTransientMiddleware::new_with_policy(retry_policy))
                 .build();
 
-                if url.len() > 1 && url.chars().last().unwrap_safe_unchecked() == '/' {
+                if url.len() > 1 && matches!(url.chars().last(), Some('/')) {
                     url.pop();
                 }
 
@@ -295,8 +294,10 @@ impl Client {
     /// Selects the next node to use for a request based on health and priority.
     fn get_next_node(&self) -> &Node {
         // if only one node (including nearest)
-        if self.nodes.len() == 1 {
-            return self.nodes.first().unwrap_safe_unchecked();
+        if self.nodes.len() == 1
+            && let Some(first) = self.nodes.first()
+        {
+            return first;
         }
 
         let (nodes_len, mut index) = if self.is_nearest_node_set {
@@ -310,7 +311,7 @@ impl Client {
         };
 
         for _ in 0..self.nodes.len() {
-            let node = self.nodes.get_safe_unchecked(index);
+            let node = &self.nodes[index];
 
             if node.is_healthy.load(Ordering::Relaxed)
                 || node.last_accessed.read().unwrap().elapsed() >= self.healthcheck_interval
@@ -323,7 +324,7 @@ impl Client {
         // If all nodes are unhealthy and not due for a check, just pick the next one in the round-robin.
         // This gives it a chance to prove it has recovered.
         index = self.current_node_index.load(Ordering::Relaxed) % self.nodes.len();
-        self.nodes.get_safe_unchecked(index)
+        &self.nodes[index]
     }
 
     /// For use in legacy APIs.

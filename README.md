@@ -5,7 +5,149 @@
 
 Community-maintained Rust client library for Typesense | Work In Progress &amp; Help Wanted!
 
-### Development
+## Collection schema derive
+
+Apply `#[derive(Typesense)]` to any struct you want to index in Typesense. The macro generates:
+
+- a `collection_schema()` definition based on your struct fields and attributes.
+- a `{struct_name}Partial` struct for partial updates of Typesense documents.
+
+### Quick example
+
+```rust
+#[derive(Typesense, Serialize, Deserialize)]
+#[typesense(
+    collection_name = "mega_products",
+    default_sorting_field = "price",
+    symbols_to_index = ["+", "-"]
+)]
+struct MegaProduct {
+    id: String,
+
+    #[typesense(infix, stem)]
+    title: String,
+
+    #[typesense(facet)]
+    brand: String,
+
+    #[typesense(sort)]
+    price: f32,
+
+    #[typesense(rename = "product_name", sort = true)]
+    #[serde(rename = "product_name")]
+    official_name: String,
+}
+
+// update a Typesense document using the generated partial struct
+let update_payload = MegaProductPartial {
+    price: Some(25.99),
+    ..Default::default()
+};
+
+let result = client
+    .collection::<MegaProduct>()
+    .document("product-1")
+    .update(&update_payload, None)
+    .await;
+```
+
+### Supported collection parameters
+
+| Key                     | Type            | Description / Notes                                                                                                                         |
+| ----------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `collection_name`       | string          | Defaults to the struct name in lowercase                                                                                                    |
+| `default_sorting_field` | string          | Must match the field name after `rename` if used                                                                                            |
+| `enable_nested_fields`  | bool            | Enables Typesense nested field support                                                                                                      |
+| `token_separators`      | list of strings | List of symbols or special characters to be used for splitting the text into individual words in addition to space and new-line characters. |
+| `symbols_to_index`      | list of strings | List of symbols or special characters to be indexed.                                                                                        |
+
+### Supported field parameter
+
+| Attribute     | Type    | Description / Notes                                                                                                   |
+| ------------- | ------- | --------------------------------------------------------------------------------------------------------------------- |
+| `facet`       | bool    | Enable faceting for the field                                                                                         |
+| `sort`        | bool    | Marks the field as sortable                                                                                           |
+| `index`       | bool    | Whether to index the field in memmory                                                                                 |
+| `store`       | bool    | Whether to store the field on disk                                                                                    |
+| `infix`       | bool    | Enables infix search                                                                                                  |
+| `stem`        | bool    | Values are stemmed before indexing in-memory.                                                                         |
+| `range_index` | bool    | Enables an index optimized for range filtering on numerical fields                                                    |
+| `optional`    | bool    | Fields with type `Option<T>` are optional in the generated Typesense schema. Setting this attribute will override it. |
+| `num_dim`     | integer | Set this to a non-zero value to treat a field of type `float[]` as a vector field.                                    |
+| `locale`      | string  | Locale for text processing                                                                                            |
+| `vec_dist`    | string  | Distance metric to be used for vector search                                                                          |
+| `type`        | string  | Override the field type in Typesense                                                                                  |
+| `rename`      | string  | Rename the field in the Typesense schema                                                                              |
+| `flatten`     | --      | Generate Typesense field schemas for a nested struct                                                                  |
+| `skip`        | --      | Skips this field in the Typesense schema                                                                              |
+
+All boolean attributes can be either set to `true` using shorthand flags or explicitly set a value `=true/false`. Example:
+
+```rust
+#[typesense(facet)]
+brand: String,
+
+#[typesense(facet = false)]
+weight: f32,
+```
+
+#### Indexing nested objects
+
+When you have fields that are also structs, you need to mark all structs with `#[derive(Typesense)]`. The generated Typesense schema for those fields will have type of `object` (or `object[]` if the field is a vector).
+
+Applying `#[typesense(flatten)]` on a field will expand the nested field schemas into the parent.
+
+```rust
+#[typesense(flatten)]
+supplier: SupplierInfo,
+```
+
+If the field has a rename:
+
+```rust
+#[typesense(flatten, rename = "logistics_data")]
+logistics: Logistics,
+```
+
+flattened fields become `logistics_data.field_name`.
+
+`#[typesense(flatten, skip)]` produces only the flattened fields and omits the parent object field.
+
+#### Nested objects example:
+
+```rust
+#[derive(Typesense, Serialize, Deserialize)]
+struct ProductDetails {
+    #[typesense(facet)]
+    part_number: String,
+    #[typesense(skip)]
+    description: String,
+}
+
+#[derive(Typesense, Serialize, Deserialize)]
+#[typesense(
+    collection_name = "mega_products",
+)]
+struct MegaProduct {
+    #[typesense(flatten)]
+    details: ProductDetails,
+}
+```
+
+Will generate this schema:
+
+```jsonc
+{
+    "name": "mega_products"
+    "fields": [
+        {"name": "details", "type": "object"}, // <-- `#[typesense(flatten, skip)]` will omit this field
+        {"name": "details.part_number", "type": "string", "facet": true}
+        // `description` is skipped
+    ],
+}
+```
+
+## Development
 
 When updating or adding new parameters and endpoints, make changes directly in the [Typesense API spec repository](https://github.com/typesense/typesense-api-spec).
 

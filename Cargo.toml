@@ -22,7 +22,6 @@ anyhow = "1"
 base64 = "0.22"
 bon = "3"
 clap = { version = "4", features = ["derive"] }
-debug_unsafe = "0.1"
 hmac = "0.12"
 indexmap = { version = "2", features = ["serde"] }
 reqwest-retry = "0.7"
