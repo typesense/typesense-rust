@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -24,8 +25,8 @@ pub struct FacetCountsCountsInner {
 }
 
 impl FacetCountsCountsInner {
-    pub fn new() -> FacetCountsCountsInner {
-        FacetCountsCountsInner {
+    pub fn new() -> Self {
+        Self {
             count: None,
             highlighted: None,
             value: None,

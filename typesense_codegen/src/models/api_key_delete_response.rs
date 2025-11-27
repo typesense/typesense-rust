@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -19,7 +20,7 @@ pub struct ApiKeyDeleteResponse {
 }
 
 impl ApiKeyDeleteResponse {
-    pub fn new(id: i64) -> ApiKeyDeleteResponse {
-        ApiKeyDeleteResponse { id }
+    pub fn new(id: i64) -> Self {
+        Self { id }
     }
 }

@@ -35,7 +35,7 @@ impl<'c> Keys<'c> {
     #[inline]
     pub async fn create(
         &self,
-        schema: models::ApiKeySchema,
+        schema: models::ApiKeySchema<'_>,
     ) -> Result<models::ApiKey, Error<keys_api::CreateKeyError>> {
         let params = keys_api::CreateKeyParams {
             api_key_schema: Some(schema),
@@ -55,7 +55,7 @@ impl<'c> Keys<'c> {
     pub fn generate_scoped_search_key(
         &self,
         key: impl AsRef<str>,
-        params: &ScopedKeyParameters,
+        params: &ScopedKeyParameters<'_>,
     ) -> anyhow::Result<String> {
         let params = serde_json::to_string(params)?;
 

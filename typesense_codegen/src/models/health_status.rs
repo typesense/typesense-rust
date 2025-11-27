@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -18,7 +19,7 @@ pub struct HealthStatus {
 }
 
 impl HealthStatus {
-    pub fn new(ok: bool) -> HealthStatus {
-        HealthStatus { ok }
+    pub fn new(ok: bool) -> Self {
+        Self { ok }
     }
 }

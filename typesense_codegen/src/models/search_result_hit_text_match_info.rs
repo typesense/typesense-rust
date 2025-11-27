@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -30,8 +31,8 @@ pub struct SearchResultHitTextMatchInfo {
 }
 
 impl SearchResultHitTextMatchInfo {
-    pub fn new() -> SearchResultHitTextMatchInfo {
-        SearchResultHitTextMatchInfo {
+    pub fn new() -> Self {
+        Self {
             best_field_score: None,
             best_field_weight: None,
             fields_matched: None,

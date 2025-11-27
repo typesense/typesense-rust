@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -53,8 +54,8 @@ pub struct SearchResult<D> {
 }
 
 impl<D> SearchResult<D> {
-    pub fn new() -> SearchResult<D> {
-        SearchResult {
+    pub fn new() -> Self {
+        Self {
             facet_counts: None,
             found: None,
             found_docs: None,

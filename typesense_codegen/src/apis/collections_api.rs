@@ -10,68 +10,69 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
+use ::std::borrow::Cow;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
 /// struct for passing parameters to the method [`create_collection`]
 #[derive(Clone, Debug)]
-pub struct CreateCollectionParams {
+pub struct CreateCollectionParams<'p> {
     /// The collection object to be created
-    pub collection_schema: models::CollectionSchema,
+    pub collection_schema: models::CollectionSchema<'p>,
 }
 
 /// struct for passing parameters to the method [`delete_alias`]
 #[derive(Clone, Debug)]
-pub struct DeleteAliasParams {
+pub struct DeleteAliasParams<'p> {
     /// The name of the alias to delete
-    pub alias_name: String,
+    pub alias_name: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`delete_collection`]
 #[derive(Clone, Debug)]
-pub struct DeleteCollectionParams {
+pub struct DeleteCollectionParams<'p> {
     /// The name of the collection to delete
-    pub collection_name: String,
+    pub collection_name: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`get_alias`]
 #[derive(Clone, Debug)]
-pub struct GetAliasParams {
+pub struct GetAliasParams<'p> {
     /// The name of the alias to retrieve
-    pub alias_name: String,
+    pub alias_name: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`get_collection`]
 #[derive(Clone, Debug)]
-pub struct GetCollectionParams {
+pub struct GetCollectionParams<'p> {
     /// The name of the collection to retrieve
-    pub collection_name: String,
+    pub collection_name: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`get_collections`]
 #[derive(Clone, Debug)]
-pub struct GetCollectionsParams {
-    pub exclude_fields: Option<String>,
+pub struct GetCollectionsParams<'p> {
+    pub exclude_fields: Option<Cow<'p, str>>,
     pub limit: Option<i32>,
     pub offset: Option<i32>,
 }
 
 /// struct for passing parameters to the method [`update_collection`]
 #[derive(Clone, Debug)]
-pub struct UpdateCollectionParams {
+pub struct UpdateCollectionParams<'p> {
     /// The name of the collection to update
-    pub collection_name: String,
+    pub collection_name: Cow<'p, str>,
     /// The document object with fields to be updated
     pub collection_update_schema: models::CollectionUpdateSchema,
 }
 
 /// struct for passing parameters to the method [`upsert_alias`]
 #[derive(Clone, Debug)]
-pub struct UpsertAliasParams {
+pub struct UpsertAliasParams<'p> {
     /// The name of the alias to create/update
-    pub alias_name: String,
+    pub alias_name: Cow<'p, str>,
     /// Collection alias to be created/updated
-    pub collection_alias_schema: Option<models::CollectionAliasSchema>,
+    pub collection_alias_schema: Option<models::CollectionAliasSchema<'p>>,
 }
 
 /// struct for typed errors of method [`create_collection`]
@@ -150,7 +151,7 @@ pub enum UpsertAliasError {
 /// When a collection is created, we give it a name and describe the fields that will be indexed from the documents added to the collection.
 pub async fn create_collection(
     configuration: &configuration::Configuration,
-    params: &CreateCollectionParams,
+    params: &CreateCollectionParams<'_>,
 ) -> Result<models::CollectionResponse, Error<CreateCollectionError>> {
     let uri_str = format!("{}/collections", configuration.base_path);
     let mut req_builder = configuration
@@ -209,7 +210,7 @@ pub async fn create_collection(
 
 pub async fn delete_alias(
     configuration: &configuration::Configuration,
-    params: &DeleteAliasParams,
+    params: &DeleteAliasParams<'_>,
 ) -> Result<models::CollectionAlias, Error<DeleteAliasError>> {
     let uri_str = format!(
         "{}/aliases/{aliasName}",
@@ -272,7 +273,7 @@ pub async fn delete_alias(
 /// Permanently drops a collection. This action cannot be undone. For large collections, this might have an impact on read latencies.
 pub async fn delete_collection(
     configuration: &configuration::Configuration,
-    params: &DeleteCollectionParams,
+    params: &DeleteCollectionParams<'_>,
 ) -> Result<models::CollectionResponse, Error<DeleteCollectionError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}",
@@ -335,7 +336,7 @@ pub async fn delete_collection(
 /// Find out which collection an alias points to by fetching it
 pub async fn get_alias(
     configuration: &configuration::Configuration,
-    params: &GetAliasParams,
+    params: &GetAliasParams<'_>,
 ) -> Result<models::CollectionAlias, Error<GetAliasError>> {
     let uri_str = format!(
         "{}/aliases/{aliasName}",
@@ -452,7 +453,7 @@ pub async fn get_aliases(
 /// Retrieve the details of a collection, given its name.
 pub async fn get_collection(
     configuration: &configuration::Configuration,
-    params: &GetCollectionParams,
+    params: &GetCollectionParams<'_>,
 ) -> Result<models::CollectionResponse, Error<GetCollectionError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}",
@@ -513,7 +514,7 @@ pub async fn get_collection(
 /// Returns a summary of all your collections. The collections are returned sorted by creation date, with the most recent collections appearing first.
 pub async fn get_collections(
     configuration: &configuration::Configuration,
-    params: &GetCollectionsParams,
+    params: &GetCollectionsParams<'_>,
 ) -> Result<Vec<models::CollectionResponse>, Error<GetCollectionsError>> {
     let uri_str = format!("{}/collections", configuration.base_path);
     let mut req_builder = configuration.client.request(reqwest::Method::GET, &uri_str);
@@ -579,7 +580,7 @@ pub async fn get_collections(
 /// Update a collection's schema to modify the fields and their types.
 pub async fn update_collection(
     configuration: &configuration::Configuration,
-    params: &UpdateCollectionParams,
+    params: &UpdateCollectionParams<'_>,
 ) -> Result<models::CollectionUpdateSchema, Error<UpdateCollectionError>> {
     let uri_str = format!(
         "{}/collections/{collectionName}",
@@ -643,7 +644,7 @@ pub async fn update_collection(
 /// Create or update a collection alias. An alias is a virtual collection name that points to a real collection. If you're familiar with symbolic links on Linux, it's very similar to that. Aliases are useful when you want to reindex your data in the background on a new collection and switch your application to it without any changes to your code.
 pub async fn upsert_alias(
     configuration: &configuration::Configuration,
-    params: &UpsertAliasParams,
+    params: &UpsertAliasParams<'_>,
 ) -> Result<models::CollectionAlias, Error<UpsertAliasError>> {
     let uri_str = format!(
         "{}/aliases/{aliasName}",

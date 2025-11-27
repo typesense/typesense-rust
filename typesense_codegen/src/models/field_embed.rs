@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -20,8 +21,8 @@ pub struct FieldEmbed {
 }
 
 impl FieldEmbed {
-    pub fn new(from: Vec<String>, model_config: models::FieldEmbedModelConfig) -> FieldEmbed {
-        FieldEmbed {
+    pub fn new(from: Vec<String>, model_config: models::FieldEmbedModelConfig) -> Self {
+        Self {
             from,
             model_config: Box::new(model_config),
         }

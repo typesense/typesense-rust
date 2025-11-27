@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -22,7 +23,7 @@ pub struct StemmingDictionary {
 }
 
 impl StemmingDictionary {
-    pub fn new(id: String, words: Vec<models::StemmingDictionaryWordsInner>) -> StemmingDictionary {
-        StemmingDictionary { id, words }
+    pub fn new(id: String, words: Vec<models::StemmingDictionaryWordsInner>) -> Self {
+        Self { id, words }
     }
 }

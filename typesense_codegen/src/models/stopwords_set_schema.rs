@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -22,8 +23,8 @@ pub struct StopwordsSetSchema {
 }
 
 impl StopwordsSetSchema {
-    pub fn new(id: String, stopwords: Vec<String>) -> StopwordsSetSchema {
-        StopwordsSetSchema {
+    pub fn new(id: String, stopwords: Vec<String>) -> Self {
+        Self {
             id,
             stopwords,
             locale: None,

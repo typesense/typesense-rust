@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -18,7 +19,7 @@ pub struct ListStemmingDictionaries200Response {
 }
 
 impl ListStemmingDictionaries200Response {
-    pub fn new() -> ListStemmingDictionaries200Response {
-        ListStemmingDictionaries200Response { dictionaries: None }
+    pub fn new() -> Self {
+        Self { dictionaries: None }
     }
 }

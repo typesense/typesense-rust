@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -59,8 +60,8 @@ pub struct CurationItemSchema {
 }
 
 impl CurationItemSchema {
-    pub fn new(rule: models::CurationRule, id: String) -> CurationItemSchema {
-        CurationItemSchema {
+    pub fn new(rule: models::CurationRule, id: String) -> Self {
+        Self {
             rule: Box::new(rule),
             includes: None,
             excludes: None,

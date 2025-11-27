@@ -7,8 +7,8 @@ use typesense_codegen::models::MultiSearchCollectionParameters;
 /// sent to the Typesense multi-search endpoint. Each search query is defined in a
 /// `MultiSearchCollectionParameters` struct within the `searches` vector.
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize, bon::Builder)]
-pub struct MultiSearchBody {
+pub struct MultiSearchBody<'a> {
     /// A vector of individual search queries to be executed. The order of the search results returned by Typesense will match the order of these queries.
     #[serde(rename = "searches")]
-    pub searches: Vec<MultiSearchCollectionParameters>,
+    pub searches: Vec<MultiSearchCollectionParameters<'a>>,
 }

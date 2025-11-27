@@ -9,27 +9,28 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 /// AnalyticsEventData : Event payload
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct AnalyticsEventData {
+pub struct AnalyticsEventData<'a> {
     #[serde(rename = "user_id", skip_serializing_if = "Option::is_none")]
-    pub user_id: Option<String>,
+    pub user_id: Option<Cow<'a, str>>,
     #[serde(rename = "doc_id", skip_serializing_if = "Option::is_none")]
-    pub doc_id: Option<String>,
+    pub doc_id: Option<Cow<'a, str>>,
     #[serde(rename = "doc_ids", skip_serializing_if = "Option::is_none")]
     pub doc_ids: Option<Vec<String>>,
     #[serde(rename = "q", skip_serializing_if = "Option::is_none")]
-    pub q: Option<String>,
+    pub q: Option<Cow<'a, str>>,
     #[serde(rename = "analytics_tag", skip_serializing_if = "Option::is_none")]
-    pub analytics_tag: Option<String>,
+    pub analytics_tag: Option<Cow<'a, str>>,
 }
 
-impl AnalyticsEventData {
+impl<'a> AnalyticsEventData<'a> {
     /// Event payload
-    pub fn new() -> AnalyticsEventData {
-        AnalyticsEventData {
+    pub fn new() -> Self {
+        Self {
             user_id: None,
             doc_id: None,
             doc_ids: None,

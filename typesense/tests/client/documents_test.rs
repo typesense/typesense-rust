@@ -14,22 +14,22 @@ async fn run_test_schemaless_document_lifecycle() {
 
     // ---  Setup: Create a Collection ---
     let schema = CollectionSchema {
-        name: collection_name.clone(),
+        name: collection_name.as_str().into(),
         fields: vec![
             Field {
-                name: "title".to_owned(),
-                r#type: "string".to_owned(),
+                name: "title".into(),
+                r#type: "string".into(),
                 ..Default::default()
             },
             Field {
-                name: "author".to_owned(),
-                r#type: "string".to_owned(),
+                name: "author".into(),
+                r#type: "string".into(),
                 facet: Some(true),
                 ..Default::default()
             },
             Field {
-                name: "publication_year".to_owned(),
-                r#type: "int32".to_owned(),
+                name: "publication_year".into(),
+                r#type: "int32".into(),
                 ..Default::default()
             },
         ],
@@ -106,7 +106,7 @@ async fn run_test_schemaless_document_lifecycle() {
 
     // ---  Export documents (via `documents().export_jsonl()`) ---
     let export_params = ExportDocumentsParameters {
-        filter_by: Some("author:John".to_owned()),
+        filter_by: Some("author:John".into()),
         ..Default::default()
     };
     let exported_jsonl = documents_client
@@ -122,7 +122,7 @@ async fn run_test_schemaless_document_lifecycle() {
 
     // --- Bulk Delete ---
     let delete_params = DeleteDocumentsParameters {
-        filter_by: "publication_year:>1960".to_owned(),
+        filter_by: "publication_year:>1960".into(),
         ..Default::default()
     };
     let bulk_delete_response = documents_client
@@ -152,27 +152,27 @@ async fn run_test_generic_document_lifecycle() {
 
     // --- 1. Setup: Create a Collection matching the Book struct ---
     let schema = CollectionSchema {
-        name: collection_name.clone(),
+        name: collection_name.as_str().into(),
         fields: vec![
             Field {
-                name: "title".to_owned(),
-                r#type: "string".to_owned(),
+                name: "title".into(),
+                r#type: "string".into(),
                 ..Default::default()
             },
             Field {
-                name: "author".to_owned(),
-                r#type: "string".to_owned(),
+                name: "author".into(),
+                r#type: "string".into(),
                 facet: Some(true),
                 ..Default::default()
             },
             Field {
-                name: "publication_year".to_owned(),
-                r#type: "int32".to_owned(),
+                name: "publication_year".into(),
+                r#type: "int32".into(),
                 ..Default::default()
             },
             Field {
-                name: "in_stock".to_owned(),
-                r#type: "bool".to_owned(),
+                name: "in_stock".into(),
+                r#type: "bool".into(),
                 optional: Some(true),
                 ..Default::default()
             },
@@ -232,8 +232,8 @@ async fn run_test_generic_document_lifecycle() {
 
     // --- 5. Search for documents with strongly-typed results ---
     let search_params = SearchParameters {
-        q: Some("dune".to_owned()),
-        query_by: Some("title".to_owned()),
+        q: Some("dune".into()),
+        query_by: Some("title".into()),
         ..Default::default()
     };
     let search_results = typed_collection
@@ -277,7 +277,7 @@ async fn run_test_generic_document_lifecycle() {
 
     // --- 7. Bulk Update (via `documents().update()`) ---
     let bulk_update_params = UpdateDocumentsParameters {
-        filter_by: Some("publication_year:>1965".to_owned()),
+        filter_by: Some("publication_year:>1965".into()),
     };
     let bulk_update_response = typed_collection
         .documents()

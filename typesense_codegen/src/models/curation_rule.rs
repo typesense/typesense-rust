@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -28,8 +29,8 @@ pub struct CurationRule {
 }
 
 impl CurationRule {
-    pub fn new() -> CurationRule {
-        CurationRule {
+    pub fn new() -> Self {
+        Self {
             tags: None,
             query: None,
             r#match: None,

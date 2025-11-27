@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -43,13 +44,8 @@ pub struct ConversationModelSchema {
 }
 
 impl ConversationModelSchema {
-    pub fn new(
-        id: String,
-        model_name: String,
-        history_collection: String,
-        max_bytes: i32,
-    ) -> ConversationModelSchema {
-        ConversationModelSchema {
+    pub fn new(id: String, model_name: String, history_collection: String, max_bytes: i32) -> Self {
+        Self {
             id,
             model_name,
             api_key: None,

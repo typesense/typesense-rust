@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -30,8 +31,8 @@ pub struct SearchSynonym {
 }
 
 impl SearchSynonym {
-    pub fn new(synonyms: Vec<String>, id: String) -> SearchSynonym {
-        SearchSynonym {
+    pub fn new(synonyms: Vec<String>, id: String) -> Self {
+        Self {
             root: None,
             synonyms,
             locale: None,

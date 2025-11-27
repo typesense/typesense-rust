@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -18,7 +19,7 @@ pub struct DeleteDocuments200Response {
 }
 
 impl DeleteDocuments200Response {
-    pub fn new(num_deleted: i32) -> DeleteDocuments200Response {
-        DeleteDocuments200Response { num_deleted }
+    pub fn new(num_deleted: i32) -> Self {
+        Self { num_deleted }
     }
 }

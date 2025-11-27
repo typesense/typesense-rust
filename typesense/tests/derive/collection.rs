@@ -1,10 +1,7 @@
-use std::collections::BTreeMap;
-use std::collections::HashMap;
-
+use ::std::collections::{BTreeMap, HashMap};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use typesense::Typesense;
-use typesense::prelude::*;
+use typesense::{Typesense, prelude::*};
 
 // Test 1: Basic Schema Generation (keeping the old test to ensure backward compatibility)
 #[allow(dead_code)]
@@ -227,10 +224,19 @@ fn derived_document_handles_nested_and_flattened_fields() {
 
         // --- Sub-fields indexing ---
         { "name": "profile", "type": "object" },
+
+        { "name": "previous_addresses", "type": "object[]" },
+
+        { "name": "nested_struct_vec", "type": "object[]"},
+
+        // --- Manually flattened object ---
+        // correctly skipped `data`
+        { "name": "primary_address.city", "type": "string" },
+        { "name": "work_addresses.zip", "type": "string[]" },
+
         { "name": "profile.name", "type": "string", "facet": true, "sort": true},
         { "name": "profile.email", "type": "string", "optional": true },
 
-        { "name": "previous_addresses", "type": "object[]" },
         { "name": "previous_addresses.line_1", "type": "string[]" },
         { "name": "previous_addresses.number", "type": "int32[]" },
         { "name": "previous_addresses.optional_field", "type": "string[]", "optional": true},
@@ -244,16 +250,10 @@ fn derived_document_handles_nested_and_flattened_fields() {
         { "name": "nested_struct.address.primary_city", "type": "string" },
         { "name": "nested_struct.address.work_zips", "type": "string[]" },
 
-        { "name": "nested_struct_vec", "type": "object[]"},
         { "name": "nested_struct_vec.name", "type": "string[]"},
         { "name": "nested_struct_vec.address", "type": "object[]" },
         { "name": "nested_struct_vec.address.primary_city", "type": "string[]" },
-        { "name": "nested_struct_vec.address.work_zips", "type": "string[]" },
-
-        // --- Manually flattened object ---
-        // correctly skipped `data`
-        { "name": "primary_address.city", "type": "string" },
-        { "name": "work_addresses.zip", "type": "string[]" }
+        { "name": "nested_struct_vec.address.work_zips", "type": "string[]" }
       ]
     });
 

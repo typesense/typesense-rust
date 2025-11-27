@@ -31,7 +31,7 @@ impl<'a> Dictionary<'a> {
         &self,
     ) -> Result<models::StemmingDictionary, Error<stemming_api::GetStemmingDictionaryError>> {
         let params = stemming_api::GetStemmingDictionaryParams {
-            dictionary_id: self.dictionary_id.to_owned(),
+            dictionary_id: self.dictionary_id.into(),
         };
         execute_wrapper!(self, stemming_api::get_stemming_dictionary, params)
     }

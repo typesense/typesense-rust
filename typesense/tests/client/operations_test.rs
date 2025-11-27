@@ -66,7 +66,7 @@ async fn run_test_take_snapshot() {
     // Note: This requires a directory that Typesense can write to.
     // In a typical Docker setup, `/tmp` is a safe choice.
     let params = typesense::models::TakeSnapshotParams {
-        snapshot_path: "/tmp/typesense-snapshots-rust-test".to_string(),
+        snapshot_path: "/tmp/typesense-snapshots-rust-test".into(),
     };
     let snapshot_result = client.operations().take_snapshot(params).await;
 

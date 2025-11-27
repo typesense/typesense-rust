@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -29,8 +30,8 @@ impl SearchResultConversation {
         conversation_history: Vec<serde_json::Value>,
         conversation_id: String,
         query: String,
-    ) -> SearchResultConversation {
-        SearchResultConversation {
+    ) -> Self {
+        Self {
             answer,
             conversation_history,
             conversation_id,

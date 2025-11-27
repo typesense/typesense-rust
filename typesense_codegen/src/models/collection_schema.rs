@@ -9,15 +9,17 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(bon::Builder)]
+#[builder(on(Cow<'_, str>, into))]
 #[builder(on(String, into))]
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct CollectionSchema {
+pub struct CollectionSchema<'a> {
     /// Name of the collection
     #[serde(rename = "name")]
-    pub name: String,
+    pub name: Cow<'a, str>,
     /// A list of fields for querying, filtering and faceting
     #[serde(rename = "fields")]
     pub fields: Vec<models::Field>,
@@ -26,7 +28,7 @@ pub struct CollectionSchema {
         rename = "default_sorting_field",
         skip_serializing_if = "Option::is_none"
     )]
-    pub default_sorting_field: Option<String>,
+    pub default_sorting_field: Option<Cow<'a, str>>,
     /// List of symbols or special characters to be used for splitting the text into individual words in addition to space and new-line characters.
     #[serde(rename = "token_separators", skip_serializing_if = "Option::is_none")]
     pub token_separators: Option<Vec<String>>,
@@ -49,9 +51,9 @@ pub struct CollectionSchema {
     pub metadata: Option<serde_json::Value>,
 }
 
-impl CollectionSchema {
-    pub fn new(name: String, fields: Vec<models::Field>) -> CollectionSchema {
-        CollectionSchema {
+impl<'a> CollectionSchema<'a> {
+    pub fn new(name: Cow<'a, str>, fields: Vec<models::Field>) -> Self {
+        Self {
             name,
             fields,
             default_sorting_field: None,

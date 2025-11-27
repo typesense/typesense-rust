@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -18,7 +19,7 @@ pub struct CollectionAliasesResponse {
 }
 
 impl CollectionAliasesResponse {
-    pub fn new(aliases: Vec<models::CollectionAlias>) -> CollectionAliasesResponse {
-        CollectionAliasesResponse { aliases }
+    pub fn new(aliases: Vec<models::CollectionAlias>) -> Self {
+        Self { aliases }
     }
 }

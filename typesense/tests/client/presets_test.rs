@@ -9,8 +9,8 @@ async fn run_test_presets_lifecycle() {
     // --- 1. Define the Preset's value using the strong types ---
     // This will be the expected value in the response as well.
     let search_params = SearchParameters {
-        query_by: Some("title,authors".to_owned()),
-        sort_by: Some("_text_match:desc,publication_year:desc".to_owned()),
+        query_by: Some("title,authors".into()),
+        sort_by: Some("_text_match:desc,publication_year:desc".into()),
         ..Default::default()
     };
     let expected_preset_value = PresetUpsertSchemaValue::SearchParameters(Box::new(search_params));

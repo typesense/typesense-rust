@@ -10,23 +10,24 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
+use ::std::borrow::Cow;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
 /// struct for passing parameters to the method [`get_stemming_dictionary`]
 #[derive(Clone, Debug)]
-pub struct GetStemmingDictionaryParams {
+pub struct GetStemmingDictionaryParams<'p> {
     /// The ID of the dictionary to retrieve
-    pub dictionary_id: String,
+    pub dictionary_id: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`import_stemming_dictionary`]
 #[derive(Clone, Debug)]
-pub struct ImportStemmingDictionaryParams {
+pub struct ImportStemmingDictionaryParams<'p> {
     /// The ID to assign to the dictionary
-    pub id: String,
+    pub id: Cow<'p, str>,
     /// The JSONL file containing word mappings
-    pub body: String,
+    pub body: Cow<'p, str>,
 }
 
 /// struct for typed errors of method [`get_stemming_dictionary`]
@@ -55,7 +56,7 @@ pub enum ListStemmingDictionariesError {
 /// Fetch details of a specific stemming dictionary.
 pub async fn get_stemming_dictionary(
     configuration: &configuration::Configuration,
-    params: &GetStemmingDictionaryParams,
+    params: &GetStemmingDictionaryParams<'_>,
 ) -> Result<models::StemmingDictionary, Error<GetStemmingDictionaryError>> {
     let uri_str = format!(
         "{}/stemming/dictionaries/{dictionaryId}",
@@ -116,7 +117,7 @@ pub async fn get_stemming_dictionary(
 /// Upload a JSONL file containing word mappings to create or update a stemming dictionary.
 pub async fn import_stemming_dictionary(
     configuration: &configuration::Configuration,
-    params: &ImportStemmingDictionaryParams,
+    params: &ImportStemmingDictionaryParams<'_>,
 ) -> Result<String, Error<ImportStemmingDictionaryError>> {
     let uri_str = format!("{}/stemming/dictionaries/import", configuration.base_path);
     let mut req_builder = configuration
@@ -137,7 +138,7 @@ pub async fn import_stemming_dictionary(
     };
     req_builder = req_builder
         .header(reqwest::header::CONTENT_TYPE, "text/plain")
-        .body(params.body.to_owned());
+        .body(params.body.clone().into_owned());
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;

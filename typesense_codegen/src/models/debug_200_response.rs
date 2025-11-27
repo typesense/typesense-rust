@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -18,7 +19,7 @@ pub struct Debug200Response {
 }
 
 impl Debug200Response {
-    pub fn new() -> Debug200Response {
-        Debug200Response { version: None }
+    pub fn new() -> Self {
+        Self { version: None }
     }
 }

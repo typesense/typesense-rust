@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -19,7 +20,7 @@ pub struct SynonymSetsRetrieveSchema {
 }
 
 impl SynonymSetsRetrieveSchema {
-    pub fn new(synonym_sets: Vec<models::SynonymSetSchema>) -> SynonymSetsRetrieveSchema {
-        SynonymSetsRetrieveSchema { synonym_sets }
+    pub fn new(synonym_sets: Vec<models::SynonymSetSchema>) -> Self {
+        Self { synonym_sets }
     }
 }

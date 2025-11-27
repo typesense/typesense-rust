@@ -9,20 +9,21 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SynonymSetSchema {
     /// Array of synonym items
     #[serde(rename = "items")]
-    pub items: Vec<models::SynonymItemSchema>,
+    pub items: Vec<models::SynonymItemSchema<'static>>,
     /// Name of the synonym set
     #[serde(rename = "name")]
     pub name: String,
 }
 
 impl SynonymSetSchema {
-    pub fn new(items: Vec<models::SynonymItemSchema>, name: String) -> SynonymSetSchema {
-        SynonymSetSchema { items, name }
+    pub fn new(items: Vec<models::SynonymItemSchema<'static>>, name: String) -> Self {
+        Self { items, name }
     }
 }

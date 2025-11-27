@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -35,8 +36,8 @@ pub struct SearchHighlight {
 }
 
 impl SearchHighlight {
-    pub fn new() -> SearchHighlight {
-        SearchHighlight {
+    pub fn new() -> Self {
+        Self {
             field: None,
             snippet: None,
             snippets: None,

@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -18,7 +19,7 @@ pub struct ApiKeysResponse {
 }
 
 impl ApiKeysResponse {
-    pub fn new(keys: Vec<models::ApiKey>) -> ApiKeysResponse {
-        ApiKeysResponse { keys }
+    pub fn new(keys: Vec<models::ApiKey>) -> Self {
+        Self { keys }
     }
 }

@@ -105,7 +105,7 @@ impl<'a> Operations<'a> {
     /// Docs: <https://typesense.org/docs/latest/api/cluster-operations.html#create-snapshot-for-backups>
     pub async fn take_snapshot(
         &self,
-        params: operations_api::TakeSnapshotParams,
+        params: operations_api::TakeSnapshotParams<'_>,
     ) -> Result<models::SuccessStatus, Error<operations_api::TakeSnapshotError>> {
         execute_wrapper!(self, operations_api::take_snapshot, params)
     }

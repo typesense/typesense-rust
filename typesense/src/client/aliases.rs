@@ -3,6 +3,7 @@
 //! An `Aliases` instance is created via the main `client.aliases()` method.
 
 use crate::{Client, Error, execute_wrapper};
+use ::std::borrow::Cow;
 use typesense_codegen::{apis::collections_api, models};
 
 /// Provides methods for interacting with Typesense collection aliases.
@@ -30,8 +31,8 @@ impl<'a> Aliases<'a> {
     /// * `schema` - A `CollectionAliasSchema` pointing to the target collection.
     pub async fn upsert(
         &self,
-        alias_name: impl Into<String>,
-        schema: models::CollectionAliasSchema,
+        alias_name: impl Into<Cow<'_, str>>,
+        schema: models::CollectionAliasSchema<'_>,
     ) -> Result<models::CollectionAlias, Error<collections_api::UpsertAliasError>> {
         let params = collections_api::UpsertAliasParams {
             alias_name: alias_name.into(),

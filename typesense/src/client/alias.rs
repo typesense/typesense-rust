@@ -25,7 +25,7 @@ impl<'a> Alias<'a> {
         &self,
     ) -> Result<models::CollectionAlias, Error<collections_api::GetAliasError>> {
         let params = collections_api::GetAliasParams {
-            alias_name: self.alias_name.to_owned(),
+            alias_name: self.alias_name.into(),
         };
 
         execute_wrapper!(self, collections_api::get_alias, params)
@@ -36,7 +36,7 @@ impl<'a> Alias<'a> {
         &self,
     ) -> Result<models::CollectionAlias, Error<collections_api::DeleteAliasError>> {
         let params = collections_api::DeleteAliasParams {
-            alias_name: self.alias_name.to_owned(),
+            alias_name: self.alias_name.into(),
         };
         execute_wrapper!(self, collections_api::delete_alias, params)
     }

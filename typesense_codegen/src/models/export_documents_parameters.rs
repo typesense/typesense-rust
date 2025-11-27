@@ -9,24 +9,25 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ExportDocumentsParameters {
+pub struct ExportDocumentsParameters<'a> {
     /// Filter conditions for refining your search results. Separate multiple conditions with &&.
     #[serde(rename = "filter_by", skip_serializing_if = "Option::is_none")]
-    pub filter_by: Option<String>,
+    pub filter_by: Option<Cow<'a, str>>,
     /// List of fields from the document to include in the search result
     #[serde(rename = "include_fields", skip_serializing_if = "Option::is_none")]
-    pub include_fields: Option<String>,
+    pub include_fields: Option<Cow<'a, str>>,
     /// List of fields from the document to exclude in the search result
     #[serde(rename = "exclude_fields", skip_serializing_if = "Option::is_none")]
-    pub exclude_fields: Option<String>,
+    pub exclude_fields: Option<Cow<'a, str>>,
 }
 
-impl ExportDocumentsParameters {
-    pub fn new() -> ExportDocumentsParameters {
-        ExportDocumentsParameters {
+impl<'a> ExportDocumentsParameters<'a> {
+    pub fn new() -> Self {
+        Self {
             filter_by: None,
             include_fields: None,
             exclude_fields: None,

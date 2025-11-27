@@ -11,6 +11,7 @@ pub trait ToTypesenseField {
 }
 /// Generic implementation for any type that is also a Typesense document.
 impl<T: Document> ToTypesenseField for T {
+    #[inline(always)]
     fn to_typesense_type() -> &'static str {
         "object"
     }
@@ -18,6 +19,7 @@ impl<T: Document> ToTypesenseField for T {
 
 /// Generic implementation for a Vec of any type that is also a Typesense document.
 impl<T: Document> ToTypesenseField for Vec<T> {
+    #[inline(always)]
     fn to_typesense_type() -> &'static str {
         "object[]"
     }

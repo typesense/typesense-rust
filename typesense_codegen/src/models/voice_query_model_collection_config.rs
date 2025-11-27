@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 /// VoiceQueryModelCollectionConfig : Configuration for the voice query model
@@ -20,7 +21,7 @@ pub struct VoiceQueryModelCollectionConfig {
 
 impl VoiceQueryModelCollectionConfig {
     /// Configuration for the voice query model
-    pub fn new() -> VoiceQueryModelCollectionConfig {
-        VoiceQueryModelCollectionConfig { model_name: None }
+    pub fn new() -> Self {
+        Self { model_name: None }
     }
 }

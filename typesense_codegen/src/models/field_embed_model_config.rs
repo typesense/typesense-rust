@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -36,8 +37,8 @@ pub struct FieldEmbedModelConfig {
 }
 
 impl FieldEmbedModelConfig {
-    pub fn new(model_name: String) -> FieldEmbedModelConfig {
-        FieldEmbedModelConfig {
+    pub fn new(model_name: String) -> Self {
+        Self {
             model_name,
             api_key: None,
             url: None,

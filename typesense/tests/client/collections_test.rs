@@ -10,16 +10,16 @@ async fn logic_test_collections_and_collection_lifecycle() {
 
     // --- 1. Create a Collection (via `collections`) ---
     let schema = CollectionSchema {
-        name: collection_name.clone(),
+        name: collection_name.as_str().into(),
         fields: vec![
             Field {
-                name: "name".to_owned(),
-                r#type: "string".to_owned(),
+                name: "name".into(),
+                r#type: "string".into(),
                 ..Default::default()
             },
             Field {
-                name: "price".to_owned(),
-                r#type: "int32".to_owned(),
+                name: "price".into(),
+                r#type: "int32".into(),
                 ..Default::default()
             },
         ],
@@ -67,14 +67,14 @@ async fn logic_test_collections_and_collection_lifecycle() {
         fields: vec![
             // Add a new field
             Field {
-                name: "description".to_owned(),
-                r#type: "string".to_owned(),
+                name: "description".into(),
+                r#type: "string".into(),
                 optional: Some(true),
                 ..Default::default()
             },
             // Drop an existing field
             Field {
-                name: "price".to_owned(),
+                name: "price".into(),
                 drop: Some(true),
                 ..Default::default()
             },

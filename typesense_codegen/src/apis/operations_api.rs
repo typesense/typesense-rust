@@ -10,14 +10,15 @@
 
 use super::{ContentType, Error, configuration};
 use crate::{apis::ResponseContent, models};
+use ::std::borrow::Cow;
 use reqwest;
 use serde::{Deserialize, Serialize, de::Error as _};
 
 /// struct for passing parameters to the method [`take_snapshot`]
 #[derive(Clone, Debug)]
-pub struct TakeSnapshotParams {
+pub struct TakeSnapshotParams<'p> {
     /// The directory on the server where the snapshot should be saved.
-    pub snapshot_path: String,
+    pub snapshot_path: Cow<'p, str>,
 }
 
 /// struct for passing parameters to the method [`toggle_slow_request_log`]
@@ -369,7 +370,7 @@ pub async fn retrieve_metrics(
 /// Creates a point-in-time snapshot of a Typesense node's state and data in the specified directory. You can then backup the snapshot directory that gets created and later restore it as a data directory, as needed.
 pub async fn take_snapshot(
     configuration: &configuration::Configuration,
-    params: &TakeSnapshotParams,
+    params: &TakeSnapshotParams<'_>,
 ) -> Result<models::SuccessStatus, Error<TakeSnapshotError>> {
     let uri_str = format!("{}/operations/snapshot", configuration.base_path);
     let mut req_builder = configuration

@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -24,8 +25,8 @@ pub struct SearchRequestParams {
 }
 
 impl SearchRequestParams {
-    pub fn new(collection_name: String, q: String, per_page: i32) -> SearchRequestParams {
-        SearchRequestParams {
+    pub fn new(collection_name: String, q: String, per_page: i32) -> Self {
+        Self {
             collection_name,
             q,
             per_page,

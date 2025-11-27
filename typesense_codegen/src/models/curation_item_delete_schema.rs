@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -19,7 +20,7 @@ pub struct CurationItemDeleteSchema {
 }
 
 impl CurationItemDeleteSchema {
-    pub fn new(id: String) -> CurationItemDeleteSchema {
-        CurationItemDeleteSchema { id }
+    pub fn new(id: String) -> Self {
+        Self { id }
     }
 }

@@ -9,30 +9,31 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SynonymItemSchema {
+pub struct SynonymItemSchema<'a> {
     /// Unique identifier for the synonym item
     #[serde(rename = "id")]
-    pub id: String,
+    pub id: Cow<'a, str>,
     /// Array of words that should be considered as synonyms
     #[serde(rename = "synonyms")]
     pub synonyms: Vec<String>,
     /// For 1-way synonyms, indicates the root word that words in the synonyms parameter map to
     #[serde(rename = "root", skip_serializing_if = "Option::is_none")]
-    pub root: Option<String>,
+    pub root: Option<Cow<'a, str>>,
     /// Locale for the synonym, leave blank to use the standard tokenizer
     #[serde(rename = "locale", skip_serializing_if = "Option::is_none")]
-    pub locale: Option<String>,
+    pub locale: Option<Cow<'a, str>>,
     /// By default, special characters are dropped from synonyms. Use this attribute to specify which special characters should be indexed as is
     #[serde(rename = "symbols_to_index", skip_serializing_if = "Option::is_none")]
     pub symbols_to_index: Option<Vec<String>>,
 }
 
-impl SynonymItemSchema {
-    pub fn new(id: String, synonyms: Vec<String>) -> SynonymItemSchema {
-        SynonymItemSchema {
+impl<'a> SynonymItemSchema<'a> {
+    pub fn new(id: Cow<'a, str>, synonyms: Vec<String>) -> Self {
+        Self {
             id,
             synonyms,
             root: None,

@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -22,7 +23,7 @@ pub struct StemmingDictionaryWordsInner {
 }
 
 impl StemmingDictionaryWordsInner {
-    pub fn new(word: String, root: String) -> StemmingDictionaryWordsInner {
-        StemmingDictionaryWordsInner { word, root }
+    pub fn new(word: String, root: String) -> Self {
+        Self { word, root }
     }
 }

@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -24,19 +25,14 @@ pub struct CreateAnalyticsRule200ResponseOneOfInner {
     #[serde(rename = "rule_tag", skip_serializing_if = "Option::is_none")]
     pub rule_tag: Option<String>,
     #[serde(rename = "params", skip_serializing_if = "Option::is_none")]
-    pub params: Option<Box<models::AnalyticsRuleCreateParams>>,
+    pub params: Option<Box<models::AnalyticsRuleCreateParams<'static>>>,
     #[serde(rename = "error", skip_serializing_if = "Option::is_none")]
     pub error: Option<String>,
 }
 
 impl CreateAnalyticsRule200ResponseOneOfInner {
-    pub fn new(
-        name: String,
-        r#type: Type,
-        collection: String,
-        event_type: String,
-    ) -> CreateAnalyticsRule200ResponseOneOfInner {
-        CreateAnalyticsRule200ResponseOneOfInner {
+    pub fn new(name: String, r#type: Type, collection: String, event_type: String) -> Self {
+        Self {
             name,
             r#type,
             collection,

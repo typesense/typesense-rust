@@ -26,7 +26,7 @@ impl<'a> Stopword<'a> {
     ) -> Result<models::StopwordsSetRetrieveSchema, Error<stopwords_api::RetrieveStopwordsSetError>>
     {
         let params = stopwords_api::RetrieveStopwordsSetParams {
-            set_id: self.set_id.to_owned(),
+            set_id: self.set_id.into(),
         };
         execute_wrapper!(self, stopwords_api::retrieve_stopwords_set, params)
     }
@@ -37,7 +37,7 @@ impl<'a> Stopword<'a> {
     ) -> Result<models::DeleteStopwordsSet200Response, Error<stopwords_api::DeleteStopwordsSetError>>
     {
         let params = stopwords_api::DeleteStopwordsSetParams {
-            set_id: self.set_id.to_owned(),
+            set_id: self.set_id.into(),
         };
         execute_wrapper!(self, stopwords_api::delete_stopwords_set, params)
     }

@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -19,7 +20,7 @@ pub struct NlSearchModelDeleteSchema {
 }
 
 impl NlSearchModelDeleteSchema {
-    pub fn new(id: String) -> NlSearchModelDeleteSchema {
-        NlSearchModelDeleteSchema { id }
+    pub fn new(id: String) -> Self {
+        Self { id }
     }
 }

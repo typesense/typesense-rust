@@ -28,7 +28,7 @@ impl<'c> Collections<'c> {
     /// * `schema` - A `CollectionSchema` object describing the collection to be created.
     pub async fn create(
         &self,
-        schema: models::CollectionSchema,
+        schema: models::CollectionSchema<'_>,
     ) -> Result<models::CollectionResponse, Error<collections_api::CreateCollectionError>> {
         let params = collections_api::CreateCollectionParams {
             collection_schema: schema,
@@ -39,7 +39,7 @@ impl<'c> Collections<'c> {
     /// List the existing Typesense collections.
     pub async fn retrieve(
         &self,
-        params: GetCollectionsParameters,
+        params: GetCollectionsParameters<'_>,
     ) -> Result<Vec<models::CollectionResponse>, Error<collections_api::GetCollectionsError>> {
         let params = GetCollectionsParams {
             exclude_fields: params.exclude_fields,

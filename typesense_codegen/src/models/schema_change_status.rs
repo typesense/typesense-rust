@@ -9,6 +9,7 @@
  */
 
 use crate::models;
+use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
@@ -25,8 +26,8 @@ pub struct SchemaChangeStatus {
 }
 
 impl SchemaChangeStatus {
-    pub fn new() -> SchemaChangeStatus {
-        SchemaChangeStatus {
+    pub fn new() -> Self {
+        Self {
             collection: None,
             validated_docs: None,
             altered_docs: None,

@@ -5,6 +5,7 @@
 //! A `Presets` instance is created via the main `client.presets()` method.
 
 use crate::{Client, Error, execute_wrapper};
+use ::std::borrow::Cow;
 use typesense_codegen::{apis::presets_api, models};
 
 /// Provides methods for managing all of your Typesense presets.
@@ -35,8 +36,8 @@ impl<'a> Presets<'a> {
     /// * `schema` - A `PresetUpsertSchema` object with the preset's value.
     pub async fn upsert(
         &self,
-        preset_id: impl Into<String>,
-        schema: models::PresetUpsertSchema,
+        preset_id: impl Into<Cow<'_, str>>,
+        schema: models::PresetUpsertSchema<'_>,
     ) -> Result<models::PresetSchema, Error<presets_api::UpsertPresetError>> {
         let params = presets_api::UpsertPresetParams {
             preset_id: preset_id.into(),
