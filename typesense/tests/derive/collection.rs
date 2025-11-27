@@ -140,7 +140,7 @@ fn derived_document_handles_all_attributes() {
         { "name": "btree_map_vec", "type": "object[]" },
 
         { "name": "optional_field", "type": "int32", "optional": false },
-        {"name": "company_id", "type": "string", "reference": "company.id"}
+        { "name": "company_id", "type": "string", "reference": "company.id" },
       ],
       "default_sorting_field": "renamed_price",
       "token_separators": ["-", "/"],
