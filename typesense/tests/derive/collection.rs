@@ -110,6 +110,9 @@ struct KitchenSinkProduct {
     // optional = false should override the Option<T> type
     #[typesense(optional = false)]
     optional_field: Option<i32>,
+
+    #[typesense(reference = "company.id")]
+    company_id: String,
 }
 
 #[test]
@@ -137,6 +140,7 @@ fn derived_document_handles_all_attributes() {
         { "name": "btree_map_vec", "type": "object[]" },
 
         { "name": "optional_field", "type": "int32", "optional": false },
+        { "name": "company_id", "type": "string", "reference": "company.id" },
       ],
       "default_sorting_field": "renamed_price",
       "token_separators": ["-", "/"],
