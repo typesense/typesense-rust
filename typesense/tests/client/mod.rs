@@ -4,6 +4,7 @@ mod collections_test;
 mod conversation_models_test;
 mod derive_integration_test;
 mod documents_test;
+mod http_builder_test;
 mod keys_test;
 mod multi_search_test;
 mod operations_test;
