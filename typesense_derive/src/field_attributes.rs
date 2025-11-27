@@ -20,6 +20,7 @@ pub(crate) struct FieldAttributes {
     flatten: bool,
     pub(crate) rename: Option<String>,
     skip: bool,
+    reference: Option<String>,
 }
 
 // This function will parse #[typesense(...)] on a FIELD
@@ -209,6 +210,16 @@ pub(crate) fn extract_field_attrs(field: &Field) -> syn::Result<FieldAttributes>
                         }
                         res.vec_dist = Some(string_literal(&mut tt_iter)?);
                     }
+                    "reference" => {
+                        skip_eq(&i, &mut tt_iter)?;
+                        if res.reference.is_some() {
+                            return Err(syn::Error::new_spanned(
+                                &i,
+                                "Attribute `reference` is duplicated",
+                            ));
+                        }
+                        res.reference = Some(string_literal(&mut tt_iter)?);
+                    }
                     "type" => {
                         skip_eq(&i, &mut tt_iter)?;
                         if res.type_override.is_some() {
@@ -283,11 +294,15 @@ fn build_regular_field(field: &Field, field_attrs: &FieldAttributes) -> proc_mac
     let range_index = field_attrs.range_index.map(|v| quote!(.range_index(#v)));
     let locale = field_attrs.locale.as_ref().map(|v| quote!(.locale(#v)));
     let vec_dist = field_attrs.vec_dist.as_ref().map(|v| quote!(.vec_dist(#v)));
+    let reference = field_attrs
+        .reference
+        .as_ref()
+        .map(|v| quote!(.reference(#v)));
     let num_dim = field_attrs.num_dim.map(|v| quote!(.num_dim(#v)));
 
     quote! {
         ::typesense::models::Field::builder().name(#field_name).r#type(#typesense_field_type)
-            #optional #facet #index #store #sort #infix #stem #range_index #locale #vec_dist #num_dim
+            #optional #facet #index #store #sort #infix #stem #range_index #locale #vec_dist #reference #num_dim
             .build()
     }
 }
