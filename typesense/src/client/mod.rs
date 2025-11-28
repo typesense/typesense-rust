@@ -210,6 +210,7 @@ impl Client {
     /// - **healthcheck_interval**: 60 seconds.
     /// - **retry_policy**: Exponential backoff with a maximum of 3 retries. (disabled on WASM)
     /// - **connection_timeout**: 5 seconds. (disabled on WASM)
+    /// - **additional_root_certificates**: None. (not available on WASM)
     #[builder]
     pub fn new(
         /// The Typesense API key used for authentication.
@@ -235,6 +236,11 @@ impl Client {
         #[builder(default = Duration::from_secs(5))]
         /// The timeout for each individual network request.
         connection_timeout: Duration,
+
+        #[cfg(not(target_arch = "wasm32"))]
+        #[builder(default = vec![])]
+        /// The list of custom headers to add to each request.
+        additional_root_certificates: Vec<reqwest::Certificate>,
     ) -> Result<Self, &'static str> {
         let is_nearest_node_set = nearest_node.is_some();
 
@@ -248,12 +254,16 @@ impl Client {
                     .expect("Failed to build reqwest client");
 
                 #[cfg(not(target_arch = "wasm32"))]
-                let http_client = ReqwestMiddlewareClientBuilder::new(
-                    reqwest::Client::builder()
-                        .timeout(connection_timeout)
-                        .build()
-                        .expect("Failed to build reqwest client"),
-                )
+                let http_client = ReqwestMiddlewareClientBuilder::new({
+                    let builder = reqwest::Client::builder().timeout(connection_timeout);
+                    let builder = additional_root_certificates
+                        .iter()
+                        .fold(builder, |builder, certificate| {
+                            builder.add_root_certificate(certificate.clone())
+                        });
+
+                    builder.build().expect("Failed to build reqwest client")
+                })
                 .with(RetryTransientMiddleware::new_with_policy(retry_policy))
                 .build();
 

@@ -10,6 +10,8 @@ mod operations_test;
 mod presets_test;
 mod stemming_dictionaries_test;
 mod stopwords_test;
+#[cfg(not(target_arch = "wasm32"))]
+mod tls_certificate_test;
 
 use std::time::Duration;
 use typesense::{Client, ExponentialBackoff};
