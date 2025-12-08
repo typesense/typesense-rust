@@ -16,14 +16,14 @@ use serde::{Deserialize, Serialize};
 pub struct SynonymSetSchema {
     /// Array of synonym items
     #[serde(rename = "items")]
-    pub items: Vec<models::SynonymItemSchema<'static>>,
+    pub items: Vec<models::SynonymItemSchema>,
     /// Name of the synonym set
     #[serde(rename = "name")]
     pub name: String,
 }
 
 impl SynonymSetSchema {
-    pub fn new(items: Vec<models::SynonymItemSchema<'static>>, name: String) -> Self {
+    pub fn new(items: Vec<models::SynonymItemSchema>, name: String) -> Self {
         Self { items, name }
     }
 }

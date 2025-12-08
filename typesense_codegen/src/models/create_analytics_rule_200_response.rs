@@ -24,21 +24,3 @@ impl Default for CreateAnalyticsRule200Response {
         Self::AnalyticsRule(Default::default())
     }
 }
-///
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum Type {
-    #[serde(rename = "popular_queries")]
-    PopularQueries,
-    #[serde(rename = "nohits_queries")]
-    NohitsQueries,
-    #[serde(rename = "counter")]
-    Counter,
-    #[serde(rename = "log")]
-    Log,
-}
-
-impl Default for Type {
-    fn default() -> Type {
-        Self::PopularQueries
-    }
-}
