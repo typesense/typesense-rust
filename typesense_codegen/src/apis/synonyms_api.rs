@@ -59,7 +59,7 @@ pub struct UpsertSynonymSetParams<'p> {
     /// The name of the synonym set to create/update
     pub synonym_set_name: Cow<'p, str>,
     /// The synonym set to be created/updated
-    pub synonym_set_create_schema: models::SynonymSetCreateSchema<'p>,
+    pub synonym_set_create_schema: models::SynonymSetCreateSchema,
 }
 
 /// struct for passing parameters to the method [`upsert_synonym_set_item`]
@@ -267,7 +267,7 @@ pub async fn delete_synonym_set_item(
 pub async fn retrieve_synonym_set(
     configuration: &configuration::Configuration,
     params: &RetrieveSynonymSetParams<'_>,
-) -> Result<models::SynonymSetCreateSchema<'static>, Error<RetrieveSynonymSetError>> {
+) -> Result<models::SynonymSetCreateSchema, Error<RetrieveSynonymSetError>> {
     let uri_str = format!(
         "{}/synonym_sets/{synonymSetName}",
         configuration.base_path,
