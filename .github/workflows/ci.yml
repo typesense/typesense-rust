@@ -35,9 +35,8 @@ jobs:
           TYPESENSE_API_KEY: 'xyz'
           TYPESENSE_ENABLE_CORS: true
           TYPESENSE_URL: 'http://localhost:8108'
-        options: >-
-          --enable-search-analytics=true
-          --analytics-dir=/analytics-data
+          TYPESENSE_ENABLE_SEARCH_ANALYTICS: 'true'
+          TYPESENSE_ANALYTICS_DIR: '/analytics-data'
     steps:
       - uses: actions/checkout@v4
       - name: Cache .cargo and target
