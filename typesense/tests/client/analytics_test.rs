@@ -170,15 +170,29 @@ async fn logic_test_analytics_rules_and_events_lifecycle() {
             event_type: "search".into(),
             data: Box::new(AnalyticsEventData {
                 q: Some("running shoes".into()),
-                user_id: Some("111112".into()),
+                user_id: Some("".into()),
                 ..Default::default()
             }),
         })
         .await;
-    println!("{:?}", event_result);
-
     assert!(event_result.is_ok(), "Failed to send the click event.");
     assert!(event_result.unwrap().ok, "Unsuccessful click event.");
+
+    // Retrieve events
+    let retrieve_events_result = client
+        .analytics()
+        .events()
+        .retrieve(models::GetAnalyticsEventsParams {
+            name: rule_name_1.as_str().into(),
+            user_id: "111112".into(),
+            n: 10,
+        })
+        .await;
+
+    assert!(
+        retrieve_events_result.is_ok(),
+        "Failed to retrieve analytics events."
+    );
 
     // Delete a Rule
     let delete_result = client.analytics().rule(&rule_name_1).delete().await;

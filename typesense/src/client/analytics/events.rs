@@ -33,4 +33,16 @@ impl<'a> Events<'a> {
         };
         execute_wrapper!(self, analytics_api::create_analytics_event, params)
     }
+
+    /// Retrieve the most recent analytics events for a specific user and analytics rule name.
+    ///
+    /// # Arguments
+    /// * `params` - `GetAnalyticsEventsParams`.
+    pub async fn retrieve(
+        &self,
+        params: models::GetAnalyticsEventsParams<'_>,
+    ) -> Result<models::AnalyticsEventsResponse, Error<analytics_api::GetAnalyticsEventsError>>
+    {
+        execute_wrapper!(self, analytics_api::get_analytics_events, params)
+    }
 }
