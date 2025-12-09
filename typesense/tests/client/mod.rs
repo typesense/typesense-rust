@@ -1,4 +1,5 @@
 mod aliases_test;
+mod analytics_test;
 mod client_test;
 mod collections_test;
 mod conversation_models_test;
