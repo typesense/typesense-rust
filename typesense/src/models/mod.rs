@@ -7,7 +7,7 @@ pub use document_index_parameters::*;
 pub use scoped_key_parameters::*;
 pub use typesense_codegen::{
     apis::{analytics_api::GetAnalyticsEventsParams, operations_api::TakeSnapshotParams},
-    models::*,
+    models::{curation_rule::Match as CurationRuleMatch, *},
 };
 
 pub use multi_search::MultiSearchBody;

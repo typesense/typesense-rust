@@ -3,6 +3,7 @@ mod analytics_test;
 mod client_test;
 mod collections_test;
 mod conversation_models_test;
+mod curation_sets_test;
 mod derive_integration_test;
 mod documents_test;
 mod keys_test;

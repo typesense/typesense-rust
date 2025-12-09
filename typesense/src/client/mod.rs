@@ -112,6 +112,8 @@ mod analytics;
 mod collection;
 mod collections;
 mod conversations;
+mod curation_set;
+mod curation_sets;
 mod key;
 mod keys;
 mod multi_search;
@@ -129,6 +131,8 @@ use analytics::Analytics;
 use collection::Collection;
 use collections::Collections;
 use conversations::Conversations;
+use curation_set::CurationSet;
+use curation_sets::CurationSets;
 use key::Key;
 use keys::Keys;
 use operations::Operations;
@@ -622,6 +626,54 @@ impl Client {
     #[inline]
     pub fn conversations(&self) -> Conversations<'_> {
         Conversations::new(self)
+    }
+
+    /// Provides access to endpoints for managing curation sets.
+    /// # Example
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec!["http://localhost:8108"])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let curation_sets = client.curation_sets().retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    #[inline]
+    pub fn curation_sets(&self) -> CurationSets<'_> {
+        CurationSets::new(self)
+    }
+
+    /// Provides access to endpoints for managing a specific curation set.
+    /// # Example
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec!["http://localhost:8108"])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let curation_set = client.curation_set("curation_set_name").retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    #[inline]
+    pub fn curation_set<'a>(&'a self, curation_set_name: &'a str) -> CurationSet<'a> {
+        CurationSet::new(self, curation_set_name)
     }
 
     /// Provides access to endpoints for managing the collection of API keys.
