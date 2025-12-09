@@ -137,7 +137,7 @@ Class | Method | HTTP request | Description
  - [ConversationModelUpdateSchema](docs/ConversationModelUpdateSchema.md)
  - [CreateAnalyticsRule200Response](docs/CreateAnalyticsRule200Response.md)
  - [CreateAnalyticsRule200ResponseOneOfInner](docs/CreateAnalyticsRule200ResponseOneOfInner.md)
- - [CreateAnalyticsRule200ResponseOneOfInnerAnyOf](docs/CreateAnalyticsRule200ResponseOneOfInnerAnyOf.md)
+ - [CreateAnalyticsRule200ResponseOneOfInnerOneOf](docs/CreateAnalyticsRule200ResponseOneOfInnerOneOf.md)
  - [CreateAnalyticsRuleRequest](docs/CreateAnalyticsRuleRequest.md)
  - [CurationExclude](docs/CurationExclude.md)
  - [CurationInclude](docs/CurationInclude.md)

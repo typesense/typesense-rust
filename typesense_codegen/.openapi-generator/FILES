@@ -30,7 +30,7 @@ docs/ConversationModelUpdateSchema.md
 docs/ConversationsApi.md
 docs/CreateAnalyticsRule200Response.md
 docs/CreateAnalyticsRule200ResponseOneOfInner.md
-docs/CreateAnalyticsRule200ResponseOneOfInnerAnyOf.md
+docs/CreateAnalyticsRule200ResponseOneOfInnerOneOf.md
 docs/CreateAnalyticsRuleRequest.md
 docs/CurationExclude.md
 docs/CurationInclude.md
@@ -161,7 +161,7 @@ src/models/conversation_model_schema.rs
 src/models/conversation_model_update_schema.rs
 src/models/create_analytics_rule_200_response.rs
 src/models/create_analytics_rule_200_response_one_of_inner.rs
-src/models/create_analytics_rule_200_response_one_of_inner_any_of.rs
+src/models/create_analytics_rule_200_response_one_of_inner_one_of.rs
 src/models/create_analytics_rule_request.rs
 src/models/curation_exclude.rs
 src/models/curation_include.rs

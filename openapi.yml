@@ -1805,7 +1805,7 @@ paths:
                   - $ref: "#/components/schemas/AnalyticsRule"
                   - type: array
                     items:
-                      anyOf:
+                      oneOf:
                         - $ref: "#/components/schemas/AnalyticsRule"
                         - type: object
                           properties:
