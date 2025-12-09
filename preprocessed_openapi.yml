@@ -1118,7 +1118,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CurationSetRetrieveSchema'
+                $ref: '#/components/schemas/CurationSetSchema'
         '404':
           description: Curation set not found
           content:
@@ -5074,8 +5074,6 @@ components:
         id:
           type: string
           description: document id that should be excluded from the search results.
-    CurationSetRetrieveSchema:
-      $ref: '#/components/schemas/CurationSetCreateSchema'
     CurationSetDeleteSchema:
       type: object
       required:
