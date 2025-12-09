@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **name** | **String** |  | 
-**r#type** | **String** |  | 
+**r#type** | [**models::AnalyticsRuleType**](AnalyticsRuleType.md) |  | 
 **collection** | **String** |  | 
 **event_type** | **String** |  | 
 **rule_tag** | Option<**String**> |  | [optional]

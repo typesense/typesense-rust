@@ -108,6 +108,7 @@
 //! ```
 mod alias;
 mod aliases;
+mod analytics;
 mod collection;
 mod collections;
 mod conversations;
@@ -124,6 +125,7 @@ mod stopwords;
 use crate::{Error, traits::Document};
 use alias::Alias;
 use aliases::Aliases;
+use analytics::Analytics;
 use collection::Collection;
 use collections::Collections;
 use conversations::Conversations;
@@ -415,6 +417,31 @@ impl Client {
     #[inline]
     pub fn alias<'a>(&'a self, alias_name: &'a str) -> Alias<'a> {
         Alias::new(self, alias_name)
+    }
+
+    /// Provides access to the analytics API endpoints.
+    ///
+    /// # Example
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec!["http://localhost:8108"])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let all_rules = client.analytics().rules().retrieve(None).await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    #[inline]
+    pub fn analytics(&self) -> Analytics<'_> {
+        Analytics::new(self)
     }
 
     /// Provides access to API endpoints for managing collections like `create()` and `retrieve()`.

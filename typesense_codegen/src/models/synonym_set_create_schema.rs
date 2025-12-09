@@ -13,14 +13,14 @@ use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct SynonymSetCreateSchema<'a> {
+pub struct SynonymSetCreateSchema {
     /// Array of synonym items
     #[serde(rename = "items")]
-    pub items: Vec<models::SynonymItemSchema<'a>>,
+    pub items: Vec<models::SynonymItemSchema>,
 }
 
-impl<'a> SynonymSetCreateSchema<'a> {
-    pub fn new(items: Vec<models::SynonymItemSchema<'a>>) -> Self {
+impl SynonymSetCreateSchema {
+    pub fn new(items: Vec<models::SynonymItemSchema>) -> Self {
         Self { items }
     }
 }

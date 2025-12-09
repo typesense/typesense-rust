@@ -8,6 +8,7 @@ docs/AnalyticsEventsResponseEventsInner.md
 docs/AnalyticsRule.md
 docs/AnalyticsRuleCreate.md
 docs/AnalyticsRuleCreateParams.md
+docs/AnalyticsRuleType.md
 docs/AnalyticsRuleUpdate.md
 docs/AnalyticsStatus.md
 docs/ApiKey.md
@@ -29,7 +30,7 @@ docs/ConversationModelUpdateSchema.md
 docs/ConversationsApi.md
 docs/CreateAnalyticsRule200Response.md
 docs/CreateAnalyticsRule200ResponseOneOfInner.md
-docs/CreateAnalyticsRule200ResponseOneOfInnerAnyOf.md
+docs/CreateAnalyticsRule200ResponseOneOfInnerOneOf.md
 docs/CreateAnalyticsRuleRequest.md
 docs/CurationExclude.md
 docs/CurationInclude.md
@@ -106,6 +107,7 @@ docs/StopwordsSetsRetrieveAllSchema.md
 docs/SuccessStatus.md
 docs/SynonymItemDeleteSchema.md
 docs/SynonymItemSchema.md
+docs/SynonymItemUpsertSchema.md
 docs/SynonymSetCreateSchema.md
 docs/SynonymSetDeleteSchema.md
 docs/SynonymSetSchema.md
@@ -139,6 +141,7 @@ src/models/analytics_events_response_events_inner.rs
 src/models/analytics_rule.rs
 src/models/analytics_rule_create.rs
 src/models/analytics_rule_create_params.rs
+src/models/analytics_rule_type.rs
 src/models/analytics_rule_update.rs
 src/models/analytics_status.rs
 src/models/api_key.rs
@@ -158,7 +161,7 @@ src/models/conversation_model_schema.rs
 src/models/conversation_model_update_schema.rs
 src/models/create_analytics_rule_200_response.rs
 src/models/create_analytics_rule_200_response_one_of_inner.rs
-src/models/create_analytics_rule_200_response_one_of_inner_any_of.rs
+src/models/create_analytics_rule_200_response_one_of_inner_one_of.rs
 src/models/create_analytics_rule_request.rs
 src/models/curation_exclude.rs
 src/models/curation_include.rs
@@ -226,6 +229,7 @@ src/models/stopwords_sets_retrieve_all_schema.rs
 src/models/success_status.rs
 src/models/synonym_item_delete_schema.rs
 src/models/synonym_item_schema.rs
+src/models/synonym_item_upsert_schema.rs
 src/models/synonym_set_create_schema.rs
 src/models/synonym_set_delete_schema.rs
 src/models/synonym_set_schema.rs

@@ -17,7 +17,7 @@ pub struct AnalyticsRuleCreate<'a> {
     #[serde(rename = "name")]
     pub name: Cow<'a, str>,
     #[serde(rename = "type")]
-    pub r#type: Type,
+    pub r#type: models::AnalyticsRuleType,
     #[serde(rename = "collection")]
     pub collection: Cow<'a, str>,
     #[serde(rename = "event_type")]
@@ -31,7 +31,7 @@ pub struct AnalyticsRuleCreate<'a> {
 impl<'a> AnalyticsRuleCreate<'a> {
     pub fn new(
         name: Cow<'a, str>,
-        r#type: Type,
+        r#type: models::AnalyticsRuleType,
         collection: Cow<'a, str>,
         event_type: Cow<'a, str>,
     ) -> Self {
@@ -43,23 +43,5 @@ impl<'a> AnalyticsRuleCreate<'a> {
             rule_tag: None,
             params: None,
         }
-    }
-}
-///
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum Type {
-    #[serde(rename = "popular_queries")]
-    PopularQueries,
-    #[serde(rename = "nohits_queries")]
-    NohitsQueries,
-    #[serde(rename = "counter")]
-    Counter,
-    #[serde(rename = "log")]
-    Log,
-}
-
-impl Default for Type {
-    fn default() -> Type {
-        Self::PopularQueries
     }
 }

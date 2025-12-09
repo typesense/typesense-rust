@@ -59,7 +59,7 @@ pub struct UpsertSynonymSetParams<'p> {
     /// The name of the synonym set to create/update
     pub synonym_set_name: Cow<'p, str>,
     /// The synonym set to be created/updated
-    pub synonym_set_create_schema: models::SynonymSetCreateSchema<'p>,
+    pub synonym_set_create_schema: models::SynonymSetCreateSchema,
 }
 
 /// struct for passing parameters to the method [`upsert_synonym_set_item`]
@@ -70,7 +70,7 @@ pub struct UpsertSynonymSetItemParams<'p> {
     /// The id of the synonym item to upsert
     pub item_id: Cow<'p, str>,
     /// The synonym item to be created/updated
-    pub synonym_item_schema: models::SynonymItemSchema<'p>,
+    pub synonym_item_upsert_schema: models::SynonymItemUpsertSchema<'p>,
 }
 
 /// struct for typed errors of method [`delete_synonym_set`]
@@ -267,7 +267,7 @@ pub async fn delete_synonym_set_item(
 pub async fn retrieve_synonym_set(
     configuration: &configuration::Configuration,
     params: &RetrieveSynonymSetParams<'_>,
-) -> Result<models::SynonymSetCreateSchema<'static>, Error<RetrieveSynonymSetError>> {
+) -> Result<models::SynonymSetCreateSchema, Error<RetrieveSynonymSetError>> {
     let uri_str = format!(
         "{}/synonym_sets/{synonymSetName}",
         configuration.base_path,
@@ -328,7 +328,7 @@ pub async fn retrieve_synonym_set(
 pub async fn retrieve_synonym_set_item(
     configuration: &configuration::Configuration,
     params: &RetrieveSynonymSetItemParams<'_>,
-) -> Result<models::SynonymItemSchema<'static>, Error<RetrieveSynonymSetItemError>> {
+) -> Result<models::SynonymItemSchema, Error<RetrieveSynonymSetItemError>> {
     let uri_str = format!(
         "{}/synonym_sets/{synonymSetName}/items/{itemId}",
         configuration.base_path,
@@ -390,7 +390,7 @@ pub async fn retrieve_synonym_set_item(
 pub async fn retrieve_synonym_set_items(
     configuration: &configuration::Configuration,
     params: &RetrieveSynonymSetItemsParams<'_>,
-) -> Result<Vec<models::SynonymItemSchema<'static>>, Error<RetrieveSynonymSetItemsError>> {
+) -> Result<Vec<models::SynonymItemSchema>, Error<RetrieveSynonymSetItemsError>> {
     let uri_str = format!(
         "{}/synonym_sets/{synonymSetName}/items",
         configuration.base_path,
@@ -569,7 +569,7 @@ pub async fn upsert_synonym_set(
 pub async fn upsert_synonym_set_item(
     configuration: &configuration::Configuration,
     params: &UpsertSynonymSetItemParams<'_>,
-) -> Result<models::SynonymItemSchema<'static>, Error<UpsertSynonymSetItemError>> {
+) -> Result<models::SynonymItemSchema, Error<UpsertSynonymSetItemError>> {
     let uri_str = format!(
         "{}/synonym_sets/{synonymSetName}/items/{itemId}",
         configuration.base_path,
@@ -589,7 +589,7 @@ pub async fn upsert_synonym_set_item(
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&params.synonym_item_schema);
+    req_builder = req_builder.json(&params.synonym_item_upsert_schema);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;

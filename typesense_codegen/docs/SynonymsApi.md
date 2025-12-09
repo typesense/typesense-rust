@@ -227,7 +227,7 @@ Name | Type | Description  | Required | Notes
 
 ## upsert_synonym_set_item
 
-> models::SynonymItemSchema upsert_synonym_set_item(synonym_set_name, item_id, synonym_item_schema)
+> models::SynonymItemSchema upsert_synonym_set_item(synonym_set_name, item_id, synonym_item_upsert_schema)
 Create or update a synonym set item
 
 Create or update a synonym set item with the given id
@@ -239,7 +239,7 @@ Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **synonym_set_name** | **String** | The name of the synonym set | [required] |
 **item_id** | **String** | The id of the synonym item to upsert | [required] |
-**synonym_item_schema** | [**SynonymItemSchema**](SynonymItemSchema.md) | The synonym item to be created/updated | [required] |
+**synonym_item_upsert_schema** | [**SynonymItemUpsertSchema**](SynonymItemUpsertSchema.md) | The synonym item to be created/updated | [required] |
 
 ### Return type
 

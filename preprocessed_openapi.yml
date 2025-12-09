@@ -1036,7 +1036,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SynonymItemSchema'
+              $ref: '#/components/schemas/SynonymItemUpsertSchema'
       responses:
         '200':
           description: Synonym item successfully created/updated
@@ -2003,7 +2003,7 @@ paths:
               x-rust-has-borrowed-data: true
       responses:
         '200':
-          description: Compacting the on-disk database succeeded.
+          description: Toggle Slow Request Log database succeeded.
           content:
             application/json:
               schema:
@@ -2528,7 +2528,7 @@ paths:
                 - $ref: '#/components/schemas/AnalyticsRule'
                 - type: array
                   items:
-                    anyOf:
+                    oneOf:
                     - $ref: '#/components/schemas/AnalyticsRule'
                     - type: object
                       properties:
@@ -4441,12 +4441,7 @@ components:
         name:
           type: string
         type:
-          type: string
-          enum:
-          - popular_queries
-          - nohits_queries
-          - counter
-          - log
+          $ref: '#/components/schemas/AnalyticsRuleType'
         collection:
           type: string
         event_type:
@@ -4474,6 +4469,13 @@ components:
               type: integer
           x-rust-has-borrowed-data: true
       x-rust-has-borrowed-data: true
+    AnalyticsRuleType:
+      type: string
+      enum:
+      - popular_queries
+      - nohits_queries
+      - counter
+      - log
     AnalyticsRuleUpdate:
       type: object
       description: Fields allowed to update on an analytics rule
@@ -4859,15 +4861,11 @@ components:
         id:
           type: string
           description: ID of the deleted NL search model
-    SynonymItemSchema:
+    SynonymItemUpsertSchema:
       type: object
       required:
-      - id
       - synonyms
       properties:
-        id:
-          type: string
-          description: Unique identifier for the synonym item
         synonyms:
           type: array
           description: Array of words that should be considered as synonyms
@@ -4885,6 +4883,16 @@ components:
           items:
             type: string
       x-rust-has-borrowed-data: true
+    SynonymItemSchema:
+      allOf:
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            type: string
+            description: Unique identifier for the synonym item
+      - $ref: '#/components/schemas/SynonymItemUpsertSchema'
     SynonymSetCreateSchema:
       type: object
       required:
