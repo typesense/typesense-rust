@@ -78,7 +78,7 @@ Name | Type | Description  | Required | Notes
 
 ## retrieve_synonym_set
 
-> models::SynonymSetCreateSchema retrieve_synonym_set(synonym_set_name)
+> models::SynonymSetSchema retrieve_synonym_set(synonym_set_name)
 Retrieve a synonym set
 
 Retrieve a specific synonym set by its name
@@ -92,7 +92,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::SynonymSetCreateSchema**](SynonymSetCreateSchema.md)
+[**models::SynonymSetSchema**](SynonymSetSchema.md)
 
 ### Authorization
 
