@@ -38,7 +38,7 @@ jobs:
           TYPESENSE_ENABLE_SEARCH_ANALYTICS: 'true'
           TYPESENSE_ANALYTICS_DIR: '/analytics-data'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Cache .cargo and target
         uses: actions/cache@v4
         with:
