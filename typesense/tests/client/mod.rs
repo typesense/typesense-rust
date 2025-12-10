@@ -12,6 +12,7 @@ mod operations_test;
 mod presets_test;
 mod stemming_dictionaries_test;
 mod stopwords_test;
+mod synonym_sets_test;
 
 use std::time::Duration;
 use typesense::{Client, ExponentialBackoff};
