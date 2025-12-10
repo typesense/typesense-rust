@@ -267,7 +267,7 @@ pub async fn delete_curation_set_item(
 pub async fn retrieve_curation_set(
     configuration: &configuration::Configuration,
     params: &RetrieveCurationSetParams<'_>,
-) -> Result<models::CurationSetCreateSchema<'static>, Error<RetrieveCurationSetError>> {
+) -> Result<models::CurationSetSchema, Error<RetrieveCurationSetError>> {
     let uri_str = format!(
         "{}/curation_sets/{curationSetName}",
         configuration.base_path,
@@ -304,12 +304,12 @@ pub async fn retrieve_curation_set(
             ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::CurationSetCreateSchema`",
+                    "Received `text/plain` content type response that cannot be converted to `models::CurationSetSchema`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::CurationSetCreateSchema`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::CurationSetSchema`"
                 ))));
             }
         }

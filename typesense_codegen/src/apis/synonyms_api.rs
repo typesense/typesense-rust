@@ -267,7 +267,7 @@ pub async fn delete_synonym_set_item(
 pub async fn retrieve_synonym_set(
     configuration: &configuration::Configuration,
     params: &RetrieveSynonymSetParams<'_>,
-) -> Result<models::SynonymSetCreateSchema, Error<RetrieveSynonymSetError>> {
+) -> Result<models::SynonymSetSchema, Error<RetrieveSynonymSetError>> {
     let uri_str = format!(
         "{}/synonym_sets/{synonymSetName}",
         configuration.base_path,
@@ -304,12 +304,12 @@ pub async fn retrieve_synonym_set(
             ContentType::Json => serde_json::from_str(&content).map_err(Error::from),
             ContentType::Text => {
                 return Err(Error::from(serde_json::Error::custom(
-                    "Received `text/plain` content type response that cannot be converted to `models::SynonymSetCreateSchema`",
+                    "Received `text/plain` content type response that cannot be converted to `models::SynonymSetSchema`",
                 )));
             }
             ContentType::Unsupported(unknown_type) => {
                 return Err(Error::from(serde_json::Error::custom(format!(
-                    "Received `{unknown_type}` content type response that cannot be converted to `models::SynonymSetCreateSchema`"
+                    "Received `{unknown_type}` content type response that cannot be converted to `models::SynonymSetSchema`"
                 ))));
             }
         }

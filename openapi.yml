@@ -495,7 +495,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SynonymSetRetrieveSchema"
+                $ref: "#/components/schemas/SynonymSetSchema"
         "404":
           description: Synonym set not found
           content:
@@ -735,7 +735,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CurationSetRetrieveSchema"
+                $ref: "#/components/schemas/CurationSetSchema"
         "404":
           description: Curation set not found
           content:
@@ -4432,8 +4432,6 @@ components:
           items:
             $ref: "#/components/schemas/SynonymSetSchema"
 
-    SynonymSetRetrieveSchema:
-      $ref: "#/components/schemas/SynonymSetCreateSchema"
 
     SynonymSetDeleteSchema:
       type: object
@@ -4594,9 +4592,6 @@ components:
         id:
           type: string
           description: document id that should be excluded from the search results.
-
-    CurationSetRetrieveSchema:
-      $ref: '#/components/schemas/CurationSetCreateSchema'
 
     CurationSetDeleteSchema:
       type: object

@@ -112,6 +112,8 @@ mod analytics;
 mod collection;
 mod collections;
 mod conversations;
+mod curation_set;
+mod curation_sets;
 mod key;
 mod keys;
 mod multi_search;
@@ -121,6 +123,8 @@ mod presets;
 mod stemming;
 mod stopword;
 mod stopwords;
+mod synonym_set;
+mod synonym_sets;
 
 use crate::{Error, traits::Document};
 use alias::Alias;
@@ -129,6 +133,8 @@ use analytics::Analytics;
 use collection::Collection;
 use collections::Collections;
 use conversations::Conversations;
+use curation_set::CurationSet;
+use curation_sets::CurationSets;
 use key::Key;
 use keys::Keys;
 use operations::Operations;
@@ -137,6 +143,8 @@ use presets::Presets;
 use stemming::Stemming;
 use stopword::Stopword;
 use stopwords::Stopwords;
+use synonym_set::SynonymSet;
+use synonym_sets::SynonymSets;
 
 #[cfg(not(target_arch = "wasm32"))]
 use reqwest_middleware::ClientBuilder as ReqwestMiddlewareClientBuilder;
@@ -624,6 +632,54 @@ impl Client {
         Conversations::new(self)
     }
 
+    /// Provides access to endpoints for managing curation sets.
+    /// # Example
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec!["http://localhost:8108"])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let curation_sets = client.curation_sets().retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    #[inline]
+    pub fn curation_sets(&self) -> CurationSets<'_> {
+        CurationSets::new(self)
+    }
+
+    /// Provides access to endpoints for managing a specific curation set.
+    /// # Example
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec!["http://localhost:8108"])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let curation_set = client.curation_set("curation_set_name").retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    #[inline]
+    pub fn curation_set<'a>(&'a self, curation_set_name: &'a str) -> CurationSet<'a> {
+        CurationSet::new(self, curation_set_name)
+    }
+
     /// Provides access to endpoints for managing the collection of API keys.
     ///
     /// # Example
@@ -872,6 +928,59 @@ impl Client {
     #[inline]
     pub fn stopword<'a>(&'a self, set_id: &'a str) -> Stopword<'a> {
         Stopword::new(self, set_id)
+    }
+
+    /// Provides access to endpoints for managing all synonym sets.
+    ///
+    /// # Example
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec!["http://localhost:8108"])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let all_synonym_sets = client.synonym_sets().retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    #[inline]
+    pub fn synonym_sets(&self) -> SynonymSets<'_> {
+        SynonymSets::new(self)
+    }
+
+    /// Provides access to endpoints for managing a single synonym set.
+    ///
+    /// # Arguments
+    /// * `synonym_set_name` - The name of the synonym set to manage.
+    ///
+    /// # Example
+    /// ```no_run
+    /// # #[cfg(not(target_family = "wasm"))]
+    /// # {
+    /// # use typesense::Client;
+    /// #
+    /// # #[tokio::main]
+    /// # async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    /// # let client = Client::builder()
+    /// #    .nodes(vec!["http://localhost:8108"])
+    /// #    .api_key("xyz")
+    /// #    .build()
+    /// #    .unwrap();
+    /// let my_synonym_set = client.synonym_set("synonym_set_name").retrieve().await.unwrap();
+    /// # Ok(())
+    /// # }
+    /// # }
+    /// ```
+    #[inline]
+    pub fn synonym_set<'a>(&'a self, synonym_set_name: &'a str) -> SynonymSet<'a> {
+        SynonymSet::new(self, synonym_set_name)
     }
 }
 

@@ -78,7 +78,7 @@ Name | Type | Description  | Required | Notes
 
 ## retrieve_curation_set
 
-> models::CurationSetCreateSchema retrieve_curation_set(curation_set_name)
+> models::CurationSetSchema retrieve_curation_set(curation_set_name)
 Retrieve a curation set
 
 Retrieve a specific curation set by its name
@@ -92,7 +92,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**models::CurationSetCreateSchema**](CurationSetCreateSchema.md)
+[**models::CurationSetSchema**](CurationSetSchema.md)
 
 ### Authorization
 

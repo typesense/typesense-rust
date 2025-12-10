@@ -3,6 +3,7 @@ mod analytics_test;
 mod client_test;
 mod collections_test;
 mod conversation_models_test;
+mod curation_sets_test;
 mod derive_integration_test;
 mod documents_test;
 mod keys_test;
@@ -11,6 +12,7 @@ mod operations_test;
 mod presets_test;
 mod stemming_dictionaries_test;
 mod stopwords_test;
+mod synonym_sets_test;
 
 use std::time::Duration;
 use typesense::{Client, ExponentialBackoff};
