@@ -48,6 +48,8 @@ trybuild = "1.0.42"
 # native-only dev deps
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 tokio = { workspace = true}
+tokio-rustls = "0.26"
+rcgen = "0.14"
 wiremock = "0.6"
 
 # wasm test deps

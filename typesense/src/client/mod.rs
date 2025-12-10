@@ -220,6 +220,7 @@ impl Client {
     /// - **healthcheck_interval**: 60 seconds.
     /// - **retry_policy**: Exponential backoff with a maximum of 3 retries. (disabled on WASM)
     /// - **connection_timeout**: 5 seconds. (disabled on WASM)
+    /// - **http_builder**: An `Fn()` closure returning a `reqwest::ClientBuilder` instance (optional).
     #[builder]
     pub fn new(
         /// The Typesense API key used for authentication.
@@ -245,6 +246,16 @@ impl Client {
         #[builder(default = Duration::from_secs(5))]
         /// The timeout for each individual network request.
         connection_timeout: Duration,
+
+        /// An optional custom builder for the HTTP client.
+        ///
+        /// This is useful if you need to configure custom settings on the HTTP client.
+        /// The value should be a closure that returns a `reqwest::ClientBuilder` instance.
+        ///
+        /// Note that this library may apply its own settings before building the client (eg. `connection_timeout`),
+        /// so not all custom settings may be preserved.
+        #[builder(with = |f: impl Fn() -> reqwest::ClientBuilder + 'static| Box::new(f))]
+        http_builder: Option<Box<dyn Fn() -> reqwest::ClientBuilder>>,
     ) -> Result<Self, &'static str> {
         let is_nearest_node_set = nearest_node.is_some();
 
@@ -252,14 +263,18 @@ impl Client {
             .into_iter()
             .chain(nearest_node)
             .map(|mut url| {
+                let http_buidler = http_builder
+                    .as_ref()
+                    .map(|f| f())
+                    .unwrap_or_else(reqwest::Client::builder);
                 #[cfg(target_arch = "wasm32")]
-                let http_client = reqwest::Client::builder()
+                let http_client = http_buidler
                     .build()
                     .expect("Failed to build reqwest client");
 
                 #[cfg(not(target_arch = "wasm32"))]
                 let http_client = ReqwestMiddlewareClientBuilder::new(
-                    reqwest::Client::builder()
+                    http_buidler
                         .timeout(connection_timeout)
                         .build()
                         .expect("Failed to build reqwest client"),
