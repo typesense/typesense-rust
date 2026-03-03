@@ -28,7 +28,6 @@
 //!         .api_key("xyz")
 //!         .healthcheck_interval(Duration::from_secs(60))
 //!         .retry_policy(ExponentialBackoff::builder().build_with_max_retries(3))
-//!         .connection_timeout(Duration::from_secs(5))
 //!         .build()
 //!         .unwrap();
 //!
@@ -59,8 +58,7 @@
 //! ### WebAssembly (Wasm) Usage
 //!
 //! When compiling for a WebAssembly target (`wasm32-unknown-unknown`),
-//! Tokio-based features such as middleware, retries, and connection
-//! timeouts are **not available**.
+//! Tokio-based features such as middleware and retries are **not available**.
 //!
 //! Example:
 //!
@@ -78,8 +76,7 @@
 //!             .nodes(vec!["http://localhost:8108"])
 //!             .api_key("xyz")
 //!             .healthcheck_interval(Duration::from_secs(60))
-//!             // .retry_policy(...)       <-- not supported in Wasm
-//!             // .connection_timeout(...) <-- not supported in Wasm
+//!             // .retry_policy(...)  <-- not supported in Wasm
 //!             .build()
 //!             .unwrap();
 //!
@@ -182,6 +179,100 @@ macro_rules! execute_wrapper {
     };
 }
 
+/// Configuration for a single Typesense node.
+///
+/// Use this to customize the HTTP client for specific nodes,
+/// for example to add custom TLS root certificates or configure proxies.
+///
+/// For simple cases, you can pass a plain URL string to the builder's
+/// `.nodes()` method, which will be automatically converted.
+///
+/// # Examples
+///
+/// ```
+/// use typesense::NodeConfig;
+///
+/// // Simple URL (same as passing a string directly)
+/// let node = NodeConfig::new("https://node1.example.com");
+///
+/// // With custom HTTP client configuration
+/// let node = NodeConfig::new("https://node2.example.com")
+///     .http_builder(|builder| {
+///         builder.connect_timeout(std::time::Duration::from_secs(10))
+///     });
+/// ```
+pub struct NodeConfig {
+    url: String,
+    http_builder: Option<Box<dyn Fn(reqwest::ClientBuilder) -> reqwest::ClientBuilder>>,
+}
+
+impl std::fmt::Debug for NodeConfig {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("NodeConfig")
+            .field("url", &self.url)
+            .field("http_builder", &self.http_builder.as_ref().map(|_| ".."))
+            .finish()
+    }
+}
+
+impl NodeConfig {
+    /// Creates a new `NodeConfig` with the given URL.
+    pub fn new(url: impl Into<String>) -> Self {
+        Self {
+            url: url.into(),
+            http_builder: None,
+        }
+    }
+
+    /// Sets a custom HTTP client builder for this node.
+    ///
+    /// The closure receives a default [`reqwest::ClientBuilder`] and should return
+    /// a configured builder. This is useful for adding custom TLS certificates,
+    /// proxies, or other reqwest settings.
+    ///
+    /// When not set, a default builder with a 5-second connect timeout is used
+    /// (native targets only; WASM uses the browser's defaults).
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use typesense::NodeConfig;
+    ///
+    /// let cert = reqwest::Certificate::from_pem(b"...").unwrap();
+    /// let node = NodeConfig::new("https://secure.example.com")
+    ///     .http_builder(move |builder| {
+    ///         builder
+    ///             .add_root_certificate(cert.clone())
+    ///             .connect_timeout(std::time::Duration::from_secs(10))
+    ///     });
+    /// ```
+    pub fn http_builder(
+        mut self,
+        f: impl Fn(reqwest::ClientBuilder) -> reqwest::ClientBuilder + 'static,
+    ) -> Self {
+        self.http_builder = Some(Box::new(f));
+        self
+    }
+}
+
+impl From<String> for NodeConfig {
+    fn from(url: String) -> Self {
+        Self::new(url)
+    }
+}
+
+impl<'a> From<&'a str> for NodeConfig {
+    fn from(url: &'a str) -> Self {
+        Self::new(url)
+    }
+}
+
+impl From<reqwest::Url> for NodeConfig {
+    fn from(url: reqwest::Url) -> Self {
+        Self::new(url)
+    }
+}
+
 // This is an internal detail to track the state of each node.
 #[derive(Debug)]
 struct Node {
@@ -219,54 +310,64 @@ impl Client {
     /// - **nearest_node**: None.
     /// - **healthcheck_interval**: 60 seconds.
     /// - **retry_policy**: Exponential backoff with a maximum of 3 retries. (disabled on WASM)
-    /// - **connection_timeout**: 5 seconds. (disabled on WASM)
+    /// - **http_builder**: An `Fn(reqwest::ClientBuilder) -> reqwest::ClientBuilder` closure
+    ///   for per-node HTTP client customization (optional, via [`NodeConfig`]).
+    ///
+    /// When no custom `http_builder` is configured, a default `reqwest::ClientBuilder` with
+    /// a 5-second connect timeout is used (native targets only).
     #[builder]
     pub fn new(
         /// The Typesense API key used for authentication.
         #[builder(into)]
         api_key: String,
         /// A list of all nodes in the Typesense cluster.
+        ///
+        /// Accepts plain URL strings or [`NodeConfig`] instances for per-node
+        /// HTTP client customization.
         #[builder(
-            with = |iter: impl IntoIterator<Item = impl Into<String>>|
-                iter.into_iter().map(Into::into).collect::<Vec<String>>()
+            with = |iter: impl IntoIterator<Item = impl Into<NodeConfig>>|
+                iter.into_iter().map(Into::into).collect::<Vec<NodeConfig>>()
         )]
-        nodes: Vec<String>,
+        nodes: Vec<NodeConfig>,
         #[builder(into)]
         /// An optional, preferred node to try first for every request.
         /// This is for your server-side load balancer.
         /// Do not add this node to all nodes list, should be a separate one.
-        nearest_node: Option<String>,
+        nearest_node: Option<NodeConfig>,
         #[builder(default = Duration::from_secs(60))]
         /// The duration after which an unhealthy node will be retried for requests.
         healthcheck_interval: Duration,
         #[builder(default = ExponentialBackoff::builder().build_with_max_retries(3))]
         /// The retry policy for transient network errors on a *single* node.
         retry_policy: ExponentialBackoff,
-        #[builder(default = Duration::from_secs(5))]
-        /// The timeout for each individual network request.
-        connection_timeout: Duration,
     ) -> Result<Self, &'static str> {
         let is_nearest_node_set = nearest_node.is_some();
 
         let nodes: Vec<_> = nodes
             .into_iter()
             .chain(nearest_node)
-            .map(|mut url| {
+            .map(|node_config| {
+                let builder = match node_config.http_builder {
+                    Some(f) => f(reqwest::Client::builder()),
+                    None => {
+                        let b = reqwest::Client::builder();
+                        #[cfg(not(target_arch = "wasm32"))]
+                        let b = b.connect_timeout(Duration::from_secs(5));
+                        b
+                    }
+                };
+
                 #[cfg(target_arch = "wasm32")]
-                let http_client = reqwest::Client::builder()
-                    .build()
-                    .expect("Failed to build reqwest client");
+                let http_client = builder.build().expect("Failed to build reqwest client");
 
                 #[cfg(not(target_arch = "wasm32"))]
                 let http_client = ReqwestMiddlewareClientBuilder::new(
-                    reqwest::Client::builder()
-                        .timeout(connection_timeout)
-                        .build()
-                        .expect("Failed to build reqwest client"),
+                    builder.build().expect("Failed to build reqwest client"),
                 )
                 .with(RetryTransientMiddleware::new_with_policy(retry_policy))
                 .build();
 
+                let mut url = node_config.url;
                 if url.len() > 1 && matches!(url.chars().last(), Some('/')) {
                     url.pop();
                 }
