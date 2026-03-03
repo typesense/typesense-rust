@@ -48,7 +48,6 @@
 //!             .api_key("xyz")
 //!             .healthcheck_interval(Duration::from_secs(60))
 //!             .retry_policy(ExponentialBackoff::builder().build_with_max_retries(3))
-//!             .connection_timeout(Duration::from_secs(5))
 //!             .build()?;
 //!
 //!         // Create the collection in Typesense
@@ -68,8 +67,7 @@
 //! ### WebAssembly (Wasm)
 //!
 //! This example is tailored for a WebAssembly target.
-//! Key difference: Tokio-dependent features like `.retry_policy()` and `.connection_timeout()`
-//! are disabled. You can still set them in the client builder but it will do nothing.
+//! Key difference: Tokio-dependent features like `.retry_policy()` are disabled.
 //!
 //! ```no_run
 //! #[cfg(target_family = "wasm")]
@@ -98,8 +96,7 @@
 //!                 .nodes(vec!["http://localhost:8108"])
 //!                 .api_key("xyz")
 //!                 .healthcheck_interval(Duration::from_secs(60))
-//!                 // .retry_policy(...)       <-- disabled in Wasm
-//!                 // .connection_timeout(...) <-- disabled in Wasm
+//!                 // .retry_policy(...)  <-- disabled in Wasm
 //!                 .build()
 //!                 .unwrap();
 //!
@@ -119,7 +116,7 @@ pub mod error;
 pub mod models;
 pub mod prelude;
 
-pub use client::{Client, ExponentialBackoff};
+pub use client::{Client, ExponentialBackoff, NodeConfig};
 pub use error::*;
 
 pub use typesense_codegen as legacy;

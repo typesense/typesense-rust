@@ -116,7 +116,6 @@ fn get_test_client(uri: &str) -> Client {
         .api_key("TEST_API_KEY")
         .healthcheck_interval(Duration::from_secs(60))
         .retry_policy(ExponentialBackoff::builder().build_with_max_retries(0))
-        .connection_timeout(Duration::from_secs(1))
         .build()
         .expect("Failed to create client")
 }

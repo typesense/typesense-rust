@@ -6,6 +6,7 @@ mod conversation_models_test;
 mod curation_sets_test;
 mod derive_integration_test;
 mod documents_test;
+mod http_builder_test;
 mod keys_test;
 mod multi_search_test;
 mod operations_test;
@@ -25,7 +26,6 @@ pub fn get_client() -> Client {
         .api_key("xyz")
         .healthcheck_interval(Duration::from_secs(5))
         .retry_policy(ExponentialBackoff::builder().build_with_max_retries(0))
-        .connection_timeout(Duration::from_secs(3))
         .build()
         .expect("Failed to create Typesense client")
 }
