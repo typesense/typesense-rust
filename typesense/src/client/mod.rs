@@ -207,21 +207,7 @@ macro_rules! execute_wrapper {
 /// ```
 pub struct NodeConfig {
     url: String,
-    http_builder: Option<Box<dyn HttpBuilderFn>>,
-}
-
-/// Internal helper to allow storing and calling a boxed `FnOnce`.
-trait HttpBuilderFn: Send {
-    fn call_once(self: Box<Self>, builder: reqwest::ClientBuilder) -> reqwest::ClientBuilder;
-}
-
-impl<F> HttpBuilderFn for F
-where
-    F: FnOnce(reqwest::ClientBuilder) -> reqwest::ClientBuilder + Send,
-{
-    fn call_once(self: Box<Self>, builder: reqwest::ClientBuilder) -> reqwest::ClientBuilder {
-        (*self)(builder)
-    }
+    http_builder: Option<Box<dyn FnOnce(reqwest::ClientBuilder) -> reqwest::ClientBuilder>>,
 }
 
 impl std::fmt::Debug for NodeConfig {
@@ -260,14 +246,11 @@ impl NodeConfig {
     /// // and apply it to the `reqwest::ClientBuilder` on platforms that support it.
     /// let node = NodeConfig::new("https://secure.example.com")
     ///     .http_builder(move |builder| {
-    ///         // Example (native-only, not shown here to keep the example
-    ///         // portable across native and WASM):
-    ///         //
-    ///         //   builder
-    ///         //       .add_root_certificate(cert)
-    ///         //       .connect_timeout(std::time::Duration::from_secs(10))
-    ///         //
-    ///         // For this doctest, we just return the builder unchanged.
+    ///         #[cfg(not(target_family = "wasm"))]
+    ///         let builder = builder
+    ///             .add_root_certificate(cert)
+    ///             .connect_timeout(std::time::Duration::from_secs(10));
+    ///
     ///         builder
     ///     });
     /// ```
@@ -288,7 +271,9 @@ impl NodeConfig {
     ///     .map(|url| {
     ///         let cert_for_node = cert.clone();
     ///         NodeConfig::new(url).http_builder(move |b| {
-    ///             b.add_root_certificate(cert_for_node) // reqwest takes ownership
+    ///             #[cfg(not(target_family = "wasm"))]
+    ///             let b = b.add_root_certificate(cert_for_node);
+    ///             b
     ///         })
     ///     })
     ///     .collect::<Vec<_>>();
@@ -296,7 +281,7 @@ impl NodeConfig {
     /// ```
     pub fn http_builder(
         mut self,
-        f: impl FnOnce(reqwest::ClientBuilder) -> reqwest::ClientBuilder + Send + 'static,
+        f: impl FnOnce(reqwest::ClientBuilder) -> reqwest::ClientBuilder + 'static,
     ) -> Self {
         self.http_builder = Some(Box::new(f));
         self
@@ -396,7 +381,7 @@ impl Client {
             .chain(nearest_node)
             .map(|node_config| {
                 let builder = match node_config.http_builder {
-                    Some(f) => f.call_once(reqwest::Client::builder()),
+                    Some(f) => f(reqwest::Client::builder()),
                     None => {
                         let b = reqwest::Client::builder();
                         #[cfg(not(target_arch = "wasm32"))]
