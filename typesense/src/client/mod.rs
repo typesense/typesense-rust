@@ -240,19 +240,21 @@ impl NodeConfig {
     /// # Examples
     ///
     /// ```no_run
+    /// #[cfg(not(target_family = "wasm"))]
+    /// {
     /// use typesense::NodeConfig;
     ///
+    /// # fn cert() -> reqwest::Certificate { unimplemented!() }
+    /// let cert = cert();
     /// // You can capture arbitrary configuration here (certs, proxies, etc.)
     /// // and apply it to the `reqwest::ClientBuilder` on platforms that support it.
     /// let node = NodeConfig::new("https://secure.example.com")
     ///     .http_builder(move |builder| {
-    ///         #[cfg(not(target_family = "wasm"))]
-    ///         let builder = builder
-    ///             .add_root_certificate(cert)
-    ///             .connect_timeout(std::time::Duration::from_secs(10));
-    ///
     ///         builder
+    ///             .add_root_certificate(cert)
+    ///             .connect_timeout(std::time::Duration::from_secs(10))
     ///     });
+    /// }
     /// ```
     ///
     /// # Multiple nodes with the same configuration
@@ -262,6 +264,8 @@ impl NodeConfig {
     /// multiple nodes, clone the value once per node when building the configs:
     ///
     /// ```no_run
+    /// #[cfg(not(target_family = "wasm"))]
+    /// {
     /// use typesense::{Client, NodeConfig};
     ///
     /// # fn cert() -> reqwest::Certificate { unimplemented!() }
@@ -271,13 +275,12 @@ impl NodeConfig {
     ///     .map(|url| {
     ///         let cert_for_node = cert.clone();
     ///         NodeConfig::new(url).http_builder(move |b| {
-    ///             #[cfg(not(target_family = "wasm"))]
-    ///             let b = b.add_root_certificate(cert_for_node);
-    ///             b
+    ///             b.add_root_certificate(cert_for_node)
     ///         })
     ///     })
     ///     .collect::<Vec<_>>();
     /// let _client = Client::builder().nodes(nodes).api_key("key").build();
+    /// }
     /// ```
     pub fn http_builder(
         mut self,
