@@ -49,11 +49,7 @@ pub(super) async fn test_http_builder_tls() {
     let client = typesense::Client::builder()
         .nodes(vec![
             NodeConfig::new(format!("https://localhost:{}", server_addr.port())).http_builder(
-                move |builder| {
-                    builder
-                        .add_root_certificate(client_cert.clone())
-                        .https_only(true)
-                },
+                move |builder| builder.add_root_certificate(client_cert).https_only(true),
             ),
         ])
         .api_key(api_key)

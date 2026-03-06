@@ -207,7 +207,21 @@ macro_rules! execute_wrapper {
 /// ```
 pub struct NodeConfig {
     url: String,
-    http_builder: Option<Box<dyn Fn(reqwest::ClientBuilder) -> reqwest::ClientBuilder>>,
+    http_builder: Option<Box<dyn HttpBuilderFn>>,
+}
+
+/// Internal helper to allow storing and calling a boxed `FnOnce`.
+trait HttpBuilderFn: Send {
+    fn call_once(self: Box<Self>, builder: reqwest::ClientBuilder) -> reqwest::ClientBuilder;
+}
+
+impl<F> HttpBuilderFn for F
+where
+    F: FnOnce(reqwest::ClientBuilder) -> reqwest::ClientBuilder + Send,
+{
+    fn call_once(self: Box<Self>, builder: reqwest::ClientBuilder) -> reqwest::ClientBuilder {
+        (*self)(builder)
+    }
 }
 
 impl std::fmt::Debug for NodeConfig {
@@ -250,16 +264,39 @@ impl NodeConfig {
     ///         // portable across native and WASM):
     ///         //
     ///         //   builder
-    ///         //       .add_root_certificate(cert.clone())
+    ///         //       .add_root_certificate(cert)
     ///         //       .connect_timeout(std::time::Duration::from_secs(10))
     ///         //
     ///         // For this doctest, we just return the builder unchanged.
     ///         builder
     ///     });
     /// ```
+    ///
+    /// # Multiple nodes with the same configuration
+    ///
+    /// The closure is `FnOnce`, so it is consumed when the HTTP client for that node
+    /// is built. To use the same configuration (e.g. the same TLS certificate) for
+    /// multiple nodes, clone the value once per node when building the configs:
+    ///
+    /// ```no_run
+    /// use typesense::{Client, NodeConfig};
+    ///
+    /// # fn cert() -> reqwest::Certificate { unimplemented!() }
+    /// let cert = cert();
+    /// let nodes = ["https://node1:8108", "https://node2:8108"]
+    ///     .into_iter()
+    ///     .map(|url| {
+    ///         let cert_for_node = cert.clone();
+    ///         NodeConfig::new(url).http_builder(move |b| {
+    ///             b.add_root_certificate(cert_for_node) // reqwest takes ownership
+    ///         })
+    ///     })
+    ///     .collect::<Vec<_>>();
+    /// let _client = Client::builder().nodes(nodes).api_key("key").build();
+    /// ```
     pub fn http_builder(
         mut self,
-        f: impl Fn(reqwest::ClientBuilder) -> reqwest::ClientBuilder + 'static,
+        f: impl FnOnce(reqwest::ClientBuilder) -> reqwest::ClientBuilder + Send + 'static,
     ) -> Self {
         self.http_builder = Some(Box::new(f));
         self
@@ -321,7 +358,7 @@ impl Client {
     /// - **nearest_node**: None.
     /// - **healthcheck_interval**: 60 seconds.
     /// - **retry_policy**: Exponential backoff with a maximum of 3 retries. (disabled on WASM)
-    /// - **http_builder**: An `Fn(reqwest::ClientBuilder) -> reqwest::ClientBuilder` closure
+    /// - **http_builder**: An `FnOnce(reqwest::ClientBuilder) -> reqwest::ClientBuilder` closure
     ///   for per-node HTTP client customization (optional, via [`NodeConfig`]).
     ///
     /// When no custom `http_builder` is configured, a default `reqwest::ClientBuilder` with
@@ -359,7 +396,7 @@ impl Client {
             .chain(nearest_node)
             .map(|node_config| {
                 let builder = match node_config.http_builder {
-                    Some(f) => f(reqwest::Client::builder()),
+                    Some(f) => f.call_once(reqwest::Client::builder()),
                     None => {
                         let b = reqwest::Client::builder();
                         #[cfg(not(target_arch = "wasm32"))]
