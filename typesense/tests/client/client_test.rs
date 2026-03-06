@@ -49,7 +49,6 @@ fn get_client(nodes: Vec<String>, nearest_node: Option<String>) -> Client {
         .api_key("test-key")
         .healthcheck_interval(Duration::from_secs(60))
         .retry_policy(ExponentialBackoff::builder().build_with_max_retries(0))
-        .connection_timeout(Duration::from_secs(1))
         .build()
         .expect("Failed to create client")
 }
@@ -186,7 +185,6 @@ async fn test_health_check_and_node_recovery() {
         .api_key("test-key")
         .healthcheck_interval(Duration::from_millis(500)) // Use a very short healthcheck interval for the test
         .retry_policy(ExponentialBackoff::builder().build_with_max_retries(0))
-        .connection_timeout(Duration::from_secs(1))
         .build()
         .expect("Failed to create client");
 
