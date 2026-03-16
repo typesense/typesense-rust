@@ -138,7 +138,7 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
     let name_partial = Ident::new(&(ident.to_string() + "Partial"), ident.span());
 
     let generated_code = quote! {
-        #[derive(Default, Serialize)]
+        #[derive(Default, ::serde::Serialize)]
         #vis struct #name_partial {
             #(#optional_fields)*
         }
