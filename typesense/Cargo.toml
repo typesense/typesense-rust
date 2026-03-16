@@ -13,6 +13,9 @@ default = ["derive"]
 # Provide derive(Typesense) macro.
 derive = ["typesense_derive"]
 
+# Add ToTypesenseField impls for chrono date/time types.
+chrono = ["dep:chrono"]
+
 [lib]
 crate-type = ["cdylib", "rlib"]
 
@@ -24,6 +27,7 @@ base64 = { workspace = true }
 bon = { workspace = true }
 hmac = { workspace = true }
 reqwest-retry = { workspace = true }
+chrono = { version = "0.4", optional = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 sha2 = { workspace = true }
