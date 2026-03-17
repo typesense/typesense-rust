@@ -56,20 +56,20 @@ macro_rules! impl_to_typesense_field (
         }
     };
 
-    ($for:ty, $typesense_type:expr, $any:ident) => {
-        impl<$any> $crate::prelude::ToTypesenseField for $for {
+    ($for:ty, $typesense_type:expr, $any:ident $(: $any_bound:path)?) => {
+        impl<$any $(: $any_bound)?> $crate::prelude::ToTypesenseField for $for {
             #[inline(always)]
             fn to_typesense_type() -> &'static str {
                 $typesense_type
             }
         }
-        impl<$any> $crate::prelude::ToTypesenseField for Vec<$for> {
+        impl<$any $(: $any_bound)?> $crate::prelude::ToTypesenseField for Vec<$for> {
             #[inline(always)]
             fn to_typesense_type() -> &'static str {
                 concat!($typesense_type, "[]")
             }
         }
-        impl<$any> $crate::prelude::ToTypesenseField for Vec<Option<$for>> {
+        impl<$any $(: $any_bound)?> $crate::prelude::ToTypesenseField for Vec<Option<$for>> {
             #[inline(always)]
             fn to_typesense_type() -> &'static str {
                 concat!($typesense_type, "[]")
@@ -97,9 +97,7 @@ impl_to_typesense_field!(BTreeMap<String, T>, "object", T);
 
 #[cfg(feature = "chrono")]
 mod chrono_support {
-    impl_to_typesense_field!(chrono::DateTime<chrono::Utc>, "string");
-    impl_to_typesense_field!(chrono::DateTime<chrono::Local>, "string");
-    impl_to_typesense_field!(chrono::DateTime<chrono::FixedOffset>, "string");
+    impl_to_typesense_field!(chrono::DateTime<T>, "string", T: chrono::TimeZone);
     impl_to_typesense_field!(chrono::NaiveDate, "string");
     impl_to_typesense_field!(chrono::NaiveDateTime, "string");
     impl_to_typesense_field!(chrono::NaiveTime, "string");
