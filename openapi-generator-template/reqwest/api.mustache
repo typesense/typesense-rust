@@ -13,15 +13,7 @@ use serde::{Deserialize, Serialize, de::Error as _};
 {{#-first}}
 /// struct for passing parameters to the method [`{{operationId}}`]
 #[derive(Clone, Debug)]
-pub struct {{{operationIdCamelCase}}}Params<'p{{!
-  Iterate through ALL parameters in the operation.
-  Only the requestBody has this extension defined, so it will print "<B>".
-  The other parameters have nothing, so they will print nothing.
-  This effectively extract the generic parameter from the requestBody
-  and places it on the struct definition line.
-}}{{#allParams}}
-{{#vendorExtensions.x-rust-params-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-params-generic-parameter}}
-{{/allParams}}> {
+pub struct {{{operationIdCamelCase}}}Params{{#vendorExtensions.x-rust-has-borrowed-data}}<'p{{#allParams}}{{#vendorExtensions.x-rust-params-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-params-generic-parameter}}{{/allParams}}>{{/vendorExtensions.x-rust-has-borrowed-data}}{{^vendorExtensions.x-rust-has-borrowed-data}}{{#allParams}}{{#-first}}{{#vendorExtensions.x-rust-params-generic-parameter}}<{{/vendorExtensions.x-rust-params-generic-parameter}}{{/-first}}{{/allParams}}{{#allParams}}{{#vendorExtensions.x-rust-params-generic-parameter}}{{{.}}}{{/vendorExtensions.x-rust-params-generic-parameter}}{{/allParams}}{{#allParams}}{{#-last}}{{#vendorExtensions.x-rust-params-generic-parameter}}>{{/vendorExtensions.x-rust-params-generic-parameter}}{{/-last}}{{/allParams}}{{/vendorExtensions.x-rust-has-borrowed-data}} {
 {{/-first}}
     {{#description}}
     /// {{{.}}}
@@ -37,8 +29,8 @@ pub struct {{{operationIdCamelCase}}}Params<'p{{!
     }}{{^isUuid}}{{#isString}}{{#isArray}}Vec<{{/isArray}}Cow<'p, str>{{#isArray}}>{{/isArray}}{{/isString}}{{/isUuid}}{{!
     ### UUIDs
     }}{{#isUuid}}{{#isArray}}Vec<{{/isArray}}String{{#isArray}}>{{/isArray}}{{/isUuid}}{{!
-    ### Models and primative types
-    }}{{^isString}}{{^isUuid}}{{^isPrimitiveType}}{{^isContainer}}models::{{/isContainer}}{{/isPrimitiveType}}{{{dataType}}}{{#isModel}}<'p>{{/isModel}}{{/isUuid}}{{/isString}}{{!
+    ### Models and primitive types
+    }}{{^isString}}{{^isUuid}}{{#isArray}}Vec<{{#items}}{{^isPrimitiveType}}models::{{/isPrimitiveType}}{{{dataType}}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'p>{{/vendorExtensions.x-rust-has-borrowed-data}}{{/items}}>{{/isArray}}{{^isArray}}{{^isPrimitiveType}}{{^isContainer}}models::{{/isContainer}}{{/isPrimitiveType}}{{{dataType}}}{{^isContainer}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'p>{{/vendorExtensions.x-rust-has-borrowed-data}}{{/isContainer}}{{/isArray}}{{/isUuid}}{{/isString}}{{!
     ### Option End
     }}{{^required}}>{{/required}}{{#required}}{{#isNullable}}>{{/isNullable}}{{/required}}{{!
     ### Comma for next arguement
@@ -108,7 +100,7 @@ pub enum {{{operationIdCamelCase}}}Error {
 {{#vendorExtensions.x-group-parameters}}
 pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}{{#vendorExtensions.x-rust-generic-parameter}}<{{{.}}}>{{/vendorExtensions.x-rust-generic-parameter}}(configuration: &configuration::Configuration{{#allParams}}{{#-first}}, {{!
 ### Params
-}}params: &{{{operationIdCamelCase}}}Params<'_{{#allParams}}{{#vendorExtensions.x-rust-params-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-params-generic-parameter}}{{/allParams}}>{{/-first}}{{/allParams}}{{!
+}}params: &{{{operationIdCamelCase}}}Params<{{#vendorExtensions.x-rust-has-borrowed-data}}'_{{#allParams}}{{#vendorExtensions.x-rust-params-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-params-generic-parameter}}{{/allParams}}{{/vendorExtensions.x-rust-has-borrowed-data}}{{^vendorExtensions.x-rust-has-borrowed-data}}{{#allParams}}{{#vendorExtensions.x-rust-params-generic-parameter}}{{{.}}}{{/vendorExtensions.x-rust-params-generic-parameter}}{{/allParams}}{{/vendorExtensions.x-rust-has-borrowed-data}}>{{/-first}}{{/allParams}}{{!
 ### Function return type
 }}) -> Result<{{#vendorExtensions.x-rust-return-type}}{{{.}}}{{/vendorExtensions.x-rust-return-type}}{{^vendorExtensions.x-rust-return-type}}{{!
 }}{{#isResponseFile}}{{#supportAsync}}reqwest::Response{{/supportAsync}}{{^supportAsync}}reqwest::blocking::Response{{/supportAsync}}{{/isResponseFile}}{{!

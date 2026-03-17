@@ -70,7 +70,7 @@ pub struct UpsertCurationSetItemParams<'p> {
     /// The id of the curation item to upsert
     pub item_id: Cow<'p, str>,
     /// The curation item to be created/updated
-    pub curation_item_create_schema: models::CurationItemCreateSchema<'p>,
+    pub curation_item_create_schema: models::CurationItemCreateSchema,
 }
 
 /// struct for typed errors of method [`delete_curation_set`]

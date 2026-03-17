@@ -223,7 +223,7 @@ pub enum {{classname}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a>{{/vendo
     {{#description}}
     /// {{{.}}}
     {{/description}}
-    {{{name}}}({{#isModel}}{{^avoidBoxedModels}}Box<{{/avoidBoxedModels}}{{/isModel}}{{#isArray}}Vec<{{{items.dataType}}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a>{{/vendorExtensions.x-rust-has-borrowed-data}}>{{/isArray}}{{^isArray}}{{{dataType}}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a>{{/vendorExtensions.x-rust-has-borrowed-data}}{{/isArray}}{{#isModel}}{{^avoidBoxedModels}}>{{/avoidBoxedModels}}{{/isModel}}),
+    {{{name}}}({{#isModel}}{{^avoidBoxedModels}}Box<{{/avoidBoxedModels}}{{/isModel}}{{#isArray}}Vec<{{{items.dataType}}}{{#items.vendorExtensions.x-rust-has-borrowed-data}}<'a>{{/items.vendorExtensions.x-rust-has-borrowed-data}}{{^items.vendorExtensions.x-rust-has-borrowed-data}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a>{{/vendorExtensions.x-rust-has-borrowed-data}}{{/items.vendorExtensions.x-rust-has-borrowed-data}}>{{/isArray}}{{^isArray}}{{{dataType}}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a>{{/vendorExtensions.x-rust-has-borrowed-data}}{{/isArray}}{{#isModel}}{{^avoidBoxedModels}}>{{/avoidBoxedModels}}{{/isModel}}),
 {{/composedSchemas.oneOf}}
 }
 

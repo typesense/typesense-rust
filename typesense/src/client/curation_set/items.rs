@@ -51,7 +51,7 @@ impl<'a> CurationSetItems<'a> {
     pub async fn upsert(
         &self,
         item_id: impl Into<Cow<'_, str>>,
-        schema: models::CurationItemCreateSchema<'_>,
+        schema: models::CurationItemCreateSchema,
     ) -> Result<models::CurationItemSchema, Error<curation_sets_api::UpsertCurationSetItemError>>
     {
         let params = curation_sets_api::UpsertCurationSetItemParams {

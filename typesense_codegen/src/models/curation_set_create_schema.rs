@@ -16,14 +16,14 @@ use serde::{Deserialize, Serialize};
 pub struct CurationSetCreateSchema<'a> {
     /// Array of curation items
     #[serde(rename = "items")]
-    pub items: Vec<models::CurationItemCreateSchema<'a>>,
+    pub items: Vec<models::CurationItemCreateSchema>,
     /// Optional description for the curation set
     #[serde(rename = "description", skip_serializing_if = "Option::is_none")]
     pub description: Option<Cow<'a, str>>,
 }
 
 impl<'a> CurationSetCreateSchema<'a> {
-    pub fn new(items: Vec<models::CurationItemCreateSchema<'a>>) -> Self {
+    pub fn new(items: Vec<models::CurationItemCreateSchema>) -> Self {
         Self {
             items,
             description: None,

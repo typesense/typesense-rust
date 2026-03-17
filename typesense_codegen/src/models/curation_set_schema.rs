@@ -16,7 +16,7 @@ use serde::{Deserialize, Serialize};
 pub struct CurationSetSchema {
     /// Array of curation items
     #[serde(rename = "items")]
-    pub items: Vec<models::CurationItemCreateSchema<'static>>,
+    pub items: Vec<models::CurationItemCreateSchema>,
     /// Optional description for the curation set
     #[serde(rename = "description", skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
@@ -25,7 +25,7 @@ pub struct CurationSetSchema {
 }
 
 impl CurationSetSchema {
-    pub fn new(items: Vec<models::CurationItemCreateSchema<'static>>, name: String) -> Self {
+    pub fn new(items: Vec<models::CurationItemCreateSchema>, name: String) -> Self {
         Self {
             items,
             description: None,

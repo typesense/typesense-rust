@@ -13,7 +13,7 @@ use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct CurationItemCreateSchema<'a> {
+pub struct CurationItemCreateSchema {
     #[serde(rename = "rule")]
     pub rule: Box<models::CurationRule>,
     /// List of document `id`s that should be included in the search results with their corresponding `position`s.
@@ -24,7 +24,7 @@ pub struct CurationItemCreateSchema<'a> {
     pub excludes: Option<Vec<models::CurationExclude>>,
     /// A filter by clause that is applied to any search query that matches the curation rule.
     #[serde(rename = "filter_by", skip_serializing_if = "Option::is_none")]
-    pub filter_by: Option<Cow<'a, str>>,
+    pub filter_by: Option<String>,
     /// Indicates whether search query tokens that exist in the curation's rule should be removed from the search query.
     #[serde(
         rename = "remove_matched_tokens",
@@ -36,10 +36,10 @@ pub struct CurationItemCreateSchema<'a> {
     pub metadata: Option<serde_json::Value>,
     /// A sort by clause that is applied to any search query that matches the curation rule.
     #[serde(rename = "sort_by", skip_serializing_if = "Option::is_none")]
-    pub sort_by: Option<Cow<'a, str>>,
+    pub sort_by: Option<String>,
     /// Replaces the current search query with this value, when the search query matches the curation rule.
     #[serde(rename = "replace_query", skip_serializing_if = "Option::is_none")]
-    pub replace_query: Option<Cow<'a, str>>,
+    pub replace_query: Option<String>,
     /// When set to true, the filter conditions of the query is applied to the curated records as well. Default: false.
     #[serde(
         rename = "filter_curated_hits",
@@ -57,10 +57,10 @@ pub struct CurationItemCreateSchema<'a> {
     pub stop_processing: Option<bool>,
     /// ID of the curation item
     #[serde(rename = "id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<Cow<'a, str>>,
+    pub id: Option<String>,
 }
 
-impl<'a> CurationItemCreateSchema<'a> {
+impl CurationItemCreateSchema {
     pub fn new(rule: models::CurationRule) -> Self {
         Self {
             rule: Box::new(rule),

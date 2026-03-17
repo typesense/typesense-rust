@@ -1,9 +1,15 @@
-use ::std::{collections::HashSet, fs};
+use ::std::fs;
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
 use serde_yaml::Value;
 
-use crate::add_vendor_attributes::add_vendor_attributes;
+use crate::{
+    add_vendor_attributes::add_vendor_attributes,
+    mark_borrowed_data::{
+        collect_request_schemas, collect_response_schemas, is_forced_borrow_model,
+        property_contains_string,
+    },
+};
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -202,31 +208,34 @@ pub fn preprocess_openapi_file(
 }
 
 impl OpenAPIProperty {
-    fn collect_properties(&self) -> Vec<String> {
-        let mut data = Vec::new();
-        if let Some(schema) = &self.r#ref {
-            data.push(
-                schema
-                    .trim_start_matches("#/components/schemas/")
-                    .to_owned(),
-            );
-        }
-        if let Some(p) = &self.items {
-            data.extend(p.collect_properties());
-        }
-        if let Some(v) = &self.any_of {
-            v.iter().for_each(|p| data.extend(p.collect_properties()));
-        }
-        if let Some(v) = &self.one_of {
-            v.iter().for_each(|p| data.extend(p.collect_properties()));
-        }
-        data
-    }
-
-    fn mark_borrowed_property(&mut self) {
-        if self.r#type.as_deref() == Some("object") || self.one_of.is_some() {
+    fn mark_borrowed_property_recursive(
+        &mut self,
+        schemas: &IndexMap<String, OpenAPIProperty>,
+        response_schemas: &std::collections::HashSet<String>,
+    ) {
+        let mut visited = std::collections::HashSet::new();
+        if property_contains_string(self, schemas, &mut visited, response_schemas) {
             self.extra
                 .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
+        }
+
+        if let Some(properties) = &mut self.properties {
+            for nested_property in properties.values_mut() {
+                nested_property.mark_borrowed_property_recursive(schemas, response_schemas);
+            }
+        }
+        if let Some(items) = &mut self.items {
+            items.mark_borrowed_property_recursive(schemas, response_schemas);
+        }
+        if let Some(one_of) = &mut self.one_of {
+            for variant in one_of.iter_mut() {
+                variant.mark_borrowed_property_recursive(schemas, response_schemas);
+            }
+        }
+        if let Some(any_of) = &mut self.any_of {
+            for variant in any_of.iter_mut() {
+                variant.mark_borrowed_property_recursive(schemas, response_schemas);
+            }
         }
     }
 }
@@ -235,41 +244,144 @@ impl OpenAPI {
     fn mark_borrowed_data(&mut self) {
         println!("Marking borrowed data...");
 
-        let mut request_schemas = HashSet::new();
-        self.paths.iter_mut().for_each(|(_, pms)| {
-            pms.iter_mut().for_each(|(_, pm)| {
-                if let Some(ps) = &mut pm.parameters {
-                    ps.iter_mut().for_each(|p| {
-                        if let Some(s) = &mut p.schema {
-                            s.mark_borrowed_property();
-                            request_schemas.extend(s.collect_properties());
+        let schemas_ref = self.components.schemas.clone();
+        let mut request_schemas = std::collections::HashSet::new();
+        let mut response_schemas = std::collections::HashSet::new();
+
+        // Gather all response schemas
+        self.paths.iter().for_each(|(_path, operations)| {
+            operations.iter().for_each(|(_method, operation)| {
+                if let Some(responses) = &operation.responses {
+                    for response in responses.values() {
+                        if let Some(media_types) = &response.content {
+                            for media_type in media_types.values() {
+                                if let Some(schema) = &media_type.schema {
+                                    collect_response_schemas(
+                                        schema,
+                                        &schemas_ref,
+                                        &mut response_schemas,
+                                        false,
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        // Process requests
+        self.paths.iter_mut().for_each(|(_path, operations)| {
+            operations.iter_mut().for_each(|(_method, operation)| {
+                let mut operation_has_borrowed_data = false;
+
+                if let Some(parameters) = &mut operation.parameters {
+                    parameters.iter_mut().for_each(|parameter| {
+                        if let Some(schema) = &mut parameter.schema {
+                            collect_request_schemas(schema, &schemas_ref, &mut request_schemas);
+
+                            let mut visited = std::collections::HashSet::new();
+                            if property_contains_string(
+                                schema,
+                                &schemas_ref,
+                                &mut visited,
+                                &response_schemas,
+                            ) {
+                                schema.mark_borrowed_property_recursive(
+                                    &schemas_ref,
+                                    &response_schemas,
+                                );
+                                schema.extra.insert(
+                                    "x-rust-has-borrowed-data".to_owned(),
+                                    Value::Bool(true),
+                                );
+                                parameter.extra.insert(
+                                    "x-rust-has-borrowed-data".to_owned(),
+                                    Value::Bool(true),
+                                );
+                                operation_has_borrowed_data = true;
+                            }
                         }
                     })
                 }
 
-                if let Some(reqb) = &mut pm.request_body
-                    && let Some(cs) = &mut reqb.content
-                {
-                    cs.iter_mut().for_each(|(_, c)| {
-                        if let Some(s) = &mut c.schema {
-                            s.mark_borrowed_property();
-                            request_schemas.extend(s.collect_properties());
-                        }
-                    })
+                if let Some(request_body) = &mut operation.request_body {
+                    let mut request_body_has_borrowed_data = false;
+                    if let Some(media_types) = &mut request_body.content {
+                        media_types.iter_mut().for_each(|(_mime, media_type)| {
+                            if let Some(schema) = &mut media_type.schema {
+                                collect_request_schemas(schema, &schemas_ref, &mut request_schemas);
+
+                                let mut visited = std::collections::HashSet::new();
+                                if property_contains_string(
+                                    schema,
+                                    &schemas_ref,
+                                    &mut visited,
+                                    &response_schemas,
+                                ) {
+                                    schema.mark_borrowed_property_recursive(
+                                        &schemas_ref,
+                                        &response_schemas,
+                                    );
+                                    schema.extra.insert(
+                                        "x-rust-has-borrowed-data".to_owned(),
+                                        Value::Bool(true),
+                                    );
+                                    request_body_has_borrowed_data = true;
+                                }
+                            }
+                        })
+                    }
+                    if request_body_has_borrowed_data {
+                        request_body
+                            .extra
+                            .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
+                        operation_has_borrowed_data = true;
+                    }
+                }
+
+                if operation_has_borrowed_data {
+                    operation
+                        .extra
+                        .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
                 }
             })
         });
 
-        let schemas = self
+        // Filter request schemas to only those that are not also response schemas, unless they are forced borrow models
+        request_schemas.retain(|schema_name| {
+            !response_schemas.contains(schema_name) || is_forced_borrow_model(schema_name)
+        });
+
+        let schemas_to_check = self
             .components
             .schemas
-            .iter()
-            .filter(|(n, _)| n.ends_with("Parameters") || request_schemas.contains(n.as_str()))
-            .map(|(n, _)| n.to_owned())
+            .keys()
+            .filter(|schema_name| {
+                is_forced_borrow_model(schema_name)
+                    || request_schemas.contains(schema_name.as_str())
+            })
+            .cloned()
             .collect::<Vec<String>>();
-        drop(request_schemas);
 
-        for schema_name in schemas {
+        // Apply the Cow flag
+        for schema_name in schemas_to_check {
+            if response_schemas.contains(&schema_name) && !is_forced_borrow_model(&schema_name) {
+                continue;
+            }
+
+            let contains_string = {
+                let Some(schema) = self.components.schemas.get(&schema_name) else {
+                    continue;
+                };
+                let mut visited = std::collections::HashSet::new();
+                property_contains_string(schema, &schemas_ref, &mut visited, &response_schemas)
+            };
+
+            if !contains_string {
+                continue;
+            }
+
             let Some(schema) = self.components.schemas.get_mut(&schema_name) else {
                 continue;
             };
@@ -277,20 +389,7 @@ impl OpenAPI {
             schema
                 .extra
                 .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
-
-            for (_, prop) in schema.properties.iter_mut().flat_map(|v| v.iter_mut()) {
-                for inner in prop.one_of.iter_mut().flat_map(|v| v.iter_mut()) {
-                    inner.mark_borrowed_property();
-                }
-                for inner in prop.any_of.iter_mut().flat_map(|v| v.iter_mut()) {
-                    inner.mark_borrowed_property();
-                }
-                if let Some(inner) = &mut prop.items {
-                    inner.mark_borrowed_property();
-                }
-
-                prop.mark_borrowed_property();
-            }
+            schema.mark_borrowed_property_recursive(&schemas_ref, &response_schemas);
         }
     }
 
