@@ -80,27 +80,18 @@ impl_to_typesense_field!(Vec<bool>, "bool[]");
 impl_to_typesense_field!(Vec<HashMap<String, T>>, "object[]", T);
 impl_to_typesense_field!(Vec<BTreeMap<String, T>>, "object[]", T);
 
-impl_to_typesense_field!(Option<String>, "string");
-impl_to_typesense_field!(Option<i8>, "int32");
-impl_to_typesense_field!(Option<u8>, "int32");
-impl_to_typesense_field!(Option<i16>, "int32");
-impl_to_typesense_field!(Option<u16>, "int32");
-impl_to_typesense_field!(Option<i32>, "int32");
-impl_to_typesense_field!(Option<u32>, "int64");
-impl_to_typesense_field!(Option<i64>, "int64");
-impl_to_typesense_field!(Option<u64>, "int64");
-impl_to_typesense_field!(Option<isize>, "int64");
-impl_to_typesense_field!(Option<usize>, "int64");
-impl_to_typesense_field!(Option<f32>, "float");
-impl_to_typesense_field!(Option<f64>, "float");
-impl_to_typesense_field!(Option<bool>, "bool");
-
-impl_to_typesense_field!(Vec<Option<String>>, "string[]");
-impl_to_typesense_field!(Vec<Option<i32>>, "int32[]");
-impl_to_typesense_field!(Vec<Option<i64>>, "int64[]");
-impl_to_typesense_field!(Vec<Option<f32>>, "float[]");
-impl_to_typesense_field!(Vec<Option<f64>>, "float[]");
-impl_to_typesense_field!(Vec<Option<bool>>, "bool[]");
+impl<T: ToTypesenseField> ToTypesenseField for Option<T> {
+    #[inline(always)]
+    fn to_typesense_type() -> &'static str {
+        T::to_typesense_type()
+    }
+}
+impl<T: ToTypesenseField> ToTypesenseField for Vec<Option<T>> {
+    #[inline(always)]
+    fn to_typesense_type() -> &'static str {
+        T::to_typesense_type()
+    }
+}
 
 #[cfg(feature = "chrono")]
 mod chrono_support {
