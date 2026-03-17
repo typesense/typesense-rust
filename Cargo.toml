@@ -21,6 +21,7 @@ typesense_derive = { path = "./typesense_derive", version = "0.3" }
 anyhow = "1"
 base64 = "0.22"
 bon = "3"
+chrono = "0.4"
 clap = { version = "4", features = ["derive"] }
 hmac = "0.12"
 indexmap = { version = "2", features = ["serde"] }
