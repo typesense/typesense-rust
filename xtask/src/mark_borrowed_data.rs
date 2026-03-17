@@ -3,9 +3,19 @@ use indexmap::IndexMap;
 use crate::preprocess_openapi::OpenAPIProperty;
 
 pub(crate) fn is_forced_borrow_model(name: &str) -> bool {
-    name.ends_with("Parameters") || name == "MultiSearchSearchesParameter"
+    matches!(
+        name,
+        "SearchParameters"
+            | "MultiSearchParameters"
+            | "MultiSearchSearchesParameter"
+            | "MultiSearchCollectionParameters"
+            | "ImportDocumentsParameters"
+            | "ExportDocumentsParameters"
+            | "UpdateDocumentsParameters"
+            | "DeleteDocumentsParameters"
+            | "GetCollectionsParameters"
+    )
 }
-
 // Deeply traverse resolving $refs to ensure all nested request models are tracked.
 pub(crate) fn collect_request_schemas(
     property: &OpenAPIProperty,
