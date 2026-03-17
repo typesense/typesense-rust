@@ -14,10 +14,10 @@ pub(crate) fn collect_request_schemas(
 ) {
     if let Some(reference) = &property.r#ref {
         let name = reference.trim_start_matches("#/components/schemas/");
-        if collected.insert(name.to_owned()) {
-            if let Some(schema) = schemas.get(name) {
-                collect_request_schemas(schema, schemas, collected);
-            }
+        if collected.insert(name.to_owned())
+            && let Some(schema) = schemas.get(name)
+        {
+            collect_request_schemas(schema, schemas, collected);
         }
     }
 
@@ -40,19 +40,18 @@ pub(crate) fn collect_request_schemas(
         }
     }
 
-    if let Some(all_of_value) = property.extra.get("allOf") {
-        if let Ok(sequence) = serde_yaml::from_value::<Vec<OpenAPIProperty>>(all_of_value.clone()) {
-            for item in sequence {
-                collect_request_schemas(&item, schemas, collected);
-            }
+    if let Some(all_of_value) = property.extra.get("allOf")
+        && let Ok(sequence) = serde_yaml::from_value::<Vec<OpenAPIProperty>>(all_of_value.clone())
+    {
+        for item in sequence {
+            collect_request_schemas(&item, schemas, collected);
         }
     }
-    if let Some(additional_properties_value) = property.extra.get("additionalProperties") {
-        if let Ok(additional_property) =
+    if let Some(additional_properties_value) = property.extra.get("additionalProperties")
+        && let Ok(additional_property) =
             serde_yaml::from_value::<OpenAPIProperty>(additional_properties_value.clone())
-        {
-            collect_request_schemas(&additional_property, schemas, collected);
-        }
+    {
+        collect_request_schemas(&additional_property, schemas, collected);
     }
 }
 
@@ -69,10 +68,10 @@ pub(crate) fn collect_response_schemas(
 
         if !is_mixin {
             // It's a direct type reference, blocklist it.
-            if collected.insert(name.to_owned()) {
-                if let Some(schema) = schemas.get(name) {
-                    collect_response_schemas(schema, schemas, collected, false);
-                }
+            if collected.insert(name.to_owned())
+                && let Some(schema) = schemas.get(name)
+            {
+                collect_response_schemas(schema, schemas, collected, false);
             }
         } else {
             // It's an allOf mixin. Do NOT blocklist the schema itself.
@@ -96,22 +95,20 @@ pub(crate) fn collect_response_schemas(
                     }
                 }
 
-                if let Some(all_of_value) = schema.extra.get("allOf") {
-                    if let Ok(sequence) =
+                if let Some(all_of_value) = schema.extra.get("allOf")
+                    && let Ok(sequence) =
                         serde_yaml::from_value::<Vec<OpenAPIProperty>>(all_of_value.clone())
-                    {
-                        for item in sequence {
-                            collect_response_schemas(&item, schemas, collected, true);
-                        }
+                {
+                    for item in sequence {
+                        collect_response_schemas(&item, schemas, collected, true);
                     }
                 }
                 if let Some(additional_properties_value) = schema.extra.get("additionalProperties")
-                {
-                    if let Ok(additional_property) = serde_yaml::from_value::<OpenAPIProperty>(
+                    && let Ok(additional_property) = serde_yaml::from_value::<OpenAPIProperty>(
                         additional_properties_value.clone(),
-                    ) {
-                        collect_response_schemas(&additional_property, schemas, collected, false);
-                    }
+                    )
+                {
+                    collect_response_schemas(&additional_property, schemas, collected, false);
                 }
             }
         }
@@ -137,19 +134,18 @@ pub(crate) fn collect_response_schemas(
     }
 
     // If we hit `allOf` in a response, flag its targets as mixins (is_mixin = true)
-    if let Some(all_of_value) = property.extra.get("allOf") {
-        if let Ok(sequence) = serde_yaml::from_value::<Vec<OpenAPIProperty>>(all_of_value.clone()) {
-            for item in sequence {
-                collect_response_schemas(&item, schemas, collected, true);
-            }
+    if let Some(all_of_value) = property.extra.get("allOf")
+        && let Ok(sequence) = serde_yaml::from_value::<Vec<OpenAPIProperty>>(all_of_value.clone())
+    {
+        for item in sequence {
+            collect_response_schemas(&item, schemas, collected, true);
         }
     }
-    if let Some(additional_properties_value) = property.extra.get("additionalProperties") {
-        if let Ok(additional_property) =
+    if let Some(additional_properties_value) = property.extra.get("additionalProperties")
+        && let Ok(additional_property) =
             serde_yaml::from_value::<OpenAPIProperty>(additional_properties_value.clone())
-        {
-            collect_response_schemas(&additional_property, schemas, collected, false);
-        }
+    {
+        collect_response_schemas(&additional_property, schemas, collected, false);
     }
 }
 
@@ -177,10 +173,10 @@ pub(crate) fn property_contains_string(
 
         if !visited.contains(name) {
             visited.insert(name.to_owned());
-            if let Some(schema) = schemas.get(name) {
-                if property_contains_string(schema, schemas, visited, response_schemas) {
-                    return true;
-                }
+            if let Some(schema) = schemas.get(name)
+                && property_contains_string(schema, schemas, visited, response_schemas)
+            {
+                return true;
             }
         }
     }
@@ -192,10 +188,10 @@ pub(crate) fn property_contains_string(
             }
         }
     }
-    if let Some(items) = &property.items {
-        if property_contains_string(items, schemas, visited, response_schemas) {
-            return true;
-        }
+    if let Some(items) = &property.items
+        && property_contains_string(items, schemas, visited, response_schemas)
+    {
+        return true;
     }
     if let Some(one_of) = &property.one_of {
         for variant in one_of {
@@ -212,23 +208,21 @@ pub(crate) fn property_contains_string(
         }
     }
 
-    if let Some(all_of_value) = property.extra.get("allOf") {
-        if let Ok(sequence) = serde_yaml::from_value::<Vec<OpenAPIProperty>>(all_of_value.clone()) {
-            for item in sequence {
-                if property_contains_string(&item, schemas, visited, response_schemas) {
-                    return true;
-                }
-            }
-        }
-    }
-    if let Some(additional_properties_value) = property.extra.get("additionalProperties") {
-        if let Ok(additional_property) =
-            serde_yaml::from_value::<OpenAPIProperty>(additional_properties_value.clone())
-        {
-            if property_contains_string(&additional_property, schemas, visited, response_schemas) {
+    if let Some(all_of_value) = property.extra.get("allOf")
+        && let Ok(sequence) = serde_yaml::from_value::<Vec<OpenAPIProperty>>(all_of_value.clone())
+    {
+        for item in sequence {
+            if property_contains_string(&item, schemas, visited, response_schemas) {
                 return true;
             }
         }
+    }
+    if let Some(additional_properties_value) = property.extra.get("additionalProperties")
+        && let Ok(additional_property) =
+            serde_yaml::from_value::<OpenAPIProperty>(additional_properties_value.clone())
+        && property_contains_string(&additional_property, schemas, visited, response_schemas)
+    {
+        return true;
     }
 
     false
