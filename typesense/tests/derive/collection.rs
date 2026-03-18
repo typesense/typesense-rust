@@ -260,7 +260,66 @@ fn derived_document_handles_nested_and_flattened_fields() {
     assert_eq!(serde_json::to_value(schema).unwrap(), expected);
 }
 
-// Test 4: All Boolean Shorthand Attributes
+// Test 4: Raw Identifiers
+//
+// Rust raw identifiers (r#type, r#abstract, etc.) must have the r# prefix
+// stripped in all generated output: regular field names, flattened prefixes,
+// and default_sorting_field validation.
+
+#[allow(dead_code)]
+#[derive(Typesense, Serialize, Deserialize)]
+#[typesense(collection_name = "raw_ident_docs", default_sorting_field = "type")]
+struct RawIdentDoc {
+    id: String,
+    #[typesense(type = "int32")]
+    r#type: String,
+    r#abstract: Option<String>,
+    normal_field: i32,
+}
+
+#[derive(Typesense, Serialize, Deserialize)]
+struct RawIdentNested {
+    value: String,
+}
+
+#[allow(dead_code)]
+#[derive(Typesense, Serialize, Deserialize)]
+#[typesense(collection_name = "raw_ident_flat")]
+struct RawIdentFlat {
+    id: String,
+    #[typesense(flatten, skip)]
+    r#match: RawIdentNested,
+}
+
+#[test]
+fn derived_document_strips_raw_identifier_prefix() {
+    // Regular fields: r#type -> "type", r#abstract -> "abstract"
+    let schema = RawIdentDoc::collection_schema();
+    let expected = json!({
+      "name": "raw_ident_docs",
+      "default_sorting_field": "type",
+      "fields": [
+        { "name": "id", "type": "string" },
+        { "name": "type", "type": "int32" },
+        { "name": "abstract", "type": "string", "optional": true },
+        { "name": "normal_field", "type": "int32" }
+      ]
+    });
+    assert_eq!(serde_json::to_value(schema).unwrap(), expected);
+
+    // Flattened prefix: r#match -> "match.value"
+    let schema = RawIdentFlat::collection_schema();
+    let expected = json!({
+      "name": "raw_ident_flat",
+      "fields": [
+        { "name": "id", "type": "string" },
+        { "name": "match.value", "type": "string" }
+      ]
+    });
+    assert_eq!(serde_json::to_value(schema).unwrap(), expected);
+}
+
+// Test 5: All Boolean Shorthand Attributes
 
 #[allow(dead_code)]
 #[derive(Typesense, Serialize, Deserialize)]

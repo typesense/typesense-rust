@@ -56,9 +56,9 @@ fn impl_typesense_collection(item: ItemStruct) -> syn::Result<TokenStream> {
             .iter()
             .map(|field| {
                 extract_field_attrs(field).map(|attrs| {
-                    attrs
-                        .rename
-                        .unwrap_or_else(|| field.ident.as_ref().unwrap().to_string())
+                    attrs.rename.unwrap_or_else(|| {
+                        strip_raw_prefix(&field.ident.as_ref().unwrap().to_string())
+                    })
                 })
             })
             .collect::<syn::Result<Vec<String>>>()?;
