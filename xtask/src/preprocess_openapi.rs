@@ -214,9 +214,19 @@ impl OpenAPIProperty {
         response_schemas: &std::collections::HashSet<String>,
     ) {
         let mut visited = std::collections::HashSet::new();
+
         if property_contains_string(self, schemas, &mut visited, response_schemas) {
-            self.extra
-                .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
+            // only flag structures that need a Rust <'a> lifetime e.g. objects, arrays,...
+            let is_structural = self.r#type.as_deref() == Some("object")
+                || self.r#type.as_deref() == Some("array")
+                || self.r#ref.is_some()
+                || self.one_of.is_some()
+                || self.any_of.is_some();
+
+            if is_structural {
+                self.extra
+                    .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
+            }
         }
 
         if let Some(properties) = &mut self.properties {

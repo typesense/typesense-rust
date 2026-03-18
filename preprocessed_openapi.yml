@@ -3470,7 +3470,6 @@ components:
           type: string
           description: Name of the collection
           example: companies
-          x-rust-has-borrowed-data: true
         fields:
           type: array
           description: A list of fields for querying, filtering and faceting
@@ -3491,7 +3490,6 @@ components:
           default: ''
           description: The name of an int32 / float field that determines the order in which the search results are ranked when a sort_by clause is not provided during searching. This field must indicate some kind of popularity.
           example: num_employees
-          x-rust-has-borrowed-data: true
         token_separators:
           type: array
           default: []
@@ -3501,7 +3499,6 @@ components:
             type: string
             minLength: 1
             maxLength: 1
-            x-rust-has-borrowed-data: true
           x-rust-has-borrowed-data: true
         synonym_sets:
           type: array
@@ -3509,7 +3506,6 @@ components:
           items:
             type: string
             example: synonym_set_1
-            x-rust-has-borrowed-data: true
           x-rust-has-borrowed-data: true
         enable_nested_fields:
           type: boolean
@@ -3525,7 +3521,6 @@ components:
             type: string
             minLength: 1
             maxLength: 1
-            x-rust-has-borrowed-data: true
           x-rust-has-borrowed-data: true
         voice_query_model:
           $ref: '#/components/schemas/VoiceQueryModelCollectionConfig'
@@ -3715,7 +3710,6 @@ components:
         collection_name:
           type: string
           description: Name of the collection you wish to map the alias to
-          x-rust-has-borrowed-data: true
       x-rust-has-borrowed-data: true
     CollectionAlias:
       type: object
@@ -4047,21 +4041,17 @@ components:
       properties:
         value:
           type: string
-          x-rust-has-borrowed-data: true
         description:
           type: string
-          x-rust-has-borrowed-data: true
         actions:
           type: array
           items:
             type: string
-            x-rust-has-borrowed-data: true
           x-rust-has-borrowed-data: true
         collections:
           type: array
           items:
             type: string
-            x-rust-has-borrowed-data: true
           x-rust-has-borrowed-data: true
         expires_at:
           type: integer
@@ -4130,34 +4120,27 @@ components:
         q:
           type: string
           description: The query text to search for in the collection. Use * as the search string to return all documents. This is typically useful when used in conjunction with filter_by.
-          x-rust-has-borrowed-data: true
         query_by:
           type: string
           description: A list of `string` fields that should be queried against. Multiple fields are separated with a comma.
-          x-rust-has-borrowed-data: true
         nl_query:
           type: boolean
           description: Whether to use natural language processing to parse the query.
         nl_model_id:
           type: string
           description: The ID of the natural language model to use.
-          x-rust-has-borrowed-data: true
         query_by_weights:
           type: string
           description: The relative weight to give each `query_by` field when ranking results. This can be used to boost fields in priority, when looking for matches. Multiple fields are separated with a comma.
-          x-rust-has-borrowed-data: true
         text_match_type:
           type: string
           description: In a multi-field matching context, this parameter determines how the representative text match score of a record is calculated. Possible values are max_score (default) or max_weight.
-          x-rust-has-borrowed-data: true
         prefix:
           type: string
           description: Boolean field to indicate that the last word in the query should be treated as a prefix, and not as a whole word. This is used for building autocomplete and instant search interfaces. Defaults to true.
-          x-rust-has-borrowed-data: true
         infix:
           type: string
           description: If infix index is enabled for this field, infix searching can be done on a per-field basis by sending a comma separated string parameter called infix to the search query. This parameter can have 3 values; `off` infix search is disabled, which is default `always` infix search is performed along with regular search `fallback` infix search is performed if regular search does not produce results
-          x-rust-has-borrowed-data: true
         max_extra_prefix:
           type: integer
           description: There are also 2 parameters that allow you to control the extent of infix searching max_extra_prefix and max_extra_suffix which specify the maximum number of symbols before or after the query that can be present in the token. For example query "K2100" has 2 extra symbols in "6PK2100". By default, any number of prefixes/suffixes can be present for a match.
@@ -4168,7 +4151,6 @@ components:
           type: string
           description: Filter conditions for refining your open api validator search results. Separate multiple conditions with &&.
           example: 'num_employees:>100 && country: [USA, UK]'
-          x-rust-has-borrowed-data: true
         max_filter_by_candidates:
           type: integer
           description: Controls the number of similar words that Typesense considers during fuzzy search on filter_by values. Useful for controlling prefix matches like company_name:Acm*.
@@ -4176,23 +4158,19 @@ components:
           type: string
           description: A list of numerical fields and their corresponding sort orders that will be used for ordering your results. Up to 3 sort fields can be specified. The text similarity score is exposed as a special `_text_match` field that you can use in the list of sorting fields. If no `sort_by` parameter is specified, results are sorted by `_text_match:desc,default_sorting_field:desc`
           example: num_employees:desc
-          x-rust-has-borrowed-data: true
         facet_by:
           type: string
           description: A list of fields that will be used for faceting your results on. Separate multiple fields with a comma.
-          x-rust-has-borrowed-data: true
         max_facet_values:
           type: integer
           description: Maximum number of facet values to be returned.
         facet_query:
           type: string
           description: Facet values that are returned can now be filtered via this parameter. The matching facet text is also highlighted. For example, when faceting by `category`, you can set `facet_query=category:shoe` to return only facet values that contain the prefix "shoe".
-          x-rust-has-borrowed-data: true
         num_typos:
           type: string
           description: |
             The number of typographical errors (1 or 2) that would be tolerated. Default: 2
-          x-rust-has-borrowed-data: true
         page:
           type: integer
           description: Results from this specific page number would be fetched.
@@ -4209,7 +4187,6 @@ components:
         group_by:
           type: string
           description: You can aggregate search results into groups or buckets by specify one or more `group_by` fields. Separate multiple fields with a comma. To group on a particular field, it must be a faceted field.
-          x-rust-has-borrowed-data: true
         group_limit:
           type: integer
           description: |
@@ -4221,15 +4198,12 @@ components:
         include_fields:
           type: string
           description: List of fields from the document to include in the search result
-          x-rust-has-borrowed-data: true
         exclude_fields:
           type: string
           description: List of fields from the document to exclude in the search result
-          x-rust-has-borrowed-data: true
         highlight_full_fields:
           type: string
           description: List of fields which should be highlighted fully without snippeting
-          x-rust-has-borrowed-data: true
         highlight_affix_num_tokens:
           type: integer
           description: |
@@ -4238,12 +4212,10 @@ components:
           type: string
           description: |
             The start tag used for the highlighted snippets. Default: `<mark>`
-          x-rust-has-borrowed-data: true
         highlight_end_tag:
           type: string
           description: |
             The end tag used for the highlighted snippets. Default: `</mark>`
-          x-rust-has-borrowed-data: true
         enable_highlight_v1:
           type: boolean
           default: true
@@ -4262,7 +4234,6 @@ components:
           type: string
           description: List of synonym set names to associate with this search query
           example: synonym_set_1,synonym_set_2
-          x-rust-has-borrowed-data: true
         drop_tokens_threshold:
           type: integer
           description: |
@@ -4298,27 +4269,22 @@ components:
           description: |
             A list of records to unconditionally include in the search results at specific positions. An example use case would be to feature or promote certain items on the top of search results. A list of `record_id:hit_position`. Eg: to include a record with ID 123 at Position 1 and another record with ID 456 at Position 5, you'd specify `123:1,456:5`.
             You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
-          x-rust-has-borrowed-data: true
         hidden_hits:
           type: string
           description: |
             A list of records to unconditionally hide from search results. A list of `record_id`s to hide. Eg: to hide records with IDs 123 and 456, you'd specify `123,456`.
             You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
-          x-rust-has-borrowed-data: true
         override_tags:
           type: string
           description: Comma separated list of tags to trigger the curations rules that match the tags.
-          x-rust-has-borrowed-data: true
         highlight_fields:
           type: string
           description: |
             A list of custom fields that must be highlighted even if you don't query for them
-          x-rust-has-borrowed-data: true
         split_join_tokens:
           type: string
           description: |
             Treat space as typo: search for q=basket ball if q=basketball is not found or vice-versa. Splitting/joining of tokens will only be attempted if the original query produces no results. To always trigger this behavior, set value to `always``. To disable, set value to `off`. Default is `fallback`.
-          x-rust-has-borrowed-data: true
         pre_segmented_query:
           type: boolean
           description: |
@@ -4328,7 +4294,6 @@ components:
           type: string
           description: |
             Search using a bunch of search parameters by setting this parameter to the name of the existing Preset.
-          x-rust-has-borrowed-data: true
         enable_overrides:
           type: boolean
           default: false
@@ -4386,7 +4351,6 @@ components:
           type: string
           description: |
             Vector query expression for fetching documents "closest" to a given query/document vector.
-          x-rust-has-borrowed-data: true
         remote_embedding_timeout_ms:
           type: integer
           description: |
@@ -4399,22 +4363,18 @@ components:
           type: string
           description: |
             Choose the underlying faceting strategy used. Comma separated string of allows values: exhaustive, top_values or automatic (default).
-          x-rust-has-borrowed-data: true
         stopwords:
           type: string
           description: |
             Name of the stopwords set to apply for this search, the keywords present in the set will be removed from the search query.
-          x-rust-has-borrowed-data: true
         facet_return_parent:
           type: string
           description: |
             Comma separated string of nested facet fields whose parent object should be returned in facet response.
-          x-rust-has-borrowed-data: true
         voice_query:
           type: string
           description: |
             The base64 encoded audio file in 16 khz 16-bit WAV format.
-          x-rust-has-borrowed-data: true
         conversation:
           type: boolean
           description: |
@@ -4423,12 +4383,10 @@ components:
           type: string
           description: |
             The Id of Conversation Model to be used.
-          x-rust-has-borrowed-data: true
         conversation_id:
           type: string
           description: |
             The Id of a previous conversation to continue, this tells Typesense to include prior context when communicating with the LLM.
-          x-rust-has-borrowed-data: true
       x-rust-builder: true
       x-rust-has-borrowed-data: true
     MultiSearchParameters:
@@ -4439,27 +4397,21 @@ components:
         q:
           type: string
           description: The query text to search for in the collection. Use * as the search string to return all documents. This is typically useful when used in conjunction with filter_by.
-          x-rust-has-borrowed-data: true
         query_by:
           type: string
           description: A list of `string` fields that should be queried against. Multiple fields are separated with a comma.
-          x-rust-has-borrowed-data: true
         query_by_weights:
           type: string
           description: The relative weight to give each `query_by` field when ranking results. This can be used to boost fields in priority, when looking for matches. Multiple fields are separated with a comma.
-          x-rust-has-borrowed-data: true
         text_match_type:
           type: string
           description: In a multi-field matching context, this parameter determines how the representative text match score of a record is calculated. Possible values are max_score (default) or max_weight.
-          x-rust-has-borrowed-data: true
         prefix:
           type: string
           description: Boolean field to indicate that the last word in the query should be treated as a prefix, and not as a whole word. This is used for building autocomplete and instant search interfaces. Defaults to true.
-          x-rust-has-borrowed-data: true
         infix:
           type: string
           description: If infix index is enabled for this field, infix searching can be done on a per-field basis by sending a comma separated string parameter called infix to the search query. This parameter can have 3 values; `off` infix search is disabled, which is default `always` infix search is performed along with regular search `fallback` infix search is performed if regular search does not produce results
-          x-rust-has-borrowed-data: true
         max_extra_prefix:
           type: integer
           description: There are also 2 parameters that allow you to control the extent of infix searching max_extra_prefix and max_extra_suffix which specify the maximum number of symbols before or after the query that can be present in the token. For example query "K2100" has 2 extra symbols in "6PK2100". By default, any number of prefixes/suffixes can be present for a match.
@@ -4470,27 +4422,22 @@ components:
           type: string
           description: Filter conditions for refining youropen api validator search results. Separate multiple conditions with &&.
           example: 'num_employees:>100 && country: [USA, UK]'
-          x-rust-has-borrowed-data: true
         sort_by:
           type: string
           description: A list of numerical fields and their corresponding sort orders that will be used for ordering your results. Up to 3 sort fields can be specified. The text similarity score is exposed as a special `_text_match` field that you can use in the list of sorting fields. If no `sort_by` parameter is specified, results are sorted by `_text_match:desc,default_sorting_field:desc`
-          x-rust-has-borrowed-data: true
         facet_by:
           type: string
           description: A list of fields that will be used for faceting your results on. Separate multiple fields with a comma.
-          x-rust-has-borrowed-data: true
         max_facet_values:
           type: integer
           description: Maximum number of facet values to be returned.
         facet_query:
           type: string
           description: Facet values that are returned can now be filtered via this parameter. The matching facet text is also highlighted. For example, when faceting by `category`, you can set `facet_query=category:shoe` to return only facet values that contain the prefix "shoe".
-          x-rust-has-borrowed-data: true
         num_typos:
           type: string
           description: |
             The number of typographical errors (1 or 2) that would be tolerated. Default: 2
-          x-rust-has-borrowed-data: true
         page:
           type: integer
           description: Results from this specific page number would be fetched.
@@ -4507,7 +4454,6 @@ components:
         group_by:
           type: string
           description: You can aggregate search results into groups or buckets by specify one or more `group_by` fields. Separate multiple fields with a comma. To group on a particular field, it must be a faceted field.
-          x-rust-has-borrowed-data: true
         group_limit:
           type: integer
           description: |
@@ -4519,15 +4465,12 @@ components:
         include_fields:
           type: string
           description: List of fields from the document to include in the search result
-          x-rust-has-borrowed-data: true
         exclude_fields:
           type: string
           description: List of fields from the document to exclude in the search result
-          x-rust-has-borrowed-data: true
         highlight_full_fields:
           type: string
           description: List of fields which should be highlighted fully without snippeting
-          x-rust-has-borrowed-data: true
         highlight_affix_num_tokens:
           type: integer
           description: |
@@ -4536,12 +4479,10 @@ components:
           type: string
           description: |
             The start tag used for the highlighted snippets. Default: `<mark>`
-          x-rust-has-borrowed-data: true
         highlight_end_tag:
           type: string
           description: |
             The end tag used for the highlighted snippets. Default: `</mark>`
-          x-rust-has-borrowed-data: true
         snippet_threshold:
           type: integer
           description: |
@@ -4586,22 +4527,18 @@ components:
           description: |
             A list of records to unconditionally include in the search results at specific positions. An example use case would be to feature or promote certain items on the top of search results. A list of `record_id:hit_position`. Eg: to include a record with ID 123 at Position 1 and another record with ID 456 at Position 5, you'd specify `123:1,456:5`.
             You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
-          x-rust-has-borrowed-data: true
         hidden_hits:
           type: string
           description: |
             A list of records to unconditionally hide from search results. A list of `record_id`s to hide. Eg: to hide records with IDs 123 and 456, you'd specify `123,456`.
             You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
-          x-rust-has-borrowed-data: true
         override_tags:
           type: string
           description: Comma separated list of tags to trigger the curations rules that match the tags.
-          x-rust-has-borrowed-data: true
         highlight_fields:
           type: string
           description: |
             A list of custom fields that must be highlighted even if you don't query for them
-          x-rust-has-borrowed-data: true
         pre_segmented_query:
           type: boolean
           default: false
@@ -4612,7 +4549,6 @@ components:
           type: string
           description: |
             Search using a bunch of search parameters by setting this parameter to the name of the existing Preset.
-          x-rust-has-borrowed-data: true
         enable_overrides:
           type: boolean
           default: false
@@ -4666,7 +4602,6 @@ components:
           type: string
           description: |
             Vector query expression for fetching documents "closest" to a given query/document vector.
-          x-rust-has-borrowed-data: true
         remote_embedding_timeout_ms:
           type: integer
           description: |
@@ -4679,22 +4614,18 @@ components:
           type: string
           description: |
             Choose the underlying faceting strategy used. Comma separated string of allows values: exhaustive, top_values or automatic (default).
-          x-rust-has-borrowed-data: true
         stopwords:
           type: string
           description: |
             Name of the stopwords set to apply for this search, the keywords present in the set will be removed from the search query.
-          x-rust-has-borrowed-data: true
         facet_return_parent:
           type: string
           description: |
             Comma separated string of nested facet fields whose parent object should be returned in facet response.
-          x-rust-has-borrowed-data: true
         voice_query:
           type: string
           description: |
             The base64 encoded audio file in 16 khz 16-bit WAV format.
-          x-rust-has-borrowed-data: true
         conversation:
           type: boolean
           description: |
@@ -4703,12 +4634,10 @@ components:
           type: string
           description: |
             The Id of Conversation Model to be used.
-          x-rust-has-borrowed-data: true
         conversation_id:
           type: string
           description: |
             The Id of a previous conversation to continue, this tells Typesense to include prior context when communicating with the LLM.
-          x-rust-has-borrowed-data: true
       x-rust-builder: true
       x-rust-has-borrowed-data: true
     MultiSearchSearchesParameter:
@@ -4798,33 +4727,26 @@ components:
         name:
           type: string
           description: Name of the analytics rule this event corresponds to
-          x-rust-has-borrowed-data: true
         event_type:
           type: string
           description: Type of event (e.g., click, conversion, query, visit)
-          x-rust-has-borrowed-data: true
         data:
           type: object
           description: Event payload
           properties:
             user_id:
               type: string
-              x-rust-has-borrowed-data: true
             doc_id:
               type: string
-              x-rust-has-borrowed-data: true
             doc_ids:
               type: array
               items:
                 type: string
-                x-rust-has-borrowed-data: true
               x-rust-has-borrowed-data: true
             q:
               type: string
-              x-rust-has-borrowed-data: true
             analytics_tag:
               type: string
-              x-rust-has-borrowed-data: true
           x-rust-has-borrowed-data: true
       x-rust-has-borrowed-data: true
     AnalyticsEventsResponse:
@@ -4866,24 +4788,19 @@ components:
       properties:
         name:
           type: string
-          x-rust-has-borrowed-data: true
         type:
           $ref: '#/components/schemas/AnalyticsRuleType'
         collection:
           type: string
-          x-rust-has-borrowed-data: true
         event_type:
           type: string
-          x-rust-has-borrowed-data: true
         rule_tag:
           type: string
-          x-rust-has-borrowed-data: true
         params:
           type: object
           properties:
             destination_collection:
               type: string
-              x-rust-has-borrowed-data: true
             limit:
               type: integer
             capture_search_requests:
@@ -4892,13 +4809,11 @@ components:
               type: array
               items:
                 type: string
-                x-rust-has-borrowed-data: true
               x-rust-has-borrowed-data: true
             expand_query:
               type: boolean
             counter_field:
               type: string
-              x-rust-has-borrowed-data: true
             weight:
               type: integer
           x-rust-has-borrowed-data: true
@@ -4916,16 +4831,13 @@ components:
       properties:
         name:
           type: string
-          x-rust-has-borrowed-data: true
         rule_tag:
           type: string
-          x-rust-has-borrowed-data: true
         params:
           type: object
           properties:
             destination_collection:
               type: string
-              x-rust-has-borrowed-data: true
             limit:
               type: integer
             capture_search_requests:
@@ -4934,13 +4846,11 @@ components:
               type: array
               items:
                 type: string
-                x-rust-has-borrowed-data: true
               x-rust-has-borrowed-data: true
             expand_query:
               type: boolean
             counter_field:
               type: string
-              x-rust-has-borrowed-data: true
             weight:
               type: integer
           x-rust-has-borrowed-data: true
@@ -5019,11 +4929,9 @@ components:
           type: array
           items:
             type: string
-            x-rust-has-borrowed-data: true
           x-rust-has-borrowed-data: true
         locale:
           type: string
-          x-rust-has-borrowed-data: true
       x-rust-has-borrowed-data: true
     StopwordsSetSchema:
       type: object
@@ -5150,27 +5058,21 @@ components:
         id:
           type: string
           description: An explicit id for the model, otherwise the API will return a response with an auto-generated conversation model id.
-          x-rust-has-borrowed-data: true
         model_name:
           type: string
           description: Name of the LLM model offered by OpenAI, Cloudflare or vLLM
-          x-rust-has-borrowed-data: true
         api_key:
           type: string
           description: The LLM service's API Key
-          x-rust-has-borrowed-data: true
         history_collection:
           type: string
           description: Typesense collection that stores the historical conversations
-          x-rust-has-borrowed-data: true
         account_id:
           type: string
           description: LLM service's account ID (only applicable for Cloudflare)
-          x-rust-has-borrowed-data: true
         system_prompt:
           type: string
           description: The system prompt that contains special instructions to the LLM
-          x-rust-has-borrowed-data: true
         ttl:
           type: integer
           description: |
@@ -5182,7 +5084,6 @@ components:
         vllm_url:
           type: string
           description: URL of vLLM service
-          x-rust-has-borrowed-data: true
       x-rust-has-borrowed-data: true
     ConversationModelSchema:
       allOf:
@@ -5227,15 +5128,12 @@ components:
         model_name:
           type: string
           description: Name of the NL model to use
-          x-rust-has-borrowed-data: true
         api_key:
           type: string
           description: API key for the NL model service
-          x-rust-has-borrowed-data: true
         api_url:
           type: string
           description: Custom API URL for the NL model service
-          x-rust-has-borrowed-data: true
         max_bytes:
           type: integer
           description: Maximum number of bytes to process
@@ -5245,7 +5143,6 @@ components:
         system_prompt:
           type: string
           description: System prompt for the NL model
-          x-rust-has-borrowed-data: true
         top_p:
           type: number
           description: Top-p parameter for the NL model (Google-specific)
@@ -5257,43 +5154,34 @@ components:
           description: Stop sequences for the NL model (Google-specific)
           items:
             type: string
-            x-rust-has-borrowed-data: true
           x-rust-has-borrowed-data: true
         api_version:
           type: string
           description: API version for the NL model service
-          x-rust-has-borrowed-data: true
         project_id:
           type: string
           description: Project ID for GCP Vertex AI
-          x-rust-has-borrowed-data: true
         access_token:
           type: string
           description: Access token for GCP Vertex AI
-          x-rust-has-borrowed-data: true
         refresh_token:
           type: string
           description: Refresh token for GCP Vertex AI
-          x-rust-has-borrowed-data: true
         client_id:
           type: string
           description: Client ID for GCP Vertex AI
-          x-rust-has-borrowed-data: true
         client_secret:
           type: string
           description: Client secret for GCP Vertex AI
-          x-rust-has-borrowed-data: true
         region:
           type: string
           description: Region for GCP Vertex AI
-          x-rust-has-borrowed-data: true
         max_output_tokens:
           type: integer
           description: Maximum output tokens for GCP Vertex AI
         account_id:
           type: string
           description: Account ID for Cloudflare-specific models
-          x-rust-has-borrowed-data: true
       x-rust-has-borrowed-data: true
     NLSearchModelCreateSchema:
       allOf:
@@ -5335,22 +5223,18 @@ components:
           description: Array of words that should be considered as synonyms
           items:
             type: string
-            x-rust-has-borrowed-data: true
           x-rust-has-borrowed-data: true
         root:
           type: string
           description: For 1-way synonyms, indicates the root word that words in the synonyms parameter map to
-          x-rust-has-borrowed-data: true
         locale:
           type: string
           description: Locale for the synonym, leave blank to use the standard tokenizer
-          x-rust-has-borrowed-data: true
         symbols_to_index:
           type: array
           description: By default, special characters are dropped from synonyms. Use this attribute to specify which special characters should be indexed as is
           items:
             type: string
-            x-rust-has-borrowed-data: true
           x-rust-has-borrowed-data: true
       x-rust-has-borrowed-data: true
     SynonymItemSchema:
@@ -5487,7 +5371,6 @@ components:
         description:
           type: string
           description: Optional description for the curation set
-          x-rust-has-borrowed-data: true
       x-rust-has-borrowed-data: true
     CurationSetSchema:
       allOf:
@@ -5578,15 +5461,12 @@ components:
         filter_by:
           type: string
           description: Filter conditions for refining your search results. Separate multiple conditions with &&.
-          x-rust-has-borrowed-data: true
         include_fields:
           type: string
           description: List of fields from the document to include in the search result
-          x-rust-has-borrowed-data: true
         exclude_fields:
           type: string
           description: List of fields from the document to exclude in the search result
-          x-rust-has-borrowed-data: true
       x-rust-has-borrowed-data: true
     UpdateDocumentsParameters:
       type: object
@@ -5594,7 +5474,6 @@ components:
         filter_by:
           type: string
           example: 'num_employees:>100 && country: [USA, UK]'
-          x-rust-has-borrowed-data: true
       x-rust-has-borrowed-data: true
     DeleteDocumentsParameters:
       type: object
@@ -5604,7 +5483,6 @@ components:
         filter_by:
           type: string
           example: 'num_employees:>100 && country: [USA, UK]'
-          x-rust-has-borrowed-data: true
         batch_size:
           type: integer
           description: Batch size parameter controls the number of documents that should be deleted at a time. A larger value will speed up deletions, but will impact performance of other operations running on the server.
@@ -5620,7 +5498,6 @@ components:
         exclude_fields:
           type: string
           description: Comma-separated list of fields from the collection to exclude from the response
-          x-rust-has-borrowed-data: true
         limit:
           type: integer
           description: |
