@@ -9,11 +9,6 @@ pub(crate) fn is_forced_borrow_model(name: &str) -> bool {
             | "MultiSearchParameters"
             | "MultiSearchSearchesParameter"
             | "MultiSearchCollectionParameters"
-            | "ImportDocumentsParameters"
-            | "ExportDocumentsParameters"
-            | "UpdateDocumentsParameters"
-            | "DeleteDocumentsParameters"
-            | "GetCollectionsParameters"
     )
 }
 // Deeply traverse resolving $refs to ensure all nested request models are tracked.

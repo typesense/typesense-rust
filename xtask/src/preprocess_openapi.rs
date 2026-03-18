@@ -32,6 +32,10 @@ pub(crate) struct OpenAPI {
     // Everything else not explicitly listed above
     #[serde(flatten)]
     pub(crate) extra: IndexMap<String, Value>,
+
+    // Track schemas created by `unwrap_parameters_by_path` which are not used in any OpenAPI path methods
+    #[serde(skip)]
+    pub(crate) orphaned_request_schemas: std::collections::HashSet<String>,
 }
 
 pub(crate) type OpenAPIPath = IndexMap<String, OpenAPIMethod>;
@@ -258,6 +262,17 @@ impl OpenAPI {
         let mut request_schemas = std::collections::HashSet::new();
         let mut response_schemas = std::collections::HashSet::new();
 
+        // This takes the schemas we remembered during the unwrap phase
+        // and treats them as if they were found in a live API request.
+        let forced_orphans = self.orphaned_request_schemas.clone();
+        for schema_name in &forced_orphans {
+            request_schemas.insert(schema_name.clone());
+            if let Some(schema) = schemas_ref.get(schema_name) {
+                // Tracing them ensures any sub-models they use also get Cow
+                collect_request_schemas(schema, &schemas_ref, &mut request_schemas);
+            }
+        }
+
         // Gather all response schemas
         self.paths.iter().for_each(|(_path, operations)| {
             operations.iter().for_each(|(_method, operation)| {
@@ -444,6 +459,9 @@ impl OpenAPI {
             self.components
                 .schemas
                 .insert(component_name.into(), inline_schema);
+            // Remember that this schema is an orphaned request schema for the next borrow data marking step
+            self.orphaned_request_schemas
+                .insert(component_name.to_owned());
         }
 
         // --- Step 2: Unwrap the parameter object into individual parameters ---
