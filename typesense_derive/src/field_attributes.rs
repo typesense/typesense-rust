@@ -1,4 +1,7 @@
-use crate::{bool_literal, get_inner_type, i32_literal, skip_eq, string_literal, strip_raw_prefix, ty_inner_type};
+use crate::{
+    bool_literal, get_inner_type, i32_literal, skip_eq, string_literal, strip_raw_prefix,
+    ty_inner_type,
+};
 use proc_macro2::TokenTree;
 use quote::quote;
 use syn::{Attribute, Field};
