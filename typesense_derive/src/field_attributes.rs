@@ -1,4 +1,4 @@
-use crate::{bool_literal, get_inner_type, i32_literal, skip_eq, string_literal, ty_inner_type};
+use crate::{bool_literal, get_inner_type, i32_literal, skip_eq, string_literal, strip_raw_prefix, ty_inner_type};
 use proc_macro2::TokenTree;
 use quote::quote;
 use syn::{Attribute, Field};
@@ -271,7 +271,7 @@ fn build_regular_field(field: &Field, field_attrs: &FieldAttributes) -> proc_mac
     let field_name = if let Some(rename) = &field_attrs.rename {
         quote! { #rename }
     } else {
-        let name_ident = field.ident.as_ref().unwrap().to_string();
+        let name_ident = strip_raw_prefix(&field.ident.as_ref().unwrap().to_string());
         quote! { #name_ident }
     };
 
@@ -322,7 +322,7 @@ pub(crate) fn process_field(
         let prefix = if let Some(rename_prefix) = &field_attrs.rename {
             quote! { #rename_prefix }
         } else {
-            let name_ident = field.ident.as_ref().unwrap().to_string();
+            let name_ident = strip_raw_prefix(&field.ident.as_ref().unwrap().to_string());
             quote! { #name_ident }
         };
 

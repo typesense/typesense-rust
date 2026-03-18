@@ -133,6 +133,12 @@ pub(crate) fn ty_inner_type<'a>(ty: &'a syn::Type, wrapper: &'static str) -> Opt
     None
 }
 
+/// Strip the `r#` prefix from raw identifiers.
+/// ie, 'r#' in `r#type`should not appear in generated output like schema field names.
+pub(crate) fn strip_raw_prefix(s: &str) -> String {
+    s.strip_prefix("r#").unwrap_or(s).to_string()
+}
+
 /// Helper to get the inner-most type from nested Option/Vec wrappers.
 pub(crate) fn get_inner_type(mut ty: &syn::Type) -> &syn::Type {
     while let Some(inner) = ty_inner_type(ty, "Option").or_else(|| ty_inner_type(ty, "Vec")) {
