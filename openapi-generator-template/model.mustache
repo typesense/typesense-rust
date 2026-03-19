@@ -129,7 +129,7 @@ impl Default for {{classname}} {
 {{/vendorExtensions.x-rust-builder}}{{!
 }}{{#vendorExtensions.x-rust-has-byte-array}}#[serde_as]{{/vendorExtensions.x-rust-has-byte-array}}{{!
 }}{{#oneOf.isEmpty}}#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct {{{classname}}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a{{#vendorExtensions.x-rust-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-generic-parameter}}>{{/vendorExtensions.x-rust-has-borrowed-data}}{{^vendorExtensions.x-rust-has-borrowed-data}}{{#vendorExtensions.x-rust-generic-parameter}}<{{{.}}}>{{/vendorExtensions.x-rust-generic-parameter}}{{/vendorExtensions.x-rust-has-borrowed-data}} {
+pub struct {{{classname}}}{{#vendorExtensions.x-rust-has-lifetime}}<'a{{#vendorExtensions.x-rust-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-generic-parameter}}>{{/vendorExtensions.x-rust-has-lifetime}}{{^vendorExtensions.x-rust-has-lifetime}}{{#vendorExtensions.x-rust-generic-parameter}}<{{{.}}}>{{/vendorExtensions.x-rust-generic-parameter}}{{/vendorExtensions.x-rust-has-lifetime}} {
 {{#vars}}
     {{#description}}
     /// {{{.}}}
@@ -148,15 +148,15 @@ pub struct {{{classname}}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a{{#ve
     ### Enums
     }}{{#isEnum}}{{#isArray}}{{#uniqueItems}}std::collections::HashSet<{{/uniqueItems}}{{^uniqueItems}}Vec<{{/uniqueItems}}{{/isArray}}{{{enumName}}}{{#isArray}}>{{/isArray}}{{/isEnum}}{{!
     ### Models
-    }}{{^isEnum}}{{#isModel}}{{^avoidBoxedModels}}Box<{{/avoidBoxedModels}}{{{dataType}}}{{#vendorExtensions.x-rust-has-borrowed-data}}{{#model}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a>{{/vendorExtensions.x-rust-has-borrowed-data}}{{^vendorExtensions.x-rust-has-borrowed-data}}<'static>{{/vendorExtensions.x-rust-has-borrowed-data}}{{/model}}{{/vendorExtensions.x-rust-has-borrowed-data}}{{^avoidBoxedModels}}>{{/avoidBoxedModels}}{{/isModel}}{{!
+    }}{{^isEnum}}{{#isModel}}{{^avoidBoxedModels}}Box<{{/avoidBoxedModels}}{{{dataType}}}{{#vendorExtensions.x-rust-has-lifetime}}{{#model}}{{#vendorExtensions.x-rust-has-lifetime}}<'a>{{/vendorExtensions.x-rust-has-lifetime}}{{^vendorExtensions.x-rust-has-lifetime}}<'static>{{/vendorExtensions.x-rust-has-lifetime}}{{/model}}{{/vendorExtensions.x-rust-has-lifetime}}{{^avoidBoxedModels}}>{{/avoidBoxedModels}}{{/isModel}}{{!
     ### ByteArray
     }}{{^isModel}}{{#isByteArray}}Vec<u8>{{/isByteArray}}{{!
     ### String
-    }}{{^isByteArray}}{{#isString}}{{#model}}{{#vendorExtensions.x-rust-has-borrowed-data}}Cow<'a, str>{{/vendorExtensions.x-rust-has-borrowed-data}}{{^vendorExtensions.x-rust-has-borrowed-data}}String{{/vendorExtensions.x-rust-has-borrowed-data}}{{/model}}{{/isString}}{{!
+    }}{{^isByteArray}}{{#isString}}{{#model}}{{#vendorExtensions.x-rust-has-lifetime}}Cow<'a, str>{{/vendorExtensions.x-rust-has-lifetime}}{{^vendorExtensions.x-rust-has-lifetime}}String{{/vendorExtensions.x-rust-has-lifetime}}{{/model}}{{/isString}}{{!
     ### Arrays
     }}{{^isString}}{{#isArray}}Vec<{{#items}}{{!
     ### Array Models
-    }}{{#isModel}}{{{dataType}}}{{#vendorExtensions.x-rust-has-borrowed-data}}{{#model}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a>{{/vendorExtensions.x-rust-has-borrowed-data}}{{^vendorExtensions.x-rust-has-borrowed-data}}<'static>{{/vendorExtensions.x-rust-has-borrowed-data}}{{/model}}{{/vendorExtensions.x-rust-has-borrowed-data}}{{/isModel}}{{!
+    }}{{#isModel}}{{{dataType}}}{{#vendorExtensions.x-rust-has-lifetime}}{{#model}}{{#vendorExtensions.x-rust-has-lifetime}}<'a>{{/vendorExtensions.x-rust-has-lifetime}}{{^vendorExtensions.x-rust-has-lifetime}}<'static>{{/vendorExtensions.x-rust-has-lifetime}}{{/model}}{{/vendorExtensions.x-rust-has-lifetime}}{{/isModel}}{{!
     ### Array other datatypes
     }}{{^isModel}}{{{dataType}}}{{/isModel}}{{/items}}>{{/isArray}}{{!
     ### Primitive datatypes
@@ -171,8 +171,8 @@ pub struct {{{classname}}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a{{#ve
 {{/vars}}
 }
 
-impl{{#vendorExtensions.x-rust-has-borrowed-data}}<'a{{#vendorExtensions.x-rust-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-generic-parameter}}>{{/vendorExtensions.x-rust-has-borrowed-data}}{{^vendorExtensions.x-rust-has-borrowed-data}}{{#vendorExtensions.x-rust-generic-parameter}}<{{{.}}}>{{/vendorExtensions.x-rust-generic-parameter}}{{/vendorExtensions.x-rust-has-borrowed-data}} {{!
-    }}{{{classname}}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a{{#vendorExtensions.x-rust-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-generic-parameter}}>{{/vendorExtensions.x-rust-has-borrowed-data}}{{^vendorExtensions.x-rust-has-borrowed-data}}{{#vendorExtensions.x-rust-generic-parameter}}<{{{.}}}>{{/vendorExtensions.x-rust-generic-parameter}}{{/vendorExtensions.x-rust-has-borrowed-data}} {
+impl{{#vendorExtensions.x-rust-has-lifetime}}<'a{{#vendorExtensions.x-rust-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-generic-parameter}}>{{/vendorExtensions.x-rust-has-lifetime}}{{^vendorExtensions.x-rust-has-lifetime}}{{#vendorExtensions.x-rust-generic-parameter}}<{{{.}}}>{{/vendorExtensions.x-rust-generic-parameter}}{{/vendorExtensions.x-rust-has-lifetime}} {{!
+    }}{{{classname}}}{{#vendorExtensions.x-rust-has-lifetime}}<'a{{#vendorExtensions.x-rust-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-generic-parameter}}>{{/vendorExtensions.x-rust-has-lifetime}}{{^vendorExtensions.x-rust-has-lifetime}}{{#vendorExtensions.x-rust-generic-parameter}}<{{{.}}}>{{/vendorExtensions.x-rust-generic-parameter}}{{/vendorExtensions.x-rust-has-lifetime}} {
     {{#description}}
     /// {{{.}}}
     {{/description}}
@@ -183,11 +183,11 @@ impl{{#vendorExtensions.x-rust-has-borrowed-data}}<'a{{#vendorExtensions.x-rust-
     }}{{^vendorExtensions.x-rust-type}}{{#isNullable}}Option<{{/isNullable}}{{!
     }}{{#isEnum}}{{#isArray}}{{#uniqueItems}}std::collections::HashSet<{{/uniqueItems}}{{^uniqueItems}}Vec<{{/uniqueItems}}{{/isArray}}{{{enumName}}}{{#isArray}}>{{/isArray}}{{/isEnum}}{{!
     }}{{^isEnum}}{{#isByteArray}}Vec<u8>{{/isByteArray}}{{!
-    }}{{^isByteArray}}{{#isString}}{{#model}}{{#vendorExtensions.x-rust-has-borrowed-data}}Cow<'a, str>{{/vendorExtensions.x-rust-has-borrowed-data}}{{^vendorExtensions.x-rust-has-borrowed-data}}String{{/vendorExtensions.x-rust-has-borrowed-data}}{{/model}}{{/isString}}{{!
+    }}{{^isByteArray}}{{#isString}}{{#model}}{{#vendorExtensions.x-rust-has-lifetime}}Cow<'a, str>{{/vendorExtensions.x-rust-has-lifetime}}{{^vendorExtensions.x-rust-has-lifetime}}String{{/vendorExtensions.x-rust-has-lifetime}}{{/model}}{{/isString}}{{!
     }}{{^isString}}{{#isArray}}Vec<{{#items}}{{!
-    }}{{#isModel}}{{{dataType}}}{{#vendorExtensions.x-rust-has-borrowed-data}}{{#model}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a>{{/vendorExtensions.x-rust-has-borrowed-data}}{{^vendorExtensions.x-rust-has-borrowed-data}}<'static>{{/vendorExtensions.x-rust-has-borrowed-data}}{{/model}}{{/vendorExtensions.x-rust-has-borrowed-data}}{{/isModel}}{{!
+    }}{{#isModel}}{{{dataType}}}{{#vendorExtensions.x-rust-has-lifetime}}{{#model}}{{#vendorExtensions.x-rust-has-lifetime}}<'a>{{/vendorExtensions.x-rust-has-lifetime}}{{^vendorExtensions.x-rust-has-lifetime}}<'static>{{/vendorExtensions.x-rust-has-lifetime}}{{/model}}{{/vendorExtensions.x-rust-has-lifetime}}{{/isModel}}{{!
     }}{{^isModel}}{{{dataType}}}{{/isModel}}{{/items}}>{{/isArray}}{{!
-    }}{{^isArray}}{{{dataType}}}{{#isModel}}{{#vendorExtensions.x-rust-has-borrowed-data}}{{#model}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a>{{/vendorExtensions.x-rust-has-borrowed-data}}{{^vendorExtensions.x-rust-has-borrowed-data}}<'static>{{/vendorExtensions.x-rust-has-borrowed-data}}{{/model}}{{/vendorExtensions.x-rust-has-borrowed-data}}{{/isModel}}{{!
+    }}{{^isArray}}{{{dataType}}}{{#isModel}}{{#vendorExtensions.x-rust-has-lifetime}}{{#model}}{{#vendorExtensions.x-rust-has-lifetime}}<'a>{{/vendorExtensions.x-rust-has-lifetime}}{{^vendorExtensions.x-rust-has-lifetime}}<'static>{{/vendorExtensions.x-rust-has-lifetime}}{{/model}}{{/vendorExtensions.x-rust-has-lifetime}}{{/isModel}}{{!
     }}{{/isArray}}{{/isString}}{{/isByteArray}}{{/isEnum}}{{!
     }}{{#isNullable}}>{{/isNullable}}{{/vendorExtensions.x-rust-type}}{{!
     ### Comma for next arguement
@@ -218,16 +218,16 @@ impl{{#vendorExtensions.x-rust-has-borrowed-data}}<'a{{#vendorExtensions.x-rust-
 {{/description}}
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum {{classname}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a>{{/vendorExtensions.x-rust-has-borrowed-data}} {
+pub enum {{classname}}{{#vendorExtensions.x-rust-has-lifetime}}<'a>{{/vendorExtensions.x-rust-has-lifetime}} {
 {{#composedSchemas.oneOf}}
     {{#description}}
     /// {{{.}}}
     {{/description}}
-    {{{name}}}({{#isModel}}{{^avoidBoxedModels}}Box<{{/avoidBoxedModels}}{{/isModel}}{{#isArray}}Vec<{{{items.dataType}}}{{#items.vendorExtensions.x-rust-has-borrowed-data}}<'a>{{/items.vendorExtensions.x-rust-has-borrowed-data}}{{^items.vendorExtensions.x-rust-has-borrowed-data}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a>{{/vendorExtensions.x-rust-has-borrowed-data}}{{/items.vendorExtensions.x-rust-has-borrowed-data}}>{{/isArray}}{{^isArray}}{{{dataType}}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'a>{{/vendorExtensions.x-rust-has-borrowed-data}}{{/isArray}}{{#isModel}}{{^avoidBoxedModels}}>{{/avoidBoxedModels}}{{/isModel}}),
+    {{{name}}}({{#isModel}}{{^avoidBoxedModels}}Box<{{/avoidBoxedModels}}{{/isModel}}{{#isArray}}Vec<{{{items.dataType}}}{{#items.vendorExtensions.x-rust-has-lifetime}}<'a>{{/items.vendorExtensions.x-rust-has-lifetime}}{{^items.vendorExtensions.x-rust-has-lifetime}}{{#vendorExtensions.x-rust-has-lifetime}}<'a>{{/vendorExtensions.x-rust-has-lifetime}}{{/items.vendorExtensions.x-rust-has-lifetime}}>{{/isArray}}{{^isArray}}{{{dataType}}}{{#vendorExtensions.x-rust-has-lifetime}}<'a>{{/vendorExtensions.x-rust-has-lifetime}}{{/isArray}}{{#isModel}}{{^avoidBoxedModels}}>{{/avoidBoxedModels}}{{/isModel}}),
 {{/composedSchemas.oneOf}}
 }
 
-impl Default for {{classname}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'_>{{/vendorExtensions.x-rust-has-borrowed-data}} {
+impl Default for {{classname}}{{#vendorExtensions.x-rust-has-lifetime}}<'_>{{/vendorExtensions.x-rust-has-lifetime}} {
     fn default() -> Self {
         {{#composedSchemas.oneOf}}{{#-first}}Self::{{{name}}}(Default::default()){{/-first}}{{/composedSchemas.oneOf}}
     }

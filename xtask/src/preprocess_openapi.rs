@@ -212,24 +212,27 @@ pub fn preprocess_openapi_file(
 }
 
 impl OpenAPIProperty {
+    // Helper to determine if a schema is a structure that requires a <'a> or <'p> generic in Rust
+    fn is_structural(&self) -> bool {
+        self.r#type.as_deref() == Some("object")
+            || self.r#type.as_deref() == Some("array")
+            || self.r#ref.is_some()
+            || self.one_of.is_some()
+            || self.any_of.is_some()
+            || self.extra.contains_key("allOf")
+    }
+
     fn mark_borrowed_property_recursive(
         &mut self,
         schemas: &IndexMap<String, OpenAPIProperty>,
         response_schemas: &std::collections::HashSet<String>,
     ) {
         let mut visited = std::collections::HashSet::new();
-
         if property_contains_string(self, schemas, &mut visited, response_schemas) {
             // only flag structures that need a Rust <'a> lifetime e.g. objects, arrays,...
-            let is_structural = self.r#type.as_deref() == Some("object")
-                || self.r#type.as_deref() == Some("array")
-                || self.r#ref.is_some()
-                || self.one_of.is_some()
-                || self.any_of.is_some();
-
-            if is_structural {
+            if self.is_structural() {
                 self.extra
-                    .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
+                    .insert("x-rust-has-lifetime".to_owned(), Value::Bool(true));
             }
         }
 
@@ -316,14 +319,18 @@ impl OpenAPI {
                                     &schemas_ref,
                                     &response_schemas,
                                 );
-                                schema.extra.insert(
-                                    "x-rust-has-borrowed-data".to_owned(),
-                                    Value::Bool(true),
-                                );
-                                parameter.extra.insert(
-                                    "x-rust-has-borrowed-data".to_owned(),
-                                    Value::Bool(true),
-                                );
+
+                                // only flag the schema and parameter if it is structural (object/arrays)
+                                if schema.is_structural() {
+                                    schema.extra.insert(
+                                        "x-rust-has-lifetime".to_owned(),
+                                        Value::Bool(true),
+                                    );
+                                    parameter.extra.insert(
+                                        "x-rust-has-lifetime".to_owned(),
+                                        Value::Bool(true),
+                                    );
+                                }
                                 operation_has_borrowed_data = true;
                             }
                         }
@@ -348,11 +355,14 @@ impl OpenAPI {
                                         &schemas_ref,
                                         &response_schemas,
                                     );
-                                    schema.extra.insert(
-                                        "x-rust-has-borrowed-data".to_owned(),
-                                        Value::Bool(true),
-                                    );
-                                    request_body_has_borrowed_data = true;
+
+                                    if schema.is_structural() {
+                                        schema.extra.insert(
+                                            "x-rust-has-lifetime".to_owned(),
+                                            Value::Bool(true),
+                                        );
+                                        request_body_has_borrowed_data = true;
+                                    }
                                 }
                             }
                         })
@@ -360,7 +370,7 @@ impl OpenAPI {
                     if request_body_has_borrowed_data {
                         request_body
                             .extra
-                            .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
+                            .insert("x-rust-has-lifetime".to_owned(), Value::Bool(true));
                         operation_has_borrowed_data = true;
                     }
                 }
@@ -368,7 +378,7 @@ impl OpenAPI {
                 if operation_has_borrowed_data {
                     operation
                         .extra
-                        .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
+                        .insert("x-rust-has-lifetime".to_owned(), Value::Bool(true));
                 }
             })
         });
@@ -411,9 +421,22 @@ impl OpenAPI {
                 continue;
             };
 
+            // prevent OpenAPI generator from dropping flags on pure $ref aliases
+            // We wrap pure $refs in an `allOf` so the generator keeps the vendor extensions.
+            if let Some(r) = schema.r#ref.take() {
+                let all_of_item = OpenAPIProperty {
+                    r#ref: Some(r),
+                    ..Default::default()
+                };
+                schema.extra.insert(
+                    "allOf".to_owned(),
+                    serde_yaml::to_value(vec![all_of_item]).unwrap(),
+                );
+            }
+
             schema
                 .extra
-                .insert("x-rust-has-borrowed-data".to_owned(), Value::Bool(true));
+                .insert("x-rust-has-lifetime".to_owned(), Value::Bool(true));
             schema.mark_borrowed_property_recursive(&schemas_ref, &response_schemas);
         }
     }

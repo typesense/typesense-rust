@@ -98,8 +98,6 @@ paths:
         schema:
           type: string
           description: Comma-separated list of fields from the collection to exclude from the response
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: limit
         in: query
         schema:
@@ -121,7 +119,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/CollectionResponse'
                 x-go-type: '[]*CollectionResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     post:
       tags:
       - collections
@@ -135,8 +133,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CollectionSchema'
-              x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '201':
           description: Collection successfully created
@@ -156,7 +154,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /collections/{collectionName}:
     get:
       tags:
@@ -171,8 +169,6 @@ paths:
         description: The name of the collection to retrieve
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Collection fetched
@@ -186,7 +182,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     patch:
       tags:
       - collections
@@ -200,8 +196,6 @@ paths:
         description: The name of the collection to update
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       requestBody:
         required: true
         description: The document object with fields to be updated
@@ -228,7 +222,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     delete:
       tags:
       - collections
@@ -242,8 +236,6 @@ paths:
         description: The name of the collection to delete
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Collection deleted
@@ -257,7 +249,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /collections/{collectionName}/documents:
     post:
       tags:
@@ -272,8 +264,6 @@ paths:
         description: The name of the collection to add the document to
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: action
         in: query
         description: Additional action to perform
@@ -281,8 +271,8 @@ paths:
           type: string
           example: upsert
           $ref: '#/components/schemas/IndexAction'
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
+          x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       - name: dirty_values
         in: query
         description: Dealing with Dirty Data
@@ -311,7 +301,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     patch:
       tags:
       - documents
@@ -325,15 +315,11 @@ paths:
         description: The name of the collection to update documents in
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: filter_by
         in: query
         schema:
           type: string
           example: 'num_employees:>100 && country: [USA, UK]'
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       requestBody:
         required: true
         description: The document fields to be updated
@@ -372,7 +358,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
       x-rust-generic-parameter: 'B: Serialize'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     delete:
       tags:
       - documents
@@ -386,15 +372,11 @@ paths:
         description: The name of the collection to delete documents from
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: filter_by
         in: query
         schema:
           type: string
           example: 'num_employees:>100 && country: [USA, UK]'
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: batch_size
         in: query
         schema:
@@ -427,7 +409,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /collections/{collectionName}/documents/search:
     get:
       tags:
@@ -442,22 +424,16 @@ paths:
         description: The name of the collection to search for the document under
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: q
         in: query
         schema:
           type: string
           description: The query text to search for in the collection. Use * as the search string to return all documents. This is typically useful when used in conjunction with filter_by.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: query_by
         in: query
         schema:
           type: string
           description: A list of `string` fields that should be queried against. Multiple fields are separated with a comma.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: nl_query
         in: query
         schema:
@@ -468,36 +444,26 @@ paths:
         schema:
           type: string
           description: The ID of the natural language model to use.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: query_by_weights
         in: query
         schema:
           type: string
           description: The relative weight to give each `query_by` field when ranking results. This can be used to boost fields in priority, when looking for matches. Multiple fields are separated with a comma.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: text_match_type
         in: query
         schema:
           type: string
           description: In a multi-field matching context, this parameter determines how the representative text match score of a record is calculated. Possible values are max_score (default) or max_weight.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: prefix
         in: query
         schema:
           type: string
           description: Boolean field to indicate that the last word in the query should be treated as a prefix, and not as a whole word. This is used for building autocomplete and instant search interfaces. Defaults to true.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: infix
         in: query
         schema:
           type: string
           description: If infix index is enabled for this field, infix searching can be done on a per-field basis by sending a comma separated string parameter called infix to the search query. This parameter can have 3 values; `off` infix search is disabled, which is default `always` infix search is performed along with regular search `fallback` infix search is performed if regular search does not produce results
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: max_extra_prefix
         in: query
         schema:
@@ -514,8 +480,6 @@ paths:
           type: string
           description: Filter conditions for refining your open api validator search results. Separate multiple conditions with &&.
           example: 'num_employees:>100 && country: [USA, UK]'
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: max_filter_by_candidates
         in: query
         schema:
@@ -527,15 +491,11 @@ paths:
           type: string
           description: A list of numerical fields and their corresponding sort orders that will be used for ordering your results. Up to 3 sort fields can be specified. The text similarity score is exposed as a special `_text_match` field that you can use in the list of sorting fields. If no `sort_by` parameter is specified, results are sorted by `_text_match:desc,default_sorting_field:desc`
           example: num_employees:desc
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: facet_by
         in: query
         schema:
           type: string
           description: A list of fields that will be used for faceting your results on. Separate multiple fields with a comma.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: max_facet_values
         in: query
         schema:
@@ -546,16 +506,12 @@ paths:
         schema:
           type: string
           description: Facet values that are returned can now be filtered via this parameter. The matching facet text is also highlighted. For example, when faceting by `category`, you can set `facet_query=category:shoe` to return only facet values that contain the prefix "shoe".
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: num_typos
         in: query
         schema:
           type: string
           description: |
             The number of typographical errors (1 or 2) that would be tolerated. Default: 2
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: page
         in: query
         schema:
@@ -582,8 +538,6 @@ paths:
         schema:
           type: string
           description: You can aggregate search results into groups or buckets by specify one or more `group_by` fields. Separate multiple fields with a comma. To group on a particular field, it must be a faceted field.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: group_limit
         in: query
         schema:
@@ -601,22 +555,16 @@ paths:
         schema:
           type: string
           description: List of fields from the document to include in the search result
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: exclude_fields
         in: query
         schema:
           type: string
           description: List of fields from the document to exclude in the search result
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: highlight_full_fields
         in: query
         schema:
           type: string
           description: List of fields which should be highlighted fully without snippeting
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: highlight_affix_num_tokens
         in: query
         schema:
@@ -629,16 +577,12 @@ paths:
           type: string
           description: |
             The start tag used for the highlighted snippets. Default: `<mark>`
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: highlight_end_tag
         in: query
         schema:
           type: string
           description: |
             The end tag used for the highlighted snippets. Default: `</mark>`
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: enable_highlight_v1
         in: query
         schema:
@@ -665,8 +609,6 @@ paths:
           type: string
           description: List of synonym set names to associate with this search query
           example: synonym_set_1,synonym_set_2
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: drop_tokens_threshold
         in: query
         schema:
@@ -720,8 +662,6 @@ paths:
           description: |
             A list of records to unconditionally include in the search results at specific positions. An example use case would be to feature or promote certain items on the top of search results. A list of `record_id:hit_position`. Eg: to include a record with ID 123 at Position 1 and another record with ID 456 at Position 5, you'd specify `123:1,456:5`.
             You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: hidden_hits
         in: query
         schema:
@@ -729,31 +669,23 @@ paths:
           description: |
             A list of records to unconditionally hide from search results. A list of `record_id`s to hide. Eg: to hide records with IDs 123 and 456, you'd specify `123,456`.
             You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: override_tags
         in: query
         schema:
           type: string
           description: Comma separated list of tags to trigger the curations rules that match the tags.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: highlight_fields
         in: query
         schema:
           type: string
           description: |
             A list of custom fields that must be highlighted even if you don't query for them
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: split_join_tokens
         in: query
         schema:
           type: string
           description: |
             Treat space as typo: search for q=basket ball if q=basketball is not found or vice-versa. Splitting/joining of tokens will only be attempted if the original query produces no results. To always trigger this behavior, set value to `always``. To disable, set value to `off`. Default is `fallback`.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: pre_segmented_query
         in: query
         schema:
@@ -767,8 +699,6 @@ paths:
           type: string
           description: |
             Search using a bunch of search parameters by setting this parameter to the name of the existing Preset.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: enable_overrides
         in: query
         schema:
@@ -852,8 +782,6 @@ paths:
           type: string
           description: |
             Vector query expression for fetching documents "closest" to a given query/document vector.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: remote_embedding_timeout_ms
         in: query
         schema:
@@ -872,32 +800,24 @@ paths:
           type: string
           description: |
             Choose the underlying faceting strategy used. Comma separated string of allows values: exhaustive, top_values or automatic (default).
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: stopwords
         in: query
         schema:
           type: string
           description: |
             Name of the stopwords set to apply for this search, the keywords present in the set will be removed from the search query.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: facet_return_parent
         in: query
         schema:
           type: string
           description: |
             Comma separated string of nested facet fields whose parent object should be returned in facet response.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: voice_query
         in: query
         schema:
           type: string
           description: |
             The base64 encoded audio file in 16 khz 16-bit WAV format.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: conversation
         in: query
         schema:
@@ -910,16 +830,12 @@ paths:
           type: string
           description: |
             The Id of Conversation Model to be used.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: conversation_id
         in: query
         schema:
           type: string
           description: |
             The Id of a previous conversation to continue, this tells Typesense to include prior context when communicating with the LLM.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Search results
@@ -941,7 +857,7 @@ paths:
                 $ref: '#/components/schemas/ApiResponse'
       x-rust-generic-parameter: 'D: for<''de> serde::Deserialize<''de> + Serialize'
       x-rust-return-type: models::SearchResult<D>
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /synonym_sets:
     get:
       tags:
@@ -972,8 +888,6 @@ paths:
         description: The name of the synonym set to retrieve
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Synonym set fetched
@@ -987,7 +901,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     put:
       tags:
       - synonyms
@@ -1001,8 +915,6 @@ paths:
         description: The name of the synonym set to create/update
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       requestBody:
         required: true
         description: The synonym set to be created/updated
@@ -1023,7 +935,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     delete:
       tags:
       - synonyms
@@ -1037,8 +949,6 @@ paths:
         description: The name of the synonym set to delete
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Synonym set successfully deleted
@@ -1052,7 +962,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /synonym_sets/{synonymSetName}/items:
     get:
       tags:
@@ -1067,8 +977,6 @@ paths:
         description: The name of the synonym set to retrieve items for
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: List of synonym items
@@ -1084,7 +992,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /synonym_sets/{synonymSetName}/items/{itemId}:
     get:
       tags:
@@ -1099,16 +1007,12 @@ paths:
         description: The name of the synonym set
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: itemId
         required: true
         in: path
         description: The id of the synonym item to retrieve
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Synonym item fetched
@@ -1122,7 +1026,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     put:
       tags:
       - synonyms
@@ -1136,16 +1040,12 @@ paths:
         description: The name of the synonym set
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: itemId
         required: true
         in: path
         description: The id of the synonym item to upsert
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       requestBody:
         required: true
         description: The synonym item to be created/updated
@@ -1153,8 +1053,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SynonymItemUpsertSchema'
-              x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '200':
           description: Synonym item successfully created/updated
@@ -1168,7 +1068,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     delete:
       tags:
       - synonyms
@@ -1182,16 +1082,12 @@ paths:
         description: The name of the synonym set
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: itemId
         required: true
         in: path
         description: The id of the synonym item to delete
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Synonym item successfully deleted
@@ -1205,7 +1101,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /curation_sets:
     get:
       tags:
@@ -1236,8 +1132,6 @@ paths:
         description: The name of the curation set to retrieve
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Curation set fetched
@@ -1251,7 +1145,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     put:
       tags:
       - curation_sets
@@ -1265,8 +1159,6 @@ paths:
         description: The name of the curation set to create/update
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       requestBody:
         required: true
         description: The curation set to be created/updated
@@ -1274,8 +1166,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CurationSetCreateSchema'
-              x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '200':
           description: Curation set successfully created/updated
@@ -1289,7 +1181,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     delete:
       tags:
       - curation_sets
@@ -1303,8 +1195,6 @@ paths:
         description: The name of the curation set to delete
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Curation set successfully deleted
@@ -1318,7 +1208,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /curation_sets/{curationSetName}/items:
     get:
       tags:
@@ -1333,8 +1223,6 @@ paths:
         description: The name of the curation set to retrieve items for
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: List of curation items
@@ -1350,7 +1238,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /curation_sets/{curationSetName}/items/{itemId}:
     get:
       tags:
@@ -1365,16 +1253,12 @@ paths:
         description: The name of the curation set
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: itemId
         required: true
         in: path
         description: The id of the curation item to retrieve
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Curation item fetched
@@ -1388,7 +1272,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     put:
       tags:
       - curation_sets
@@ -1402,16 +1286,12 @@ paths:
         description: The name of the curation set
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: itemId
         required: true
         in: path
         description: The id of the curation item to upsert
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       requestBody:
         required: true
         description: The curation item to be created/updated
@@ -1432,7 +1312,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     delete:
       tags:
       - curation_sets
@@ -1446,16 +1326,12 @@ paths:
         description: The name of the curation set
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: itemId
         required: true
         in: path
         description: The id of the curation item to delete
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Curation item successfully deleted
@@ -1469,7 +1345,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /collections/{collectionName}/documents/export:
     get:
       tags:
@@ -1484,29 +1360,21 @@ paths:
         description: The name of the collection
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: filter_by
         in: query
         schema:
           type: string
           description: Filter conditions for refining your search results. Separate multiple conditions with &&.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: include_fields
         in: query
         schema:
           type: string
           description: List of fields from the document to include in the search result
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: exclude_fields
         in: query
         schema:
           type: string
           description: List of fields from the document to exclude in the search result
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Exports all the documents in a given collection.
@@ -1525,7 +1393,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
       x-supports-plain-text: true
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /collections/{collectionName}/documents/import:
     post:
       tags:
@@ -1540,8 +1408,6 @@ paths:
         description: The name of the collection
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: batch_size
         in: query
         schema:
@@ -1575,8 +1441,6 @@ paths:
             schema:
               type: string
               description: The JSONL file to import
-              x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Result of the import operation. Each line of the response indicates the result of each document present in the request body (in the same order). If the import of a single document fails, it does not affect the other documents. If there is a failure, the response line will include a corresponding error message and as well as the actual document content.
@@ -1601,7 +1465,7 @@ paths:
                 $ref: '#/components/schemas/ApiResponse'
       x-rust-body-is-raw-text: true
       x-supports-plain-text: true
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /collections/{collectionName}/documents/{documentId}:
     get:
       tags:
@@ -1616,16 +1480,12 @@ paths:
         description: The name of the collection to search for the document under
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: documentId
         required: true
         in: path
         description: The Document ID
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: The document referenced by the ID
@@ -1640,7 +1500,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     patch:
       tags:
       - documents
@@ -1654,16 +1514,12 @@ paths:
         description: The name of the collection to search for the document under
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: documentId
         required: true
         in: path
         description: The Document ID
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: dirty_values
         in: query
         description: Dealing with Dirty Data
@@ -1695,7 +1551,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
       x-rust-generic-parameter: 'B: Serialize'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     delete:
       tags:
       - documents
@@ -1709,16 +1565,12 @@ paths:
         description: The name of the collection to search for the document under
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: documentId
         required: true
         in: path
         description: The Document ID
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: The document referenced by the ID was deleted
@@ -1733,7 +1585,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /conversations/models:
     get:
       tags:
@@ -1763,8 +1615,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ConversationModelCreateSchema'
-              x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '201':
           description: Created Conversation Model
@@ -1778,7 +1630,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /conversations/models/{modelId}:
     get:
       tags:
@@ -1793,8 +1645,6 @@ paths:
         description: The id of the conversation model to retrieve
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: A conversation model
@@ -1802,7 +1652,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConversationModelSchema'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     put:
       tags:
       - conversations
@@ -1816,16 +1666,14 @@ paths:
         description: The id of the conversation model to update
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ConversationModelUpdateSchema'
-              x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '200':
           description: The conversation model was successfully updated
@@ -1833,7 +1681,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConversationModelSchema'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     delete:
       tags:
       - conversations
@@ -1847,8 +1695,6 @@ paths:
         description: The id of the conversation model to delete
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: The conversation model was successfully deleted
@@ -1856,7 +1702,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConversationModelSchema'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /keys:
     get:
       tags:
@@ -1882,8 +1728,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ApiKeySchema'
-              x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '201':
           description: Created API key
@@ -1903,7 +1749,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /keys/{keyId}:
     get:
       tags:
@@ -1992,16 +1838,14 @@ paths:
         description: The name of the alias to create/update
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       requestBody:
         description: Collection alias to be created/updated
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/CollectionAliasSchema'
-              x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '200':
           description: The collection alias was created/updated
@@ -2021,7 +1865,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     get:
       tags:
       - collections
@@ -2035,8 +1879,6 @@ paths:
         description: The name of the alias to retrieve
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Collection alias fetched
@@ -2050,7 +1892,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     delete:
       tags:
       - collections
@@ -2063,8 +1905,6 @@ paths:
         description: The name of the alias to delete
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Collection alias was deleted
@@ -2078,7 +1918,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /debug:
     get:
       tags:
@@ -2141,8 +1981,6 @@ paths:
         description: The directory on the server where the snapshot should be saved.
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '201':
           description: Snapshot is created.
@@ -2150,7 +1988,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessStatus'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /operations/vote:
     post:
       tags:
@@ -2232,43 +2070,31 @@ paths:
         schema:
           type: string
           description: The query text to search for in the collection. Use * as the search string to return all documents. This is typically useful when used in conjunction with filter_by.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: query_by
         in: query
         schema:
           type: string
           description: A list of `string` fields that should be queried against. Multiple fields are separated with a comma.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: query_by_weights
         in: query
         schema:
           type: string
           description: The relative weight to give each `query_by` field when ranking results. This can be used to boost fields in priority, when looking for matches. Multiple fields are separated with a comma.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: text_match_type
         in: query
         schema:
           type: string
           description: In a multi-field matching context, this parameter determines how the representative text match score of a record is calculated. Possible values are max_score (default) or max_weight.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: prefix
         in: query
         schema:
           type: string
           description: Boolean field to indicate that the last word in the query should be treated as a prefix, and not as a whole word. This is used for building autocomplete and instant search interfaces. Defaults to true.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: infix
         in: query
         schema:
           type: string
           description: If infix index is enabled for this field, infix searching can be done on a per-field basis by sending a comma separated string parameter called infix to the search query. This parameter can have 3 values; `off` infix search is disabled, which is default `always` infix search is performed along with regular search `fallback` infix search is performed if regular search does not produce results
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: max_extra_prefix
         in: query
         schema:
@@ -2285,22 +2111,16 @@ paths:
           type: string
           description: Filter conditions for refining youropen api validator search results. Separate multiple conditions with &&.
           example: 'num_employees:>100 && country: [USA, UK]'
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: sort_by
         in: query
         schema:
           type: string
           description: A list of numerical fields and their corresponding sort orders that will be used for ordering your results. Up to 3 sort fields can be specified. The text similarity score is exposed as a special `_text_match` field that you can use in the list of sorting fields. If no `sort_by` parameter is specified, results are sorted by `_text_match:desc,default_sorting_field:desc`
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: facet_by
         in: query
         schema:
           type: string
           description: A list of fields that will be used for faceting your results on. Separate multiple fields with a comma.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: max_facet_values
         in: query
         schema:
@@ -2311,16 +2131,12 @@ paths:
         schema:
           type: string
           description: Facet values that are returned can now be filtered via this parameter. The matching facet text is also highlighted. For example, when faceting by `category`, you can set `facet_query=category:shoe` to return only facet values that contain the prefix "shoe".
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: num_typos
         in: query
         schema:
           type: string
           description: |
             The number of typographical errors (1 or 2) that would be tolerated. Default: 2
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: page
         in: query
         schema:
@@ -2347,8 +2163,6 @@ paths:
         schema:
           type: string
           description: You can aggregate search results into groups or buckets by specify one or more `group_by` fields. Separate multiple fields with a comma. To group on a particular field, it must be a faceted field.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: group_limit
         in: query
         schema:
@@ -2366,22 +2180,16 @@ paths:
         schema:
           type: string
           description: List of fields from the document to include in the search result
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: exclude_fields
         in: query
         schema:
           type: string
           description: List of fields from the document to exclude in the search result
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: highlight_full_fields
         in: query
         schema:
           type: string
           description: List of fields which should be highlighted fully without snippeting
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: highlight_affix_num_tokens
         in: query
         schema:
@@ -2394,16 +2202,12 @@ paths:
           type: string
           description: |
             The start tag used for the highlighted snippets. Default: `<mark>`
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: highlight_end_tag
         in: query
         schema:
           type: string
           description: |
             The end tag used for the highlighted snippets. Default: `</mark>`
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: snippet_threshold
         in: query
         schema:
@@ -2470,8 +2274,6 @@ paths:
           description: |
             A list of records to unconditionally include in the search results at specific positions. An example use case would be to feature or promote certain items on the top of search results. A list of `record_id:hit_position`. Eg: to include a record with ID 123 at Position 1 and another record with ID 456 at Position 5, you'd specify `123:1,456:5`.
             You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: hidden_hits
         in: query
         schema:
@@ -2479,23 +2281,17 @@ paths:
           description: |
             A list of records to unconditionally hide from search results. A list of `record_id`s to hide. Eg: to hide records with IDs 123 and 456, you'd specify `123,456`.
             You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: override_tags
         in: query
         schema:
           type: string
           description: Comma separated list of tags to trigger the curations rules that match the tags.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: highlight_fields
         in: query
         schema:
           type: string
           description: |
             A list of custom fields that must be highlighted even if you don't query for them
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: pre_segmented_query
         in: query
         schema:
@@ -2510,8 +2306,6 @@ paths:
           type: string
           description: |
             Search using a bunch of search parameters by setting this parameter to the name of the existing Preset.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: enable_overrides
         in: query
         schema:
@@ -2589,8 +2383,6 @@ paths:
           type: string
           description: |
             Vector query expression for fetching documents "closest" to a given query/document vector.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: remote_embedding_timeout_ms
         in: query
         schema:
@@ -2609,32 +2401,24 @@ paths:
           type: string
           description: |
             Choose the underlying faceting strategy used. Comma separated string of allows values: exhaustive, top_values or automatic (default).
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: stopwords
         in: query
         schema:
           type: string
           description: |
             Name of the stopwords set to apply for this search, the keywords present in the set will be removed from the search query.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: facet_return_parent
         in: query
         schema:
           type: string
           description: |
             Comma separated string of nested facet fields whose parent object should be returned in facet response.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: voice_query
         in: query
         schema:
           type: string
           description: |
             The base64 encoded audio file in 16 khz 16-bit WAV format.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: conversation
         in: query
         schema:
@@ -2647,23 +2431,19 @@ paths:
           type: string
           description: |
             The Id of Conversation Model to be used.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: conversation_id
         in: query
         schema:
           type: string
           description: |
             The Id of a previous conversation to continue, this tells Typesense to include prior context when communicating with the LLM.
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/MultiSearchSearchesParameter'
-              x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '200':
           description: Search results
@@ -2678,7 +2458,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
       x-rust-return-type: serde_json::Value
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /analytics/events:
     post:
       tags:
@@ -2693,8 +2473,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AnalyticsEvent'
-              x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '200':
           description: Analytics event successfully created
@@ -2708,7 +2488,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     get:
       tags:
       - analytics
@@ -2721,16 +2501,12 @@ paths:
         in: query
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: name
         required: true
         in: query
         description: Analytics rule name
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       - name: n
         required: true
         in: query
@@ -2750,7 +2526,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /analytics/flush:
     post:
       tags:
@@ -2794,14 +2570,14 @@ paths:
             schema:
               oneOf:
               - $ref: '#/components/schemas/AnalyticsRuleCreate'
-                x-rust-has-borrowed-data: true
+                x-rust-has-lifetime: true
               - type: array
                 items:
                   $ref: '#/components/schemas/AnalyticsRuleCreate'
-                  x-rust-has-borrowed-data: true
-                x-rust-has-borrowed-data: true
-              x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
+                  x-rust-has-lifetime: true
+                x-rust-has-lifetime: true
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '200':
           description: Analytics rule(s) successfully created
@@ -2824,7 +2600,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     get:
       tags:
       - analytics
@@ -2838,8 +2614,6 @@ paths:
         description: Filter rules by rule_tag
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Analytics rules fetched
@@ -2849,7 +2623,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/AnalyticsRule'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /analytics/rules/{ruleName}:
     put:
       tags:
@@ -2864,8 +2638,6 @@ paths:
         description: The name of the analytics rule to upsert
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       requestBody:
         required: true
         description: The Analytics rule to be upserted
@@ -2873,8 +2645,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AnalyticsRuleUpdate'
-              x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '200':
           description: Analytics rule successfully upserted
@@ -2888,7 +2660,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     get:
       tags:
       - analytics
@@ -2902,8 +2674,6 @@ paths:
         description: The name of the analytics rule to retrieve
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Analytics rule fetched
@@ -2917,7 +2687,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     delete:
       tags:
       - analytics
@@ -2931,8 +2701,6 @@ paths:
         description: The name of the analytics rule to delete
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Analytics rule deleted
@@ -2946,7 +2714,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /metrics.json:
     get:
       tags:
@@ -3003,9 +2771,7 @@ paths:
         description: The ID of the stopwords set to upsert.
         schema:
           type: string
-          x-rust-has-borrowed-data: true
         example: countries
-        x-rust-has-borrowed-data: true
       requestBody:
         required: true
         description: The stopwords set to upsert.
@@ -3013,8 +2779,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/StopwordsSetUpsertSchema'
-              x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '200':
           description: Stopwords set successfully upserted.
@@ -3028,7 +2794,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     get:
       tags:
       - stopwords
@@ -3042,9 +2808,7 @@ paths:
         description: The ID of the stopwords set to retrieve.
         schema:
           type: string
-          x-rust-has-borrowed-data: true
         example: countries
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Stopwords set fetched.
@@ -3058,7 +2822,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     delete:
       tags:
       - stopwords
@@ -3072,9 +2836,7 @@ paths:
         description: The ID of the stopwords set to delete.
         schema:
           type: string
-          x-rust-has-borrowed-data: true
         example: countries
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Stopwords set rule deleted.
@@ -3095,7 +2857,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /presets:
     get:
       tags:
@@ -3124,9 +2886,7 @@ paths:
         description: The ID of the preset to retrieve.
         schema:
           type: string
-          x-rust-has-borrowed-data: true
         example: listing_view
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Preset fetched.
@@ -3140,7 +2900,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     put:
       tags:
       - presets
@@ -3154,9 +2914,7 @@ paths:
         description: The name of the preset set to upsert.
         schema:
           type: string
-          x-rust-has-borrowed-data: true
         example: listing_view
-        x-rust-has-borrowed-data: true
       requestBody:
         required: true
         description: The stopwords set to upsert.
@@ -3164,8 +2922,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/PresetUpsertSchema'
-              x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '200':
           description: Preset successfully upserted.
@@ -3179,7 +2937,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     delete:
       tags:
       - presets
@@ -3193,9 +2951,7 @@ paths:
         description: The ID of the preset to delete.
         schema:
           type: string
-          x-rust-has-borrowed-data: true
         example: listing_view
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Preset deleted.
@@ -3209,7 +2965,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /stemming/dictionaries:
     get:
       tags:
@@ -3246,9 +3002,7 @@ paths:
         description: The ID of the dictionary to retrieve
         schema:
           type: string
-          x-rust-has-borrowed-data: true
         example: irregular-plurals
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Stemming dictionary details
@@ -3262,7 +3016,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /stemming/dictionaries/import:
     post:
       tags:
@@ -3277,9 +3031,7 @@ paths:
         description: The ID to assign to the dictionary
         schema:
           type: string
-          x-rust-has-borrowed-data: true
         example: irregular-plurals
-        x-rust-has-borrowed-data: true
       requestBody:
         required: true
         description: The JSONL file containing word mappings
@@ -3290,8 +3042,6 @@ paths:
               example: |
                 {"word": "people", "root": "person"}
                 {"word": "children", "root": "child"}
-              x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Dictionary successfully imported
@@ -3309,7 +3059,7 @@ paths:
                 $ref: '#/components/schemas/ApiResponse'
       x-rust-body-is-raw-text: true
       x-supports-plain-text: true
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /nl_search_models:
     get:
       tags:
@@ -3339,8 +3089,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/NLSearchModelCreateSchema'
-              x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '201':
           description: NL search model successfully created
@@ -3354,7 +3104,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   /nl_search_models/{modelId}:
     get:
       tags:
@@ -3369,8 +3119,6 @@ paths:
         description: The ID of the NL search model to retrieve
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: NL search model fetched
@@ -3384,7 +3132,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     put:
       tags:
       - nl_search_models
@@ -3398,8 +3146,6 @@ paths:
         description: The ID of the NL search model to update
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       requestBody:
         required: true
         description: The NL search model fields to update
@@ -3407,8 +3153,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/NLSearchModelUpdateSchema'
-              x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '200':
           description: NL search model successfully updated
@@ -3428,7 +3174,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     delete:
       tags:
       - nl_search_models
@@ -3442,8 +3188,6 @@ paths:
         description: The ID of the NL search model to delete
         schema:
           type: string
-          x-rust-has-borrowed-data: true
-        x-rust-has-borrowed-data: true
       responses:
         '200':
           description: NL search model successfully deleted
@@ -3457,7 +3201,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
 components:
   schemas:
     CollectionSchema:
@@ -3499,14 +3243,14 @@ components:
             type: string
             minLength: 1
             maxLength: 1
-          x-rust-has-borrowed-data: true
+          x-rust-has-lifetime: true
         synonym_sets:
           type: array
           description: List of synonym set names to associate with this collection
           items:
             type: string
             example: synonym_set_1
-          x-rust-has-borrowed-data: true
+          x-rust-has-lifetime: true
         enable_nested_fields:
           type: boolean
           default: false
@@ -3521,7 +3265,7 @@ components:
             type: string
             minLength: 1
             maxLength: 1
-          x-rust-has-borrowed-data: true
+          x-rust-has-lifetime: true
         voice_query_model:
           $ref: '#/components/schemas/VoiceQueryModelCollectionConfig'
         metadata:
@@ -3529,7 +3273,7 @@ components:
           description: |
             Optional details about the collection, e.g., when it was created, who created it etc.
       x-rust-builder: true
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     CollectionUpdateSchema:
       type: object
       required:
@@ -3710,7 +3454,7 @@ components:
         collection_name:
           type: string
           description: Name of the collection you wish to map the alias to
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     CollectionAlias:
       type: object
       required:
@@ -4047,16 +3791,16 @@ components:
           type: array
           items:
             type: string
-          x-rust-has-borrowed-data: true
+          x-rust-has-lifetime: true
         collections:
           type: array
           items:
             type: string
-          x-rust-has-borrowed-data: true
+          x-rust-has-lifetime: true
         expires_at:
           type: integer
           format: int64
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     ApiKey:
       allOf:
       - $ref: '#/components/schemas/ApiKeySchema'
@@ -4388,7 +4132,7 @@ components:
           description: |
             The Id of a previous conversation to continue, this tells Typesense to include prior context when communicating with the LLM.
       x-rust-builder: true
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     MultiSearchParameters:
       type: object
       description: |
@@ -4639,7 +4383,7 @@ components:
           description: |
             The Id of a previous conversation to continue, this tells Typesense to include prior context when communicating with the LLM.
       x-rust-builder: true
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     MultiSearchSearchesParameter:
       type: object
       required:
@@ -4653,9 +4397,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MultiSearchCollectionParameters'
-            x-rust-has-borrowed-data: true
-          x-rust-has-borrowed-data: true
-      x-rust-has-borrowed-data: true
+            x-rust-has-lifetime: true
+          x-rust-has-lifetime: true
+      x-rust-has-lifetime: true
     MultiSearchCollectionParameters:
       allOf:
       - $ref: '#/components/schemas/MultiSearchParameters'
@@ -4674,7 +4418,7 @@ components:
               When true, computes both text match and vector distance scores for all matches in hybrid search. Documents found only through keyword search will get a vector distance score, and documents found only through vector search will get a text match score.
             default: false
       x-rust-builder: true
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     FacetCounts:
       type: object
       properties:
@@ -4742,13 +4486,13 @@ components:
               type: array
               items:
                 type: string
-              x-rust-has-borrowed-data: true
+              x-rust-has-lifetime: true
             q:
               type: string
             analytics_tag:
               type: string
-          x-rust-has-borrowed-data: true
-      x-rust-has-borrowed-data: true
+          x-rust-has-lifetime: true
+      x-rust-has-lifetime: true
     AnalyticsEventsResponse:
       type: object
       required:
@@ -4809,15 +4553,15 @@ components:
               type: array
               items:
                 type: string
-              x-rust-has-borrowed-data: true
+              x-rust-has-lifetime: true
             expand_query:
               type: boolean
             counter_field:
               type: string
             weight:
               type: integer
-          x-rust-has-borrowed-data: true
-      x-rust-has-borrowed-data: true
+          x-rust-has-lifetime: true
+      x-rust-has-lifetime: true
     AnalyticsRuleType:
       type: string
       enum:
@@ -4846,15 +4590,15 @@ components:
               type: array
               items:
                 type: string
-              x-rust-has-borrowed-data: true
+              x-rust-has-lifetime: true
             expand_query:
               type: boolean
             counter_field:
               type: string
             weight:
               type: integer
-          x-rust-has-borrowed-data: true
-      x-rust-has-borrowed-data: true
+          x-rust-has-lifetime: true
+      x-rust-has-lifetime: true
     AnalyticsRule:
       allOf:
       - $ref: '#/components/schemas/AnalyticsRuleCreate'
@@ -4929,10 +4673,10 @@ components:
           type: array
           items:
             type: string
-          x-rust-has-borrowed-data: true
+          x-rust-has-lifetime: true
         locale:
           type: string
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     StopwordsSetSchema:
       type: object
       required:
@@ -4976,11 +4720,11 @@ components:
         value:
           oneOf:
           - $ref: '#/components/schemas/SearchParameters'
-            x-rust-has-borrowed-data: true
+            x-rust-has-lifetime: true
           - $ref: '#/components/schemas/MultiSearchSearchesParameter'
-            x-rust-has-borrowed-data: true
-          x-rust-has-borrowed-data: true
-      x-rust-has-borrowed-data: true
+            x-rust-has-lifetime: true
+          x-rust-has-lifetime: true
+      x-rust-has-lifetime: true
     PresetSchema:
       allOf:
       - $ref: '#/components/schemas/PresetUpsertSchema'
@@ -5051,7 +4795,7 @@ components:
           history_collection:
             type: string
             description: Typesense collection that stores the historical conversations
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     ConversationModelUpdateSchema:
       type: object
       properties:
@@ -5084,7 +4828,7 @@ components:
         vllm_url:
           type: string
           description: URL of vLLM service
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     ConversationModelSchema:
       allOf:
       - $ref: '#/components/schemas/ConversationModelCreateSchema'
@@ -5154,7 +4898,7 @@ components:
           description: Stop sequences for the NL model (Google-specific)
           items:
             type: string
-          x-rust-has-borrowed-data: true
+          x-rust-has-lifetime: true
         api_version:
           type: string
           description: API version for the NL model service
@@ -5182,7 +4926,7 @@ components:
         account_id:
           type: string
           description: Account ID for Cloudflare-specific models
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     NLSearchModelCreateSchema:
       allOf:
       - $ref: '#/components/schemas/NLSearchModelBase'
@@ -5191,7 +4935,7 @@ components:
           id:
             type: string
             description: Optional ID for the NL search model
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     NLSearchModelSchema:
       allOf:
       - $ref: '#/components/schemas/NLSearchModelCreateSchema'
@@ -5203,8 +4947,9 @@ components:
             type: string
             description: ID of the NL search model
     NLSearchModelUpdateSchema:
-      $ref: '#/components/schemas/NLSearchModelCreateSchema'
-      x-rust-has-borrowed-data: true
+      allOf:
+      - $ref: '#/components/schemas/NLSearchModelCreateSchema'
+      x-rust-has-lifetime: true
     NLSearchModelDeleteSchema:
       type: object
       required:
@@ -5223,7 +4968,7 @@ components:
           description: Array of words that should be considered as synonyms
           items:
             type: string
-          x-rust-has-borrowed-data: true
+          x-rust-has-lifetime: true
         root:
           type: string
           description: For 1-way synonyms, indicates the root word that words in the synonyms parameter map to
@@ -5235,8 +4980,8 @@ components:
           description: By default, special characters are dropped from synonyms. Use this attribute to specify which special characters should be indexed as is
           items:
             type: string
-          x-rust-has-borrowed-data: true
-      x-rust-has-borrowed-data: true
+          x-rust-has-lifetime: true
+      x-rust-has-lifetime: true
     SynonymItemSchema:
       allOf:
       - type: object
@@ -5371,7 +5116,7 @@ components:
         description:
           type: string
           description: Optional description for the curation set
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     CurationSetSchema:
       allOf:
       - $ref: '#/components/schemas/CurationSetCreateSchema'
@@ -5467,14 +5212,14 @@ components:
         exclude_fields:
           type: string
           description: List of fields from the document to exclude in the search result
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     UpdateDocumentsParameters:
       type: object
       properties:
         filter_by:
           type: string
           example: 'num_employees:>100 && country: [USA, UK]'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     DeleteDocumentsParameters:
       type: object
       required:
@@ -5491,7 +5236,7 @@ components:
         truncate:
           type: boolean
           description: When true, removes all documents from the collection while preserving the collection and its schema.
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     GetCollectionsParameters:
       type: object
       properties:
@@ -5505,7 +5250,7 @@ components:
         offset:
           type: integer
           description: Identifies the starting point to return collections when paginating.
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   securitySchemes:
     api_key_header:
       type: apiKey
