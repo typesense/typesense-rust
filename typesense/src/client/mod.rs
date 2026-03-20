@@ -117,6 +117,7 @@ mod multi_search;
 mod operations;
 mod preset;
 mod presets;
+mod retry_policy;
 mod stemming;
 mod stopword;
 mod stopwords;
@@ -137,6 +138,7 @@ use keys::Keys;
 use operations::Operations;
 use preset::Preset;
 use presets::Presets;
+use retry_policy::ClientRetryPolicy;
 use stemming::Stemming;
 use stopword::Stopword;
 use stopwords::Stopwords;
@@ -373,9 +375,9 @@ impl Client {
         #[builder(default = Duration::from_secs(60))]
         /// The duration after which an unhealthy node will be retried for requests.
         healthcheck_interval: Duration,
-        #[builder(default = ExponentialBackoff::builder().build_with_max_retries(3))]
+        #[builder(into, default)]
         /// The retry policy for transient network errors on a *single* node.
-        retry_policy: ExponentialBackoff,
+        retry_policy: ClientRetryPolicy,
     ) -> Result<Self, &'static str> {
         let is_nearest_node_set = nearest_node.is_some();
 
@@ -397,11 +399,19 @@ impl Client {
                 let http_client = builder.build().expect("Failed to build reqwest client");
 
                 #[cfg(not(target_arch = "wasm32"))]
-                let http_client = ReqwestMiddlewareClientBuilder::new(
+                let mw_builder = ReqwestMiddlewareClientBuilder::new(
                     builder.build().expect("Failed to build reqwest client"),
-                )
-                .with(RetryTransientMiddleware::new_with_policy(retry_policy))
-                .build();
+                );
+
+                #[cfg(not(target_arch = "wasm32"))]
+                let http_client = match retry_policy {
+                    ClientRetryPolicy::Default(policy) => mw_builder
+                        .with(RetryTransientMiddleware::new_with_policy(policy))
+                        .build(),
+                    ClientRetryPolicy::Timed(policy) => mw_builder
+                        .with(RetryTransientMiddleware::new_with_policy(policy))
+                        .build(),
+                };
 
                 let mut url = node_config.url;
                 if url.len() > 1 && matches!(url.chars().last(), Some('/')) {
