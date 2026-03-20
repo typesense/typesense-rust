@@ -130,6 +130,8 @@ pub mod nl_search_model_delete_schema;
 pub use self::nl_search_model_delete_schema::NlSearchModelDeleteSchema;
 pub mod nl_search_model_schema;
 pub use self::nl_search_model_schema::NlSearchModelSchema;
+pub mod nl_search_model_update_schema;
+pub use self::nl_search_model_update_schema::NlSearchModelUpdateSchema;
 pub mod preset_delete_schema;
 pub use self::preset_delete_schema::PresetDeleteSchema;
 pub mod preset_schema;

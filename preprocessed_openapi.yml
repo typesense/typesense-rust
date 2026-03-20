@@ -119,6 +119,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/CollectionResponse'
                 x-go-type: '[]*CollectionResponse'
+      x-rust-has-lifetime: true
     post:
       tags:
       - collections
@@ -132,6 +133,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CollectionSchema'
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '201':
           description: Collection successfully created
@@ -151,6 +154,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
   /collections/{collectionName}:
     get:
       tags:
@@ -178,6 +182,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
     patch:
       tags:
       - collections
@@ -217,6 +222,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
     delete:
       tags:
       - collections
@@ -243,6 +249,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
   /collections/{collectionName}/documents:
     post:
       tags:
@@ -278,7 +285,6 @@ paths:
               type: object
               description: Can be any key-value pair
               x-go-type: interface{}
-              x-rust-has-borrowed-data: true
       responses:
         '201':
           description: Document successfully created/indexed
@@ -293,6 +299,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
     patch:
       tags:
       - documents
@@ -320,7 +327,6 @@ paths:
               type: object
               description: Can be any key-value pair
               x-go-type: interface{}
-              x-rust-has-borrowed-data: true
         x-rust-params-generic-parameter: B
         x-rust-type: B
       responses:
@@ -350,6 +356,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
       x-rust-generic-parameter: 'B: Serialize'
+      x-rust-has-lifetime: true
     delete:
       tags:
       - documents
@@ -400,6 +407,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
   /collections/{collectionName}/documents/search:
     get:
       tags:
@@ -847,6 +855,7 @@ paths:
                 $ref: '#/components/schemas/ApiResponse'
       x-rust-generic-parameter: 'D: for<''de> serde::Deserialize<''de> + Serialize'
       x-rust-return-type: models::SearchResult<D>
+      x-rust-has-lifetime: true
   /synonym_sets:
     get:
       tags:
@@ -890,6 +899,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
     put:
       tags:
       - synonyms
@@ -923,6 +933,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
     delete:
       tags:
       - synonyms
@@ -949,6 +960,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
   /synonym_sets/{synonymSetName}/items:
     get:
       tags:
@@ -978,6 +990,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
   /synonym_sets/{synonymSetName}/items/{itemId}:
     get:
       tags:
@@ -1011,6 +1024,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
     put:
       tags:
       - synonyms
@@ -1037,6 +1051,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SynonymItemUpsertSchema'
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '200':
           description: Synonym item successfully created/updated
@@ -1050,6 +1066,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
     delete:
       tags:
       - synonyms
@@ -1082,6 +1099,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
   /curation_sets:
     get:
       tags:
@@ -1125,6 +1143,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
     put:
       tags:
       - curation_sets
@@ -1145,6 +1164,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CurationSetCreateSchema'
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '200':
           description: Curation set successfully created/updated
@@ -1158,6 +1179,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
     delete:
       tags:
       - curation_sets
@@ -1184,6 +1206,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
   /curation_sets/{curationSetName}/items:
     get:
       tags:
@@ -1213,6 +1236,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
   /curation_sets/{curationSetName}/items/{itemId}:
     get:
       tags:
@@ -1246,6 +1270,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
     put:
       tags:
       - curation_sets
@@ -1285,6 +1310,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
     delete:
       tags:
       - curation_sets
@@ -1317,6 +1343,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
   /collections/{collectionName}/documents/export:
     get:
       tags:
@@ -1364,6 +1391,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
       x-supports-plain-text: true
+      x-rust-has-lifetime: true
   /collections/{collectionName}/documents/import:
     post:
       tags:
@@ -1435,6 +1463,7 @@ paths:
                 $ref: '#/components/schemas/ApiResponse'
       x-rust-body-is-raw-text: true
       x-supports-plain-text: true
+      x-rust-has-lifetime: true
   /collections/{collectionName}/documents/{documentId}:
     get:
       tags:
@@ -1469,6 +1498,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
     patch:
       tags:
       - documents
@@ -1502,7 +1532,6 @@ paths:
               type: object
               description: Can be any key-value pair
               x-go-type: interface{}
-              x-rust-has-borrowed-data: true
         x-rust-params-generic-parameter: B
         x-rust-type: B
       responses:
@@ -1520,6 +1549,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
       x-rust-generic-parameter: 'B: Serialize'
+      x-rust-has-lifetime: true
     delete:
       tags:
       - documents
@@ -1553,6 +1583,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
   /conversations/models:
     get:
       tags:
@@ -1582,6 +1613,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ConversationModelCreateSchema'
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '201':
           description: Created Conversation Model
@@ -1595,6 +1628,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
   /conversations/models/{modelId}:
     get:
       tags:
@@ -1616,6 +1650,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConversationModelSchema'
+      x-rust-has-lifetime: true
     put:
       tags:
       - conversations
@@ -1635,6 +1670,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ConversationModelUpdateSchema'
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '200':
           description: The conversation model was successfully updated
@@ -1642,6 +1679,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConversationModelSchema'
+      x-rust-has-lifetime: true
     delete:
       tags:
       - conversations
@@ -1662,6 +1700,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConversationModelSchema'
+      x-rust-has-lifetime: true
   /keys:
     get:
       tags:
@@ -1687,6 +1726,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ApiKeySchema'
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '201':
           description: Created API key
@@ -1706,6 +1747,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
   /keys/{keyId}:
     get:
       tags:
@@ -1800,6 +1842,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CollectionAliasSchema'
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '200':
           description: The collection alias was created/updated
@@ -1819,6 +1863,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
     get:
       tags:
       - collections
@@ -1845,6 +1890,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
     delete:
       tags:
       - collections
@@ -1870,6 +1916,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
   /debug:
     get:
       tags:
@@ -1939,6 +1986,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessStatus'
+      x-rust-has-lifetime: true
   /operations/vote:
     post:
       tags:
@@ -2000,7 +2048,6 @@ paths:
               properties:
                 log-slow-requests-time-ms:
                   type: integer
-              x-rust-has-borrowed-data: true
       responses:
         '200':
           description: Toggle Slow Request Log database succeeded.
@@ -2393,6 +2440,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/MultiSearchSearchesParameter'
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '200':
           description: Search results
@@ -2407,6 +2456,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
       x-rust-return-type: serde_json::Value
+      x-rust-has-lifetime: true
   /analytics/events:
     post:
       tags:
@@ -2421,6 +2471,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AnalyticsEvent'
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '200':
           description: Analytics event successfully created
@@ -2434,6 +2486,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
     get:
       tags:
       - analytics
@@ -2471,6 +2524,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
   /analytics/flush:
     post:
       tags:
@@ -2514,10 +2568,14 @@ paths:
             schema:
               oneOf:
               - $ref: '#/components/schemas/AnalyticsRuleCreate'
+                x-rust-has-lifetime: true
               - type: array
                 items:
                   $ref: '#/components/schemas/AnalyticsRuleCreate'
-              x-rust-has-borrowed-data: true
+                  x-rust-has-lifetime: true
+                x-rust-has-lifetime: true
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '200':
           description: Analytics rule(s) successfully created
@@ -2540,6 +2598,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
     get:
       tags:
       - analytics
@@ -2562,6 +2621,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/AnalyticsRule'
+      x-rust-has-lifetime: true
   /analytics/rules/{ruleName}:
     put:
       tags:
@@ -2583,6 +2643,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/AnalyticsRuleUpdate'
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '200':
           description: Analytics rule successfully upserted
@@ -2596,6 +2658,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
     get:
       tags:
       - analytics
@@ -2622,6 +2685,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
     delete:
       tags:
       - analytics
@@ -2648,6 +2712,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
   /metrics.json:
     get:
       tags:
@@ -2712,6 +2777,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/StopwordsSetUpsertSchema'
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '200':
           description: Stopwords set successfully upserted.
@@ -2725,6 +2792,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
     get:
       tags:
       - stopwords
@@ -2752,6 +2820,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
     delete:
       tags:
       - stopwords
@@ -2786,6 +2855,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
   /presets:
     get:
       tags:
@@ -2828,6 +2898,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
     put:
       tags:
       - presets
@@ -2849,6 +2920,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/PresetUpsertSchema'
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '200':
           description: Preset successfully upserted.
@@ -2862,6 +2935,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
     delete:
       tags:
       - presets
@@ -2889,6 +2963,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
   /stemming/dictionaries:
     get:
       tags:
@@ -2939,6 +3014,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
   /stemming/dictionaries/import:
     post:
       tags:
@@ -2981,6 +3057,7 @@ paths:
                 $ref: '#/components/schemas/ApiResponse'
       x-rust-body-is-raw-text: true
       x-supports-plain-text: true
+      x-rust-has-lifetime: true
   /nl_search_models:
     get:
       tags:
@@ -3010,6 +3087,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/NLSearchModelCreateSchema'
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '201':
           description: NL search model successfully created
@@ -3023,6 +3102,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
   /nl_search_models/{modelId}:
     get:
       tags:
@@ -3050,6 +3130,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
     put:
       tags:
       - nl_search_models
@@ -3070,6 +3151,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/NLSearchModelUpdateSchema'
+              x-rust-has-lifetime: true
+        x-rust-has-lifetime: true
       responses:
         '200':
           description: NL search model successfully updated
@@ -3089,6 +3172,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
     delete:
       tags:
       - nl_search_models
@@ -3115,6 +3199,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
+      x-rust-has-lifetime: true
 components:
   schemas:
     CollectionSchema:
@@ -3182,9 +3267,8 @@ components:
           type: object
           description: |
             Optional details about the collection, e.g., when it was created, who created it etc.
-          x-rust-has-borrowed-data: true
       x-rust-builder: true
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     CollectionUpdateSchema:
       type: object
       required:
@@ -3215,8 +3299,6 @@ components:
           type: object
           description: |
             Optional details about the collection, e.g., when it was created, who created it etc.
-          x-rust-has-borrowed-data: true
-      x-rust-has-borrowed-data: true
     CollectionResponse:
       allOf:
       - $ref: '#/components/schemas/CollectionSchema'
@@ -3367,7 +3449,7 @@ components:
         collection_name:
           type: string
           description: Name of the collection you wish to map the alias to
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     CollectionAlias:
       type: object
       required:
@@ -3711,7 +3793,7 @@ components:
         expires_at:
           type: integer
           format: int64
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     ApiKey:
       allOf:
       - $ref: '#/components/schemas/ApiKeySchema'
@@ -4043,7 +4125,7 @@ components:
           description: |
             The Id of a previous conversation to continue, this tells Typesense to include prior context when communicating with the LLM.
       x-rust-builder: true
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     MultiSearchParameters:
       type: object
       description: |
@@ -4294,7 +4376,7 @@ components:
           description: |
             The Id of a previous conversation to continue, this tells Typesense to include prior context when communicating with the LLM.
       x-rust-builder: true
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     MultiSearchSearchesParameter:
       type: object
       required:
@@ -4308,7 +4390,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MultiSearchCollectionParameters'
-      x-rust-has-borrowed-data: true
+            x-rust-has-lifetime: true
+          x-rust-has-lifetime: true
+      x-rust-has-lifetime: true
     MultiSearchCollectionParameters:
       allOf:
       - $ref: '#/components/schemas/MultiSearchParameters'
@@ -4327,7 +4411,7 @@ components:
               When true, computes both text match and vector distance scores for all matches in hybrid search. Documents found only through keyword search will get a vector distance score, and documents found only through vector search will get a text match score.
             default: false
       x-rust-builder: true
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     FacetCounts:
       type: object
       properties:
@@ -4399,8 +4483,8 @@ components:
               type: string
             analytics_tag:
               type: string
-          x-rust-has-borrowed-data: true
-      x-rust-has-borrowed-data: true
+          x-rust-has-lifetime: true
+      x-rust-has-lifetime: true
     AnalyticsEventsResponse:
       type: object
       required:
@@ -4467,8 +4551,8 @@ components:
               type: string
             weight:
               type: integer
-          x-rust-has-borrowed-data: true
-      x-rust-has-borrowed-data: true
+          x-rust-has-lifetime: true
+      x-rust-has-lifetime: true
     AnalyticsRuleType:
       type: string
       enum:
@@ -4503,8 +4587,8 @@ components:
               type: string
             weight:
               type: integer
-          x-rust-has-borrowed-data: true
-      x-rust-has-borrowed-data: true
+          x-rust-has-lifetime: true
+      x-rust-has-lifetime: true
     AnalyticsRule:
       allOf:
       - $ref: '#/components/schemas/AnalyticsRuleCreate'
@@ -4581,7 +4665,7 @@ components:
             type: string
         locale:
           type: string
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     StopwordsSetSchema:
       type: object
       required:
@@ -4625,9 +4709,11 @@ components:
         value:
           oneOf:
           - $ref: '#/components/schemas/SearchParameters'
+            x-rust-has-lifetime: true
           - $ref: '#/components/schemas/MultiSearchSearchesParameter'
-          x-rust-has-borrowed-data: true
-      x-rust-has-borrowed-data: true
+            x-rust-has-lifetime: true
+          x-rust-has-lifetime: true
+      x-rust-has-lifetime: true
     PresetSchema:
       allOf:
       - $ref: '#/components/schemas/PresetUpsertSchema'
@@ -4661,7 +4747,6 @@ components:
       - coerce_or_drop
       - drop
       - reject
-      x-rust-has-borrowed-data: true
     IndexAction:
       type: string
       enum:
@@ -4669,7 +4754,6 @@ components:
       - update
       - upsert
       - emplace
-      x-rust-has-borrowed-data: true
     DropTokensMode:
       type: string
       description: |
@@ -4678,7 +4762,6 @@ components:
       - right_to_left
       - left_to_right
       - both_sides:3
-      x-rust-has-borrowed-data: true
     ConversationModelCreateSchema:
       required:
       - model_name
@@ -4701,7 +4784,7 @@ components:
           history_collection:
             type: string
             description: Typesense collection that stores the historical conversations
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     ConversationModelUpdateSchema:
       type: object
       properties:
@@ -4734,7 +4817,7 @@ components:
         vllm_url:
           type: string
           description: URL of vLLM service
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     ConversationModelSchema:
       allOf:
       - $ref: '#/components/schemas/ConversationModelCreateSchema'
@@ -4831,6 +4914,7 @@ components:
         account_id:
           type: string
           description: Account ID for Cloudflare-specific models
+      x-rust-has-lifetime: true
     NLSearchModelCreateSchema:
       allOf:
       - $ref: '#/components/schemas/NLSearchModelBase'
@@ -4839,7 +4923,7 @@ components:
           id:
             type: string
             description: Optional ID for the NL search model
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     NLSearchModelSchema:
       allOf:
       - $ref: '#/components/schemas/NLSearchModelCreateSchema'
@@ -4851,8 +4935,9 @@ components:
             type: string
             description: ID of the NL search model
     NLSearchModelUpdateSchema:
-      $ref: '#/components/schemas/NLSearchModelCreateSchema'
-      x-rust-has-borrowed-data: true
+      allOf:
+      - $ref: '#/components/schemas/NLSearchModelCreateSchema'
+      x-rust-has-lifetime: true
     NLSearchModelDeleteSchema:
       type: object
       required:
@@ -4882,7 +4967,7 @@ components:
           description: By default, special characters are dropped from synonyms. Use this attribute to specify which special characters should be indexed as is
           items:
             type: string
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     SynonymItemSchema:
       allOf:
       - type: object
@@ -4903,7 +4988,6 @@ components:
           description: Array of synonym items
           items:
             $ref: '#/components/schemas/SynonymItemSchema'
-      x-rust-has-borrowed-data: true
     SynonymSetSchema:
       allOf:
       - $ref: '#/components/schemas/SynonymSetCreateSchema'
@@ -4969,7 +5053,6 @@ components:
           type: object
           description: |
             Return a custom JSON object in the Search API response, when this rule is triggered. This can can be used to display a pre-defined message (eg: a promotion banner) on the front-end when a particular rule is triggered.
-          x-rust-has-borrowed-data: true
         sort_by:
           type: string
           description: |
@@ -4997,7 +5080,6 @@ components:
         id:
           type: string
           description: ID of the curation item
-      x-rust-has-borrowed-data: true
     CurationItemSchema:
       allOf:
       - $ref: '#/components/schemas/CurationItemCreateSchema'
@@ -5020,7 +5102,7 @@ components:
         description:
           type: string
           description: Optional description for the curation set
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     CurationSetSchema:
       allOf:
       - $ref: '#/components/schemas/CurationSetCreateSchema'
@@ -5104,7 +5186,6 @@ components:
           $ref: '#/components/schemas/IndexAction'
         dirty_values:
           $ref: '#/components/schemas/DirtyValues'
-      x-rust-has-borrowed-data: true
     ExportDocumentsParameters:
       type: object
       properties:
@@ -5117,14 +5198,14 @@ components:
         exclude_fields:
           type: string
           description: List of fields from the document to exclude in the search result
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     UpdateDocumentsParameters:
       type: object
       properties:
         filter_by:
           type: string
           example: 'num_employees:>100 && country: [USA, UK]'
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     DeleteDocumentsParameters:
       type: object
       required:
@@ -5141,7 +5222,7 @@ components:
         truncate:
           type: boolean
           description: When true, removes all documents from the collection while preserving the collection and its schema.
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
     GetCollectionsParameters:
       type: object
       properties:
@@ -5155,7 +5236,7 @@ components:
         offset:
           type: integer
           description: Identifies the starting point to return collections when paginating.
-      x-rust-has-borrowed-data: true
+      x-rust-has-lifetime: true
   securitySchemes:
     api_key_header:
       type: apiKey

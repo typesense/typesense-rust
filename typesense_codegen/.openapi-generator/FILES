@@ -73,6 +73,7 @@ docs/NlSearchModelBase.md
 docs/NlSearchModelCreateSchema.md
 docs/NlSearchModelDeleteSchema.md
 docs/NlSearchModelSchema.md
+docs/NlSearchModelUpdateSchema.md
 docs/NlSearchModelsApi.md
 docs/OperationsApi.md
 docs/PresetDeleteSchema.md
@@ -200,6 +201,7 @@ src/models/nl_search_model_base.rs
 src/models/nl_search_model_create_schema.rs
 src/models/nl_search_model_delete_schema.rs
 src/models/nl_search_model_schema.rs
+src/models/nl_search_model_update_schema.rs
 src/models/preset_delete_schema.rs
 src/models/preset_schema.rs
 src/models/preset_upsert_schema.rs

@@ -13,7 +13,7 @@ use ::std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
-pub struct NlSearchModelBase<'a> {
+pub struct NlSearchModelUpdateSchema<'a> {
     /// Name of the NL model to use
     #[serde(rename = "model_name", skip_serializing_if = "Option::is_none")]
     pub model_name: Option<Cow<'a, str>>,
@@ -68,9 +68,12 @@ pub struct NlSearchModelBase<'a> {
     /// Account ID for Cloudflare-specific models
     #[serde(rename = "account_id", skip_serializing_if = "Option::is_none")]
     pub account_id: Option<Cow<'a, str>>,
+    /// Optional ID for the NL search model
+    #[serde(rename = "id", skip_serializing_if = "Option::is_none")]
+    pub id: Option<Cow<'a, str>>,
 }
 
-impl<'a> NlSearchModelBase<'a> {
+impl<'a> NlSearchModelUpdateSchema<'a> {
     pub fn new() -> Self {
         Self {
             model_name: None,
@@ -91,6 +94,7 @@ impl<'a> NlSearchModelBase<'a> {
             region: None,
             max_output_tokens: None,
             account_id: None,
+            id: None,
         }
     }
 }

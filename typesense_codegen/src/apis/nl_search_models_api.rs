@@ -41,7 +41,7 @@ pub struct UpdateNlSearchModelParams<'p> {
     /// The ID of the NL search model to update
     pub model_id: Cow<'p, str>,
     /// The NL search model fields to update
-    pub body: models::NlSearchModelCreateSchema<'p>,
+    pub nl_search_model_update_schema: models::NlSearchModelUpdateSchema<'p>,
 }
 
 /// struct for typed errors of method [`create_nl_search_model`]
@@ -347,7 +347,7 @@ pub async fn update_nl_search_model(
         };
         req_builder = req_builder.header("X-TYPESENSE-API-KEY", value);
     };
-    req_builder = req_builder.json(&params.body);
+    req_builder = req_builder.json(&params.nl_search_model_update_schema);
 
     let req = req_builder.build()?;
     let resp = configuration.client.execute(req).await?;

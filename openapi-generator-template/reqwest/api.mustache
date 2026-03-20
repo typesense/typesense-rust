@@ -9,20 +9,11 @@ use serde::{Deserialize, Serialize, de::Error as _};
 {{#operations}}
 {{#operation}}
 {{#vendorExtensions.x-group-parameters}}
-{{#allParams}}
-{{#-first}}
+{{#hasParams}}
 /// struct for passing parameters to the method [`{{operationId}}`]
 #[derive(Clone, Debug)]
-pub struct {{{operationIdCamelCase}}}Params<'p{{!
-  Iterate through ALL parameters in the operation.
-  Only the requestBody has this extension defined, so it will print "<B>".
-  The other parameters have nothing, so they will print nothing.
-  This effectively extract the generic parameter from the requestBody
-  and places it on the struct definition line.
-}}{{#allParams}}
-{{#vendorExtensions.x-rust-params-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-params-generic-parameter}}
-{{/allParams}}> {
-{{/-first}}
+pub struct {{{operationIdCamelCase}}}Params{{#vendorExtensions.x-rust-has-lifetime}}<'p{{#allParams}}{{#vendorExtensions.x-rust-params-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-params-generic-parameter}}{{/allParams}}>{{/vendorExtensions.x-rust-has-lifetime}}{{^vendorExtensions.x-rust-has-lifetime}}{{#allParams}}{{#-first}}{{#vendorExtensions.x-rust-params-generic-parameter}}<{{/vendorExtensions.x-rust-params-generic-parameter}}{{/-first}}{{/allParams}}{{#allParams}}{{#vendorExtensions.x-rust-params-generic-parameter}}{{{.}}}{{/vendorExtensions.x-rust-params-generic-parameter}}{{/allParams}}{{#allParams}}{{#-last}}{{#vendorExtensions.x-rust-params-generic-parameter}}>{{/vendorExtensions.x-rust-params-generic-parameter}}{{/-last}}{{/allParams}}{{/vendorExtensions.x-rust-has-lifetime}} {
+{{#allParams}}
     {{#description}}
     /// {{{.}}}
     {{/description}}
@@ -37,18 +28,17 @@ pub struct {{{operationIdCamelCase}}}Params<'p{{!
     }}{{^isUuid}}{{#isString}}{{#isArray}}Vec<{{/isArray}}Cow<'p, str>{{#isArray}}>{{/isArray}}{{/isString}}{{/isUuid}}{{!
     ### UUIDs
     }}{{#isUuid}}{{#isArray}}Vec<{{/isArray}}String{{#isArray}}>{{/isArray}}{{/isUuid}}{{!
-    ### Models and primative types
-    }}{{^isString}}{{^isUuid}}{{^isPrimitiveType}}{{^isContainer}}models::{{/isContainer}}{{/isPrimitiveType}}{{{dataType}}}{{#isModel}}<'p>{{/isModel}}{{/isUuid}}{{/isString}}{{!
+    ### Models and primitive types
+    }}{{^isString}}{{^isUuid}}{{#isArray}}Vec<{{#items}}{{^isPrimitiveType}}models::{{/isPrimitiveType}}{{{dataType}}}{{^isPrimitiveType}}{{^isEnum}}{{#vendorExtensions.x-rust-has-lifetime}}<'p>{{/vendorExtensions.x-rust-has-lifetime}}{{/isEnum}}{{/isPrimitiveType}}{{/items}}>{{/isArray}}{{^isArray}}{{^isPrimitiveType}}{{^isContainer}}models::{{/isContainer}}{{/isPrimitiveType}}{{{dataType}}}{{^isContainer}}{{^isPrimitiveType}}{{^isEnum}}{{#vendorExtensions.x-rust-has-lifetime}}<'p>{{/vendorExtensions.x-rust-has-lifetime}}{{/isEnum}}{{/isPrimitiveType}}{{/isContainer}}{{/isArray}}{{/isUuid}}{{/isString}}{{!
     ### Option End
     }}{{^required}}>{{/required}}{{#required}}{{#isNullable}}>{{/isNullable}}{{/required}}{{!
     ### Comma for next arguement
     }},
     {{/vendorExtensions.x-rust-type}}
-{{#-last}}
-}
-
-{{/-last}}
 {{/allParams}}
+}
+{{/hasParams}}
+
 {{/vendorExtensions.x-group-parameters}}
 {{/operation}}
 {{/operations}}
@@ -106,16 +96,16 @@ pub enum {{{operationIdCamelCase}}}Error {
 /// {{{.}}}
 {{/notes}}
 {{#vendorExtensions.x-group-parameters}}
-pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}{{#vendorExtensions.x-rust-generic-parameter}}<{{{.}}}>{{/vendorExtensions.x-rust-generic-parameter}}(configuration: &configuration::Configuration{{#allParams}}{{#-first}}, {{!
+pub {{#supportAsync}}async {{/supportAsync}}fn {{{operationId}}}{{#vendorExtensions.x-rust-generic-parameter}}<{{{.}}}>{{/vendorExtensions.x-rust-generic-parameter}}(configuration: &configuration::Configuration{{#hasParams}}, {{!
 ### Params
-}}params: &{{{operationIdCamelCase}}}Params<'_{{#allParams}}{{#vendorExtensions.x-rust-params-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-params-generic-parameter}}{{/allParams}}>{{/-first}}{{/allParams}}{{!
+}}params: &{{{operationIdCamelCase}}}Params{{#vendorExtensions.x-rust-has-lifetime}}<'_{{#allParams}}{{#vendorExtensions.x-rust-params-generic-parameter}}, {{{.}}}{{/vendorExtensions.x-rust-params-generic-parameter}}{{/allParams}}>{{/vendorExtensions.x-rust-has-lifetime}}{{^vendorExtensions.x-rust-has-lifetime}}{{#allParams}}{{#-first}}{{#vendorExtensions.x-rust-params-generic-parameter}}<{{/vendorExtensions.x-rust-params-generic-parameter}}{{/-first}}{{/allParams}}{{#allParams}}{{#vendorExtensions.x-rust-params-generic-parameter}}{{{.}}}{{/vendorExtensions.x-rust-params-generic-parameter}}{{/allParams}}{{#allParams}}{{#-last}}{{#vendorExtensions.x-rust-params-generic-parameter}}>{{/vendorExtensions.x-rust-params-generic-parameter}}{{/-last}}{{/allParams}}{{/vendorExtensions.x-rust-has-lifetime}}{{/hasParams}}{{!
 ### Function return type
 }}) -> Result<{{#vendorExtensions.x-rust-return-type}}{{{.}}}{{/vendorExtensions.x-rust-return-type}}{{^vendorExtensions.x-rust-return-type}}{{!
 }}{{#isResponseFile}}{{#supportAsync}}reqwest::Response{{/supportAsync}}{{^supportAsync}}reqwest::blocking::Response{{/supportAsync}}{{/isResponseFile}}{{!
 }}{{^isResponseFile}}{{#supportMultipleResponses}}ResponseContent<{{{operationIdCamelCase}}}Success>{{/supportMultipleResponses}}{{^supportMultipleResponses}}{{!
 }}{{^returnType}}(){{/returnType}}{{!
-}}{{#isArray}}Vec<{{#returnProperty.items}}{{{dataType}}}{{#isModel}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'static>{{/vendorExtensions.x-rust-has-borrowed-data}}{{/isModel}}{{/returnProperty.items}}>{{/isArray}}{{!
-}}{{^isArray}}{{#returnProperty}}{{{dataType}}}{{#isModel}}{{#vendorExtensions.x-rust-has-borrowed-data}}<'static>{{/vendorExtensions.x-rust-has-borrowed-data}}{{/isModel}}{{/returnProperty}}{{!
+}}{{#isArray}}Vec<{{#returnProperty.items}}{{{dataType}}}{{#isModel}}{{#vendorExtensions.x-rust-has-lifetime}}<'static>{{/vendorExtensions.x-rust-has-lifetime}}{{/isModel}}{{/returnProperty.items}}>{{/isArray}}{{!
+}}{{^isArray}}{{#returnProperty}}{{{dataType}}}{{#isModel}}{{#vendorExtensions.x-rust-has-lifetime}}<'static>{{/vendorExtensions.x-rust-has-lifetime}}{{/isModel}}{{/returnProperty}}{{!
 }}{{/isArray}}{{/supportMultipleResponses}}{{/isResponseFile}}{{/vendorExtensions.x-rust-return-type}}, Error<{{{operationIdCamelCase}}}Error>> {
 {{/vendorExtensions.x-group-parameters}}
     let uri_str = format!("{}{{{path}}}", configuration.base_path{{#pathParams}}, {{{baseName}}}={{#isString}}crate::apis::urlencode(&{{/isString}}{{{vendorExtensions.x-rust-param-identifier}}}{{^required}}.unwrap(){{/required}}{{#required}}{{#isNullable}}.unwrap(){{/isNullable}}{{/required}}{{#isArray}}.join(",").as_ref(){{/isArray}}{{^isString}}{{^isUuid}}{{^isPrimitiveType}}{{^isContainer}}.to_string(){{/isContainer}}{{/isPrimitiveType}}{{/isUuid}}{{/isString}}{{#isString}}){{/isString}}{{/pathParams}});

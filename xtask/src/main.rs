@@ -2,6 +2,7 @@ use anyhow::{Context, Result};
 use clap::{Parser, ValueEnum};
 use std::{env, fs, process::Command};
 mod add_vendor_attributes;
+mod mark_borrowed_data;
 mod preprocess_openapi;
 #[cfg(feature = "typesense")]
 mod test_clean;

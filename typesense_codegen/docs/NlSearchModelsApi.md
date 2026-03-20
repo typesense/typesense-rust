@@ -131,7 +131,7 @@ Name | Type | Description  | Required | Notes
 
 ## update_nl_search_model
 
-> models::NlSearchModelSchema update_nl_search_model(model_id, body)
+> models::NlSearchModelSchema update_nl_search_model(model_id, nl_search_model_update_schema)
 Update a NL search model
 
 Update an existing NL search model.
@@ -142,7 +142,7 @@ Update an existing NL search model.
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **model_id** | **String** | The ID of the NL search model to update | [required] |
-**body** | **models::NlSearchModelCreateSchema** | The NL search model fields to update | [required] |
+**nl_search_model_update_schema** | [**NlSearchModelUpdateSchema**](NlSearchModelUpdateSchema.md) | The NL search model fields to update | [required] |
 
 ### Return type
 

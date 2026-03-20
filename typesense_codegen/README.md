@@ -175,6 +175,7 @@ Class | Method | HTTP request | Description
  - [NlSearchModelCreateSchema](docs/NlSearchModelCreateSchema.md)
  - [NlSearchModelDeleteSchema](docs/NlSearchModelDeleteSchema.md)
  - [NlSearchModelSchema](docs/NlSearchModelSchema.md)
+ - [NlSearchModelUpdateSchema](docs/NlSearchModelUpdateSchema.md)
  - [PresetDeleteSchema](docs/PresetDeleteSchema.md)
  - [PresetSchema](docs/PresetSchema.md)
  - [PresetUpsertSchema](docs/PresetUpsertSchema.md)
