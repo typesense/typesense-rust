@@ -215,11 +215,12 @@ impl OpenAPIProperty {
     // Helper to determine if a schema is a structure that requires a <'a> or <'p> generic in Rust
     fn is_structural(&self) -> bool {
         self.r#type.as_deref() == Some("object")
-            || self.r#type.as_deref() == Some("array")
             || self.r#ref.is_some()
             || self.one_of.is_some()
             || self.any_of.is_some()
             || self.extra.contains_key("allOf")
+            // Only flag arrays if their inner items are structural (ignores arrays of primitive strings)
+            || (self.r#type.as_deref() == Some("array") && self.items.as_deref().map_or(false, |i| i.is_structural()))
     }
 
     fn mark_borrowed_property_recursive(

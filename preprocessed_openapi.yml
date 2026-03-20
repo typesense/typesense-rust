@@ -271,8 +271,6 @@ paths:
           type: string
           example: upsert
           $ref: '#/components/schemas/IndexAction'
-          x-rust-has-lifetime: true
-        x-rust-has-lifetime: true
       - name: dirty_values
         in: query
         description: Dealing with Dirty Data
@@ -3243,14 +3241,12 @@ components:
             type: string
             minLength: 1
             maxLength: 1
-          x-rust-has-lifetime: true
         synonym_sets:
           type: array
           description: List of synonym set names to associate with this collection
           items:
             type: string
             example: synonym_set_1
-          x-rust-has-lifetime: true
         enable_nested_fields:
           type: boolean
           default: false
@@ -3265,7 +3261,6 @@ components:
             type: string
             minLength: 1
             maxLength: 1
-          x-rust-has-lifetime: true
         voice_query_model:
           $ref: '#/components/schemas/VoiceQueryModelCollectionConfig'
         metadata:
@@ -3791,12 +3786,10 @@ components:
           type: array
           items:
             type: string
-          x-rust-has-lifetime: true
         collections:
           type: array
           items:
             type: string
-          x-rust-has-lifetime: true
         expires_at:
           type: integer
           format: int64
@@ -4486,7 +4479,6 @@ components:
               type: array
               items:
                 type: string
-              x-rust-has-lifetime: true
             q:
               type: string
             analytics_tag:
@@ -4553,7 +4545,6 @@ components:
               type: array
               items:
                 type: string
-              x-rust-has-lifetime: true
             expand_query:
               type: boolean
             counter_field:
@@ -4590,7 +4581,6 @@ components:
               type: array
               items:
                 type: string
-              x-rust-has-lifetime: true
             expand_query:
               type: boolean
             counter_field:
@@ -4673,7 +4663,6 @@ components:
           type: array
           items:
             type: string
-          x-rust-has-lifetime: true
         locale:
           type: string
       x-rust-has-lifetime: true
@@ -4898,7 +4887,6 @@ components:
           description: Stop sequences for the NL model (Google-specific)
           items:
             type: string
-          x-rust-has-lifetime: true
         api_version:
           type: string
           description: API version for the NL model service
@@ -4968,7 +4956,6 @@ components:
           description: Array of words that should be considered as synonyms
           items:
             type: string
-          x-rust-has-lifetime: true
         root:
           type: string
           description: For 1-way synonyms, indicates the root word that words in the synonyms parameter map to
@@ -4980,7 +4967,6 @@ components:
           description: By default, special characters are dropped from synonyms. Use this attribute to specify which special characters should be indexed as is
           items:
             type: string
-          x-rust-has-lifetime: true
       x-rust-has-lifetime: true
     SynonymItemSchema:
       allOf:

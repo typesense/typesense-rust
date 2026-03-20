@@ -164,7 +164,11 @@ pub(crate) fn property_contains_string(
     let is_enum = property.extra.contains_key("enum");
     let is_uuid = property.extra.get("format").and_then(|v| v.as_str()) == Some("uuid");
 
-    if property.r#type.as_deref() == Some("string") && !is_enum && !is_uuid {
+    if property.r#type.as_deref() == Some("string")
+        && !is_enum
+        && !is_uuid
+        && property.r#ref.is_none()
+    {
         return true;
     }
 
