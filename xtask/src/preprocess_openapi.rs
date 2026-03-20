@@ -220,7 +220,7 @@ impl OpenAPIProperty {
             || self.any_of.is_some()
             || self.extra.contains_key("allOf")
             // Only flag arrays if their inner items are structural (ignores arrays of primitive strings)
-            || (self.r#type.as_deref() == Some("array") && self.items.as_deref().map_or(false, |i| i.is_structural()))
+            || (self.r#type.as_deref() == Some("array") && self.items.as_deref().is_some_and(|i| i.is_structural()))
     }
 
     fn mark_borrowed_property_recursive(
