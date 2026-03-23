@@ -2562,6 +2562,10 @@ components:
           type: string
           description: >
             Name of a field in another collection that should be linked to this collection so that it can be joined during query.
+        async_reference:
+          type: boolean
+          description: >
+            Allow documents to be indexed successfully even when the referenced document doesn't exist yet.
         num_dim:
           type: integer
           example: 256
@@ -3287,7 +3291,7 @@ components:
         filter_curated_hits:
           type: boolean
           description: >
-            Whether the filter_by condition of the search query should be applicable to curated results (override definitions, pinned hits, hidden hits, etc.). Default: false
+            Whether the filter_by condition of the search query should be applicable to curated results (curation definitions, pinned hits, hidden hits, etc.). Default: false
         enable_synonyms:
           type: boolean
           description: >
@@ -3310,8 +3314,8 @@ components:
             at Position 1 and another record with ID 456 at Position 5,
             you'd specify `123:1,456:5`.
 
-            You could also use the Overrides feature to override search results based
-            on rules. Overrides are applied first, followed by `pinned_hits` and
+            You could also use the Curation feature to override search results based
+            on rules. Curations are applied first, followed by `pinned_hits` and
             finally `hidden_hits`.
           type: string
 
@@ -3321,12 +3325,12 @@ components:
             A list of `record_id`s to hide. Eg: to hide records with IDs 123 and 456,
             you'd specify `123,456`.
 
-            You could also use the Overrides feature to override search results based
-            on rules. Overrides are applied first, followed by `pinned_hits` and
+            You could also use the Curation feature to override search results based
+            on rules. Curations are applied first, followed by `pinned_hits` and
             finally `hidden_hits`.
           type: string
 
-        override_tags:
+        curation_tags:
           description: Comma separated list of tags to trigger the curations rules that match the tags.
           type: string
 
@@ -3359,9 +3363,9 @@ components:
             the name of the existing Preset.
           type: string
 
-        enable_overrides:
+        enable_curations:
           description: >
-            If you have some overrides defined but want to disable all of them during
+            If you have some curation sets defined but want to disable all of them during
             query time, you can do that by setting this parameter to false
           type: boolean
           default: false
@@ -3664,7 +3668,7 @@ components:
         filter_curated_hits:
           type: boolean
           description: >
-            Whether the filter_by condition of the search query should be applicable to curated results (override definitions, pinned hits, hidden hits, etc.). Default: false
+            Whether the filter_by condition of the search query should be applicable to curated results (curation definitions, pinned hits, hidden hits, etc.). Default: false
         enable_synonyms:
           type: boolean
           description: >
@@ -3695,8 +3699,8 @@ components:
             at Position 1 and another record with ID 456 at Position 5,
             you'd specify `123:1,456:5`.
 
-            You could also use the Overrides feature to override search results based
-            on rules. Overrides are applied first, followed by `pinned_hits` and
+            You could also use the Curation feature to override search results based
+            on rules. Curations are applied first, followed by `pinned_hits` and
             finally `hidden_hits`.
           type: string
 
@@ -3706,12 +3710,12 @@ components:
             A list of `record_id`s to hide. Eg: to hide records with IDs 123 and 456,
             you'd specify `123,456`.
 
-            You could also use the Overrides feature to override search results based
-            on rules. Overrides are applied first, followed by `pinned_hits` and
+            You could also use the Curation feature to override search results based
+            on rules. Curations are applied first, followed by `pinned_hits` and
             finally `hidden_hits`.
           type: string
 
-        override_tags:
+        curation_tags:
           description: Comma separated list of tags to trigger the curations rules that match the tags.
           type: string
 
@@ -3737,9 +3741,9 @@ components:
             the name of the existing Preset.
           type: string
 
-        enable_overrides:
+        enable_curations:
           description: >
-            If you have some overrides defined but want to disable all of them during
+            If you have some curation sets defined but want to disable all of them during
             query time, you can do that by setting this parameter to false
           type: boolean
           default: false
@@ -4431,7 +4435,6 @@ components:
           description: Array of synonym sets
           items:
             $ref: "#/components/schemas/SynonymSetSchema"
-
 
     SynonymSetDeleteSchema:
       type: object

@@ -218,7 +218,7 @@ Name | Type | Description  | Required | Notes
 
 ## multi_search
 
-> models::MultiSearchResult multi_search(q, query_by, query_by_weights, text_match_type, prefix, infix, max_extra_prefix, max_extra_suffix, filter_by, sort_by, facet_by, max_facet_values, facet_query, num_typos, page, per_page, limit, offset, group_by, group_limit, group_missing_values, include_fields, exclude_fields, highlight_full_fields, highlight_affix_num_tokens, highlight_start_tag, highlight_end_tag, snippet_threshold, drop_tokens_threshold, drop_tokens_mode, typo_tokens_threshold, enable_typos_for_alpha_numerical_tokens, filter_curated_hits, enable_synonyms, enable_analytics, synonym_prefix, synonym_num_typos, pinned_hits, hidden_hits, override_tags, highlight_fields, pre_segmented_query, preset, enable_overrides, prioritize_exact_match, prioritize_token_position, prioritize_num_matching_fields, enable_typos_for_numerical_tokens, exhaustive_search, search_cutoff_ms, use_cache, cache_ttl, min_len_1typo, min_len_2typo, vector_query, remote_embedding_timeout_ms, remote_embedding_num_tries, facet_strategy, stopwords, facet_return_parent, voice_query, conversation, conversation_model_id, conversation_id, multi_search_searches_parameter)
+> models::MultiSearchResult multi_search(q, query_by, query_by_weights, text_match_type, prefix, infix, max_extra_prefix, max_extra_suffix, filter_by, sort_by, facet_by, max_facet_values, facet_query, num_typos, page, per_page, limit, offset, group_by, group_limit, group_missing_values, include_fields, exclude_fields, highlight_full_fields, highlight_affix_num_tokens, highlight_start_tag, highlight_end_tag, snippet_threshold, drop_tokens_threshold, drop_tokens_mode, typo_tokens_threshold, enable_typos_for_alpha_numerical_tokens, filter_curated_hits, enable_synonyms, enable_analytics, synonym_prefix, synonym_num_typos, pinned_hits, hidden_hits, curation_tags, highlight_fields, pre_segmented_query, preset, enable_curations, prioritize_exact_match, prioritize_token_position, prioritize_num_matching_fields, enable_typos_for_numerical_tokens, exhaustive_search, search_cutoff_ms, use_cache, cache_ttl, min_len_1typo, min_len_2typo, vector_query, remote_embedding_timeout_ms, remote_embedding_num_tries, facet_strategy, stopwords, facet_return_parent, voice_query, conversation, conversation_model_id, conversation_id, multi_search_searches_parameter)
 send multiple search requests in a single HTTP request
 
 This is especially useful to avoid round-trip network latencies incurred otherwise if each of these requests are sent in separate HTTP requests. You can also use this feature to do a federated search across multiple collections in a single HTTP request.
@@ -267,11 +267,11 @@ Name | Type | Description  | Required | Notes
 **synonym_num_typos** | Option<**i32**> |  |  |
 **pinned_hits** | Option<**String**> |  |  |
 **hidden_hits** | Option<**String**> |  |  |
-**override_tags** | Option<**String**> |  |  |
+**curation_tags** | Option<**String**> |  |  |
 **highlight_fields** | Option<**String**> |  |  |
 **pre_segmented_query** | Option<**bool**> |  |  |[default to false]
 **preset** | Option<**String**> |  |  |
-**enable_overrides** | Option<**bool**> |  |  |[default to false]
+**enable_curations** | Option<**bool**> |  |  |[default to false]
 **prioritize_exact_match** | Option<**bool**> |  |  |[default to true]
 **prioritize_token_position** | Option<**bool**> |  |  |[default to false]
 **prioritize_num_matching_fields** | Option<**bool**> |  |  |[default to true]
@@ -312,7 +312,7 @@ Name | Type | Description  | Required | Notes
 
 ## search_collection
 
-> models::SearchResult search_collection(collection_name, q, query_by, nl_query, nl_model_id, query_by_weights, text_match_type, prefix, infix, max_extra_prefix, max_extra_suffix, filter_by, max_filter_by_candidates, sort_by, facet_by, max_facet_values, facet_query, num_typos, page, per_page, limit, offset, group_by, group_limit, group_missing_values, include_fields, exclude_fields, highlight_full_fields, highlight_affix_num_tokens, highlight_start_tag, highlight_end_tag, enable_highlight_v1, enable_analytics, snippet_threshold, synonym_sets, drop_tokens_threshold, drop_tokens_mode, typo_tokens_threshold, enable_typos_for_alpha_numerical_tokens, filter_curated_hits, enable_synonyms, synonym_prefix, synonym_num_typos, pinned_hits, hidden_hits, override_tags, highlight_fields, split_join_tokens, pre_segmented_query, preset, enable_overrides, prioritize_exact_match, max_candidates, prioritize_token_position, prioritize_num_matching_fields, enable_typos_for_numerical_tokens, exhaustive_search, search_cutoff_ms, use_cache, cache_ttl, min_len_1typo, min_len_2typo, vector_query, remote_embedding_timeout_ms, remote_embedding_num_tries, facet_strategy, stopwords, facet_return_parent, voice_query, conversation, conversation_model_id, conversation_id)
+> models::SearchResult search_collection(collection_name, q, query_by, nl_query, nl_model_id, query_by_weights, text_match_type, prefix, infix, max_extra_prefix, max_extra_suffix, filter_by, max_filter_by_candidates, sort_by, facet_by, max_facet_values, facet_query, num_typos, page, per_page, limit, offset, group_by, group_limit, group_missing_values, include_fields, exclude_fields, highlight_full_fields, highlight_affix_num_tokens, highlight_start_tag, highlight_end_tag, enable_highlight_v1, enable_analytics, snippet_threshold, synonym_sets, drop_tokens_threshold, drop_tokens_mode, typo_tokens_threshold, enable_typos_for_alpha_numerical_tokens, filter_curated_hits, enable_synonyms, synonym_prefix, synonym_num_typos, pinned_hits, hidden_hits, curation_tags, highlight_fields, split_join_tokens, pre_segmented_query, preset, enable_curations, prioritize_exact_match, max_candidates, prioritize_token_position, prioritize_num_matching_fields, enable_typos_for_numerical_tokens, exhaustive_search, search_cutoff_ms, use_cache, cache_ttl, min_len_1typo, min_len_2typo, vector_query, remote_embedding_timeout_ms, remote_embedding_num_tries, facet_strategy, stopwords, facet_return_parent, voice_query, conversation, conversation_model_id, conversation_id)
 Search for documents in a collection
 
 Search for documents in a collection that match the search criteria.
@@ -367,12 +367,12 @@ Name | Type | Description  | Required | Notes
 **synonym_num_typos** | Option<**i32**> |  |  |
 **pinned_hits** | Option<**String**> |  |  |
 **hidden_hits** | Option<**String**> |  |  |
-**override_tags** | Option<**String**> |  |  |
+**curation_tags** | Option<**String**> |  |  |
 **highlight_fields** | Option<**String**> |  |  |
 **split_join_tokens** | Option<**String**> |  |  |
 **pre_segmented_query** | Option<**bool**> |  |  |
 **preset** | Option<**String**> |  |  |
-**enable_overrides** | Option<**bool**> |  |  |[default to false]
+**enable_curations** | Option<**bool**> |  |  |[default to false]
 **prioritize_exact_match** | Option<**bool**> |  |  |[default to true]
 **max_candidates** | Option<**i32**> |  |  |
 **prioritize_token_position** | Option<**bool**> |  |  |[default to false]
