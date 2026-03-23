@@ -9,15 +9,15 @@ members = [
 resolver = "3"
 
 [workspace.package]
-version = "0.3.0"
+version = "0.4.0"
 edition = "2024"
 license = "Apache-2.0"
 repository = "https://github.com/typesense/typesense-rust"
 authors = ["Typesense  <contact@typesense.org>"]
 
 [workspace.dependencies]
-typesense_codegen = { path = "./typesense_codegen", version = "0.25" }
-typesense_derive = { path = "./typesense_derive", version = "0.3" }
+typesense_codegen = { path = "./typesense_codegen", version = "0.30" }
+typesense_derive = { path = "./typesense_derive", version = "0.4" }
 anyhow = "1"
 base64 = "0.22"
 bon = "3"
