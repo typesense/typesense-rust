@@ -13,6 +13,7 @@ Name | Type | Description | Notes
 **sort** | Option<**bool**> |  | [optional]
 **infix** | Option<**bool**> |  | [optional][default to false]
 **reference** | Option<**String**> | Name of a field in another collection that should be linked to this collection so that it can be joined during query.  | [optional]
+**async_reference** | Option<**bool**> | Allow documents to be indexed successfully even when the referenced document doesn't exist yet.  | [optional]
 **num_dim** | Option<**i32**> |  | [optional]
 **drop** | Option<**bool**> |  | [optional]
 **store** | Option<**bool**> | When set to false, the field value will not be stored on disk. Default: true.  | [optional]

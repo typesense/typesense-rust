@@ -36,6 +36,9 @@ pub struct Field {
     /// Name of a field in another collection that should be linked to this collection so that it can be joined during query.
     #[serde(rename = "reference", skip_serializing_if = "Option::is_none")]
     pub reference: Option<String>,
+    /// Allow documents to be indexed successfully even when the referenced document doesn't exist yet.
+    #[serde(rename = "async_reference", skip_serializing_if = "Option::is_none")]
+    pub async_reference: Option<bool>,
     #[serde(rename = "num_dim", skip_serializing_if = "Option::is_none")]
     pub num_dim: Option<i32>,
     #[serde(rename = "drop", skip_serializing_if = "Option::is_none")]
@@ -77,6 +80,7 @@ impl Field {
             sort: None,
             infix: None,
             reference: None,
+            async_reference: None,
             num_dim: None,
             drop: None,
             store: None,

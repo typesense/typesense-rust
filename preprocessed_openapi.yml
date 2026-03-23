@@ -634,7 +634,7 @@ paths:
         schema:
           type: boolean
           description: |
-            Whether the filter_by condition of the search query should be applicable to curated results (override definitions, pinned hits, hidden hits, etc.). Default: false
+            Whether the filter_by condition of the search query should be applicable to curated results (curation definitions, pinned hits, hidden hits, etc.). Default: false
       - name: enable_synonyms
         in: query
         schema:
@@ -659,15 +659,15 @@ paths:
           type: string
           description: |
             A list of records to unconditionally include in the search results at specific positions. An example use case would be to feature or promote certain items on the top of search results. A list of `record_id:hit_position`. Eg: to include a record with ID 123 at Position 1 and another record with ID 456 at Position 5, you'd specify `123:1,456:5`.
-            You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
+            You could also use the Curation feature to override search results based on rules. Curations are applied first, followed by `pinned_hits` and finally `hidden_hits`.
       - name: hidden_hits
         in: query
         schema:
           type: string
           description: |
             A list of records to unconditionally hide from search results. A list of `record_id`s to hide. Eg: to hide records with IDs 123 and 456, you'd specify `123,456`.
-            You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
-      - name: override_tags
+            You could also use the Curation feature to override search results based on rules. Curations are applied first, followed by `pinned_hits` and finally `hidden_hits`.
+      - name: curation_tags
         in: query
         schema:
           type: string
@@ -697,13 +697,13 @@ paths:
           type: string
           description: |
             Search using a bunch of search parameters by setting this parameter to the name of the existing Preset.
-      - name: enable_overrides
+      - name: enable_curations
         in: query
         schema:
           type: boolean
           default: false
           description: |
-            If you have some overrides defined but want to disable all of them during query time, you can do that by setting this parameter to false
+            If you have some curation sets defined but want to disable all of them during query time, you can do that by setting this parameter to false
       - name: prioritize_exact_match
         in: query
         schema:
@@ -2239,7 +2239,7 @@ paths:
         schema:
           type: boolean
           description: |
-            Whether the filter_by condition of the search query should be applicable to curated results (override definitions, pinned hits, hidden hits, etc.). Default: false
+            Whether the filter_by condition of the search query should be applicable to curated results (curation definitions, pinned hits, hidden hits, etc.). Default: false
       - name: enable_synonyms
         in: query
         schema:
@@ -2271,15 +2271,15 @@ paths:
           type: string
           description: |
             A list of records to unconditionally include in the search results at specific positions. An example use case would be to feature or promote certain items on the top of search results. A list of `record_id:hit_position`. Eg: to include a record with ID 123 at Position 1 and another record with ID 456 at Position 5, you'd specify `123:1,456:5`.
-            You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
+            You could also use the Curation feature to override search results based on rules. Curations are applied first, followed by `pinned_hits` and finally `hidden_hits`.
       - name: hidden_hits
         in: query
         schema:
           type: string
           description: |
             A list of records to unconditionally hide from search results. A list of `record_id`s to hide. Eg: to hide records with IDs 123 and 456, you'd specify `123,456`.
-            You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
-      - name: override_tags
+            You could also use the Curation feature to override search results based on rules. Curations are applied first, followed by `pinned_hits` and finally `hidden_hits`.
+      - name: curation_tags
         in: query
         schema:
           type: string
@@ -2304,13 +2304,13 @@ paths:
           type: string
           description: |
             Search using a bunch of search parameters by setting this parameter to the name of the existing Preset.
-      - name: enable_overrides
+      - name: enable_curations
         in: query
         schema:
           type: boolean
           default: false
           description: |
-            If you have some overrides defined but want to disable all of them during query time, you can do that by setting this parameter to false
+            If you have some curation sets defined but want to disable all of them during query time, you can do that by setting this parameter to false
       - name: prioritize_exact_match
         in: query
         schema:
@@ -3353,6 +3353,10 @@ components:
           type: string
           description: |
             Name of a field in another collection that should be linked to this collection so that it can be joined during query.
+        async_reference:
+          type: boolean
+          description: |
+            Allow documents to be indexed successfully even when the referenced document doesn't exist yet.
         num_dim:
           type: integer
           example: 256
@@ -3988,7 +3992,7 @@ components:
         filter_curated_hits:
           type: boolean
           description: |
-            Whether the filter_by condition of the search query should be applicable to curated results (override definitions, pinned hits, hidden hits, etc.). Default: false
+            Whether the filter_by condition of the search query should be applicable to curated results (curation definitions, pinned hits, hidden hits, etc.). Default: false
         enable_synonyms:
           type: boolean
           description: |
@@ -4005,13 +4009,13 @@ components:
           type: string
           description: |
             A list of records to unconditionally include in the search results at specific positions. An example use case would be to feature or promote certain items on the top of search results. A list of `record_id:hit_position`. Eg: to include a record with ID 123 at Position 1 and another record with ID 456 at Position 5, you'd specify `123:1,456:5`.
-            You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
+            You could also use the Curation feature to override search results based on rules. Curations are applied first, followed by `pinned_hits` and finally `hidden_hits`.
         hidden_hits:
           type: string
           description: |
             A list of records to unconditionally hide from search results. A list of `record_id`s to hide. Eg: to hide records with IDs 123 and 456, you'd specify `123,456`.
-            You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
-        override_tags:
+            You could also use the Curation feature to override search results based on rules. Curations are applied first, followed by `pinned_hits` and finally `hidden_hits`.
+        curation_tags:
           type: string
           description: Comma separated list of tags to trigger the curations rules that match the tags.
         highlight_fields:
@@ -4031,11 +4035,11 @@ components:
           type: string
           description: |
             Search using a bunch of search parameters by setting this parameter to the name of the existing Preset.
-        enable_overrides:
+        enable_curations:
           type: boolean
           default: false
           description: |
-            If you have some overrides defined but want to disable all of them during query time, you can do that by setting this parameter to false
+            If you have some curation sets defined but want to disable all of them during query time, you can do that by setting this parameter to false
         prioritize_exact_match:
           type: boolean
           default: true
@@ -4241,7 +4245,7 @@ components:
         filter_curated_hits:
           type: boolean
           description: |
-            Whether the filter_by condition of the search query should be applicable to curated results (override definitions, pinned hits, hidden hits, etc.). Default: false
+            Whether the filter_by condition of the search query should be applicable to curated results (curation definitions, pinned hits, hidden hits, etc.). Default: false
         enable_synonyms:
           type: boolean
           description: |
@@ -4263,13 +4267,13 @@ components:
           type: string
           description: |
             A list of records to unconditionally include in the search results at specific positions. An example use case would be to feature or promote certain items on the top of search results. A list of `record_id:hit_position`. Eg: to include a record with ID 123 at Position 1 and another record with ID 456 at Position 5, you'd specify `123:1,456:5`.
-            You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
+            You could also use the Curation feature to override search results based on rules. Curations are applied first, followed by `pinned_hits` and finally `hidden_hits`.
         hidden_hits:
           type: string
           description: |
             A list of records to unconditionally hide from search results. A list of `record_id`s to hide. Eg: to hide records with IDs 123 and 456, you'd specify `123,456`.
-            You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
-        override_tags:
+            You could also use the Curation feature to override search results based on rules. Curations are applied first, followed by `pinned_hits` and finally `hidden_hits`.
+        curation_tags:
           type: string
           description: Comma separated list of tags to trigger the curations rules that match the tags.
         highlight_fields:
@@ -4286,11 +4290,11 @@ components:
           type: string
           description: |
             Search using a bunch of search parameters by setting this parameter to the name of the existing Preset.
-        enable_overrides:
+        enable_curations:
           type: boolean
           default: false
           description: |
-            If you have some overrides defined but want to disable all of them during query time, you can do that by setting this parameter to false
+            If you have some curation sets defined but want to disable all of them during query time, you can do that by setting this parameter to false
         prioritize_exact_match:
           type: boolean
           default: true

@@ -123,11 +123,11 @@ pub struct MultiSearchParams<'p> {
     pub synonym_num_typos: Option<i32>,
     pub pinned_hits: Option<Cow<'p, str>>,
     pub hidden_hits: Option<Cow<'p, str>>,
-    pub override_tags: Option<Cow<'p, str>>,
+    pub curation_tags: Option<Cow<'p, str>>,
     pub highlight_fields: Option<Cow<'p, str>>,
     pub pre_segmented_query: Option<bool>,
     pub preset: Option<Cow<'p, str>>,
-    pub enable_overrides: Option<bool>,
+    pub enable_curations: Option<bool>,
     pub prioritize_exact_match: Option<bool>,
     pub prioritize_token_position: Option<bool>,
     pub prioritize_num_matching_fields: Option<bool>,
@@ -200,12 +200,12 @@ pub struct SearchCollectionParams<'p> {
     pub synonym_num_typos: Option<i32>,
     pub pinned_hits: Option<Cow<'p, str>>,
     pub hidden_hits: Option<Cow<'p, str>>,
-    pub override_tags: Option<Cow<'p, str>>,
+    pub curation_tags: Option<Cow<'p, str>>,
     pub highlight_fields: Option<Cow<'p, str>>,
     pub split_join_tokens: Option<Cow<'p, str>>,
     pub pre_segmented_query: Option<bool>,
     pub preset: Option<Cow<'p, str>>,
-    pub enable_overrides: Option<bool>,
+    pub enable_curations: Option<bool>,
     pub prioritize_exact_match: Option<bool>,
     pub max_candidates: Option<i32>,
     pub prioritize_token_position: Option<bool>,
@@ -882,8 +882,8 @@ pub async fn multi_search(
     if let Some(ref param_value) = params.hidden_hits {
         req_builder = req_builder.query(&[("hidden_hits", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = params.override_tags {
-        req_builder = req_builder.query(&[("override_tags", &param_value.to_string())]);
+    if let Some(ref param_value) = params.curation_tags {
+        req_builder = req_builder.query(&[("curation_tags", &param_value.to_string())]);
     }
     if let Some(ref param_value) = params.highlight_fields {
         req_builder = req_builder.query(&[("highlight_fields", &param_value.to_string())]);
@@ -894,8 +894,8 @@ pub async fn multi_search(
     if let Some(ref param_value) = params.preset {
         req_builder = req_builder.query(&[("preset", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = params.enable_overrides {
-        req_builder = req_builder.query(&[("enable_overrides", &param_value.to_string())]);
+    if let Some(ref param_value) = params.enable_curations {
+        req_builder = req_builder.query(&[("enable_curations", &param_value.to_string())]);
     }
     if let Some(ref param_value) = params.prioritize_exact_match {
         req_builder = req_builder.query(&[("prioritize_exact_match", &param_value.to_string())]);
@@ -1161,8 +1161,8 @@ pub async fn search_collection<D: for<'de> serde::Deserialize<'de> + Serialize>(
     if let Some(ref param_value) = params.hidden_hits {
         req_builder = req_builder.query(&[("hidden_hits", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = params.override_tags {
-        req_builder = req_builder.query(&[("override_tags", &param_value.to_string())]);
+    if let Some(ref param_value) = params.curation_tags {
+        req_builder = req_builder.query(&[("curation_tags", &param_value.to_string())]);
     }
     if let Some(ref param_value) = params.highlight_fields {
         req_builder = req_builder.query(&[("highlight_fields", &param_value.to_string())]);
@@ -1176,8 +1176,8 @@ pub async fn search_collection<D: for<'de> serde::Deserialize<'de> + Serialize>(
     if let Some(ref param_value) = params.preset {
         req_builder = req_builder.query(&[("preset", &param_value.to_string())]);
     }
-    if let Some(ref param_value) = params.enable_overrides {
-        req_builder = req_builder.query(&[("enable_overrides", &param_value.to_string())]);
+    if let Some(ref param_value) = params.enable_curations {
+        req_builder = req_builder.query(&[("enable_curations", &param_value.to_string())]);
     }
     if let Some(ref param_value) = params.prioritize_exact_match {
         req_builder = req_builder.query(&[("prioritize_exact_match", &param_value.to_string())]);

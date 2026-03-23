@@ -133,7 +133,7 @@ pub struct MultiSearchCollectionParameters<'a> {
         skip_serializing_if = "Option::is_none"
     )]
     pub enable_typos_for_alpha_numerical_tokens: Option<bool>,
-    /// Whether the filter_by condition of the search query should be applicable to curated results (override definitions, pinned hits, hidden hits, etc.). Default: false
+    /// Whether the filter_by condition of the search query should be applicable to curated results (curation definitions, pinned hits, hidden hits, etc.). Default: false
     #[serde(
         rename = "filter_curated_hits",
         skip_serializing_if = "Option::is_none"
@@ -151,15 +151,15 @@ pub struct MultiSearchCollectionParameters<'a> {
     /// Allow synonym resolution on typo-corrected words in the query. Default: 0
     #[serde(rename = "synonym_num_typos", skip_serializing_if = "Option::is_none")]
     pub synonym_num_typos: Option<i32>,
-    /// A list of records to unconditionally include in the search results at specific positions. An example use case would be to feature or promote certain items on the top of search results. A list of `record_id:hit_position`. Eg: to include a record with ID 123 at Position 1 and another record with ID 456 at Position 5, you'd specify `123:1,456:5`. You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
+    /// A list of records to unconditionally include in the search results at specific positions. An example use case would be to feature or promote certain items on the top of search results. A list of `record_id:hit_position`. Eg: to include a record with ID 123 at Position 1 and another record with ID 456 at Position 5, you'd specify `123:1,456:5`. You could also use the Curation feature to override search results based on rules. Curations are applied first, followed by `pinned_hits` and finally `hidden_hits`.
     #[serde(rename = "pinned_hits", skip_serializing_if = "Option::is_none")]
     pub pinned_hits: Option<Cow<'a, str>>,
-    /// A list of records to unconditionally hide from search results. A list of `record_id`s to hide. Eg: to hide records with IDs 123 and 456, you'd specify `123,456`. You could also use the Overrides feature to override search results based on rules. Overrides are applied first, followed by `pinned_hits` and finally `hidden_hits`.
+    /// A list of records to unconditionally hide from search results. A list of `record_id`s to hide. Eg: to hide records with IDs 123 and 456, you'd specify `123,456`. You could also use the Curation feature to override search results based on rules. Curations are applied first, followed by `pinned_hits` and finally `hidden_hits`.
     #[serde(rename = "hidden_hits", skip_serializing_if = "Option::is_none")]
     pub hidden_hits: Option<Cow<'a, str>>,
     /// Comma separated list of tags to trigger the curations rules that match the tags.
-    #[serde(rename = "override_tags", skip_serializing_if = "Option::is_none")]
-    pub override_tags: Option<Cow<'a, str>>,
+    #[serde(rename = "curation_tags", skip_serializing_if = "Option::is_none")]
+    pub curation_tags: Option<Cow<'a, str>>,
     /// A list of custom fields that must be highlighted even if you don't query for them
     #[serde(rename = "highlight_fields", skip_serializing_if = "Option::is_none")]
     pub highlight_fields: Option<Cow<'a, str>>,
@@ -172,9 +172,9 @@ pub struct MultiSearchCollectionParameters<'a> {
     /// Search using a bunch of search parameters by setting this parameter to the name of the existing Preset.
     #[serde(rename = "preset", skip_serializing_if = "Option::is_none")]
     pub preset: Option<Cow<'a, str>>,
-    /// If you have some overrides defined but want to disable all of them during query time, you can do that by setting this parameter to false
-    #[serde(rename = "enable_overrides", skip_serializing_if = "Option::is_none")]
-    pub enable_overrides: Option<bool>,
+    /// If you have some curation sets defined but want to disable all of them during query time, you can do that by setting this parameter to false
+    #[serde(rename = "enable_curations", skip_serializing_if = "Option::is_none")]
+    pub enable_curations: Option<bool>,
     /// Set this parameter to true to ensure that an exact match is ranked above the others
     #[serde(
         rename = "prioritize_exact_match",
@@ -318,11 +318,11 @@ impl<'a> MultiSearchCollectionParameters<'a> {
             synonym_num_typos: None,
             pinned_hits: None,
             hidden_hits: None,
-            override_tags: None,
+            curation_tags: None,
             highlight_fields: None,
             pre_segmented_query: None,
             preset: None,
-            enable_overrides: None,
+            enable_curations: None,
             prioritize_exact_match: None,
             prioritize_token_position: None,
             prioritize_num_matching_fields: None,
