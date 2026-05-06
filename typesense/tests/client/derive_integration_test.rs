@@ -54,6 +54,19 @@ struct Manufacturer {
     city: String,
 }
 
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+pub enum Priority {
+    Low,
+    Medium,
+    High,
+}
+
+impl ToTypesenseField for Priority {
+    fn to_typesense_type() -> &'static str {
+        "string"
+    }
+}
+
 /// The main struct that uses every feature of the derive macro.
 #[derive(Typesense, Serialize, Deserialize, Debug, PartialEq, Clone)]
 #[typesense(
@@ -104,6 +117,12 @@ struct MegaProduct {
     parts: Vec<Part>,
 
     tags: Option<Vec<String>>,
+
+    priority: Option<Priority>,
+
+    priorities: Vec<Priority>,
+
+    priorities_opt: Vec<Option<Priority>>,
 
     #[typesense(rename = "primary_address.city")]
     #[serde(rename = "primary_address.city")]
@@ -247,6 +266,24 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
                 assert_eq!(
                     actual_field.r#type, "string[]",
                     "Field 'tags' should have type 'string[]'"
+                );
+            }
+            "priority" => {
+                assert_eq!(
+                    actual_field.r#type, "string",
+                    "Field 'priority' should have type 'string[]'"
+                );
+            }
+            "priorities" => {
+                assert_eq!(
+                    actual_field.r#type, "string[]",
+                    "Field 'priorities' should have type 'string[]'"
+                );
+            }
+            "priorities_opt" => {
+                assert_eq!(
+                    actual_field.r#type, "string[]",
+                    "Field 'priorities_opt' should have type 'string[]'"
                 );
             }
             "details" => {
@@ -413,6 +450,9 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
             },
         ],
         tags: Some(vec!["steel".to_owned(), "heavy-duty".to_owned()]),
+        priority: Some(Priority::Low),
+        priorities: vec![Priority::Low],
+        priorities_opt: vec![Some(Priority::Low)],
         primary_city: "City".to_owned(),
         locale: "Xin chào!".to_owned(),
         qty: 123,
@@ -542,6 +582,9 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
     let update_payload = MegaProductPartial {
         price: Some(25.99),
         tags: Some(Some(vec!["steel".to_owned(), "sale".to_owned()])),
+        priority: Some(Some(Priority::Medium)),
+        priorities: Some(vec![Priority::Medium]),
+        priorities_opt: Some(vec![Some(Priority::Medium)]),
         ..Default::default()
     };
 
@@ -562,6 +605,9 @@ async fn logic_test_derive_macro_with_generic_client_lifecycle() {
         updated_product.tags,
         Some(vec!["steel".to_owned(), "sale".to_owned()])
     );
+    assert_eq!(updated_product.priority, Some(Priority::Medium));
+    assert_eq!(updated_product.priorities, vec![Priority::Medium]);
+    assert_eq!(updated_product.priorities_opt, vec![Some(Priority::Medium)]);
     assert_eq!(updated_product.title, product1.title); // Unchanged field
 
     //  Delete Document

@@ -17,21 +17,6 @@ impl<T: Document> ToTypesenseField for T {
     }
 }
 
-/// Generic implementation for a Vec of any type that is also a Typesense document.
-impl<T: Document> ToTypesenseField for Vec<T> {
-    #[inline(always)]
-    fn to_typesense_type() -> &'static str {
-        "object[]"
-    }
-}
-
-impl<T: ToTypesenseField> ToTypesenseField for Option<T> {
-    #[inline(always)]
-    fn to_typesense_type() -> &'static str {
-        T::to_typesense_type()
-    }
-}
-
 /// macro used internally to add implementations of ToTypesenseField for several rust types.
 #[macro_export]
 macro_rules! impl_to_typesense_field (
@@ -42,18 +27,6 @@ macro_rules! impl_to_typesense_field (
                 $typesense_type
             }
         }
-        impl $crate::prelude::ToTypesenseField for Vec<$for> {
-            #[inline(always)]
-            fn to_typesense_type() -> &'static str {
-                concat!($typesense_type, "[]")
-            }
-        }
-        impl $crate::prelude::ToTypesenseField for Vec<Option<$for>> {
-            #[inline(always)]
-            fn to_typesense_type() -> &'static str {
-                concat!($typesense_type, "[]")
-            }
-        }
     };
 
     ($for:ty, $typesense_type:expr, $any:ident $(: $any_bound:path)?) => {
@@ -61,18 +34,6 @@ macro_rules! impl_to_typesense_field (
             #[inline(always)]
             fn to_typesense_type() -> &'static str {
                 $typesense_type
-            }
-        }
-        impl<$any $(: $any_bound)?> $crate::prelude::ToTypesenseField for Vec<$for> {
-            #[inline(always)]
-            fn to_typesense_type() -> &'static str {
-                concat!($typesense_type, "[]")
-            }
-        }
-        impl<$any $(: $any_bound)?> $crate::prelude::ToTypesenseField for Vec<Option<$for>> {
-            #[inline(always)]
-            fn to_typesense_type() -> &'static str {
-                concat!($typesense_type, "[]")
             }
         }
     };
