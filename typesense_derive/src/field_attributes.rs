@@ -271,6 +271,16 @@ fn build_regular_field(field: &Field, field_attrs: &FieldAttributes) -> proc_mac
         (&field.ty, false)
     };
 
+    // Peel `Vec<_>` (and `Vec<Option<_>>`) so `ToTypesenseField` resolves on
+    // the element type and `"[]"` is appended at runtime. Lets downstream
+    // crates use local element types without hitting orphan rules.
+    let (ty, is_vec) = if let Some(vec_inner) = ty_inner_type(ty, "Vec") {
+        let inner = ty_inner_type(vec_inner, "Option").unwrap_or(vec_inner);
+        (inner, true)
+    } else {
+        (ty, false)
+    };
+
     let field_name = if let Some(rename) = &field_attrs.rename {
         quote! { #rename }
     } else {
@@ -279,9 +289,16 @@ fn build_regular_field(field: &Field, field_attrs: &FieldAttributes) -> proc_mac
     };
 
     let typesense_field_type = if let Some(override_str) = &field_attrs.type_override {
-        quote! { #override_str }
+        quote! { ::std::string::String::from(#override_str) }
+    } else if is_vec {
+        quote! {
+            format!(
+                "{}[]",
+                <#ty as ::typesense::prelude::ToTypesenseField>::to_typesense_type()
+            )
+        }
     } else {
-        quote! { <#ty as ::typesense::prelude::ToTypesenseField>::to_typesense_type() }
+        quote! { <#ty as ::typesense::prelude::ToTypesenseField>::to_typesense_type().to_owned() }
     };
 
     let optional = field_attrs
