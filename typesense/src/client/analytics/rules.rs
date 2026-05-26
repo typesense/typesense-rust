@@ -61,10 +61,13 @@ impl<'a> Rules<'a> {
         Error<analytics_api::CreateAnalyticsRuleError>,
     > {
         let params = analytics_api::CreateAnalyticsRuleParams {
-            create_analytics_rule_request: models::CreateAnalyticsRuleRequest::Array(schema),
+            create_analytics_rule_request:
+                models::CreateAnalyticsRuleRequest::ArrayVecAnalyticsRuleCreate(schema),
         };
         match execute_wrapper!(self, analytics_api::create_analytics_rule, params)? {
-            models::CreateAnalyticsRule200Response::Array(rules) => Ok(rules),
+            models::CreateAnalyticsRule200Response::ArrayVeccreateAnalyticsRule_200_response_oneOf_inner(
+                rules,
+            ) => Ok(rules),
             _ => Err(Error::Api(typesense_codegen::apis::Error::ResponseError(
                 ResponseContent {
                     status: StatusCode::OK,

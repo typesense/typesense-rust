@@ -165,6 +165,9 @@ pub fn preprocess_openapi_file(
     println!("Adding custom x-* vendor attributes...");
     add_vendor_attributes(&mut doc)?;
 
+    println!("Applying schema required-field overrides...");
+    doc.make_fields_optional_in_collection_update_schema()?;
+
     println!("Unwrapping parameters...");
     doc.unwrap_search_parameters()?;
     doc.unwrap_multi_search_parameters()?;
@@ -259,6 +262,35 @@ impl OpenAPIProperty {
 }
 
 impl OpenAPI {
+    fn make_fields_optional_in_collection_update_schema(&mut self) -> Result<(), String> {
+        let schema_name = "CollectionUpdateSchema";
+        let field_name = "fields";
+
+        let schema = self
+            .components
+            .schemas
+            .get_mut(schema_name)
+            .ok_or_else(|| format!("schema not found: {schema_name}"))?;
+
+        let Some(required) = schema.required.as_mut() else {
+            return Ok(());
+        };
+
+        let Some(required_list) = required.as_sequence_mut() else {
+            return Err(format!(
+                "schema `{schema_name}` has non-sequence `required` value"
+            ));
+        };
+
+        required_list.retain(|v| v.as_str() != Some(field_name));
+
+        if required_list.is_empty() {
+            schema.required = None;
+        }
+
+        Ok(())
+    }
+
     fn mark_borrowed_data(&mut self) {
         println!("Marking borrowed data...");
 

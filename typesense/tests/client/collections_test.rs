@@ -64,7 +64,7 @@ async fn logic_test_collections_and_collection_lifecycle() {
 
     // --- 5. Update the Collection to add and drop a field (via `collection`) ---
     let update_schema = CollectionUpdateSchema {
-        fields: vec![
+        fields: Some(vec![
             // Add a new field
             Field {
                 name: "description".into(),
@@ -78,7 +78,7 @@ async fn logic_test_collections_and_collection_lifecycle() {
                 drop: Some(true),
                 ..Default::default()
             },
-        ],
+        ]),
         ..Default::default()
     };
 
