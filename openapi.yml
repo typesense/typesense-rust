@@ -2479,9 +2479,8 @@ components:
           description: >
             Optional details about the collection, e.g., when it was created, who created it etc.
     CollectionUpdateSchema:
-      required:
-        - fields
       type: object
+      minProperties: 1
       properties:
         fields:
           type: array
@@ -2724,7 +2723,7 @@ components:
           items:
             $ref: "#/components/schemas/SearchResultHit"
         request_params:
-            $ref: "#/components/schemas/SearchRequestParams"
+          $ref: "#/components/schemas/SearchRequestParams"
         conversation:
           $ref: "#/components/schemas/SearchResultConversation"
         union_request_params:
@@ -2744,6 +2743,8 @@ components:
         - per_page
       properties:
         collection_name:
+          type: string
+        first_q:
           type: string
         q:
           type: string
@@ -3072,6 +3073,13 @@ components:
           description: A list of `string` fields that should be queried
             against. Multiple fields are separated with a comma.
           type: string
+
+        validate_field_names:
+          description: >
+            Controls whether Typesense should validate if the fields exist in the schema.
+            When set to false, Typesense will not throw an error if a field is missing.
+            This is useful for programmatic grouping where not all fields may exist.
+          type: boolean
 
         nl_query:
           description: Whether to use natural language processing to parse the query.
@@ -3845,6 +3853,13 @@ components:
           description: >
             The Id of a previous conversation to continue, this tells Typesense to include prior context when communicating with the LLM.
           type: string
+        validate_field_names:
+          description: >
+            Controls whether Typesense should validate if the fields exist in the schema.
+            When set to false, Typesense will not throw an error if a field is missing.
+            This is useful for programmatic grouping where not all fields may exist.
+          type: boolean
+
     MultiSearchSearchesParameter:
       type: object
       required:
@@ -3895,6 +3910,8 @@ components:
                 type: object
         field_name:
           type: string
+        sampled:
+          type: boolean
         stats:
           type: object
           properties:
