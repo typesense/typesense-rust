@@ -16,7 +16,7 @@ use serde::{Deserialize, Serialize};
 #[serde(untagged)]
 pub enum CreateAnalyticsRuleRequest<'a> {
     AnalyticsRuleCreate(Box<models::AnalyticsRuleCreate<'a>>),
-    ArrayVecAnalyticsRuleCreate(Vec<models::AnalyticsRuleCreate<'a>>),
+    Array(Vec<models::AnalyticsRuleCreate<'a>>),
 }
 
 impl Default for CreateAnalyticsRuleRequest<'_> {
