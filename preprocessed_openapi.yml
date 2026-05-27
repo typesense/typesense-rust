@@ -432,6 +432,12 @@ paths:
         schema:
           type: string
           description: A list of `string` fields that should be queried against. Multiple fields are separated with a comma.
+      - name: validate_field_names
+        in: query
+        schema:
+          type: boolean
+          description: |
+            Controls whether Typesense should validate if the fields exist in the schema. When set to false, Typesense will not throw an error if a field is missing. This is useful for programmatic grouping where not all fields may exist.
       - name: nl_query
         in: query
         schema:
@@ -2435,6 +2441,12 @@ paths:
           type: string
           description: |
             The Id of a previous conversation to continue, this tells Typesense to include prior context when communicating with the LLM.
+      - name: validate_field_names
+        in: query
+        schema:
+          type: boolean
+          description: |
+            Controls whether Typesense should validate if the fields exist in the schema. When set to false, Typesense will not throw an error if a field is missing. This is useful for programmatic grouping where not all fields may exist.
       requestBody:
         content:
           application/json:
@@ -3271,8 +3283,6 @@ components:
       x-rust-has-lifetime: true
     CollectionUpdateSchema:
       type: object
-      required:
-      - fields
       properties:
         fields:
           type: array
@@ -3299,6 +3309,7 @@ components:
           type: object
           description: |
             Optional details about the collection, e.g., when it was created, who created it etc.
+      minProperties: 1
     CollectionResponse:
       allOf:
       - $ref: '#/components/schemas/CollectionSchema'
@@ -3534,6 +3545,8 @@ components:
       - per_page
       properties:
         collection_name:
+          type: string
+        first_q:
           type: string
         q:
           type: string
@@ -3864,6 +3877,10 @@ components:
         query_by:
           type: string
           description: A list of `string` fields that should be queried against. Multiple fields are separated with a comma.
+        validate_field_names:
+          type: boolean
+          description: |
+            Controls whether Typesense should validate if the fields exist in the schema. When set to false, Typesense will not throw an error if a field is missing. This is useful for programmatic grouping where not all fields may exist.
         nl_query:
           type: boolean
           description: Whether to use natural language processing to parse the query.
@@ -4379,6 +4396,10 @@ components:
           type: string
           description: |
             The Id of a previous conversation to continue, this tells Typesense to include prior context when communicating with the LLM.
+        validate_field_names:
+          type: boolean
+          description: |
+            Controls whether Typesense should validate if the fields exist in the schema. When set to false, Typesense will not throw an error if a field is missing. This is useful for programmatic grouping where not all fields may exist.
       x-rust-builder: true
       x-rust-has-lifetime: true
     MultiSearchSearchesParameter:
@@ -4434,6 +4455,8 @@ components:
                 type: object
         field_name:
           type: string
+        sampled:
+          type: boolean
         stats:
           type: object
           properties:

@@ -341,6 +341,7 @@ fn build_multi_search_params<'a>(
         text_match_type: params.text_match_type,
         typo_tokens_threshold: params.typo_tokens_threshold,
         use_cache: params.use_cache,
+        validate_field_names: params.validate_field_names,
         vector_query: params.vector_query,
         voice_query: params.voice_query,
         enable_analytics: params.enable_analytics,

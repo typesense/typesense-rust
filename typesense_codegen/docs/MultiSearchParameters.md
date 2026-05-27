@@ -68,6 +68,7 @@ Name | Type | Description | Notes
 **conversation** | Option<**bool**> | Enable conversational search.  | [optional]
 **conversation_model_id** | Option<**String**> | The Id of Conversation Model to be used.  | [optional]
 **conversation_id** | Option<**String**> | The Id of a previous conversation to continue, this tells Typesense to include prior context when communicating with the LLM.  | [optional]
+**validate_field_names** | Option<**bool**> | Controls whether Typesense should validate if the fields exist in the schema. When set to false, Typesense will not throw an error if a field is missing. This is useful for programmatic grouping where not all fields may exist.  | [optional]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

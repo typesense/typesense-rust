@@ -18,6 +18,8 @@ pub struct FacetCounts {
     pub counts: Option<Vec<models::FacetCountsCountsInner>>,
     #[serde(rename = "field_name", skip_serializing_if = "Option::is_none")]
     pub field_name: Option<String>,
+    #[serde(rename = "sampled", skip_serializing_if = "Option::is_none")]
+    pub sampled: Option<bool>,
     #[serde(rename = "stats", skip_serializing_if = "Option::is_none")]
     pub stats: Option<Box<models::FacetCountsStats>>,
 }
@@ -27,6 +29,7 @@ impl FacetCounts {
         Self {
             counts: None,
             field_name: None,
+            sampled: None,
             stats: None,
         }
     }

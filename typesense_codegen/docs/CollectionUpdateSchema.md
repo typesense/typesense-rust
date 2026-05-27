@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**fields** | [**Vec<models::Field>**](Field.md) | A list of fields for querying, filtering and faceting | 
+**fields** | Option<[**Vec<models::Field>**](Field.md)> | A list of fields for querying, filtering and faceting | [optional]
 **synonym_sets** | Option<**Vec<String>**> | List of synonym set names to associate with this collection | [optional]
 **metadata** | Option<[**serde_json::Value**](.md)> | Optional details about the collection, e.g., when it was created, who created it etc.  | [optional]
 
