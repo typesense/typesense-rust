@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **collection_name** | **String** |  | 
+**first_q** | Option<**String**> |  | [optional]
 **q** | **String** |  | 
 **per_page** | **i32** |  | 
 **voice_query** | Option<[**models::SearchRequestParamsVoiceQuery**](SearchRequestParams_voice_query.md)> |  | [optional]

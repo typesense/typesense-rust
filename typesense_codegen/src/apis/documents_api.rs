@@ -148,6 +148,7 @@ pub struct MultiSearchParams<'p> {
     pub conversation: Option<bool>,
     pub conversation_model_id: Option<Cow<'p, str>>,
     pub conversation_id: Option<Cow<'p, str>>,
+    pub validate_field_names: Option<bool>,
     pub multi_search_searches_parameter: Option<models::MultiSearchSearchesParameter<'p>>,
 }
 
@@ -158,6 +159,7 @@ pub struct SearchCollectionParams<'p> {
     pub collection_name: Cow<'p, str>,
     pub q: Option<Cow<'p, str>>,
     pub query_by: Option<Cow<'p, str>>,
+    pub validate_field_names: Option<bool>,
     pub nl_query: Option<bool>,
     pub nl_model_id: Option<Cow<'p, str>>,
     pub query_by_weights: Option<Cow<'p, str>>,
@@ -963,6 +965,9 @@ pub async fn multi_search(
     if let Some(ref param_value) = params.conversation_id {
         req_builder = req_builder.query(&[("conversation_id", &param_value.to_string())]);
     }
+    if let Some(ref param_value) = params.validate_field_names {
+        req_builder = req_builder.query(&[("validate_field_names", &param_value.to_string())]);
+    }
     if let Some(ref user_agent) = configuration.user_agent {
         req_builder = req_builder.header(reqwest::header::USER_AGENT, user_agent.clone());
     }
@@ -1030,6 +1035,9 @@ pub async fn search_collection<D: for<'de> serde::Deserialize<'de> + Serialize>(
     }
     if let Some(ref param_value) = params.query_by {
         req_builder = req_builder.query(&[("query_by", &param_value.to_string())]);
+    }
+    if let Some(ref param_value) = params.validate_field_names {
+        req_builder = req_builder.query(&[("validate_field_names", &param_value.to_string())]);
     }
     if let Some(ref param_value) = params.nl_query {
         req_builder = req_builder.query(&[("nl_query", &param_value.to_string())]);

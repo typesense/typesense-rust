@@ -260,6 +260,12 @@ pub struct MultiSearchParameters<'a> {
     /// The Id of a previous conversation to continue, this tells Typesense to include prior context when communicating with the LLM.
     #[serde(rename = "conversation_id", skip_serializing_if = "Option::is_none")]
     pub conversation_id: Option<Cow<'a, str>>,
+    /// Controls whether Typesense should validate if the fields exist in the schema. When set to false, Typesense will not throw an error if a field is missing. This is useful for programmatic grouping where not all fields may exist.
+    #[serde(
+        rename = "validate_field_names",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub validate_field_names: Option<bool>,
 }
 
 impl<'a> MultiSearchParameters<'a> {
@@ -330,6 +336,7 @@ impl<'a> MultiSearchParameters<'a> {
             conversation: None,
             conversation_model_id: None,
             conversation_id: None,
+            validate_field_names: None,
         }
     }
 }

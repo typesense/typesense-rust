@@ -23,6 +23,12 @@ pub struct SearchParameters<'a> {
     /// A list of `string` fields that should be queried against. Multiple fields are separated with a comma.
     #[serde(rename = "query_by", skip_serializing_if = "Option::is_none")]
     pub query_by: Option<Cow<'a, str>>,
+    /// Controls whether Typesense should validate if the fields exist in the schema. When set to false, Typesense will not throw an error if a field is missing. This is useful for programmatic grouping where not all fields may exist.
+    #[serde(
+        rename = "validate_field_names",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub validate_field_names: Option<bool>,
     /// Whether to use natural language processing to parse the query.
     #[serde(rename = "nl_query", skip_serializing_if = "Option::is_none")]
     pub nl_query: Option<bool>,
@@ -293,6 +299,7 @@ impl<'a> SearchParameters<'a> {
         Self {
             q: None,
             query_by: None,
+            validate_field_names: None,
             nl_query: None,
             nl_model_id: None,
             query_by_weights: None,

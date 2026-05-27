@@ -6,6 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **q** | Option<**String**> | The query text to search for in the collection. Use * as the search string to return all documents. This is typically useful when used in conjunction with filter_by. | [optional]
 **query_by** | Option<**String**> | A list of `string` fields that should be queried against. Multiple fields are separated with a comma. | [optional]
+**validate_field_names** | Option<**bool**> | Controls whether Typesense should validate if the fields exist in the schema. When set to false, Typesense will not throw an error if a field is missing. This is useful for programmatic grouping where not all fields may exist.  | [optional]
 **nl_query** | Option<**bool**> | Whether to use natural language processing to parse the query. | [optional]
 **nl_model_id** | Option<**String**> | The ID of the natural language model to use. | [optional]
 **query_by_weights** | Option<**String**> | The relative weight to give each `query_by` field when ranking results. This can be used to boost fields in priority, when looking for matches. Multiple fields are separated with a comma. | [optional]

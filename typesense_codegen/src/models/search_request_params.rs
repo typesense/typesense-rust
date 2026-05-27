@@ -16,6 +16,8 @@ use serde::{Deserialize, Serialize};
 pub struct SearchRequestParams {
     #[serde(rename = "collection_name")]
     pub collection_name: String,
+    #[serde(rename = "first_q", skip_serializing_if = "Option::is_none")]
+    pub first_q: Option<String>,
     #[serde(rename = "q")]
     pub q: String,
     #[serde(rename = "per_page")]
@@ -28,6 +30,7 @@ impl SearchRequestParams {
     pub fn new(collection_name: String, q: String, per_page: i32) -> Self {
         Self {
             collection_name,
+            first_q: None,
             q,
             per_page,
             voice_query: None,

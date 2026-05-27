@@ -16,7 +16,9 @@ use serde::{Deserialize, Serialize};
 #[serde(untagged)]
 pub enum CreateAnalyticsRule200Response {
     AnalyticsRule(Box<models::AnalyticsRule>),
-    Array(Vec<models::CreateAnalyticsRule200ResponseOneOfInner>),
+    ArrayVeccreateAnalyticsRule_200_response_oneOf_inner(
+        Vec<models::CreateAnalyticsRule200ResponseOneOfInner>,
+    ),
 }
 
 impl Default for CreateAnalyticsRule200Response {
