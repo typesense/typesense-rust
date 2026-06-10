@@ -8,7 +8,7 @@ edition.workspace = true
 anyhow = { workspace = true }
 clap = { workspace = true }
 indexmap = { workspace = true }
-reqwest = { version = "0.12", features = ["blocking"] } # "blocking" is simpler for scripts
+reqwest = { version = "0.13", features = ["blocking"] } # "blocking" is simpler for scripts
 serde = { workspace = true }
 serde_yaml = { workspace = true }
 tokio = { workspace = true}
