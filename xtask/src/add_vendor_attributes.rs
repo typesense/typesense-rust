@@ -41,7 +41,7 @@ pub fn add_vendor_attributes(doc: &mut OpenAPI) -> Result<(), String> {
     // Operations
     attrs
         .operation("/collections/{collectionName}/documents/search", "get")
-        .generic_parameter("D: for<'de> serde::Deserialize<'de> + Serialize")?
+        .generic_parameter("D: for<'de> serde::Deserialize<'de>")?
         .return_type("models::SearchResult<D>")?;
 
     attrs

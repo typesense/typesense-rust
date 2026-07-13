@@ -859,7 +859,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponse'
-      x-rust-generic-parameter: 'D: for<''de> serde::Deserialize<''de> + Serialize'
+      x-rust-generic-parameter: 'D: for<''de> serde::Deserialize<''de>'
       x-rust-return-type: models::SearchResult<D>
       x-rust-has-lifetime: true
   /synonym_sets:

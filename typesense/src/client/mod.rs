@@ -159,7 +159,7 @@ use ::std::{
         atomic::{AtomicBool, AtomicUsize, Ordering},
     },
 };
-use serde::{Serialize, de::DeserializeOwned};
+use serde::de::DeserializeOwned;
 use typesense_codegen::apis::{self, configuration};
 use web_time::{Duration, Instant};
 
@@ -629,7 +629,8 @@ impl Client {
     /// stored in that collection.
     ///
     /// # Type Parameters
-    /// * `D` - The type of the documents in the collection. It must be serializable and deserializable.
+    /// * `D` - The type of the documents in the collection. It must implement `DeserializeOwned`.
+    ///   Write operations (e.g. `create`, `upsert`, `update`) additionally require `D: Document`.
     ///
     /// # Arguments
     /// * `collection_name` - The name of the collection to interact with.
@@ -642,9 +643,9 @@ impl Client {
     /// # #[cfg(not(target_family = "wasm"))]
     /// # {
     /// # use typesense::Client;
-    /// # use serde::{Serialize, Deserialize};
+    /// # use serde::Deserialize;
     /// #
-    /// # #[derive(Serialize, Deserialize, Debug)]
+    /// # #[derive(Deserialize, Debug)]
     /// # struct Book { id: String, title: String }
     /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
     /// # let client = Client::builder()
@@ -652,7 +653,7 @@ impl Client {
     /// #    .api_key("xyz")
     /// #    .build()
     /// #    .unwrap();
-    /// // Get a typed handle to the "books" collection
+    /// // Get a typed handle to the "books" collection (Deserialize is enough for reads)
     /// let books_collection = client.collection_named::<Book>("books");
     ///
     /// // Retrieve a single book, it returns `Result<Book, ...>`
@@ -669,7 +670,7 @@ impl Client {
         collection_name: impl Into<Cow<'c, str>>,
     ) -> Collection<'c, D>
     where
-        D: DeserializeOwned + Serialize,
+        D: DeserializeOwned,
     {
         Collection::new(self, collection_name)
     }
@@ -680,7 +681,7 @@ impl Client {
     /// stored in that collection.
     ///
     /// # Type Parameters
-    /// * `D` - The type of the documents in the collection. It must be of trait Document.
+    /// * `D` - The type of the documents in the collection. It must implement the [`Document`] trait.
     ///
     /// # Example: Working with a strongly-typed collection
     ///

@@ -1019,7 +1019,7 @@ pub async fn multi_search(
 }
 
 /// Search for documents in a collection that match the search criteria.
-pub async fn search_collection<D: for<'de> serde::Deserialize<'de> + Serialize>(
+pub async fn search_collection<D: for<'de> serde::Deserialize<'de>>(
     configuration: &configuration::Configuration,
     params: &SearchCollectionParams<'_>,
 ) -> Result<models::SearchResult<D>, Error<SearchCollectionError>> {
