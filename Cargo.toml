@@ -23,7 +23,7 @@ base64 = "0.22"
 bon = "3"
 chrono = "0.4"
 clap = { version = "4", features = ["derive"] }
-hmac = "0.12"
+hmac = "0.13"
 indexmap = { version = "2", features = ["serde"] }
 reqwest-retry = "0.7"
 serde = { version = "1", features = ["derive"] }
