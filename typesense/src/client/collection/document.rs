@@ -6,18 +6,19 @@
 
 use crate::{Client, Error, execute_wrapper, traits};
 use ::std::borrow::Cow;
-use serde::{Serialize, de::DeserializeOwned};
+use serde::de::DeserializeOwned;
 use typesense_codegen::apis::documents_api;
 
 /// Provides methods for interacting with a single document within a specific Typesense collection.
 ///
 /// This struct is created by calling a method like `client.collection_schemaless("collection_name").document("document_id")`
 /// or `client.collection::<MyType>().document("document_id")`.
-/// The generic `D` represents the shape of the document and must implement `Serialize` and `DeserializeOwned`.
+/// The generic `D` represents the shape of the document and must implement `DeserializeOwned`.
+/// Write operations require `D: Document`, which additionally requires `Serialize`.
 /// If `D` is not specified, it defaults to `serde_json::Value` for schemaless interactions.
 pub struct Document<'d, D = serde_json::Value>
 where
-    D: DeserializeOwned + Serialize,
+    D: DeserializeOwned,
 {
     client: &'d Client,
     collection_name: &'d str,
@@ -27,7 +28,7 @@ where
 
 impl<'d, D> Document<'d, D>
 where
-    D: DeserializeOwned + Serialize,
+    D: DeserializeOwned,
 {
     /// Creates a new `Document` instance for a specific document ID.
     #[inline]

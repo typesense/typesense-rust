@@ -7,7 +7,7 @@ mod documents;
 
 use crate::{Client, Error, execute_wrapper};
 use ::std::borrow::Cow;
-use serde::{Serialize, de::DeserializeOwned};
+use serde::de::DeserializeOwned;
 use typesense_codegen::{apis::collections_api, models};
 
 /// Provides methods for interacting with a Typesense collection.
@@ -15,7 +15,7 @@ use typesense_codegen::{apis::collections_api, models};
 /// This struct is created by calling `client.collection()`.
 pub struct Collection<'c, D = serde_json::Value>
 where
-    D: DeserializeOwned + Serialize,
+    D: DeserializeOwned,
 {
     client: &'c Client,
     collection_name: Cow<'c, str>,
@@ -24,7 +24,7 @@ where
 
 impl<'c, D> Collection<'c, D>
 where
-    D: DeserializeOwned + Serialize,
+    D: DeserializeOwned,
 {
     /// Creates a new `Collection` instance.
     #[inline]

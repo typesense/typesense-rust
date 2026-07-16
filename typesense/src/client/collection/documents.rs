@@ -10,7 +10,7 @@ use crate::{
     traits,
 };
 use ::std::borrow::Cow;
-use serde::{Serialize, de::DeserializeOwned};
+use serde::de::DeserializeOwned;
 use typesense_codegen::{
     apis::documents_api,
     models::{
@@ -25,7 +25,7 @@ use typesense_codegen::{
 /// `D` will be `MyType`.
 pub struct Documents<'d, D = serde_json::Value>
 where
-    D: DeserializeOwned + Serialize,
+    D: DeserializeOwned,
 {
     client: &'d Client,
     collection_name: &'d str,
@@ -34,7 +34,7 @@ where
 
 impl<'d, D> Documents<'d, D>
 where
-    D: DeserializeOwned + Serialize,
+    D: DeserializeOwned,
 {
     /// Creates a new `Documents` instance.
     #[inline]
