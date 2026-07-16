@@ -124,7 +124,7 @@ mod stopwords;
 mod synonym_set;
 mod synonym_sets;
 
-use crate::{Error, traits::Document};
+use crate::{ClientBuilderError, Error, traits::Document};
 use alias::Alias;
 use aliases::Aliases;
 use analytics::Analytics;
@@ -378,13 +378,13 @@ impl Client {
         #[builder(into, default)]
         /// The retry policy for transient network errors on a *single* node.
         retry_policy: ClientRetryPolicy,
-    ) -> Result<Self, &'static str> {
+    ) -> Result<Self, ClientBuilderError> {
         let is_nearest_node_set = nearest_node.is_some();
 
         let nodes: Vec<_> = nodes
             .into_iter()
             .chain(nearest_node)
-            .map(|node_config| {
+            .map(|node_config| -> Result<Node, ClientBuilderError> {
                 let builder = match node_config.http_builder {
                     Some(f) => f(reqwest::Client::builder()),
                     None => {
@@ -395,13 +395,13 @@ impl Client {
                     }
                 };
 
+                let reqwest_client = builder.build().map_err(ClientBuilderError::HttpClient)?;
+
                 #[cfg(target_arch = "wasm32")]
-                let http_client = builder.build().expect("Failed to build reqwest client");
+                let http_client = reqwest_client;
 
                 #[cfg(not(target_arch = "wasm32"))]
-                let mw_builder = ReqwestMiddlewareClientBuilder::new(
-                    builder.build().expect("Failed to build reqwest client"),
-                );
+                let mw_builder = ReqwestMiddlewareClientBuilder::new(reqwest_client);
 
                 #[cfg(not(target_arch = "wasm32"))]
                 let http_client = match retry_policy {
@@ -428,16 +428,16 @@ impl Client {
                     ..Default::default()
                 };
 
-                Node {
+                Ok(Node {
                     config,
                     is_healthy: AtomicBool::new(true),
                     last_accessed: RwLock::new(Instant::now()),
-                }
+                })
             })
-            .collect();
+            .collect::<Result<Vec<Node>, ClientBuilderError>>()?;
 
         if nodes.is_empty() {
-            return Err("Configuration must include at least one node or a nearest_node.");
+            return Err(ClientBuilderError::NoNodesProvided);
         }
 
         Ok(Self {

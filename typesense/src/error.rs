@@ -3,6 +3,20 @@
 use thiserror::Error;
 pub use typesense_codegen::apis::{Error as ApiError, ResponseContent};
 
+/// Errors that can occur when building a Typesense client.
+#[derive(Debug, Error)]
+pub enum ClientBuilderError {
+    /// Occurs when no nodes are provided to the Typesense client builder.
+    /// At least one entry in `nodes` or a `nearest_node` must be provided.
+    #[error("No nodes provided to the Typesense client builder")]
+    NoNodesProvided,
+
+    /// Failed to build the underlying HTTP client for a node.
+    /// This usually indicates an invalid option passed via a custom `http_builder` closure, like a bad TLS certificate.
+    #[error("Failed to build the underlying HTTP client for a node: {0}")]
+    HttpClient(reqwest::Error),
+}
+
 /// The primary error type for the Typesense client.
 ///
 /// This enum encapsulates all possible failures, from network issues to API errors
