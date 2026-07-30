@@ -34,7 +34,7 @@ web-time = { workspace = true } # required for wasm32 target
 
 # native-only dependencies
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-reqwest = { version = "0.12", features = ["json"] }
+reqwest = { version = "0.13", features = ["json"] }
 reqwest-middleware = { version = "0.4.2"}
 
 # wasm deps
