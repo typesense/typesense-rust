@@ -44,7 +44,7 @@ reqwest = { version = "0.12", default-features = false, features = ["json"] }
 
 [dev-dependencies]
 dotenvy = "0.15"
-nanoid = "0.4"
+nanoid = "0.5"
 trybuild = "1.0.42"
 
 # native-only dev deps
